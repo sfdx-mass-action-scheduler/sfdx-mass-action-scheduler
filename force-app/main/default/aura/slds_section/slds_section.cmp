@@ -1,3 +1,25 @@
+<!--
+Author: Doug Ayers
+Website: https://douglascayers.com
+GitHub: https://github.com/DouglasCAyers/sfdx-mass-action-scheduler
+License: BSD 3-Clause License
+-->
+<!--
+    https://www.lightningdesignsystem.com/components/expandable-section/
+-->
+<aura:component>
+
+    <aura:attribute name="title" type="String"
+                    description="Section Title"/>
+
+    <div class="slds-section">
+        <h3 class="slds-section__title slds-theme_shade">
+            <span class="slds-truncate slds-p-horizontal_small" title="{!v.title}">{!v.title}</span>
+        </h3>
+    </div>
+
+</aura:component>
+<!--
 BSD 3-Clause License
 
 Copyright (c) 2017, Doug Ayers, douglascayers.com
@@ -27,3 +49,4 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->

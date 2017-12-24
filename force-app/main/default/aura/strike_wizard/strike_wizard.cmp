@@ -1,0 +1,109 @@
+<!--
+Strike by Appiphony
+
+Version: 0.8.0
+Website: http://www.lightningstrike.io
+GitHub: https://github.com/appiphony/Strike-Components
+License: BSD 2-Clause License
+-->
+<aura:component implements="flexipage:availableForAllPageTypes,force:appHostable" access="global">
+
+    <!-- PUBLIC USER DEFINED ATTRIBUTES -->
+    <aura:attribute name="stageNames" type="String[]" default="['One','Two','Three','Four','Five']" description="The name of each chevron" required="true"/>
+    <aura:attribute name="activeChevron" type="Integer" default="0" description="Used to set the starting position of the active chevron"/>
+    <aura:attribute name="advanceButton" type="Boolean" default="{!false}" description="Used to override default button"/>
+
+    <aura:attribute name="advanceButtonNextLabel" type="string" default="Mark Stage as Completed" description="Button label used to mark a stage as completed and advance to the next chevron"/>
+    <aura:attribute name="advanceButtonSelectLabel" type="string" default="Mark as Current Stage" description="Button label used to mark a selected chevron as the current chevron"/>
+    <aura:attribute name="advanceButtonCompletedLabel" type="string" default="Process Completed" description="Button label used to indicate the process has been completed"/>
+
+    <aura:attribute name="displayMode" type="string" default="wizard" description="Simple for Basic navigation or Wizard for flows"/>
+    <aura:attribute name="disableBackwardNavOnComplete" type="Boolean" default="{!false}" description="Restricts backward navigation to stages marked as complete"/>
+    <aura:attribute name="disableForwardNavOnIncomplete" type="Boolean" default="{!false}" description="Restricts forward navigation to stages marked as incomplete"/>
+    <aura:attribute name="forceProcessFlow" type="Boolean" default="{!false}" description="Restricts all navigation"/>
+    <aura:attribute name="collapseExpandButton" type="Boolean" default="{!false}" description="A boolean value that is used to hide or show the toggle body button"/>
+    <aura:attribute name="error" type="Boolean" default="{!false}" description="A boolean value that is used to toggle the error state"/>
+    <aura:attribute name="processComplete" type="Boolean" default="{!false}"/>
+
+    <!-- INTERNAL ATTRIBUTES -->
+    <aura:attribute name="chevrons" type="Map" access="private"/>
+    <aura:attribute name="currentChevron" type="Integer" access="private" />
+    <aura:attribute name="initialized" type="Boolean" default="{!false}" access="private"/>
+    <aura:attribute name="advanceButtonText" type="String" default="Mark Stage as Completed" access="private"/>
+    <aura:attribute name="toggleButtonStyle" type="Boolean" default="{!true}" access="private"/>
+    <aura:attribute name="toggleBodyView" type="Boolean" default="{!true}" access="private"/>
+
+    <!-- HANDLERS AND EVENTS-->
+    <aura:handler name="init" value="{!this}" action="{!c.init}"/>
+    <aura:handler name="change" value="{!v.error}" action="{!c.handleErrorState}"/>
+    <aura:registerEvent name="strike_evt_chevron" type="c:strike_evt"/>
+
+    <!-- PUBLIC METHODS -->
+    <aura:method name="moveToStage" action="{!c.changeChevronMethod}">
+        <aura:attribute name="targetChevron" type="Integer" default="0" description="Used to set the position of the active chevron"/>
+    </aura:method>
+    <aura:method name="advanceProgress" action="{!c.advanceButtonClick}"/>
+    <aura:method name="showError" action="{!c.showErrorMethod}"/>
+    <aura:method name="hideError" action="{!c.hideErrorMethod}"/>
+    <aura:method name="toastMessage" action="{!c.toastMessage}">
+        <aura:attribute name="title" type="String" default=""/>
+        <aura:attribute name="message" type="String" default="Stage saved successfully"/>
+        <aura:attribute name="key" type="String" default="dislike"/>
+        <aura:attribute name="duration" type="Integer" default="5000"/>
+        <aura:attribute name="type" type="String" default="success"/>
+        <aura:attribute name="mode" type="String" default="wizard"/>
+    </aura:method>
+
+    <div class="slds-grid">
+        <aura:if isTrue="{!v.collapseExpandButton}">
+            <lightning:buttonIcon class="slds-button slds-button--icon-border-filled slds-path__trigger slds-no-flex slds-m-horizontal--small slds-flip--vertical"
+                iconName="{!if(v.toggleBodyView, 'utility:chevrondown', 'utility:chevronup')}"
+                alternativeText="toggle"
+                size="medium"
+                variant="border"
+                onclick="{!c.toggleBody}"/>
+        </aura:if>
+        <div class="slds-tabs--path" role="application">
+            <ul class="slds-tabs--path__nav" role="tablist">
+                <aura:iteration items="{!v.chevrons}" var="chevron" indexVar="index">
+                    <li class="{!'slds-tabs--path__item ' + chevron.class}" role="presentation" id="{!index}" onclick="{!c.chevronClick}">
+                        <!--<c:strike_tooltip text="{!chevron.name}" placement="bottom"> ***** Tooltips no longer supported ***** -->
+                            <a href="javascript:void(0);" class="slds-tabs--path__link">
+                                <span class="slds-tabs--path__stage">
+                                    <lightning:icon variant="bare" class="slds-button__icon" iconName="utility:check" size="x-small" alternativeText="{!chevron.name}"/>
+                                </span>
+                                <span class="slds-tabs--path__title">{!chevron.name}</span>
+                            </a>
+                        <!--</c:strike_tooltip>-->
+                    </li>
+                </aura:iteration>
+            </ul>
+        </div>
+        <aura:if isTrue="{!and(v.advanceButton, v.displayMode == 'wizard')}">
+            <lightning:button aura:id="advanceButton"
+                class="{!'slds-path__mark-complete slds-no-flex sw-advance-button slds-m-left--small' + if(v.toggleButtonStyle == true, '', ' slds-path__mark-current') + if(v.body[0] != null, ' slds-m-horizontal--small', ' slds-m-left--small')}"
+                variant="brand"
+                onclick="{!c.advanceButtonClick}"
+                disabled="{!v.error}">
+                <aura:if isTrue="{!v.toggleButtonStyle}">
+                    <lightning:icon variant="bare" class="slds-button__icon slds-button__icon--left" iconName="utility:check" size="x-small"/>
+                </aura:if>
+                {!v.advanceButtonText}
+            </lightning:button>
+        </aura:if>
+    </div>
+
+    <div aura:id="chevron-body" class="{!'slds-path__content' + if(v.toggleBodyView == false, ' slds-hide', '')}">
+        {!v.body}
+    </div>
+</aura:component>
+<!--
+Copyright 2017 Appiphony, LLC
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->

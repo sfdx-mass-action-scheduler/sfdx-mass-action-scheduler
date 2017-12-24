@@ -1,3 +1,35 @@
+/**
+ * Author: Doug Ayers
+ * Website: https://douglascayers.com
+ * GitHub: https://github.com/DouglasCAyers/sfdx-mass-action-scheduler
+ * License: BSD 3-Clause License
+ */
+public with sharing class MA_RunConfigCmpController {
+
+    @AuraEnabled
+    public static Map<String, Object> enqueueAction( ID configId ) {
+
+        Map<String, Object> result = new Map<String, Object>();
+
+        try {
+
+            ID jobId = MA_MassActionBatchUtils.enqueueAction( configId );
+
+            result.put( 'success', true );
+            result.put( 'jobId', jobId );
+
+        } catch ( Exception e ) {
+
+            result.put( 'success', false );
+            result.put( 'message', e.getMessage() );
+
+        }
+
+        return result;
+    }
+
+}
+/*
 BSD 3-Clause License
 
 Copyright (c) 2017, Doug Ayers, douglascayers.com
@@ -27,3 +59,4 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/

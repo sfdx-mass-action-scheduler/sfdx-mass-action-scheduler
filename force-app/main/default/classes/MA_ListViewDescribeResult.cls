@@ -1,3 +1,41 @@
+/**
+ * Author: Doug Ayers
+ * Website: https://douglascayers.com
+ * GitHub: https://github.com/DouglasCAyers/sfdx-mass-action-scheduler
+ * License: BSD 3-Clause License
+ */
+/*
+ * Represents some parts of a JSON response from List View REST API.
+ * "/services/data/<version>/sobjects/<sobjectName>/listviews/<listViewId>/describe"
+ */
+public class MA_ListViewDescribeResult {
+
+    public ID id { get; set; }
+
+    public String query { get; set; }
+
+    public String sobjectType { get; set; }
+
+    public List<Map<String, String>> columns { get; set; }
+
+    /**
+     * Extract a list of single property from the columns map.
+     * For example, to get all of the 'fieldNameOrPath' properties.
+     * Conceptually, it's like this: https://stackoverflow.com/questions/19590865/from-an-array-of-objects-extract-value-of-a-property-as-array
+     */
+    public List<String> getColumnProperty( String property ) {
+
+        List<String> values = new List<String>();
+
+        for ( Map<String, String> column : columns ) {
+            values.add( column.get( property ) );
+        }
+
+        return values;
+    }
+
+}
+/*
 BSD 3-Clause License
 
 Copyright (c) 2017, Doug Ayers, douglascayers.com
@@ -27,3 +65,4 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/

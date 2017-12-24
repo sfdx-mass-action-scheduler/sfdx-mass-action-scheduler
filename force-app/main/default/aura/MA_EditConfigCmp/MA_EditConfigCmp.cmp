@@ -1,0 +1,707 @@
+<!--
+Author: Doug Ayers
+Website: https://douglascayers.com
+GitHub: https://github.com/DouglasCAyers/sfdx-mass-action-scheduler
+License: BSD 3-Clause License
+-->
+<aura:component controller="MA_EditConfigCmpController" implements="flexipage:availableForRecordHome,force:hasRecordId,lightning:actionOverride" access="global">
+
+    <aura:attribute name="objectDescribe"
+                    type="Object"
+                    description="SObject and Field describe info"/>
+
+    <aura:attribute name="recordId"
+                    type="String"
+                    description="The ID of the record to be displayed. Provided by force:hasRecordId interface."/>
+
+    <aura:attribute name="record"
+                    type="Object"
+                    description="The record object to be displayed. This is a wrapper object and not the sobject."/>
+
+    <!-- Lightning Data Service -->
+
+    <!--
+        This allows us to know when the record is changed outside this component,
+        such as when the user might click the standard 'Edit' button and save the record.
+        If we don't reload this component then upon saving the record via the component
+        we could overwrite, undoing, the outside changes.
+     -->
+
+    <aura:attribute name="ldsComplexRecord"
+                    type="Object"
+                    description="The complex record. Used only with Lightning Data Service to detect when record changes outside this component."/>
+
+    <aura:attribute name="ldsSimpleRecord"
+                    type="Mass_Action_Configuration__c"
+                    description="The simple record. Used only with Lightning Data Service to detect when record changes outside this component."/>
+
+    <force:recordData aura:id="lds"
+        recordId="{!v.recordId}"
+        fields="Id"
+        mode="EDIT"
+        targetRecord="{!v.ldsComplexRecord}"
+        targetFields="{!v.ldsSimpleRecord}"
+        recordUpdated="{!c.doInit}"/>
+
+    <!-- Wizard Attributes -->
+
+    <aura:attribute name="wizardActiveStageIndex"
+                    type="Integer"
+                    description="In the Wizard, which stage is user actively on."
+                    default="0"/>
+
+    <aura:attribute name="wizardStageNames"
+                    type="String[]"
+                    description="In the Wizard, the names of the stages."
+                    default="[ 'Choose Source', 'Choose Action', 'Field Mappings', 'Schedule' ]"/>
+
+    <!-- Source Attributes -->
+
+    <aura:attribute name="sourceType"
+                    type="String"
+                    description="For tracking changes to source type. If bind to property of sobject then change handler is called when any field on record changes."/>
+
+    <aura:attribute name="sourceTypeURL"
+                    type="String"
+                    description="URL to the selected report or list view so user can verify their selection."/>
+
+    <aura:attribute name="sourceFields"
+                    type="Map[]"
+                    description="During field mapping stage, these are the assignable source fields."/>
+
+    <!-- Source Type : Reports -->
+
+    <aura:attribute name="sourceReportFolders"
+                    type="Map[]"
+                    description="Folder select options to narrow down search of a report. User must choose one to drive report filtering."/>
+
+    <aura:attribute name="sourceReportFolderId"
+                    type="String"
+                    description="Selected report folder id."/>
+
+    <aura:attribute name="sourceReports"
+                    type="Map[]"
+                    description="Report select options within the currently selected report."/>
+
+    <aura:attribute name="sourceReportId"
+                    type="String"
+                    description="Selected report id."/>
+
+    <aura:attribute name="sourceReport"
+                    type="Object"
+                    description="Details about the selected report, like name and folder."/>
+
+    <aura:attribute name="sourceReportColumns"
+                    type="Map[]"
+                    description="Column select options from the selected source report. User must choose one to drive sorting and pagination."/>
+
+    <aura:attribute name="sourceReportColumnName"
+                    type="String"
+                    description="Selected report column."/>
+
+    <!-- Source Type : List Views -->
+
+    <aura:attribute name="sourceListViewSobjectTypes"
+                    type="Map[]"
+                    description="SObject select options to narrow down search of a list view. User must choose one to drive list view filtering."/>
+
+    <aura:attribute name="sourceListViewSobjectType"
+                    type="String"
+                    description="Selected list view sobject type."/>
+
+    <aura:attribute name="sourceListViews"
+                    type="Map[]"
+                    description="List View select options within the currently selected sobject."/>
+
+    <aura:attribute name="sourceListViewId"
+                    type="String"
+                    description="Selected list view id."/>
+
+    <aura:attribute name="sourceListView"
+                    type="Object"
+                    description="Details about the selected list view, like name and sobject type."/>
+
+    <!-- Target Attributes -->
+
+    <aura:attribute name="targetType"
+                    type="String"
+                    description="For tracking changes to target type. If bind to property of sobject then change handler is called when any field on record changes."/>
+
+    <aura:attribute name="targetTypeRequiresSobject"
+                    type="Boolean"
+                    description="Indicates if selected target type requires user to select a specific object to know available actions. For example, Apex does not but Email Alerts do."/>
+
+    <aura:attribute name="targetTypeRequiresAction"
+                    type="Boolean"
+                    description="Indicates if selected target type requires user to select a specific action to invoke. For example, Workflows do not but Quick Actions do."/>
+
+    <aura:attribute name="targetSobjectTypes"
+                    type="Map[]"
+                    description="Object name select options of objects that have custom actions (e.g. objects with custom Email Alerts or Quick Actions)."/>
+
+    <aura:attribute name="targetSobjectType"
+                    type="String"
+                    description="Selected sobject type."/>
+
+    <aura:attribute name="isValidToRenderTargetInvocableActions"
+                    type="Boolean"
+                    description="Indicates conditions are met to fetch and show the target invocable action select options."/>
+
+    <aura:attribute name="targetNamedCredentials"
+                    type="Map[]"
+                    description="SObject select options of Named Credentials to choose for making API callout to REST API to execute target action."/>
+
+    <aura:attribute name="targetInvocableActions"
+                    type="Map[]"
+                    description="Action select options within the currently selected target type and target sobject."/>
+
+    <aura:attribute name="targetInvocableAction"
+                    type="String"
+                    description="The selected action name from the target invocable actions select options."/>
+
+    <aura:attribute name="targetFields"
+                    type="Map[]"
+                    description="During field mapping stage, these are the assignable target fields."/>
+
+    <aura:attribute name="targetFieldMappings"
+                    type="Map[]"
+                    description="Array of input arguments for target action to map source fields to."/>
+
+    <!-- Schedule Option Attributes -->
+
+    <aura:attribute name="scheduleOptionsHourOfDay"
+                    type="Map[]"
+                    description="Hour of Day in Cron schedule expression."/>
+
+    <aura:attribute name="scheduleOptionsDayOfWeek"
+                    type="Map[]"
+                    description="Weekday in Cron schedule expression."/>
+
+    <aura:attribute name="scheduleOptionsMonthOfYear"
+                    type="Map[]"
+                    description="Month of Year in Cron schedule expression."/>
+
+    <!-- Schedule Selection Attributes -->
+
+    <aura:attribute name="scheduleSelectionsFrequency"
+                    type="String"
+                    description="The selected values from the radioGroup. ODDITY: The type of this attribute must be String for initial value to be selected by lightning:radioGroup; but note that if user makes a selection then an array is bound to this attribute."/>
+
+    <aura:attribute name="scheduleSelectionsHourOfDay"
+                    type="String[]"
+                    description="The selected values from the checkboxGroup. When save record need to convert list to csv string."/>
+
+    <aura:attribute name="scheduleSelectionsDayOfWeek"
+                    type="String[]"
+                    description="The selected values from the checkboxGroup. When save record need to convert list to csv string."/>
+
+    <aura:attribute name="scheduleSelectionsMonthOfYear"
+                    type="String[]"
+                    description="The selected values from the checkboxGroup. When save record need to convert list to csv string."/>
+
+    <!-- Events -->
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+    <aura:handler name="change" value="{!v.sourceType}" action="{!c.handleSourceTypeChange}"/>
+    <aura:handler name="change" value="{!v.targetType}" action="{!c.handleTargetTypeChange}"/>
+
+    <aura:handler name="change" value="{!v.sourceReportFolderId}" action="{!c.handleSourceReportFolderChange}"/>
+    <aura:handler name="change" value="{!v.sourceReportId}" action="{!c.handleSourceReportChange}"/>
+
+    <aura:handler name="change" value="{!v.sourceListViewSobjectType}" action="{!c.handleSourceListViewSobjectTypeChange}"/>
+    <aura:handler name="change" value="{!v.sourceListViewId}" action="{!c.handleSourceListViewChange}"/>
+
+    <aura:handler name="change" value="{!v.targetTypeRequiresSobject}" action="{!c.handleTargetTypeRequiresSobjectChange}"/>
+    <aura:handler name="change" value="{!v.targetSobjectType}" action="{!c.handleTargetSobjectTypeChange}"/>
+
+    <!-- Markup -->
+
+    <div class="slds-theme_default slds-box slds-box_xx-small">
+
+        <lightning:spinner aura:id="spinner" variant="brand"/>
+
+        <div class="slds-grid slds-p-around_medium">
+            <div class="slds-col">
+
+                <c:strike_wizard aura:id="wizard"
+                    stageNames="{!v.wizardStageNames}"
+                    activeChevron="{!v.wizardActiveStageIndex}"
+                    displayMode="wizard"
+                    disableForwardNavOnIncomplete="true"
+                    processComplete="false"/>
+
+            </div>
+        </div>
+
+        <aura:if isTrue="{!not( empty( v.record ) )}">
+
+            <!-- Stage: Choose Source -->
+
+            <aura:if isTrue="{!equals( v.wizardActiveStageIndex, 0 )}">
+
+                <div class="slds-grid slds-p-horizontal_medium">
+
+                    <div class="slds-col">
+                        <c:slds_section title="Source Information"/>
+                    </div>
+
+                </div>
+
+                <div class="slds-grid slds-p-horizontal_medium">
+
+                    <div class="slds-col">
+                        <div class="slds-form slds-form_stacked">
+
+                            <lightning:input aura:id="inputName"
+                                name="inputName"
+                                label="{!v.objectDescribe.fields.Name.label}"
+                                title="{!v.objectDescribe.fields.Name.helpText}"
+                                value="{!v.record.name}"
+                                required="true"
+                                type="text"
+                                messageWhenValueMissing="Name is required."
+                                class="slds-p-top_x-small"
+                                onchange="{!c.handleInputFieldChanged}"/>
+
+                            <lightning:combobox aura:id="inputSourceType"
+                                name="inputSourceType"
+                                label="{!v.objectDescribe.fields.Source_Type__c.label}"
+                                title="{!v.objectDescribe.fields.Source_Type__c.helpText}"
+                                value="{!v.sourceType}"
+                                options="{!v.objectDescribe.fields.Source_Type__c.picklistValues}"
+                                placeholder="Select a Source Type"
+                                required="true"
+                                messageWhenValueMissing="Source Type is required."
+                                class="slds-p-top_x-small"
+                                onchange="{!c.handleInputFieldChanged}"/>
+
+                            <aura:if isTrue="{!equals( v.sourceType, 'Report' )}">
+
+                                <lightning:combobox aura:id="inputSourceReportFolder"
+                                    name="inputSourceReportFolder"
+                                    label="Report Folder - choose a folder that has the report to use as the source records"
+                                    value="{!v.sourceReportFolderId}"
+                                    options="{!v.sourceReportFolders}"
+                                    placeholder="Select a Report Folder"
+                                    required="true"
+                                    messageWhenValueMissing="Report Folder is required."
+                                    class="slds-p-top_x-small"
+                                    onchange="{!c.handleInputFieldChanged}"/>
+
+                                <lightning:combobox aura:id="inputSourceReport"
+                                    name="inputSourceReport"
+                                    label="Report (tabular format only)"
+                                    title="{!v.objectDescribe.fields.Source_Report_ID__c.helpText}"
+                                    value="{!v.sourceReportId}"
+                                    options="{!v.sourceReports}"
+                                    placeholder="Select a Tabular Report"
+                                    required="true"
+                                    messageWhenValueMissing="Report is required."
+                                    class="slds-p-top_x-small"
+                                    onchange="{!c.handleInputFieldChanged}"/>
+
+                                <lightning:combobox aura:id="inputSourceReportColumn"
+                                    name="inputSourceReportColumn"
+                                    label="Report Column - choose a column that uniquely identifies each record in the report"
+                                    title="{!v.objectDescribe.fields.Source_Report_Column_Name__c.helpText}"
+                                    value="{!v.sourceReportColumnName}"
+                                    options="{!v.sourceReportColumns}"
+                                    placeholder="Select a Report Column"
+                                    required="true"
+                                    messageWhenValueMissing="Report Column is required."
+                                    class="slds-p-top_x-small"
+                                    onchange="{!c.handleInputFieldChanged}"/>
+
+                            </aura:if>
+
+                            <aura:if isTrue="{!equals( v.sourceType, 'ListView')}">
+
+                                <lightning:combobox aura:id="inputSourceListViewSobjectType"
+                                    name="inputSourceListViewSobjectType"
+                                    label="Object - choose an object that has the list view to use as the source records"
+                                    value="{!v.sourceListViewSobjectType}"
+                                    options="{!v.sourceListViewSobjectTypes}"
+                                    placeholder="Select an Object"
+                                    required="true"
+                                    messageWhenValueMissing="Object is required."
+                                    class="slds-p-top_x-small"
+                                    onchange="{!c.handleInputFieldChanged}"/>
+
+                                <lightning:combobox aura:id="inputSourceListView"
+                                    name="inputSourceListView"
+                                    label="List View"
+                                    title="{!v.objectDescribe.fields.Source_List_View_ID__c.helpText}"
+                                    value="{!v.sourceListViewId}"
+                                    options="{!v.sourceListViews}"
+                                    placeholder="Select a List View"
+                                    required="true"
+                                    messageWhenValueMissing="List View is required."
+                                    class="slds-p-top_x-small"
+                                    onchange="{!c.handleInputFieldChanged}"/>
+
+                            </aura:if>
+
+                            <aura:if isTrue="{!not(empty(v.sourceTypeURL))}">
+
+                                <div class="slds-form-element">
+                                    <!--<label class="slds-form-element__label" for="input-unique-id">Form Element Label</label>-->
+                                    <div class="slds-form-element__control">
+                                        <a href="{!v.sourceTypeURL}" target="_blank">View selected source to confirm fields and filters</a>
+                                    </div>
+                                </div>
+
+                            </aura:if>
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </aura:if>
+
+            <!-- Stage: Choose Action -->
+
+            <aura:if isTrue="{!equals( v.wizardActiveStageIndex, 1 )}">
+
+                <div class="slds-grid slds-p-horizontal_medium">
+
+                    <div class="slds-col">
+                        <c:slds_section title="Action Information"/>
+                    </div>
+
+                </div>
+
+                <div class="slds-grid slds-p-horizontal_medium">
+
+                    <div class="slds-col">
+                        <div class="slds-form slds-form_stacked">
+
+                            <lightning:combobox aura:id="inputTargetNamedCredential"
+                                name="inputTargetNamedCredential"
+                                label="{!v.objectDescribe.fields.Named_Credential__c.label + ' - this will be the context user'}"
+                                title="{!v.objectDescribe.fields.Named_Credential__c.helpText}"
+                                value="{!v.record.namedCredential}"
+                                options="{!v.targetNamedCredentials}"
+                                placeholder="Select a Named Credential"
+                                required="true"
+                                messageWhenValueMissing="Named Credential is required."
+                                class="slds-p-top_x-small"
+                                onchange="{!c.handleInputFieldChanged}"/>
+
+                            <aura:if isTrue="{!not( empty( v.record.namedCredential ) )}">
+
+                                <lightning:combobox aura:id="inputTargetType"
+                                    name="inputTargetType"
+                                    label="Action Type"
+                                    title="{!v.objectDescribe.fields.Target_Type__c.helpText}"
+                                    value="{!v.targetType}"
+                                    options="{!v.objectDescribe.fields.Target_Type__c.picklistValues}"
+                                    placeholder="Select an Action Type"
+                                    required="true"
+                                    messageWhenValueMissing="Action Type is required."
+                                    class="slds-p-top_x-small"
+                                    onchange="{!c.handleInputFieldChanged}"/>
+
+                                <aura:if isTrue="{!v.targetTypeRequiresSobject}">
+                                    <lightning:combobox aura:id="inputTargetSobjectType"
+                                        name="inputTargetSobjectType"
+                                        label="Object - choose an object that has the custom actions to invoke on the source records"
+                                        title=""
+                                        value="{!v.targetSobjectType}"
+                                        options="{!v.targetSobjectTypes}"
+                                        placeholder="Select an Object"
+                                        required="true"
+                                        messageWhenValueMissing="Object is required."
+                                        class="slds-p-top_x-small"
+                                        onchange="{!c.handleInputFieldChanged}"/>
+                                </aura:if>
+
+                                <aura:if isTrue="{!v.isValidToRenderTargetInvocableActions}">
+                                    <lightning:combobox aura:id="inputTargetAction"
+                                        name="inputTargetAction"
+                                        label="Action"
+                                        title=""
+                                        value="{!v.targetInvocableAction}"
+                                        options="{!v.targetInvocableActions}"
+                                        placeholder="Select an Action"
+                                        required="true"
+                                        messageWhenValueMissing="Action is required."
+                                        class="slds-p-top_x-small"
+                                        onchange="{!c.handleInputFieldChanged}"/>
+                                </aura:if>
+
+                            </aura:if>
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </aura:if>
+
+            <!-- Stage: Field Mappings -->
+
+            <aura:if isTrue="{!equals( v.wizardActiveStageIndex, 2 )}">
+
+                <div class="slds-grid slds-p-horizontal_medium">
+
+                    <div class="slds-col">
+                        <c:slds_section title="Field Mappings"/>
+                    </div>
+
+                </div>
+
+                <div class="slds-p-horizontal_medium">
+
+                    <table class="slds-table slds-table_bordered">
+                        <thead>
+                            <tr class="slds-text-title_caps">
+                                <th scope="col">Source Field</th>
+                                <th scope="col">Target Field</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <aura:iteration var="targetFieldMapping" items="{!v.targetFieldMappings}" indexVar="index">
+                                <tr>
+                                    <td width="50%">
+
+                                        <lightning:combobox aura:id="inputMappingSourceFieldName"
+                                            name="inputMappingSourceFieldName"
+                                            variant="label-hidden"
+                                            value="{!targetFieldMapping.sourceFieldName}"
+                                            options="{!v.sourceFields}"
+                                            placeholder="Select a Field"
+                                            required="{!targetFieldMapping.targetField.required}"/>
+
+                                    </td>
+                                    <td width="50%">
+
+                                        <aura:if isTrue="{!targetFieldMapping.targetField.required}">
+
+                                            <abbr class="slds-required" title="required">*</abbr>
+
+                                            <aura:set attribute="else">
+
+                                                <span class="slds-m-right_xxx-small" style="opacity:0">*</span>
+
+                                            </aura:set>
+
+                                        </aura:if>
+
+                                        <span class="slds-m-right_xx-small">{!targetFieldMapping.targetField.label}</span>
+
+                                        <aura:if isTrue="{!not(empty(targetFieldMapping.targetField.description))}">
+                                            <c:strike_tooltip text="{!targetFieldMapping.targetField.description}" placement="auto right">
+                                                <lightning:icon iconName="utility:info" size="xx-small"/>
+                                            </c:strike_tooltip>
+                                        </aura:if>
+
+                                    </td>
+                                </tr>
+                            </aura:iteration>
+                        </tbody>
+                    </table>
+
+                </div>
+
+            </aura:if>
+
+            <!-- Stage: Schedule -->
+
+            <aura:if isTrue="{!equals( v.wizardActiveStageIndex, 3 )}">
+
+                <div class="slds-grid slds-p-horizontal_medium">
+
+                    <div class="slds-col">
+                        <c:slds_section title="Schedule Information"/>
+                    </div>
+
+                </div>
+
+                <div class="slds-grid slds-p-horizontal_medium">
+
+                    <div class="slds-col">
+                        <div class="slds-form slds-form_stacked">
+
+                            <lightning:radioGroup aura:id="inputScheduleFrequency"
+                                name="inputScheduleFrequency"
+                                label="{!v.objectDescribe.fields.Schedule_Frequency__c.label}"
+                                title="{!v.objectDescribe.fields.Schedule_Frequency__c.helpText}"
+                                value="{!v.scheduleSelectionsFrequency}"
+                                options="{!v.objectDescribe.fields.Schedule_Frequency__c.picklistValues}"
+                                type="button"
+                                required="true"
+                                messageWhenValueMissing="Schedule Frequency is required."
+                                onchange="{!c.handleInputFieldChanged}"
+                                class="slds-p-top_x-small"/>
+
+                            <!--
+                                Unfortunately, the radioGroup component changes the value type to an array,
+                                so even though my source value is a single string I need to check both data types
+                                or introduce a shadow variable to bind to the radio group and use change events
+                                to copy the newly selected value; neither of which I want to do
+                                https://org62.lightning.force.com/one/one.app#/sObject/0D50M00003LvvAqSAJ/view
+                             -->
+                            <aura:if isTrue="{!or( equals( v.scheduleSelectionsFrequency, 'Scheduled' ), and( not( empty( v.scheduleSelectionsFrequency ) ), equals( v.scheduleSelectionsFrequency[0], 'Scheduled' ) ) )}">
+
+                                <div class="slds-p-top_medium">
+
+                                    <div class="slds-grid">
+
+                                        <div class="slds-col slds-size_1-of-3">
+
+                                            <lightning:checkboxGroup aura:id="inputScheduleHourOfDay"
+                                                name="inputScheduleHourOfDay"
+                                                label="{!v.objectDescribe.fields.Schedule_HourOfDay__c.label}"
+                                                title="{!v.objectDescribe.fields.Schedule_HourOfDay__c.helpText}"
+                                                options="{!v.scheduleOptionsHourOfDay}"
+                                                value="{!v.scheduleSelectionsHourOfDay}"
+                                                required="true"
+                                                onchange="{!c.handleInputFieldChanged}"
+                                                class="font-monospace"/>
+
+                                        </div>
+
+                                        <div class="slds-col slds-size_1-of-3">
+
+                                            <lightning:checkboxGroup aura:id="inputScheduleWeekday"
+                                                name="inputScheduleWeekday"
+                                                label="{!v.objectDescribe.fields.Schedule_DayOfWeek__c.label}"
+                                                title="{!v.objectDescribe.fields.Schedule_DayOfWeek__c.helpText}"
+                                                options="{!v.scheduleOptionsDayOfWeek}"
+                                                value="{!v.scheduleSelectionsDayOfWeek}"
+                                                onchange="{!c.handleInputFieldChanged}"
+                                                required="true"/>
+
+                                        </div>
+
+                                        <div class="slds-col slds-size_1-of-3">
+
+                                            <lightning:checkboxGroup aura:id="inputScheduleMonthOfYear"
+                                                name="inputScheduleMonthOfYear"
+                                                label="{!v.objectDescribe.fields.Schedule_MonthOfYear__c.label}"
+                                                title="{!v.objectDescribe.fields.Schedule_MonthOfYear__c.helpText}"
+                                                options="{!v.scheduleOptionsMonthOfYear}"
+                                                value="{!v.scheduleSelectionsMonthOfYear}"
+                                                onchange="{!c.handleInputFieldChanged}"
+                                                required="true"/>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </aura:if>
+
+                            <aura:if isTrue="{!or( equals( v.scheduleSelectionsFrequency, 'Custom' ), and( not( empty( v.scheduleSelectionsFrequency ) ), equals( v.scheduleSelectionsFrequency[0], 'Custom' ) ) )}">
+
+                                <div class="slds-p-top_medium">
+
+                                    <lightning:input aura:id="inputScheduleCron"
+                                         name="inputScheduleCron"
+                                         label="{!v.objectDescribe.fields.Schedule_Cron__c.label}"
+                                         title="{!v.objectDescribe.fields.Schedule_Cron__c.helpText}"
+                                         type="text"
+                                         value="{!v.record.scheduleCron}"
+                                         required="true"/>
+
+                                    <div class="slds-m-vertical_small">
+                                        Please refer to the <a href="https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_scheduler.htm" target="_blank">Apex Scheduler Developer Documentation</a>
+                                        for details on creating a cron expression.
+                                    </div>
+
+                                </div>
+
+                            </aura:if>
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </aura:if>
+
+            <!-- Navigation Controls -->
+
+            <div class="slds-grid slds-p-around_medium slds-m-top_medium slds-grid_pull-padded-medium slds-grid_align-center">
+
+                <div class="slds-col slds-p-horizontal_medium">
+                    <lightning:button aura:id="wizardPreviousButton"
+                        label="Previous"
+                        title="Previous"
+                        variant="neutral"
+                        disabled="{!not( greaterthan( v.wizardActiveStageIndex, 0 ) )}"
+                        onclick="{!c.handleNavigationButtonClick}"/>
+                </div>
+
+                <aura:if isTrue="{!lessthan( v.wizardActiveStageIndex, 3 )}">
+
+                    <div class="slds-col slds-p-horizontal_medium">
+                        <lightning:button aura:id="wizardNextButton"
+                            label="Next"
+                            title="Next"
+                            variant="brand"
+                            disabled="{!not( lessthan( v.wizardActiveStageIndex, ( v.wizardStageNames.length - 1 ) ) )}"
+                            onclick="{!c.handleNavigationButtonClick}"/>
+                    </div>
+
+                </aura:if>
+
+                <aura:if isTrue="{!equals( v.wizardActiveStageIndex, 3 )}">
+
+                    <div class="slds-col slds-p-horizontal_medium">
+                        <lightning:button aura:id="wizardSaveButton"
+                            label="Save"
+                            title="Save"
+                            variant="brand"
+                            onclick="{!c.handleSaveButtonClick}"/>
+                    </div>
+
+                </aura:if>
+
+            </div>
+
+            <aura:set attribute="else">
+
+                <lightning:spinner variant="brand" size="large"/>
+
+            </aura:set>
+
+        </aura:if>
+
+    </div>
+
+</aura:component>
+<!--
+BSD 3-Clause License
+
+Copyright (c) 2017, Doug Ayers, douglascayers.com
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice, this
+  list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of the copyright holder nor the names of its
+  contributors may be used to endorse or promote products derived from
+  this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->

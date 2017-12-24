@@ -1,0 +1,23 @@
+/**
+ * The strike_wizard component applies this class
+ * to the chevrons that are incomplete. To further
+ * express to users they cannot jump ahead then
+ * change mouse cursor on hover.
+ */
+.THIS .slds-is-incomplete * {
+    cursor: not-allowed;
+}
+
+/**
+ * The lightning:combobox component when variant attribute
+ * is set to 'label-hidden' then no longer sets 100% width
+ * on the form control element. This ensures the comboboxes
+ * always display as 100% of their container.
+ */
+.THIS lightning-combobox .slds-form-element__control {
+    width: 100%;
+}
+
+.THIS font-monospace {
+    font-family: 'monospace';
+}

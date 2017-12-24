@@ -1,3 +1,27 @@
+/**
+ * Author: Doug Ayers
+ * Website: https://douglascayers.com
+ * GitHub: https://github.com/DouglasCAyers/sfdx-mass-action-scheduler
+ * License: BSD 3-Clause License
+ */
+public class MA_MassActionSchedulable implements System.Schedulable, Database.AllowsCallouts {
+
+    private ID configId { get; set; }
+
+    public MA_MassActionSchedulable( ID configId ) {
+        this.configId = configId;
+    }
+
+    public void execute( System.SchedulableContext context ) {
+
+        System.debug( 'MA_MassActionSchedulable.execute: ' + context + ', configId=' + this.configId );
+
+        MA_MassActionBatchUtils.enqueueAction( this.configId );
+
+    }
+
+}
+/*
 BSD 3-Clause License
 
 Copyright (c) 2017, Doug Ayers, douglascayers.com
@@ -27,3 +51,4 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/

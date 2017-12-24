@@ -1,3 +1,34 @@
+/**
+ * Author: Doug Ayers
+ * Website: https://douglascayers.com
+ * GitHub: https://github.com/DouglasCAyers/sfdx-mass-action-scheduler
+ * License: BSD 3-Clause License
+ */
+public class MA_InvocableActionInputsHttpRequestMock implements HttpCalloutMock {
+
+    public HttpResponse respond( HttpRequest request ) {
+
+        HttpResponse response = new HttpResponse();
+        response.setStatus( 'OK' );
+        response.setStatusCode( 200 );
+
+        response.setBody(
+            ' { ' +
+            '   "inputs" : [ { ' +
+            '     "label" : "Test Input", ' +
+            '     "name" : "Test_Input", ' +
+            '     "type" : "STRING", ' +
+            '     "required" : true, ' +
+            '     "description" : null ' +
+            '   } ] ' +
+            ' } '
+        );
+
+        return response;
+    }
+
+}
+/*
 BSD 3-Clause License
 
 Copyright (c) 2017, Doug Ayers, douglascayers.com
@@ -27,3 +58,4 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/

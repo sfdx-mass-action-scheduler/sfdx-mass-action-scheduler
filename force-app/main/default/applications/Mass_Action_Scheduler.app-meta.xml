@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomApplication xmlns="http://soap.sforce.com/2006/04/metadata">
+    <defaultLandingTab>Mass_Action_Configuration__c</defaultLandingTab>
+    <description>Declaratively schedule records from Reports or List Views to be processed by Workflow Rules, Process Builder, Flows, and Apex. https://douglascayers.com</description>
+    <label>Mass Action Scheduler</label>
+    <tab>Mass_Action_Configuration__c</tab>
+    <tab>standard-report</tab>
+</CustomApplication>

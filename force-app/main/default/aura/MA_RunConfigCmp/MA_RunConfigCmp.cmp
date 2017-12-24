@@ -1,3 +1,49 @@
+<!--
+Author: Doug Ayers
+Website: https://douglascayers.com
+GitHub: https://github.com/DouglasCAyers/sfdx-mass-action-scheduler
+License: BSD 3-Clause License
+-->
+<aura:component controller="MA_RunConfigCmpController" implements="force:lightningQuickActionWithoutHeader,force:hasRecordId" access="global">
+
+    <!-- Attributes -->
+
+    <aura:attribute name="recordId"
+                    type="String"
+                    description="The ID of the record to be displayed. Provided by force:hasRecordId interface."/>
+
+    <!-- Markup -->
+
+    <lightning:card >
+
+        <aura:set attribute="title">
+            Run Mass Action now?
+        </aura:set>
+
+        <aura:set attribute="footer">
+
+            <lightning:button label="Cancel"
+                              variant="neutral"
+                              onclick="{!c.handleCancelButtonClick}"/>
+
+            <lightning:button label="Run"
+                              variant="brand"
+                              onclick="{!c.handleRunButtonClick}"/>
+
+        </aura:set>
+
+        <aura:set attribute="actions">
+
+        </aura:set>
+
+        <p class="slds-p-horizontal_small">
+            Submits background batch job that invokes the target action on the source records.
+        </p>
+
+    </lightning:card>
+
+</aura:component>
+<!--
 BSD 3-Clause License
 
 Copyright (c) 2017, Doug Ayers, douglascayers.com
@@ -27,3 +73,4 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->

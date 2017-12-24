@@ -1,3 +1,37 @@
+/**
+ * Author: Doug Ayers
+ * Website: https://douglascayers.com
+ * GitHub: https://github.com/DouglasCAyers/sfdx-mass-action-scheduler
+ * License: BSD 3-Clause License
+ */
+@IsTest
+private class MA_ListViewDescribeResultTest {
+
+    @IsTest
+    static void test_object() {
+
+        Test.startTest();
+
+        MA_ListViewDescribeResult result = new MA_ListViewDescribeResult();
+        result.id = '00Bf40000017w5h';
+        result.query = 'SELECT Id FROM Account';
+        result.sobjectType = 'Account';
+        result.columns = new List<Map<String, String>>{
+            new Map<String, String>{
+                'label' => 'Account ID',
+                'fieldNameOrPath' => 'Id',
+                'type' => 'id'
+            }
+        };
+
+        System.assertEquals( 'Id', result.getColumnProperty( 'fieldNameOrPath' )[0] );
+
+        Test.stopTest();
+
+    }
+
+}
+/*
 BSD 3-Clause License
 
 Copyright (c) 2017, Doug Ayers, douglascayers.com
@@ -27,3 +61,4 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Source_Report_Column_Name__c</fullName>
+    <description>Report column name that holds unique record values for sorting and paginating. Needed for workaround with Reports API to process more than 2,000 rows. Applicable when Source Type is Report.</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Report column name that holds unique record values for sorting and paginating. Needed for workaround with Reports API to process more than 2,000 rows. Applicable when Source Type is Report.</inlineHelpText>
+    <label>Source Report Column Name</label>
+    <length>255</length>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

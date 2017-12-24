@@ -1,3 +1,44 @@
+/**
+ * Author: Doug Ayers
+ * Website: https://douglascayers.com
+ * GitHub: https://github.com/DouglasCAyers/sfdx-mass-action-scheduler
+ * License: BSD 3-Clause License
+ */
+@IsTest
+private class MA_MassActionBatchUtilsTest {
+
+    @IsTest
+    static void test_job_errors() {
+
+        Mass_Action_Configuration__c config = new Mass_Action_Configuration__c(
+            Name = 'Test Config',
+            Active__c = true
+        );
+
+        insert config;
+
+        // this object has non-writable fields so we use the json serialization trick to populate a mock record
+        AsyncApexJob job = (AsyncApexJob) JSON.deserialize( JSON.serialize( new Map<String, Object>{
+            'Id' => '707f400000pCeDXAA0',
+            'ExtendedStatus' => 'Test Error',
+            'TotalJobItems' => 1,
+            'JobItemsProcessed' => 1,
+            'NumberOfErrors' => 1,
+            'CreatedDate' => DateTime.now()
+        }), AsyncApexJob.class );
+
+        Test.startTest();
+
+        MA_MassActionBatchUtils.logJobErrors( config.Id, job );
+
+        Test.stopTest();
+
+        System.assertEquals( 1, [ SELECT count() FROM Mass_Action_Log__c WHERE Mass_Action_Configuration__c = :config.Id AND Message__c = :job.ExtendedStatus ] );
+
+    }
+
+}
+/*
 BSD 3-Clause License
 
 Copyright (c) 2017, Doug Ayers, douglascayers.com
@@ -27,3 +68,4 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/

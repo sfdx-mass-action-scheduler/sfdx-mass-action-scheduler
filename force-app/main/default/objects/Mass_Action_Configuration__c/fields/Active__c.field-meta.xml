@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Active__c</fullName>
+    <defaultValue>true</defaultValue>
+    <description>If active then action can be ran and scheduled. Inactive actions will not run and have their scheduled job aborted.</description>
+    <externalId>false</externalId>
+    <inlineHelpText>If active then action can be ran and scheduled. Inactive actions will not run and have their scheduled job aborted.</inlineHelpText>
+    <label>Active</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Mass_Action_Configuration__c</fullName>
+    <externalId>false</externalId>
+    <label>Mass Action Configuration</label>
+    <referenceTo>Mass_Action_Configuration__c</referenceTo>
+    <relationshipLabel>Mass Action Mappings</relationshipLabel>
+    <relationshipName>Mass_Action_Mappings</relationshipName>
+    <relationshipOrder>0</relationshipOrder>
+    <reparentableMasterDetail>false</reparentableMasterDetail>
+    <trackTrending>false</trackTrending>
+    <type>MasterDetail</type>
+    <writeRequiresMasterRead>false</writeRequiresMasterRead>
+</CustomField>

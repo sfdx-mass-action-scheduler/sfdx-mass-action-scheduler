@@ -1,0 +1,52 @@
+.THIS .sw-advance-button {
+    min-width: 240px;
+}
+
+.THIS .slds-tabs--path .slds-tabs--path__item.slds-is-lost+.slds-tabs--path__item:before {
+    background-color: t(colorBackgroundDestructive);
+}
+
+.THIS .slds-tabs--path .slds-tabs--path__item.slds-is-lost:hover,
+.THIS .slds-tabs--path .slds-tabs--path__item.slds-is-lost:hover+.slds-tabs--path__item:before {
+    background-color: t(colorBackgroundDestructiveActive);
+}
+
+.THIS .slds-tabs--path .slds-tabs--path__item.slds-is-complete+.slds-is-lost:before {
+    background-color: t(colorBackgroundPathComplete);
+}
+
+.THIS .slds-tabs--path .slds-tabs--path__item.slds-is-complete:hover+.slds-is-lost:before {
+    background-color: t(colorBackgroundPathCompleteHover);
+}
+
+.THIS .slds-tabs--path .slds-tabs--path__item.slds-is-active+.slds-is-lost:before {
+    background-color: t(colorBackgroundInverse);
+}
+
+.THIS .slds-tabs--path .slds-tabs--path__item.slds-is-active:hover+.slds-is-lost:before {
+    background-color: t(colorBackgroundAltInverse);
+}
+
+.THIS .slds-path__mark-current[disabled]:hover,
+.THIS .slds-path__mark-current[disabled]:focus {
+    background-color: t(colorBackgroundShade);
+}
+
+
+/*
+***** Tooltips no longer supported *****
+.THIS .slds-tabs--path__item {
+    overflow: visible;
+}
+
+.THIS .sw-popover_container {
+    width: 100%;
+}
+
+.THIS .sw-popover_container .slds-popover--tooltip {
+    margin-left: 8px;
+}
+
+.THIS .slds-tabs--path__item:before {
+    clip: rect(0px, 30px, 22.5px, 5.5px);
+}*/

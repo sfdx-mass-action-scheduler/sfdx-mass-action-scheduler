@@ -1,0 +1,18 @@
+.THIS.st-popover_container .st-hidden {
+    visibility: hidden;
+    opacity: 0;
+    position: fixed;
+    top: -999999px;
+    top: -999vh;
+    left: -999999px;
+    left: -999vw;
+    pointer-events: none;
+}
+.THIS.st-popover_container {
+    outline: none;
+    display: inline-block;
+    position: relative;
+}
+.THIS.st-popover__trigger {
+    display: inline-block;
+}

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomApplication xmlns="http://soap.sforce.com/2006/04/metadata">
+    <brand>
+        <headerColor>#0070D2</headerColor>
+    </brand>
+    <description>Declaratively schedule records from Reports or List Views to be processed by Workflow Rules, Process Builder, Flows, and Apex. https://douglascayers.com</description>
+    <formFactors>Large</formFactors>
+    <label>Mass Action Scheduler</label>
+    <navType>Standard</navType>
+    <tab>Mass_Action_Configuration__c</tab>
+    <tab>standard-report</tab>
+    <uiType>Lightning</uiType>
+</CustomApplication>
