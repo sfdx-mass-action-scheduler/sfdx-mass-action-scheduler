@@ -50,11 +50,70 @@ For more examples please check out the [project wiki]().
 Pre-Requisites
 --------------
 
-There are a few items you need to setup before installing and using this app. Don't worry, [Pre-Requisite Instructions]() in the wiki walk you through them every step of the way.
+There are a few items you need to setup before installing and using this app. Don't worry, the instructions below walk you through it every step of the way.
 
 1. You will need to use **Lightning Experience** because we are using Lightning Components.
 2. You will need to enable **My Domain** because we are using Lightning Components.
 3. You will need to configure a **Named Credential** because the app processes records in background jobs and will need to securely invoke the Salesforce REST API via OAuth. 
+
+Pre-Requisites Instructions
+---------------------------
+
+* Enable **Lightning Experience** ([Documentation](https://help.salesforce.com/articleView?id=lex_do_it_intro.htm&type=5)) ([Trailhead](https://trailhead.salesforce.com/en/modules/lex_migration_introduction/units/lex_migration_introduction_administration))
+
+* Enable **My Domain** ([Documentation](https://help.salesforce.com/articleView?id=domain_name_overview.htm&type=5)) ([Trailhead](https://trailhead.salesforce.com/en/modules/identity_login/units/identity_login_my_domain))
+  * Note that [Trailhead Playgrounds](https://trailhead.salesforce.com/en/modules/trailhead_playground_management) and [SFDX scratch orgs](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_scratch_orgs.htm) already have My Domain enabled
+
+* Create **Connected App** ([Documentation](https://help.salesforce.com/articleView?id=connected_app_create.htm))
+  * In Setup, type `App Manager` in the quick find
+  * Click `New Connected App` button then fill out the form:
+    * Connected App Name = `Mass Action` (or preferred name)
+    * API Name = `Mass_Action`
+    * Contact Email = `<your email>`
+    * Enable OAuth Settings = `<checked>`
+    * Callback URL = `https://localhost.com` (we will change this after creating an auth provider)
+    * Selected OAuth Scopes = `Full access` and `Perform requests on your behalf at any time`
+  * Click `Save` button then **wait 10 minutes** (otherwise may get errors about setup not ready when moving on to next steps)
+  * On the detail page, note the **Consumer Key** and **Consumer Secret** values (we will use these in next steps)
+
+![screen shot](images/create-connected-app.png)
+
+![screen shot](images/create-connected-app2.png)
+
+* Create **Auth. Provider**
+  * In Setup, type `Auth. Provider` in the quick find
+  * Click `New` button then fill out form:
+    * Provider Type = `Salesforce`
+    * Name = `Mass Action` (or preferred name)
+    * URL Suffix = `Mass_Action`
+    * Consumer Key = `<enter value from connected app>`
+    * Consumer Secret = `<enter value from connected app>`
+  * Click `Save` button
+  * On the detail page, copy the `Callback URL` then go back to your connected app and replace `https://localhost.com` with this new Callback URL
+
+![screen shot](images/create-auth-provider.png)
+
+![screen shot](images/create-connected-app3.png)
+
+* Create **Named Credential**
+  * In Setup, type `Named Credential` in the quick find
+  * Click `New Named Credential` button then fill out form:
+    * Label = `Mass Action` (or preferred name)
+    * Name = `Mass_Action`
+    * URL = `https://<MyDomain>.my.salesforce.com/services/data/v41.0`
+      * In Lightning Experience your URL may look like `https://<MyDomain>.lightning.force.com`. Make note that the URL for the Named Credential does not use `.lightning.force.com` but rather `.my.salesforce.com`
+      * For sandboxes the URL format to use must look like `https://<MyDomain>.<instance>.my.salesforce.com/services/data/v41.0`. To know your instance name (e.g. CS23 or CS8) navigate in Setup to `Company Information` and look for the field labeled `Instance`
+      * Examples: `https://my-production-domain.my.salesforce.com` and `https://my-sandbox-domain.cs23.my.salesforce.com`
+    * Identity Type = `Named Principal`
+    * Authentication Protocol = `OAuth 2.0`
+    * Authentication Provider = `<choose the auth. provider you created earlier>`
+    * Scope = `full refresh_token`
+    * Start Authentication Flow on Save = `<checked>`
+    * Generate Authorization Header = `<checked>`
+  * Click `Save` button, a login page will open
+  * Follow on-screen instructions to login as the `context user` you want to assign to this `Named Credential` (I suggest an admin user)
+
+![screen shot](images/create-named-credential.png)
 
 
 Packaged Release History
@@ -88,6 +147,34 @@ Getting Started
 7. Fill out the form, clicking `Next` button to advance through the wizard
 
 _*see table of supported action types at top of this document._
+
+
+Example: Add Contacts to Campaign via Report and Process Builder
+================================================================
+
+First, create a list view or report that identifies the source records you want to process.
+In this example I have created a report using a Cross Filter to identify contacts that are not already members of a campaign I want to add them to.
+
+![screen shot](images/example-contact-to-campaign-report.png)
+
+Second, create the action you want to apply to the source records.
+In this example I have created a process builder on Contact object that creates a CampaignMember record.
+
+![screen shot](images/example-contact-to-campaign-process-builder.png)
+
+![screen shot](images/example-contact-to-campaign-process-builder2.png)
+
+![screen shot](images/example-contact-to-campaign-process-builder3.png)
+
+Third, create a Mass Action Configuration record that ties the source and target action together with (optionally) schedule for how often to run this configuration.
+
+![screen shot](images/example-contact-to-campaign-source.png)
+
+![screen shot](images/example-contact-to-campaign-action.png)
+
+![screen shot](images/example-contact-to-campaign-mapping.png)
+
+![screen shot](images/example-contact-to-campaign-schedule.png)
 
 
 Frequently Asked Questions
