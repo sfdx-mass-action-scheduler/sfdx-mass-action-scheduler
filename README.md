@@ -36,7 +36,7 @@ No more waiting for records to be updated or creating clever workarounds to caus
 What can I do with Mass Action Scheduler?
 -----------------------------------------
 
-I'm sure you're full of ideas of how you can use this app. Here are some things you can do with Mass Action Scheduler:
+I'm sure you will think of all kinds of ideas how you can use this app. Here are some things you can do with Mass Action Scheduler:
 * Run a process monthly
 * Run a data correction actions daily
 * Automatically add leads and contacts to campaigns based on report or list view criteria
@@ -59,61 +59,7 @@ There are a few items you need to setup before installing and using this app. Do
 Pre-Requisites Instructions
 ---------------------------
 
-* Enable **Lightning Experience** ([Documentation](https://help.salesforce.com/articleView?id=lex_do_it_intro.htm&type=5)) ([Trailhead](https://trailhead.salesforce.com/en/modules/lex_migration_introduction/units/lex_migration_introduction_administration))
 
-* Enable **My Domain** ([Documentation](https://help.salesforce.com/articleView?id=domain_name_overview.htm&type=5)) ([Trailhead](https://trailhead.salesforce.com/en/modules/identity_login/units/identity_login_my_domain))
-  * Note that [Trailhead Playgrounds](https://trailhead.salesforce.com/en/modules/trailhead_playground_management) and [SFDX scratch orgs](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_scratch_orgs.htm) already have My Domain enabled
-
-* Create **Connected App** ([Documentation](https://help.salesforce.com/articleView?id=connected_app_create.htm))
-  * In Setup, type `App Manager` in the quick find
-  * Click `New Connected App` button then fill out the form:
-    * Connected App Name = `Mass Action` (or preferred name)
-    * API Name = `Mass_Action`
-    * Contact Email = `<your email>`
-    * Enable OAuth Settings = `<checked>`
-    * Callback URL = `https://localhost.com` (we will change this after creating an auth provider)
-    * Selected OAuth Scopes = `Full access` and `Perform requests on your behalf at any time`
-  * Click `Save` button then **wait 10 minutes** (otherwise may get errors about setup not ready when moving on to next steps)
-  * On the detail page, note the **Consumer Key** and **Consumer Secret** values (we will use these in next steps)
-
-![screen shot](images/create-connected-app.png)
-
-![screen shot](images/create-connected-app2.png)
-
-* Create **Auth. Provider**
-  * In Setup, type `Auth. Provider` in the quick find
-  * Click `New` button then fill out form:
-    * Provider Type = `Salesforce`
-    * Name = `Mass Action` (or preferred name)
-    * URL Suffix = `Mass_Action`
-    * Consumer Key = `<enter value from connected app>`
-    * Consumer Secret = `<enter value from connected app>`
-  * Click `Save` button
-  * On the detail page, copy the `Callback URL` then go back to your connected app and replace `https://localhost.com` with this new Callback URL
-
-![screen shot](images/create-auth-provider.png)
-
-![screen shot](images/create-connected-app3.png)
-
-* Create **Named Credential**
-  * In Setup, type `Named Credential` in the quick find
-  * Click `New Named Credential` button then fill out form:
-    * Label = `Mass Action` (or preferred name)
-    * Name = `Mass_Action`
-    * URL = `https://<MyDomain>.my.salesforce.com/services/data/v41.0`
-      * In Lightning Experience your URL may look like `https://<MyDomain>.lightning.force.com`. Make note that the URL for the Named Credential does not use `.lightning.force.com` but rather `.my.salesforce.com`
-      * For sandboxes the URL format to use must look like `https://<MyDomain>.<instance>.my.salesforce.com/services/data/v41.0`. To know your instance name (e.g. CS23 or CS8) navigate in Setup to `Company Information` and look for the field labeled `Instance`
-      * Examples: `https://my-production-domain.my.salesforce.com` and `https://my-sandbox-domain.cs23.my.salesforce.com`
-    * Identity Type = `Named Principal`
-    * Authentication Protocol = `OAuth 2.0`
-    * Authentication Provider = `<choose the auth. provider you created earlier>`
-    * Scope = `full refresh_token`
-    * Start Authentication Flow on Save = `<checked>`
-    * Generate Authorization Header = `<checked>`
-  * Click `Save` button, a login page will open
-  * Follow on-screen instructions to login as the `context user` you want to assign to this `Named Credential` (I suggest an admin user)
-
-![screen shot](images/create-named-credential.png)
 
 
 Packaged Release History
