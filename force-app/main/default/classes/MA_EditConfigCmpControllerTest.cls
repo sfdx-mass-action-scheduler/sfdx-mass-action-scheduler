@@ -422,13 +422,14 @@ private class MA_EditConfigCmpControllerTest {
     static void test_getListViewColumns() {
 
         String namedCredential = 'Mass_Action_Test_Named_Credential';
-        String listViewId = '00Bf40000017w5h';
+        String objectName = MA_MassActionUtils.NAMESPACE_API + 'Mass_Action_Configuration__c';
+        ListView lv = [ SELECT Id, Name, DeveloperName, SobjectType FROM ListView WHERE DeveloperName = 'All' AND SobjectType = :objectName AND IsSoqlCompatible = true LIMIT 1 ];
 
         Test.setMock( HttpCalloutMock.class, new MA_InvocableActionsHttpRequestMock() );
 
         Test.startTest();
 
-        List<Map<String, Object>> listViewColumns = MA_EditConfigCmpController.getListViewColumns( namedCredential, listViewId );
+        List<Map<String, Object>> listViewColumns = MA_EditConfigCmpController.getListViewColumns( namedCredential, lv.Id );
 
         System.assertEquals( 1, listViewColumns.size() );
         System.assertEquals( 'Account ID', listViewColumns[0].get( 'label' ) );
