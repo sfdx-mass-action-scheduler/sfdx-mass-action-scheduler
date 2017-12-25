@@ -5,9 +5,31 @@ Overview
 --------
 
 Declaratively schedule Process Builder, Flows, Quick Actions, Email Alerts, Workflow Rules, and Apex to process records from Reports and List Views.
+
+* **Declarative** - no code necessary
+* **On Platform** - everything happens in Salesforce so no exporting or uploading data
+* **Timely** - run actions manually or schedule hourly, daily, weekly, or any time in between
+
 Inspired by Marie Chandra's idea [Ability to Schedule when Process Builder Triggers](https://success.salesforce.com/ideaView?id=08730000000DjEmAAK).
 
 No more waiting for records to be updated or creating clever workarounds to cause records to be updated to cause these actions to fire.
+
+
+Data Sources
+------------
+
+Identify the records you want to process with list views or tabular reports.
+
+| Data Sources      | When to Use |
+|-------------------|-------------|
+| **List Views**    | Simple filters. For up to [50 million records](https://help.salesforce.com/articleView?id=000176644&type=1). |
+| **Reports**       | Complex filters like [Cross Filters](https://help.salesforce.com/articleView?id=reports_cross_filters_create.htm&type=5). For up to [~14 thousand records](https://github.com/DouglasCAyers/sfdc-add-campaign-members-by-report/issues/17#issuecomment-332382142). |
+
+
+Actions
+-------
+
+Almost any process automation you configure can be scheduled.
 
 | Actions               | Supported Types |
 |-----------------------|-----------------|
@@ -19,11 +41,10 @@ No more waiting for records to be updated or creating clever workarounds to caus
 | **Apex**              | Classes annotated with @InvocableMethod | 
 
 
-| Data Sources      | When to Use |
-|-------------------|-------------|
-| **List Views**    | Simple filters. For up to [50 million records](https://help.salesforce.com/articleView?id=000176644&type=1). |
-| **Reports**       | Complex filters like [Cross Filters](https://help.salesforce.com/articleView?id=reports_cross_filters_create.htm&type=5). For up to [~14 thousand records](https://github.com/DouglasCAyers/sfdc-add-campaign-members-by-report/issues/17#issuecomment-332382142). |
+Scheduling
+----------
 
+Flexible options for scheduling when a configuration runs.
 
 | Scheduling Options        | When to Use |
 |---------------------------|-------------|
@@ -33,33 +54,28 @@ No more waiting for records to be updated or creating clever workarounds to caus
 | **Advanced Schedule**     | Complex scheduling needs that require a cron expression |
 
 
-What can I do with Mass Action Scheduler?
------------------------------------------
+What you can do with Mass Action Scheduler
+------------------------------------------
 
-I'm sure you will think of all kinds of ideas how you can use this app. Here are some things you can do with Mass Action Scheduler:
-* Run a process monthly
-* Run a data correction actions daily
+I'm sure you will think of all kinds of ideas how you can use this app. Here are a few ideas:
+* Run a process monthly, maybe to create a record or callout to an external system
+* Run data correction actions daily
 * Automatically add leads and contacts to campaigns based on report or list view criteria
 * Send emails on a periodic basis
 * Create "infinite" flows that continuously loop on a schedule
 * Perform field updates without exporting or importing data
 
-For more examples please check out the [project wiki]().
+For more examples please check out the [examples in the wiki](https://github.com/DouglasCAyers/sfdx-mass-action-scheduler/wiki/Examples).
 
 
 Pre-Requisites
 --------------
 
-There are a few items you need to setup before installing and using this app. Don't worry, the instructions below walk you through it every step of the way.
+There are a few items you need to setup before installing and using this app. Don't worry, the [instructions in the wiki](https://github.com/DouglasCAyers/sfdx-mass-action-scheduler/wiki/Pre-Requisites-Instructions) walk you through it every step of the way.
 
 1. You will need to use **Lightning Experience** because we are using Lightning Components.
 2. You will need to enable **My Domain** because we are using Lightning Components.
 3. You will need to configure a **Named Credential** because the app processes records in background jobs and will need to securely invoke the Salesforce REST API via OAuth. 
-
-Pre-Requisites Instructions
----------------------------
-
-
 
 
 Packaged Release History
@@ -93,34 +109,6 @@ Getting Started
 7. Fill out the form, clicking `Next` button to advance through the wizard
 
 _*see table of supported action types at top of this document._
-
-
-Example: Add Contacts to Campaign via Report and Process Builder
-================================================================
-
-First, create a list view or report that identifies the source records you want to process.
-In this example I have created a report using a Cross Filter to identify contacts that are not already members of a campaign I want to add them to.
-
-![screen shot](images/example-contact-to-campaign-report.png)
-
-Second, create the action you want to apply to the source records.
-In this example I have created a process builder on Contact object that creates a CampaignMember record.
-
-![screen shot](images/example-contact-to-campaign-process-builder.png)
-
-![screen shot](images/example-contact-to-campaign-process-builder2.png)
-
-![screen shot](images/example-contact-to-campaign-process-builder3.png)
-
-Third, create a Mass Action Configuration record that ties the source and target action together with (optionally) schedule for how often to run this configuration.
-
-![screen shot](images/example-contact-to-campaign-source.png)
-
-![screen shot](images/example-contact-to-campaign-action.png)
-
-![screen shot](images/example-contact-to-campaign-mapping.png)
-
-![screen shot](images/example-contact-to-campaign-schedule.png)
 
 
 Frequently Asked Questions
