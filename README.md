@@ -5,6 +5,7 @@ Overview
 --------
 
 Declaratively schedule Process Builder, Flows, Quick Actions, Email Alerts, Workflow Rules, and Apex to process records from Reports and List Views.
+Inspired by Marie Chandra's idea [Ability to Schedule when Process Builder Triggers](https://success.salesforce.com/ideaView?id=08730000000DjEmAAK).
 
 No more waiting for records to be updated or creating clever workarounds to cause records to be updated to cause these actions to fire.
 
@@ -34,8 +35,6 @@ No more waiting for records to be updated or creating clever workarounds to caus
 
 What can I do with Mass Action Scheduler?
 -----------------------------------------
-
-Inspired by Marie Chandra's idea [Ability to Schedule when Process Builder Triggers](https://success.salesforce.com/ideaView?id=08730000000DjEmAAK).
 
 I'm sure you're full of ideas of how you can use this app. Here are some things you can do with Mass Action Scheduler:
 * Run a process monthly
