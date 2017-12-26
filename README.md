@@ -83,8 +83,11 @@ Please see the [instructions in the wiki](https://github.com/DouglasCAyers/sfdx-
 Packaged Release History
 ========================
 
-Release 1.0 (current)
+Release 1.1 (current)
 -----------
+* Install Package
+  * [Production](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tf4000001I16k)
+  * [Sandbox](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tf4000001I16k)
 * Initial release
 
 
