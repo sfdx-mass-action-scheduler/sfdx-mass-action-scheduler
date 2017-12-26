@@ -76,7 +76,7 @@ There are a few items you need to setup before installing and using this app.
 
 1. You will need to use **Lightning Experience** because we are using Lightning Components.
 2. You will need to enable **My Domain** because we are using Lightning Components.
-3. You will need to configure a **Named Credential** because the app processes records in background jobs and will need to securely invoke the Salesforce REST API via OAuth. 
+3. You will need to configure a **Named Credential** because the app processes records in background jobs and will need to securely invoke the Salesforce REST API via OAuth when you are not around. 
 
 Please see the [instructions in the wiki](https://github.com/DouglasCAyers/sfdx-mass-action-scheduler/wiki/Pre-Requisites-Instructions) for screen shots and step-by-steps.
 
