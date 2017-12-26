@@ -194,6 +194,7 @@ Credits
 =======
 
 [Doug Ayers](https://douglascayers.com) develops and maintains the project.
+
 [Appiphony](http://www.lightningstrike.io) for developing the Strike Wizard component.
 
 
