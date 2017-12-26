@@ -14,6 +14,7 @@ Inspired by Marie Chandra's idea [Ability to Schedule when Process Builder Trigg
 
 No more waiting for records to be updated or creating clever workarounds to cause records to be updated to cause these actions to fire.
 
+![screen shot](images/wizard-choose-source.png)
 
 Data Sources
 ------------
