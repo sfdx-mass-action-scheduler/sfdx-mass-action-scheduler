@@ -38,7 +38,7 @@ global class MA_RunConfigInvocable {
             description = 'The Salesforce record ID of the Mass Action Configuration to run.'
             required = true
         )
-        public ID configId;
+        global ID configId;
 
     }
 
@@ -48,7 +48,7 @@ global class MA_RunConfigInvocable {
             label = 'Job ID'
             description = 'The ID of the background apex job processing the Mass Action request.'
         )
-        public ID jobId;
+        global ID jobId;
 
     }
 
