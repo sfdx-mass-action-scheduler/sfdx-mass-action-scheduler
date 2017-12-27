@@ -84,12 +84,17 @@ Please see the [instructions in the wiki](https://github.com/DouglasCAyers/sfdx-
 Packaged Release History
 ========================
 
-Release 1.2 (current)
+Release 1.3 (current)
 -----------
 * Install Package
-  * [Production](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tf4000001I16u)
-  * [Sandbox](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tf4000001I16u)
-* Initial release
+  * [Production](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tf4000001I16z)
+  * [Sandbox](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tf4000001I16z)
+* Clarify which Workflow Rules run when choosing action type:
+  * "All active Workflow Rules whose Rule Criteria matches records, regardless the Evaluation Criteria, will run."
+
+Release 1.2
+-----------
+* Initial public release
 
 
 Installing the Source Code (Developers)

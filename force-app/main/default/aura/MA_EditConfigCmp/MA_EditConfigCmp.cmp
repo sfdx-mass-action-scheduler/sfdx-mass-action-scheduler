@@ -403,6 +403,23 @@ License: BSD 3-Clause License
                                     class="slds-p-top_x-small"
                                     onchange="{!c.handleInputFieldChanged}"/>
 
+                                <aura:if isTrue="{!equals( v.targetType, 'Workflow' )}">
+
+                                    <div class="slds-form-element slds-p-top_x-small">
+
+                                        <label class="slds-form-element__label">
+                                            <abbr title="required" class="slds-required">*</abbr>
+                                            Action
+                                        </label>
+
+                                        <div class="slds-input" disabled="disabled">
+                                            All <b>active</b> Workflow Rules whose <b>Rule Criteria</b> matches records, regardless the <b>Evaluation Criteria</b>, will run.
+                                        </div>
+
+                                    </div>
+
+                                </aura:if>
+
                                 <aura:if isTrue="{!v.targetTypeRequiresSobject}">
                                     <lightning:combobox aura:id="inputTargetSobjectType"
                                         name="inputTargetSobjectType"
