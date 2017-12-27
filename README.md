@@ -137,7 +137,7 @@ The context user that the Process Builder, Flow, Quick Actions, Email Alerts, Wo
 certainly create and use Named Credentials that use non-admin credentials.
 
 
-How to activate or inactivate a configuration?
+How do I activate or inactivate a configuration?
 ----------------------------------------------
 
 On the Mass Action Configuration detail page, click the **Quick Edit** button then check or uncheck the `Active` field then click **Save**.
@@ -147,7 +147,7 @@ automation like Process Builder, Flow, or Apex to call the `MA_RunConfigInvocabl
 ![screen shot](images/faq-quick-edit.png)
 
 
-How to change how many records are processed at a time (batch size)?
+How do I change how many records are processed at a time (batch size)?
 --------------------------------------------------------------------
 
 On the Mass Action Configuration detail page, click the **Quick Edit** button then set the value for `Batch Size` field to be between 1 and 200 then click **Save**.
@@ -155,8 +155,8 @@ On the Mass Action Configuration detail page, click the **Quick Edit** button th
 ![screen shot](images/faq-quick-edit.png)
 
 
-What are Mass Action Logs? Or, how do I know if an error occurs?
-----------------------------------------------------------------
+What are Mass Action Logs? How do I know if an error occurs?
+------------------------------------------------------------
 
 If there is an error when the Mass Action tries to run (e.g. submitting the background apex batch job) then the error will be reported here.
 Specific DML errors such as errors due to validation rules, required fields not being assigned, errors in a Flow, or otherwise any errors
@@ -169,12 +169,28 @@ may prevent the app from ever getting a chance to report the issue via a Mass Ac
 You may also [monitor the background batch jobs](https://trailhead.salesforce.com/en/modules/asynchronous_apex/units/async_apex_monitoring) for errors.
 
 
-Can I edit the Mass Action Configuration record in Classic (or outside the Configure tab in Lightning Experience?)
-------------------------------------------------------------------------------------------------------------------
+Can I edit the Mass Action Configuration record in Classic or outside the Configure tab in Lightning Experience?
+----------------------------------------------------------------------------------------------------------------
 
 You shouldn't, no. Although technically you _can_ update the Mass Action Configuration record through various means
 in Salesforce (it is just data), any method outside of the **Configure** tab or **Quick Edit** button in Lightning Experience are **not supported**
 and may cause undesired results or cause your configuration to become inoperable. This is why I provide the **Configure** wizard =)
+
+
+How do I run a single or specific Workflow Rule like I can pick a specific Process Builder or Flow?
+---------------------------------------------------------------------------------------------------
+
+The Salesforce API does not offer an option to run specific Workflow Rules.
+Instead, all Workflow Rules are evaluated and those whose entry criteria are met
+are applied to those records. To ensure only a specific Workflow Rule runs then
+you will need to adjust the entry criteria.
+
+
+If I schedule an action that updates the records, do my other Process Builders, Workflow Rules, Apex Triggers, etc. fire like normal?
+-------------------------------------------------------------------------------------------------------------------------------------
+
+Yes. If you schedule an action that causes records to be created, updated, or deleted then the same [rules apply](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_triggers_order_of_execution.htm) just as
+if you had created, updated, or deleted the records manually with Data Loader or any other means.
 
 
 Error: System.HttpResponse[Status=Bad Request, StatusCode=400] ... An error occurred when trying to start a flow
@@ -191,12 +207,21 @@ Ensure the user represented by the Named Credential used by the Mass Action Conf
 ![screen shot](images/monitor-jobs-zero-batches.png)
 
 
+My question isn't answered here, how can I contact you about my question or feature request?
+--------------------------------------------------------------------------------------------
+
+Please review the [project issue tracker](https://github.com/DouglasCAyers/sfdx-mass-action-scheduler/issues?utf8=%E2%9C%93&q=is%3Aissue) as your question may have already been asked/answered there and just hasn't made it to the FAQ yet.
+If you don't find what you're looking for please ask your question or request a feature by opening a new [issue](https://github.com/DouglasCAyers/sfdx-mass-action-scheduler/issues). Thank you!
+
+
 Credits
 =======
 
 [Doug Ayers](https://douglascayers.com) develops and maintains the project.
 
 [Appiphony](http://www.lightningstrike.io) for developing the Strike Wizard component.
+
+[Salesforce Foundation](https://github.com/SalesforceFoundation/CampaignTools) for developing tools for querying Salesforce Reports API.
 
 
 License
