@@ -107,6 +107,7 @@
         var targetTypeRequiresSobject = component.get( 'v.targetTypeRequiresSobject' );
         var targetTypeRequiresAction = component.get( 'v.targetTypeRequiresAction' );
         var targetSobjectType = component.get( 'v.targetSobjectType' );
+        var targetAction = component.get( 'v.targetInvocableAction' );
         var targetNamedCredential = component.get( 'v.record.namedCredential' );
 
         var isValidToRenderActions = true;
@@ -124,12 +125,23 @@
 
             helper.getInvocableActionsAsync( component, targetNamedCredential, targetType, ( targetSobjectType || '' ) )
                 .then( $A.getCallback( function( actions ) {
+
                     component.set( 'v.targetInvocableActions', actions );
+
+                    // if currently selected target action is not in this list then clear the field
+                    var targetActionFound = actions.find( function( elmt ) { return elmt.value === targetAction; } );
+                    component.set( 'v.targetInvocableAction', ( targetActionFound && targetActionFound.value ) );
+
                 }));
 
         } else {
 
             component.set( 'v.targetInvocableActions', null );
+
+            // Don't clear selected target action here because of timing
+            // this would clear out the record's initial value on component init.
+            // Instead, we try to handle this in the controller function "handleTargetTypeChange"
+            //component.set( 'v.targetInvocableAction', null );
 
         }
 
