@@ -84,11 +84,15 @@ Please see the [instructions in the wiki](https://github.com/DouglasCAyers/sfdx-
 Packaged Release History
 ========================
 
-Release 1.3 (current)
+Release 1.4 (current)
 -----------
 * Install Package
-  * [Production](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tf4000001I16z)
-  * [Sandbox](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tf4000001I16z)
+  * [Production](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tf4000001I17E)
+  * [Sandbox](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tf4000001I17E)
+* [Show error message when try to save active configuration with invalid custom cron expression](https://github.com/DouglasCAyers/sfdx-mass-action-scheduler/issues/2) 
+
+Release 1.3
+-----------
 * Clarify which Workflow Rules run when choosing action type:
   * "All active Workflow Rules whose Rule Criteria matches records, regardless the Evaluation Criteria, will run."
 
