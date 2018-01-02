@@ -732,7 +732,7 @@
 
                     helper.logActionErrors( response.getError() );
 
-                    reject( response.getError() );
+                    reject( helper.getMessageFromActionResponseError( response.getError() ) );
 
                 }
             });
@@ -756,5 +756,19 @@
         } else {
             console.error( 'Unknown error' );
         }
+    },
+
+    getMessageFromActionResponseError : function( errors ) {
+        var text = '';
+        if ( errors ) {
+            if ( errors.length > 0 ) {
+                for ( var i = 0; i < errors.length; i++ ) {
+                    text += '\n' + errors[i].message;
+                }
+            } else {
+                text = errors;
+            }
+        }
+        return text;
     }
 })

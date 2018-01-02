@@ -179,6 +179,10 @@
 
                     }
 
+                })).catch( $A.getCallback( function( error ) {
+
+                    helper.toastMessage( 'Error', error, 'error' );
+
                 }));
 
         } else {
