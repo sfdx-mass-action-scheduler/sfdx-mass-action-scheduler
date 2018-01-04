@@ -213,6 +213,16 @@ Error: System.HttpResponse[Status=Bad Request, StatusCode=400] ... An error occu
 
 Ensure the user represented by the Named Credential used by the Mass Action Configuration has **Force.com Flow User** checked on their user record.
 
+Please check that the `Connected App`, `Auth. Provider`, and `Named Credential` are configured correctly per the [instructions in the wiki](https://github.com/DouglasCAyers/sfdx-mass-action-scheduler/wiki/Pre-Requisites-Instructions).
+
+Please check if the admin who last activated the process or flow received an [error email](https://developer.salesforce.com/docs/atlas.en-us.salesforce_vpm_guide.meta/salesforce_vpm_guide/vpm_troubleshoot_email.htm) which may include more details to help troubleshoot.
+
+
+Error: System.HttpResponse[Status=Moved Permanently, StatusCode=301] ... An error occurred when trying to start a flow
+----------------------------------------------------------------------------------------------------------------------
+
+Usually means there is a problem with the chosen `Named Credential` authenticating to Salesforce. Please check that the `Connected App`, `Auth. Provider`, and `Named Credential` are configured correctly per the [instructions in the wiki](https://github.com/DouglasCAyers/sfdx-mass-action-scheduler/wiki/Pre-Requisites-Instructions).
+
 
 Nothing seems to happen when my Mass Action Configuration runs and the Apex Jobs page lists 0 for Total Batches, Batches Processed, and Failures.
 -------------------------------------------------------------------------------------------------------------------------------------------------
