@@ -43,6 +43,7 @@
     <allowInChatterGroups>false</allowInChatterGroups>
     <compactLayoutAssignment>Default_Compact_Layout</compactLayoutAssignment>
     <deploymentStatus>Deployed</deploymentStatus>
+    <deprecated>false</deprecated>
     <description>Defines field mappings between sources and targets.</description>
     <enableActivities>false</enableActivities>
     <enableBulkApi>true</enableBulkApi>
