@@ -77,6 +77,48 @@ private class MA_ListViewSourceBatchableTest {
 
         Test.stopTest();
 
+        System.assertEquals( 0, [ SELECT count() FROM Mass_Action_Log__c WHERE Mass_Action_Configuration__c = :config.Id ] );
+
+    }
+
+    @IsTest
+    static void test_batchable_fail() {
+
+        String objectName = MA_MassActionUtils.NAMESPACE_API + 'Mass_Action_Configuration__c';
+        ListView lv = [ SELECT Id, Name, DeveloperName, SobjectType FROM ListView WHERE DeveloperName = 'All' AND SobjectType = :objectName AND IsSoqlCompatible = true LIMIT 1 ];
+
+        Mass_Action_Configuration__c config = new Mass_Action_Configuration__c(
+            Name = 'Test Config',
+            Named_Credential__c = 'Mass_Action_Test_Named_Credential',
+            Active__c = true,
+            Batch_Size__c = 200,
+            Source_Type__c = 'ListView',
+            Source_List_View_ID__c = lv.Id,
+            Target_Type__c = 'Flow',
+            Target_Action_Name__c = 'Test_Flow',
+            Target_SObject_Type__c = null
+        );
+
+        insert config;
+
+        Mass_Action_Mapping__c configFieldMapping = new Mass_Action_Mapping__c(
+            Mass_Action_Configuration__c = config.Id,
+            Source_Field_Name__c = 'NON_EXISTENT_FIELD',
+            Target_Field_Name__c = 'ContextId'
+        );
+
+        insert configFieldMapping;
+
+        Test.setMock( HttpCalloutMock.class, new MA_InvokeActionHttpRequestMock() );
+
+        Test.startTest();
+
+        Database.executeBatch( new MA_ListViewSourceBatchable( config.Id ), config.Batch_Size__c.intValue() );
+
+        Test.stopTest();
+
+        System.assertEquals( 1, [ SELECT count() FROM Mass_Action_Log__c WHERE Mass_Action_Configuration__c = :config.Id ] );
+
     }
 
 }

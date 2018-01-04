@@ -31,13 +31,23 @@ public with sharing class MA_ListViewSourceBatchable implements Database.Batchab
 
     public void execute( Database.BatchableContext context, List<SObject> records ) {
 
-        System.debug( 'MA_ListViewSourceBatchable.execute: ' + context + ', configId=' + this.configId );
+        try {
 
-        List<Map<String, Object>> sourceRowMaps = convertRecordsToMaps( records, this.listViewDescribe );
+            System.debug( 'MA_ListViewSourceBatchable.execute: ' + context + ', configId=' + this.configId );
 
-        List<Map<String, Object>> targetRowMaps = MA_MassActionUtils.buildActionInputs( sourceRowMaps, this.config.mass_action_mappings__r );
+            List<Map<String, Object>> sourceRowMaps = convertRecordsToMaps( records, this.listViewDescribe );
 
-        MA_MassActionUtils.invokeAction( this.config, targetRowMaps );
+            List<Map<String, Object>> targetRowMaps = MA_MassActionUtils.buildActionInputs( sourceRowMaps, this.config.mass_action_mappings__r );
+
+            MA_MassActionUtils.invokeAction( this.config, targetRowMaps );
+
+        } catch ( Exception e ) {
+
+            System.debug( LoggingLevel.ERROR, e.getMessage() + ' : ' + e.getStackTraceString() );
+
+            MA_MassActionBatchUtils.logJobException( this.config.Id, context.getJobId(), e );
+
+        }
 
     }
 

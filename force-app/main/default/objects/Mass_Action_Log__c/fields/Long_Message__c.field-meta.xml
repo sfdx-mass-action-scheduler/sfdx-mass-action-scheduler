@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Long_Message__c</fullName>
+    <description>The full error message, particularly if more than 255 characters.</description>
+    <externalId>false</externalId>
+    <inlineHelpText>The full error message, particularly if more than 255 characters.</inlineHelpText>
+    <label>Long Message</label>
+    <length>32768</length>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>5</visibleLines>
+</CustomField>

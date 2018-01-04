@@ -49,6 +49,47 @@ private class MA_ReportSourceBatchableTest {
 
         Test.stopTest();
 
+        System.assertEquals( 0, [ SELECT count() FROM Mass_Action_Log__c WHERE Mass_Action_Configuration__c = :config.Id ] );
+
+    }
+
+    @IsTest( SeeAllData = true )
+    static void test_batchable_fail() {
+
+        Report r = [ SELECT Id FROM Report WHERE DeveloperName = 'MA_Test_Account_Report' ];
+
+        Mass_Action_Configuration__c config = new Mass_Action_Configuration__c(
+            Name = 'Test Config',
+            Named_Credential__c = 'Mass_Action_Test_Named_Credential',
+            Active__c = true,
+            Batch_Size__c = 200,
+            Source_Type__c = 'Report',
+            Source_Report_ID__c = r.Id,
+            Source_Report_Column_Name__c = 'ACCOUNT_ID',
+            Target_Type__c = 'Workflow',
+            Target_SObject_Type__c = 'Account'
+        );
+
+        insert config;
+
+        Mass_Action_Mapping__c configFieldMapping = new Mass_Action_Mapping__c(
+            Mass_Action_Configuration__c = config.Id,
+            Source_Field_Name__c = 'NON_EXISTENT_FIELD',
+            Target_Field_Name__c = 'ContextId'
+        );
+
+        insert configFieldMapping;
+
+        Test.setMock( HttpCalloutMock.class, new MA_InvokeActionHttpRequestMock() );
+
+        Test.startTest();
+
+        Database.executeBatch( new MA_ReportSourceBatchable( config.Id ), config.Batch_Size__c.intValue() );
+
+        Test.stopTest();
+
+        System.assertEquals( 1, [ SELECT count() FROM Mass_Action_Log__c WHERE Mass_Action_Configuration__c = :config.Id ] );
+
     }
 
 }

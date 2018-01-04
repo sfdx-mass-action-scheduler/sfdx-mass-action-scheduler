@@ -46,6 +46,10 @@
                 <behavior>Readonly</behavior>
                 <field>Message__c</field>
             </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Long_Message__c</field>
+            </layoutItems>
         </layoutColumns>
         <style>OneColumn</style>
     </layoutSections>
