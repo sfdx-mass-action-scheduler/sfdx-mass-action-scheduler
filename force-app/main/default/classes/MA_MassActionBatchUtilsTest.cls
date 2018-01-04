@@ -29,7 +29,7 @@ private class MA_MassActionBatchUtilsTest {
 
         Test.startTest();
 
-        MA_MassActionBatchUtils.logJobErrors( config.Id, job );
+        MA_MassActionBatchUtils.logJobErrors( config.Id, job, null );
 
         Test.stopTest();
 

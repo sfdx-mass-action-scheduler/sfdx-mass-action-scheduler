@@ -56,8 +56,64 @@ public class MA_MassActionBatchUtils {
     public static void logJobErrors( ID configId, ID jobId ) {
 
         System.debug( 'MA_MassActionBatchUtils.logJobErrors: configId=' + configId + ', jobId=' + jobId );
+        logJobErrors( configId, getJobById( jobId ), null );
 
-        AsyncApexJob job = [
+    }
+
+    // ----------------------------------------------------
+
+    public static void logJobException( ID configId, ID jobId, Exception ex ) {
+
+        System.debug( 'MA_MassActionBatchUtils.logJobException: configId=' + configId + ', jobId=' + jobId );
+        logJobErrors( configId, getJobById( jobId ), ex );
+
+    }
+
+    // ----------------------------------------------------
+
+    @TestVisible
+    private static void logJobErrors( ID configId, AsyncApexJob job, Exception ex ) {
+
+        System.debug( 'MA_MassActionBatchUtils.logJobErrors: configId=' + configId + ', job=' + job + ', exception=' + ex );
+
+        Database.DMLOptions dmo = new Database.DMLOptions();
+        dmo.allowFieldTruncation = true;
+
+        if ( String.isNotBlank( job.ExtendedStatus ) || ( ex != null ) ) {
+
+            // default the job error to short message as its only 255 chars
+            // and put exception in long message
+            String shortMessage = ( String.isBlank( job.ExtendedStatus ) ? null : job.ExtendedStatus );
+            String longMessage = ( ex == null ? null : ex.getMessage() );
+
+            // if either message field is blank then copy the other into it
+            // because our DML option truncates values then its ok to copy long message into short
+            shortMessage = ( String.isBlank( shortMessage ) ? longMessage : shortMessage );
+            longMessage = ( String.isBlank( longMessage ) ? shortMessage : longMessage );
+
+            Mass_Action_Log__c log = new Mass_Action_Log__c(
+                Mass_Action_Configuration__c = configId,
+                Job_ID__c = String.valueOf( job.Id ).left( 15 ),
+                Submitted_Date__c = job.CreatedDate,
+                Total_Batches__c = job.TotalJobItems,
+                Processed_Batches__c = job.JobItemsProcessed,
+                Failed_Batches__c = job.NumberOfErrors,
+                Message__c = shortMessage,
+                Long_Message__c = longMessage
+            );
+
+            Database.insert( log, dmo );
+
+            System.debug( log );
+
+        }
+
+    }
+
+    // ----------------------------------------------------
+
+    private static AsyncApexJob getJobById( ID jobId ) {
+        return [
             SELECT
                 Id,
                 CreatedDate,
@@ -70,37 +126,6 @@ public class MA_MassActionBatchUtils {
             WHERE
                 Id = :jobId
         ];
-
-        logJobErrors( configId, job );
-
-    }
-
-    @TestVisible
-    private static void logJobErrors( ID configId, AsyncApexJob job ) {
-
-        System.debug( 'MA_MassActionBatchUtils.logJobErrors: configId=' + configId + ', job=' + job );
-
-        Database.DMLOptions dmo = new Database.DMLOptions();
-        dmo.allowFieldTruncation = true;
-
-        if ( String.isNotBlank( job.ExtendedStatus ) ) {
-
-            Mass_Action_Log__c log = new Mass_Action_Log__c(
-                Mass_Action_Configuration__c = configId,
-                Job_ID__c = String.valueOf( job.Id ).left( 15 ),
-                Submitted_Date__c = job.CreatedDate,
-                Total_Batches__c = job.TotalJobItems,
-                Processed_Batches__c = job.JobItemsProcessed,
-                Failed_Batches__c = job.NumberOfErrors,
-                Message__c = job.ExtendedStatus
-            );
-
-            Database.insert( log, dmo );
-
-            System.debug( log );
-
-        }
-
     }
 
 }
