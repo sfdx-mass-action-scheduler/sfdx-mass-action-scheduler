@@ -6,7 +6,7 @@ Overview
 
 Declaratively schedule Process Builder, Flows, Quick Actions, Email Alerts, Workflow Rules, and Apex to process records from Reports and List Views.
 
-* **Declarative** - no code necessary
+* **Declarative** - no code necessary, never write batch apex again for queries that can be expressed in a report or list view and actions that can be expressed in a declarative alternative
 * **On Platform** - everything happens in Salesforce so no exporting or uploading data
 * **Timely** - run actions manually or schedule hourly, daily, weekly, or any time in between
 
@@ -66,7 +66,7 @@ I'm sure you will think of all kinds of ideas how you can use this app. Here are
 * Create "infinite" flows that continuously loop on a schedule
 * Perform field updates without exporting or importing data
 
-For more examples please check out the [examples in the wiki](https://github.com/DouglasCAyers/sfdx-mass-action-scheduler/wiki/Examples).
+For walkthroughs please check out the [examples in the wiki](https://github.com/DouglasCAyers/sfdx-mass-action-scheduler/wiki/Examples).
 
 
 Pre-Requisites
