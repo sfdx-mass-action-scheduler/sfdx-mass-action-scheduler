@@ -129,6 +129,12 @@ _*see table of supported action types at top of this document._
 Frequently Asked Questions
 =========================
 
+What magic enables such awesomeness?!
+-------------------------------------
+
+All this is made possible by the [Salesforce Actions API](https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/resources_actions_invocable_custom.htm).
+
+
 Why is a Named Credential required?
 -----------------------------------
 
