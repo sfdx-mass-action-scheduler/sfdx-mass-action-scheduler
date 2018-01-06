@@ -21,8 +21,9 @@ Documentation and Discussion
 --------------------------
 
 * For discussion and feedback [post in the community group](https://success.salesforce.com/_ui/core/chatter/groups/GroupProfilePage?g=0F93A000000LhvN) or raise well defined issues and ideas via the [Issues feature](https://github.com/DouglasCAyers/sfdx-mass-action-scheduler/issues).
-* Read the [wiki page](https://github.com/DouglasCAyers/sfdx-mass-action-scheduler/wiki) for further documentation on Mass Action Scheduler
-* Watch my [Automation Hour webinar](http://bit.ly/DAyers010518) introducing the tool and demos
+* Watch my [Automation Hour webinar](http://bit.ly/DAyers010518) introducing the tool and demos.
+* Read the [wiki page](https://github.com/DouglasCAyers/sfdx-mass-action-scheduler/wiki) for further documentation on Mass Action Scheduler.
+* Read the [FAQ page](https://github.com/DouglasCAyers/sfdx-mass-action-scheduler/wiki/Frequently-Asked-Questions) to help troubleshoot technical issues.
 
 
 Data Sources
@@ -95,9 +96,7 @@ Packaged Release History
 
 Release 1.5 (current)
 -----------
-* Install Package
-  * [Production](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tf4000001I187)
-  * [Sandbox](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tf4000001I187)
+* Install Package ([Production](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tf4000001I187)) ([Sandbox](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tf4000001I187))
 * Enhancement [Capture full error message if batch error trying to invoke target action](https://github.com/DouglasCAyers/sfdx-mass-action-scheduler/issues/8)
 
 ---
@@ -129,133 +128,6 @@ You are responsible for ensuring unit tests meet your org's validation rules and
 You can conveniently deploy the source to a new scratch org using [Wade Wegner](https://github.com/wadewegner/deploy-to-sfdx)'s deploy tool:
 
 [![Deploy from GitHub](https://deploy-to-sfdx.com/dist/assets/images/DeployToSFDX.svg)](https://deploy-to-sfdx.com?template=https://github.com/DouglasCAyers/sfdx-mass-action-scheduler)
-
-
-Getting Started
-===============
-
-1. Assign the `Mass Action Admin` permission set to yourself
-2. Switch to Lightning Experience. Using this app in Classic is not supported.
-3. Create a list view or report that identifies the source records you want to process
-4. Create a supported* Process Builder, Flow, Quick Action, Email Alert, Workflow Rule, or Apex class that you want to invoke on the source records
-5. Navigate to the `Mass Action Scheduler` app
-6. Click the `Mass Action Configurations` tab then click `New` button
-7. Fill out the form, clicking `Next` button to advance through the wizard
-
-_*see table of supported action types at top of this document._
-
-
-Frequently Asked Questions
-=========================
-
-What magic enables such awesomeness?!
--------------------------------------
-
-All this is made possible by the [Salesforce Actions API](https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/resources_actions_invocable_custom.htm).
-
-
-Why is a Named Credential required?
------------------------------------
-
-Just as when you use Data Loader to export or import records to Salesforce you are prompted to login.
-The user you log in with is the "context user" for those operations, granting access to records and defining the "Last Modified By".
-Similarly, the Mass Action Scheduler app will log in as a user to run Process Builder, Flow, Quick Actions, etc. operations too.
-But because these happen in the background and we do not want to insecurely store usernames and passwords then we instead securely store them as Named Credentials.
-
-
-What user do the actions run as?
---------------------------------
-
-The context user that the Process Builder, Flow, Quick Actions, Email Alerts, Workflow Rules, and Apex run as is determined by the
-**Named Credential** chosen when creating the Mass Action Configuration. Generally, you may want this to be an admin user but you can
-certainly create and use Named Credentials that use non-admin credentials.
-
-
-How do I activate or inactivate a configuration?
-----------------------------------------------
-
-On the Mass Action Configuration detail page, click the **Quick Edit** button then check or uncheck the `Active` field then click **Save**.
-A Mass Action Configuration that is **inactive** will not run, even if you click the **Run** button to manually kick it off or if you use
-automation like Process Builder, Flow, or Apex to call the `MA_RunConfigInvocable` invocable apex class.
-
-![screen shot](images/faq-quick-edit.png)
-
-
-How do I change how many records are processed at a time (batch size)?
---------------------------------------------------------------------
-
-On the Mass Action Configuration detail page, click the **Quick Edit** button then set the value for `Batch Size` field to be between 1 and 200 then click **Save**.
-
-![screen shot](images/faq-quick-edit.png)
-
-
-What are Mass Action Logs? How do I know if an error occurs?
-------------------------------------------------------------
-
-If there is an error when the Mass Action tries to run (e.g. submitting the background apex batch job) then the error will be reported here.
-Specific DML errors such as errors due to validation rules, required fields not being assigned, errors in a Flow, or otherwise any errors
-that occur within your selected action are **not** reported here because technically the app can't monitor them. Those errors will be reported
-however you normally receive such notifications, such as system emails to the administrator.
-
-I recommend that you subscribe to receive [Apex Exception Emails](https://help.salesforce.com/articleView?id=000170712&type=1) as some failures
-may prevent the app from ever getting a chance to report the issue via a Mass Action Log record.
-
-You may also [monitor the background batch jobs](https://trailhead.salesforce.com/en/modules/asynchronous_apex/units/async_apex_monitoring) for errors.
-
-
-Can I edit the Mass Action Configuration record in Classic or outside the Configure tab in Lightning Experience?
-----------------------------------------------------------------------------------------------------------------
-
-You shouldn't, no. Although technically you _can_ update the Mass Action Configuration record through various means
-in Salesforce (it is just data), any method outside of the **Configure** tab or **Quick Edit** button in Lightning Experience are **not supported**
-and may cause undesired results or cause your configuration to become inoperable. This is why I provide the **Configure** wizard =)
-
-
-How do I run a single or specific Workflow Rule like I can pick a specific Process Builder or Flow?
----------------------------------------------------------------------------------------------------
-
-The Salesforce API does not offer an option to run specific Workflow Rules.
-Instead, all Workflow Rules are evaluated and those whose entry criteria are met
-are applied to those records. To ensure only a specific Workflow Rule runs then
-you will need to adjust the entry criteria.
-
-
-If I schedule an action that updates the records, do my other Process Builders, Workflow Rules, Apex Triggers, etc. fire like normal?
--------------------------------------------------------------------------------------------------------------------------------------
-
-Yes. If you schedule an action that causes records to be created, updated, or deleted then the same [rules apply](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_triggers_order_of_execution.htm) just as
-if you had created, updated, or deleted the records manually with Data Loader or any other means.
-
-
-Error: System.HttpResponse[Status=Bad Request, StatusCode=400] ... An error occurred when trying to start a flow
-----------------------------------------------------------------------------------------------------------------
-
-Ensure the user represented by the Named Credential used by the Mass Action Configuration has **Force.com Flow User** checked on their user record.
-
-Please check that the `Connected App`, `Auth. Provider`, and `Named Credential` are configured correctly per the [instructions in the wiki](https://github.com/DouglasCAyers/sfdx-mass-action-scheduler/wiki/Pre-Requisites-Instructions).
-
-Please check if the admin who last activated the process or flow received an [error email](https://developer.salesforce.com/docs/atlas.en-us.salesforce_vpm_guide.meta/salesforce_vpm_guide/vpm_troubleshoot_email.htm) which may include more details to help troubleshoot.
-
-
-Error: System.HttpResponse[Status=Moved Permanently, StatusCode=301] ... An error occurred when trying to start a flow
-----------------------------------------------------------------------------------------------------------------------
-
-Usually means there is a problem with the chosen `Named Credential` authenticating to Salesforce. Please check that the `Connected App`, `Auth. Provider`, and `Named Credential` are configured correctly per the [instructions in the wiki](https://github.com/DouglasCAyers/sfdx-mass-action-scheduler/wiki/Pre-Requisites-Instructions).
-
-
-Nothing seems to happen when my Mass Action Configuration runs and the Apex Jobs page lists 0 for Total Batches, Batches Processed, and Failures.
--------------------------------------------------------------------------------------------------------------------------------------------------
-
-Ensure the user represented by the Named Credential used by the Mass Action Configuration has access to the list view or report being used.
-
-![screen shot](images/monitor-jobs-zero-batches.png)
-
-
-My question isn't answered here, how can I contact you about my question or feature request?
---------------------------------------------------------------------------------------------
-
-Please review the [project issue tracker](https://github.com/DouglasCAyers/sfdx-mass-action-scheduler/issues?utf8=%E2%9C%93&q=is%3Aissue) as your question may have already been asked/answered there and just hasn't made it to the FAQ yet.
-If you don't find what you're looking for please ask your question or request a feature by opening a new [issue](https://github.com/DouglasCAyers/sfdx-mass-action-scheduler/issues). Thank you!
 
 
 Credits
