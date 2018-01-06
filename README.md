@@ -20,7 +20,9 @@ No more waiting for records to be updated or creating clever workarounds to caus
 Documentation and Discussion
 --------------------------
 
-For discussion and feedback [post in the community group](https://success.salesforce.com/_ui/core/chatter/groups/GroupProfilePage?g=0F93A000000LhvN) or raise well defined issues and ideas via the [Issues feature](https://github.com/DouglasCAyers/sfdx-mass-action-scheduler/issues).
+* For discussion and feedback [post in the community group](https://success.salesforce.com/_ui/core/chatter/groups/GroupProfilePage?g=0F93A000000LhvN) or raise well defined issues and ideas via the [Issues feature](https://github.com/DouglasCAyers/sfdx-mass-action-scheduler/issues).
+* Read the [wiki page](https://github.com/DouglasCAyers/sfdx-mass-action-scheduler/wiki) for further documentation on Mass Action Scheduler
+* Watch my [Automation Hour webinar](http://bit.ly/DAyers010518) introducing the tool and demos
 
 
 Data Sources
@@ -98,18 +100,25 @@ Release 1.5 (current)
   * [Sandbox](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tf4000001I187)
 * Enhancement [Capture full error message if batch error trying to invoke target action](https://github.com/DouglasCAyers/sfdx-mass-action-scheduler/issues/8)
 
+---
+
 Release 1.4
 -----------
 * Enhancement [Show error message when try to save active configuration with invalid custom cron expression](https://github.com/DouglasCAyers/sfdx-mass-action-scheduler/issues/2) 
+
+---
 
 Release 1.3
 -----------
 * Enhancement [Clarify which Workflow Rules run when choosing action type](https://github.com/DouglasCAyers/sfdx-mass-action-scheduler/issues/9)
 
+---
+
 Release 1.2
 -----------
 * Initial public release
 
+---
 
 Installing the Source Code (Developers)
 ---------------------------------------
