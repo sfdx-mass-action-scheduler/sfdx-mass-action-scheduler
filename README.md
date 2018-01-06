@@ -1,6 +1,8 @@
 Mass Action Scheduler
 =======================
 
+![screen shot](images/wizard-choose-source.png)
+
 Overview
 --------
 
@@ -14,7 +16,12 @@ Inspired by Marie Chandra's idea [Ability to Schedule when Process Builder Trigg
 
 No more waiting for records to be updated or creating clever workarounds to cause records to be updated to cause these actions to fire.
 
-![screen shot](images/wizard-choose-source.png)
+
+Documentation and Discussion
+--------------------------
+
+For discussion and feedback [post in the community group](https://success.salesforce.com/_ui/core/chatter/groups/GroupProfilePage?g=0F93A000000LhvN) or raise well defined issues and ideas via the [Issues feature](https://github.com/DouglasCAyers/sfdx-mass-action-scheduler/issues).
+
 
 Data Sources
 ------------
@@ -38,7 +45,7 @@ Almost any process automation you configure can be scheduled.
 | **Flows**             | Auto-launched flows (no screens). Any that can be called from Process Builder |
 | **Quick Actions**     | Create a Record, Update a Record, and Log a Call types |
 | **Email Alerts**      | All |
-| **Workflow Rules**    | All |
+| **Workflow Rules**    | Active rules |
 | **Apex**              | Classes annotated with @InvocableMethod | 
 
 
