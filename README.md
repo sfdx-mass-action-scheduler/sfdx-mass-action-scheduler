@@ -25,6 +25,8 @@ Documentation and Discussion
 * Read the [wiki page](https://github.com/DouglasCAyers/sfdx-mass-action-scheduler/wiki) for further documentation on Mass Action Scheduler.
 * Read the [FAQ page](https://github.com/DouglasCAyers/sfdx-mass-action-scheduler/wiki/Frequently-Asked-Questions) to help troubleshoot technical issues.
 
+[![video](images/mass-action-scheduler-youtube-cover.png)](https://youtu.be/XYBKrrXgBxA?list=PL-oxrNbxQl3-Wp8k-z3pa2y_VOw88TMfw)
+
 
 Data Sources
 ------------
