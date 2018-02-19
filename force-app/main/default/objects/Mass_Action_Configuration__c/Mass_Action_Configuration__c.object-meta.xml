@@ -19,14 +19,6 @@
     <actionOverrides>
         <actionName>Edit</actionName>
         <content>MA_EditConfigCmp</content>
-        <formFactor>Small</formFactor>
-        <skipRecordTypeSelect>false</skipRecordTypeSelect>
-        <type>LightningComponent</type>
-    </actionOverrides>
-    <actionOverrides>
-        <actionName>Edit</actionName>
-        <content>MA_EditConfigCmp</content>
-        <formFactor>Large</formFactor>
         <skipRecordTypeSelect>false</skipRecordTypeSelect>
         <type>LightningComponent</type>
     </actionOverrides>
@@ -37,14 +29,6 @@
     <actionOverrides>
         <actionName>New</actionName>
         <content>MA_EditConfigCmp</content>
-        <formFactor>Large</formFactor>
-        <skipRecordTypeSelect>false</skipRecordTypeSelect>
-        <type>LightningComponent</type>
-    </actionOverrides>
-    <actionOverrides>
-        <actionName>New</actionName>
-        <content>MA_EditConfigCmp</content>
-        <formFactor>Small</formFactor>
         <skipRecordTypeSelect>false</skipRecordTypeSelect>
         <type>LightningComponent</type>
     </actionOverrides>
@@ -60,9 +44,9 @@
         <actionName>View</actionName>
         <comment>Action override created by Lightning App Builder during activation.</comment>
         <content>Mass_Action_Configuration_Record_Page</content>
-        <formFactor>Large</formFactor>
         <skipRecordTypeSelect>false</skipRecordTypeSelect>
         <type>Flexipage</type>
+        <formFactor>Large</formFactor>
     </actionOverrides>
     <allowInChatterGroups>false</allowInChatterGroups>
     <compactLayoutAssignment>Default_Compact_Layout</compactLayoutAssignment>
