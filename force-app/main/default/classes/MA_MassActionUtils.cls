@@ -65,11 +65,13 @@ public with sharing class MA_MassActionUtils {
                         Target_Field_Name__c
                     FROM
                         Mass_Action_Mappings__r
+                    FOR REFERENCE
                 )
             FROM
                 Mass_Action_Configuration__c
             WHERE
                 Id = :recordId
+            FOR VIEW
         ]) {
             config = record;
         }
