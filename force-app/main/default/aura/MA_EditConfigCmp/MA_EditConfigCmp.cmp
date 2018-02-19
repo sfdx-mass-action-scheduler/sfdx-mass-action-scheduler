@@ -485,6 +485,7 @@ License: BSD 3-Clause License
 
                                         <lightning:combobox aura:id="inputMappingSourceFieldName"
                                             name="inputMappingSourceFieldName"
+                                            label=""
                                             variant="label-hidden"
                                             value="{!targetFieldMapping.sourceFieldName}"
                                             options="{!v.sourceFields}"
@@ -575,8 +576,7 @@ License: BSD 3-Clause License
                                                 options="{!v.scheduleOptionsHourOfDay}"
                                                 value="{!v.scheduleSelectionsHourOfDay}"
                                                 required="true"
-                                                onchange="{!c.handleInputFieldChanged}"
-                                                class="font-monospace"/>
+                                                onchange="{!c.handleInputFieldChanged}"/>
 
                                         </div>
 
