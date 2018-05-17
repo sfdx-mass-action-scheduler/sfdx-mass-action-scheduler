@@ -164,6 +164,10 @@
         <viewAllRecords>true</viewAllRecords>
     </objectPermissions>
     <tabSettings>
+        <tab>MA_SetupAuthWizardPageTab</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
         <tab>Mass_Action_Configuration__c</tab>
         <visibility>Visible</visibility>
     </tabSettings>
