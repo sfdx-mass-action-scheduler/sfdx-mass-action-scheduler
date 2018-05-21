@@ -173,6 +173,10 @@ License: BSD 3-Clause License
                     type="Map[]"
                     description="Hour of Day in Cron schedule expression."/>
 
+    <aura:attribute name="scheduleOptionsDayOfMonth"
+                    type="Map[]"
+                    description="Day of Month in Cron schedule expression."/>
+
     <aura:attribute name="scheduleOptionsDayOfWeek"
                     type="Map[]"
                     description="Weekday in Cron schedule expression."/>
@@ -190,6 +194,10 @@ License: BSD 3-Clause License
     <aura:attribute name="scheduleSelectionsHourOfDay"
                     type="String[]"
                     description="The selected values from the checkboxGroup. When save record need to convert list to csv string."/>
+
+    <aura:attribute name="scheduleSelectionsDayOfMonth"
+                    type="String[]"
+                    description="The selected values from the dual listbox. When save record need to convert list to csv string."/>
 
     <aura:attribute name="scheduleSelectionsDayOfWeek"
                     type="String[]"
@@ -262,7 +270,25 @@ License: BSD 3-Clause License
                                 type="text"
                                 messageWhenValueMissing="Name is required."
                                 class="slds-p-top_x-small"
-                                onchange="{!c.handleInputFieldChanged}"/>
+                                onblur="{!c.handleInputNameFieldBlur}"/>
+
+                            <lightning:input aura:id="inputDeveloperName"
+                                name="inputDeveloperName"
+                                label="{!v.objectDescribe.fields.DeveloperName__c.label}"
+                                title="{!v.objectDescribe.fields.DeveloperName__c.helpText}"
+                                value="{!v.record.developerName}"
+                                required="true"
+                                type="text"
+                                messageWhenValueMissing="Unique Name is required."
+                                class="slds-p-top_x-small"/>
+
+                            <lightning:textarea aura:id="inputDescription"
+                                name="inputDescription"
+                                label="{!v.objectDescribe.fields.Description__c.label}"
+                                title="{!v.objectDescribe.fields.Description.helpText}"
+                                value="{!v.record.description}"
+                                required="false"
+                                class="slds-p-top_x-small"/>
 
                             <lightning:combobox aura:id="inputSourceType"
                                 name="inputSourceType"
@@ -273,8 +299,7 @@ License: BSD 3-Clause License
                                 placeholder="Select a Source Type"
                                 required="true"
                                 messageWhenValueMissing="Source Type is required."
-                                class="slds-p-top_x-small"
-                                onchange="{!c.handleInputFieldChanged}"/>
+                                class="slds-p-top_x-small"/>
 
                             <aura:if isTrue="{!equals( v.sourceType, 'Report' )}">
 
@@ -286,8 +311,7 @@ License: BSD 3-Clause License
                                     placeholder="Select a Report Folder"
                                     required="true"
                                     messageWhenValueMissing="Report Folder is required."
-                                    class="slds-p-top_x-small"
-                                    onchange="{!c.handleInputFieldChanged}"/>
+                                    class="slds-p-top_x-small"/>
 
                                 <lightning:combobox aura:id="inputSourceReport"
                                     name="inputSourceReport"
@@ -298,8 +322,7 @@ License: BSD 3-Clause License
                                     placeholder="Select a Tabular Report"
                                     required="true"
                                     messageWhenValueMissing="Report is required."
-                                    class="slds-p-top_x-small"
-                                    onchange="{!c.handleInputFieldChanged}"/>
+                                    class="slds-p-top_x-small"/>
 
                                 <lightning:combobox aura:id="inputSourceReportColumn"
                                     name="inputSourceReportColumn"
@@ -310,8 +333,7 @@ License: BSD 3-Clause License
                                     placeholder="Select a Report Column"
                                     required="true"
                                     messageWhenValueMissing="Report Column is required."
-                                    class="slds-p-top_x-small"
-                                    onchange="{!c.handleInputFieldChanged}"/>
+                                    class="slds-p-top_x-small"/>
 
                             </aura:if>
 
@@ -325,8 +347,7 @@ License: BSD 3-Clause License
                                     placeholder="Select an Object"
                                     required="true"
                                     messageWhenValueMissing="Object is required."
-                                    class="slds-p-top_x-small"
-                                    onchange="{!c.handleInputFieldChanged}"/>
+                                    class="slds-p-top_x-small"/>
 
                                 <lightning:combobox aura:id="inputSourceListView"
                                     name="inputSourceListView"
@@ -337,8 +358,7 @@ License: BSD 3-Clause License
                                     placeholder="Select a List View"
                                     required="true"
                                     messageWhenValueMissing="List View is required."
-                                    class="slds-p-top_x-small"
-                                    onchange="{!c.handleInputFieldChanged}"/>
+                                    class="slds-p-top_x-small"/>
 
                             </aura:if>
 
@@ -386,8 +406,7 @@ License: BSD 3-Clause License
                                 placeholder="Select a Named Credential"
                                 required="true"
                                 messageWhenValueMissing="Named Credential is required."
-                                class="slds-p-top_x-small"
-                                onchange="{!c.handleInputFieldChanged}"/>
+                                class="slds-p-top_x-small"/>
 
                             <aura:if isTrue="{!not( empty( v.record.namedCredential ) )}">
 
@@ -400,8 +419,7 @@ License: BSD 3-Clause License
                                     placeholder="Select an Action Type"
                                     required="true"
                                     messageWhenValueMissing="Action Type is required."
-                                    class="slds-p-top_x-small"
-                                    onchange="{!c.handleInputFieldChanged}"/>
+                                    class="slds-p-top_x-small"/>
 
                                 <aura:if isTrue="{!equals( v.targetType, 'Workflow' )}">
 
@@ -430,8 +448,7 @@ License: BSD 3-Clause License
                                         placeholder="Select an Object"
                                         required="true"
                                         messageWhenValueMissing="Object is required."
-                                        class="slds-p-top_x-small"
-                                        onchange="{!c.handleInputFieldChanged}"/>
+                                        class="slds-p-top_x-small"/>
                                 </aura:if>
 
                                 <aura:if isTrue="{!v.isValidToRenderTargetInvocableActions}">
@@ -444,8 +461,7 @@ License: BSD 3-Clause License
                                         placeholder="Select an Action"
                                         required="true"
                                         messageWhenValueMissing="Action is required."
-                                        class="slds-p-top_x-small"
-                                        onchange="{!c.handleInputFieldChanged}"/>
+                                        class="slds-p-top_x-small"/>
                                 </aura:if>
 
                             </aura:if>
@@ -485,7 +501,7 @@ License: BSD 3-Clause License
 
                                         <lightning:combobox aura:id="inputMappingSourceFieldName"
                                             name="inputMappingSourceFieldName"
-                                            label=""
+                                            label="{!targetFieldMapping.targetField.label}"
                                             variant="label-hidden"
                                             value="{!targetFieldMapping.sourceFieldName}"
                                             options="{!v.sourceFields}"
@@ -551,7 +567,6 @@ License: BSD 3-Clause License
                                 type="button"
                                 required="true"
                                 messageWhenValueMissing="Schedule Frequency is required."
-                                onchange="{!c.handleInputFieldChanged}"
                                 class="slds-p-top_x-small"/>
 
                             <!--
@@ -565,44 +580,80 @@ License: BSD 3-Clause License
 
                                 <div class="slds-p-top_medium">
 
+                                    <p>
+                                        Select the hours, days of month or weekdays, and months
+                                        that you want to schedule the action to run.
+                                    </p>
+
                                     <div class="slds-grid">
 
-                                        <div class="slds-col slds-size_1-of-3">
+                                        <div class="slds-col slds-m-vertical_medium">
 
-                                            <lightning:checkboxGroup aura:id="inputScheduleHourOfDay"
+                                            <lightning:dualListbox aura:id="inputScheduleHourOfDay"
                                                 name="inputScheduleHourOfDay"
                                                 label="{!v.objectDescribe.fields.Schedule_HourOfDay__c.label}"
                                                 title="{!v.objectDescribe.fields.Schedule_HourOfDay__c.helpText}"
+                                                sourceLabel="Available Options"
+                                                selectedLabel="Selected Options"
                                                 options="{!v.scheduleOptionsHourOfDay}"
                                                 value="{!v.scheduleSelectionsHourOfDay}"
                                                 required="true"
-                                                onchange="{!c.handleInputFieldChanged}"/>
+                                                onchange="{!c.handleInputListBoxChanged}"/>
 
                                         </div>
 
-                                        <div class="slds-col slds-size_1-of-3">
+                                    </div>
 
-                                            <lightning:checkboxGroup aura:id="inputScheduleWeekday"
+                                    <div class="slds-grid">
+
+                                        <div class="slds-col slds-m-vertical_medium">
+
+                                            <lightning:dualListbox aura:id="inputScheduleWeekday"
                                                 name="inputScheduleWeekday"
                                                 label="{!v.objectDescribe.fields.Schedule_DayOfWeek__c.label}"
                                                 title="{!v.objectDescribe.fields.Schedule_DayOfWeek__c.helpText}"
+                                                sourceLabel="Available Options"
+                                                selectedLabel="Selected Options"
                                                 options="{!v.scheduleOptionsDayOfWeek}"
                                                 value="{!v.scheduleSelectionsDayOfWeek}"
-                                                onchange="{!c.handleInputFieldChanged}"
-                                                required="true"/>
+                                                onchange="{!c.handleInputListBoxChanged}"/>
 
                                         </div>
 
-                                        <div class="slds-col slds-size_1-of-3">
+                                    </div>
 
-                                            <lightning:checkboxGroup aura:id="inputScheduleMonthOfYear"
+                                    <div class="slds-grid">
+
+                                        <div class="slds-col slds-m-vertical_medium">
+
+                                            <lightning:dualListbox aura:id="inputScheduleDayOfMonth"
+                                                name="inputScheduleDayOfMonth"
+                                                label="{!v.objectDescribe.fields.Schedule_DayOfMonth__c.label}"
+                                                title="{!v.objectDescribe.fields.Schedule_DayOfMonth__c.helpText}"
+                                                sourceLabel="Available Options"
+                                                selectedLabel="Selected Options"
+                                                options="{!v.scheduleOptionsDayOfMonth}"
+                                                value="{!v.scheduleSelectionsDayOfMonth}"
+                                                onchange="{!c.handleInputListBoxChanged}"/>
+
+                                        </div>
+
+                                    </div>
+
+                                    <div class="slds-grid">
+
+                                        <div class="slds-col slds-m-vertical_medium">
+
+                                            <lightning:dualListbox aura:id="inputScheduleMonthOfYear"
                                                 name="inputScheduleMonthOfYear"
                                                 label="{!v.objectDescribe.fields.Schedule_MonthOfYear__c.label}"
                                                 title="{!v.objectDescribe.fields.Schedule_MonthOfYear__c.helpText}"
+                                                sourceLabel="Available Options"
+                                                selectedLabel="Selected Options"
                                                 options="{!v.scheduleOptionsMonthOfYear}"
                                                 value="{!v.scheduleSelectionsMonthOfYear}"
-                                                onchange="{!c.handleInputFieldChanged}"
-                                                required="true"/>
+                                                required="true"
+                                                onchange="{!c.handleInputListBoxChanged}"/>
 
                                         </div>
 
@@ -694,7 +745,7 @@ License: BSD 3-Clause License
 <!--
 BSD 3-Clause License
 
-Copyright (c) 2017, Doug Ayers, douglascayers.com
+Copyright (c) 2018, Doug Ayers, douglascayers.com
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

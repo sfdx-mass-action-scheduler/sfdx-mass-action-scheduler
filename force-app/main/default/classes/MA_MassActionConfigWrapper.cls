@@ -28,6 +28,9 @@ public class MA_MassActionConfigWrapper {
     public String name { get; set; }
 
     @AuraEnabled
+    public String developerName { get; set; }
+
+    @AuraEnabled
     public String namedCredential { get; set; }
 
     @AuraEnabled
@@ -35,6 +38,9 @@ public class MA_MassActionConfigWrapper {
 
     @AuraEnabled
     public Integer batchSize { get; set; }
+
+    @AuraEnabled
+    public String description { get; set; }
 
     // source
 
@@ -119,9 +125,11 @@ public class MA_MassActionConfigWrapper {
             this.recordId = config.Id;
             this.ownerId = config.OwnerId;
             this.name = config.Name;
+            this.developerName = config.DeveloperName__c;
             this.namedCredential = config.Named_Credential__c;
             this.active = ( config.Active__c == null ? this.active : config.Active__c );
             this.batchSize = ( config.Batch_Size__c == null ? this.batchSize : config.Batch_Size__c.intValue() );
+            this.description = config.Description__c;
             // source
             this.sourceType = config.Source_Type__c;
             this.sourceReportID = config.Source_Report_ID__c;
@@ -153,9 +161,11 @@ public class MA_MassActionConfigWrapper {
 
         Mass_Action_Configuration__c config = new Mass_Action_Configuration__c(
             Name = this.name,
+            DeveloperName__c = this.developerName,
             Named_Credential__c = this.namedCredential,
             Active__c = ( this.active == null ? true : this.active ),
             Batch_Size__c = ( this.batchSize == null ? 200 : this.batchSize ),
+            Description__c = this.description,
             // source
             Source_Type__c = this.sourceType,
             Source_Report_ID__c = this.sourceReportID,
@@ -210,7 +220,7 @@ public class MA_MassActionConfigWrapper {
 /*
 BSD 3-Clause License
 
-Copyright (c) 2017, Doug Ayers, douglascayers.com
+Copyright (c) 2018, Doug Ayers, douglascayers.com
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

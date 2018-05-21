@@ -467,6 +467,7 @@ private class MA_EditConfigCmpControllerTest {
 
         Mass_Action_Configuration__c config = new Mass_Action_Configuration__c(
             Name = 'Test Config',
+            DeveloperName__c = 'Test_Config',
             Active__c = false,
             Batch_Size__c = 200,
             Named_Credential__c = 'Mass_Action_Test_Named_Credential',
@@ -494,6 +495,8 @@ private class MA_EditConfigCmpControllerTest {
 
         System.assertEquals( config.Id, wrapper.recordId );
         System.assertEquals( config.Name, wrapper.name );
+        System.assertEquals( config.DeveloperName__c, wrapper.developerName );
+        System.assertEquals( config.Description__c, wrapper.description );
         System.assertEquals( config.Active__c, wrapper.active );
         System.assertEquals( config.Batch_Size__c, wrapper.batchSize );
         System.assertEquals( config.Named_Credential__c, wrapper.namedCredential );
@@ -521,6 +524,8 @@ private class MA_EditConfigCmpControllerTest {
 
         System.assertEquals( config.Id, config2.Id );
         System.assertEquals( config.Name, config2.Name );
+        System.assertEquals( config.DeveloperName__c, config2.DeveloperName__c );
+        System.assertEquals( config.Description__c, config2.Description__c );
         System.assertEquals( config.Active__c, config2.Active__c );
         System.assertEquals( config.Batch_Size__c, config2.Batch_Size__c );
         System.assertEquals( config.Named_Credential__c, config2.Named_Credential__c );
@@ -583,6 +588,7 @@ private class MA_EditConfigCmpControllerTest {
 
         MA_MassActionConfigWrapper wrapper = new MA_MassActionConfigWrapper();
         wrapper.name = 'Test Config';
+        wrapper.developerName = 'Test_Config';
         wrapper.active = false;
         wrapper.batchSize = 200;
         wrapper.namedCredential = 'Mass_Action_Test_Named_Credential';
@@ -646,7 +652,7 @@ private class MA_EditConfigCmpControllerTest {
 /*
 BSD 3-Clause License
 
-Copyright (c) 2017, Doug Ayers, douglascayers.com
+Copyright (c) 2018, Doug Ayers, douglascayers.com
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

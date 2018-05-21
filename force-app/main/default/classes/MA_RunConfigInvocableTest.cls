@@ -7,14 +7,15 @@
 @IsTest
 private class MA_RunConfigInvocableTest {
 
-    @IsTest
-    static void test_invocable() {
+    @TestSetup
+    static void setup() {
 
         String objectName = MA_MassActionUtils.NAMESPACE_API + 'Mass_Action_Configuration__c';
         ListView lv = [ SELECT Id, Name, DeveloperName, SobjectType FROM ListView WHERE DeveloperName = 'All' AND SobjectType = :objectName AND IsSoqlCompatible = true LIMIT 1 ];
 
         Mass_Action_Configuration__c config = new Mass_Action_Configuration__c(
             Name = 'Test Config',
+            DeveloperName__c = 'Test_Config',
             Named_Credential__c = 'Mass_Action_Test_Named_Credential',
             Active__c = true,
             Batch_Size__c = 200,
@@ -35,6 +36,13 @@ private class MA_RunConfigInvocableTest {
 
         insert configFieldMapping;
 
+    }
+
+    @IsTest
+    static void test_invocable_by_id() {
+
+        Mass_Action_Configuration__c config = [ SELECT Id FROM Mass_Action_Configuration__c WHERE DeveloperName__c = 'Test_Config' LIMIT 1 ];
+
         Test.setMock( HttpCalloutMock.class, new MA_InvokeActionHttpRequestMock() );
 
         Test.startTest();
@@ -47,6 +55,44 @@ private class MA_RunConfigInvocableTest {
         System.assertEquals( 1, responses.size() );
         System.assertEquals( 1, [ SELECT count() FROM AsyncApexJob WHERE Id = :responses[0].jobId ] );
 
+    }
+
+    @IsTest
+    static void test_invocable_by_unique_name() {
+
+        Test.setMock( HttpCalloutMock.class, new MA_InvokeActionHttpRequestMock() );
+
+        Test.startTest();
+
+        MA_RunConfigInvocable.Request req = new MA_RunConfigInvocable.Request();
+        req.configUniqueName = 'Test_Config';
+
+        List<MA_RunConfigInvocable.Response> responses = MA_RunConfigInvocable.execute( new List<MA_RunConfigInvocable.Request>{ req } );
+
+        System.assertEquals( 1, responses.size() );
+        System.assertEquals( 1, [ SELECT count() FROM AsyncApexJob WHERE Id = :responses[0].jobId ] );
+
+    }
+
+    @IsTest
+    static void test_invocable_no_data_found() {
+
+        Test.setMock( HttpCalloutMock.class, new MA_InvokeActionHttpRequestMock() );
+
+        Test.startTest();
+
+        try {
+
+            MA_RunConfigInvocable.execute( new List<MA_RunConfigInvocable.Request>{ new MA_RunConfigInvocable.Request() } );
+
+            System.assert( false, 'should have failed' );
+
+        } catch ( Exception e ) {
+
+            System.assert( e instanceof System.NoDataFoundException, 'expected NoDataFoundException but got ' + e );
+
+        }
+
         Test.stopTest();
 
     }
@@ -55,7 +101,7 @@ private class MA_RunConfigInvocableTest {
 /*
 BSD 3-Clause License
 
-Copyright (c) 2017, Doug Ayers, douglascayers.com
+Copyright (c) 2018, Doug Ayers, douglascayers.com
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

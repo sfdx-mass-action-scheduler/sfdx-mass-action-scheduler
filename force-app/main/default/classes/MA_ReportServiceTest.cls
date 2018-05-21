@@ -38,7 +38,7 @@
  *
  * https://github.com/SalesforceFoundation/CampaignTools/blob/master/src/classes/ReportService_TEST.cls
  */
-@isTest
+@IsTest
 private class MA_ReportServiceTest {
 
     // the test report should filter for accounts whose name starts with this value
@@ -46,7 +46,7 @@ private class MA_ReportServiceTest {
 
     /**
      * Can't annotate this method with @TestSetup because not allowed
-     * in test classes that use @IsTest( seeAllData = true ).
+     * in test classes that use @IsTest( SeeAllData = true ).
      * Therefore our test methods must call this method explicitly.
      */
     static void setup() {
@@ -57,7 +57,7 @@ private class MA_ReportServiceTest {
 
     }
 
-    @isTest( seeAllData = true )
+    @IsTest( SeeAllData = true )
     static void testGetIdColumnsReturnsIdColumns() {
 
         setup();
@@ -81,7 +81,7 @@ private class MA_ReportServiceTest {
 
     }
 
-    @isTest( seeAllData = true )
+    @IsTest( SeeAllData = true )
     static void testReportIterable() {
 
         setup();
@@ -103,7 +103,52 @@ private class MA_ReportServiceTest {
 
     }
 
-    @isTest(seeAllData = true)
+    /**
+     * De to bug introduced after https://success.salesforce.com/issues_view?Id=a1p3A000000ATHC was fixed,
+     * the Reports.ReportManager.runReport method only sees records that exist in the org before the test runs.
+     * Therefore, we cannot assert that the report sees any data we insert/update/delete in the test itself.
+     */
+    @IsTest( SeeAllData = true )
+    static void testReportIterator() {
+
+        String nameFilter = ACCOUNT_NAME_PREFIX + '%';
+        Set<ID> expectedIds = new Map<ID, Account>([ SELECT Id FROM Account WHERE Name LIKE :nameFilter ]).keySet();
+
+        List<String> expectedColumnNames = new List<String>{ 'ACCOUNT_ID', 'PARENT_ID' };
+
+        Report testReport = [
+            SELECT Id
+            FROM Report
+            WHERE DeveloperName = 'MA_Test_Account_Report'
+        ];
+
+        Test.startTest();
+
+        MA_ReportService.ReportRowIterator reportRowIterator = new MA_ReportService.ReportRowIterator(
+            testReport.Id,
+            'ACCOUNT_ID'
+        );
+
+        Set<Id> actualIds = new Set<Id>();
+
+        while ( reportRowIterator.hasNext() ) {
+            actualIds.add( ( Id ) reportRowIterator.next().getDataCells().get( 0 ).getValue() );
+        }
+
+        Test.stopTest();
+
+        System.assertEquals( expectedIds, actualIds );
+        System.assertEquals( expectedColumnNames, reportRowIterator.getDetailColumnNames() );
+
+    }
+
+    /**
+     * De to bug introduced after https://success.salesforce.com/issues_view?Id=a1p3A000000ATHC was fixed,
+     * the Reports.ReportManager.runReport method only sees records that exist in the org before the test runs.
+     * Therefore, we cannot assert that the report sees any data we insert/update/delete in the test itself.
+     */
+    /*
+    @IsTest( SeeAllData = true )
     static void testReportIterator() {
 
         setup();
@@ -141,8 +186,58 @@ private class MA_ReportServiceTest {
         System.assertEquals( expectedIds, actualIds );
         System.assertEquals( expectedColumnNames, reportRowIterator.getDetailColumnNames() );
     }
+    */
 
-    @isTest(seeAllData = true)
+    /**
+     * De to bug introduced after https://success.salesforce.com/issues_view?Id=a1p3A000000ATHC was fixed,
+     * the Reports.ReportManager.runReport method only sees records that exist in the org before the test runs.
+     * Therefore, we cannot assert that the report sees any data we insert/update/delete in the test itself.
+     */
+    @IsTest( SeeAllData = true )
+    static void testGetNextPageReportResults() {
+
+        String nameFilter = ACCOUNT_NAME_PREFIX + '%';
+        List<Account> accounts = [ SELECT Id FROM Account WHERE Name LIKE :nameFilter ORDER BY Id ASC ];
+        ID firstAccountId = accounts[0].Id;
+
+        // remove first account; when filter the report we expect all the other ids to be returned
+        accounts.remove( 0 );
+        Set<ID> expectedIds = new Map<ID, Account>( accounts ).keySet();
+
+        Report testReport = [
+            SELECT Id
+            FROM Report
+            WHERE DeveloperName = 'MA_Test_Account_Report'
+        ];
+
+        String columnName = 'ACCOUNT_ID';
+        String pageIndex = firstAccountId; // report should return all rows with Ids after this one
+
+        Test.startTest();
+
+        Reports.ReportResults results = MA_ReportService.getReportResults( testReport.id, columnName, pageIndex );
+        Reports.ReportFactWithDetails facts = ( Reports.ReportFactWithDetails ) results.getFactMap().get( 'T!T' );
+        Iterator<Reports.ReportDetailRow> reportRowIterator = facts.getRows().iterator();
+
+        Set<Id> actualIds = new Set<Id>();
+
+        while ( reportRowIterator.hasNext() ) {
+            actualIds.add( ( Id ) reportRowIterator.next().getDataCells().get( 0 ).getValue() );
+        }
+
+        Test.stopTest();
+
+        System.assertEquals( expectedIds, actualIds );
+
+    }
+
+    /**
+     * De to bug introduced after https://success.salesforce.com/issues_view?Id=a1p3A000000ATHC was fixed,
+     * the Reports.ReportManager.runReport method only sees records that exist in the org before the test runs.
+     * Therefore, we cannot assert that the report sees any data we insert/update/delete in the test itself.
+     */
+    /*
+    @IsTest( SeeAllData = true )
     static void testGetNextPageReportResults() {
 
         setup();
@@ -185,5 +280,6 @@ private class MA_ReportServiceTest {
         System.assertEquals( expectedIds, actualIds );
 
     }
+    */
 
 }

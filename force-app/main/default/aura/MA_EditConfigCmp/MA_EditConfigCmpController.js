@@ -55,6 +55,12 @@
 
                 }
 
+                if ( !$A.util.isUndefinedOrNull( record.targetActionName ) ) {
+
+                    helper.renderTargetInvocableActions( component );
+
+                }
+
                 helper.initScheduleOptions( component );
 
             }));
@@ -89,6 +95,7 @@
 
                 inputCmps = [
                     component.find( 'inputName' ),
+                    component.find( 'inputDeveloperName' ),
                     component.find( 'inputSourceType' ),
                     component.find( 'inputSourceReportFolder' ),
                     component.find( 'inputSourceReport' ),
@@ -120,7 +127,9 @@
 
             }
 
-            isValidToProceed = ( helper.validateInputs( component, inputCmps ) && isValidToProceed );
+            var validationResult = helper.validateInputs( component, inputCmps );
+
+            isValidToProceed = ( !validationResult.hasErrors && isValidToProceed );
 
             if ( isValidToProceed ) {
 
@@ -134,7 +143,11 @@
 
             } else {
 
-                helper.toastMessage( 'Step Incomplete', 'Please fill out all required fields before proceeding to next step.', 'error' );
+                validationResult.components.forEach( function( componentResult ) {
+                    if ( componentResult.hasError ) {
+                        helper.toastMessage( 'Step Incomplete', componentResult.message, 'error' );
+                    }
+                });
 
             }
 
@@ -148,11 +161,14 @@
             component.find( 'inputScheduleFrequency' ),
             component.find( 'inputScheduleHourOfDay' ),
             component.find( 'inputScheduleWeekday' ),
+            component.find( 'inputScheduleDayOfMonth' ),
             component.find( 'inputScheduleMonthOfYear' ),
             component.find( 'inputScheduleCron' )
         ];
 
-        var isValidToSave = helper.validateInputs( component, inputCmps );
+        var validationResult = helper.validateInputs( component, inputCmps );
+
+        var isValidToSave = !validationResult.hasErrors;
 
         if ( isValidToSave ) {
 
@@ -187,7 +203,11 @@
 
         } else {
 
-            helper.toastMessage( 'Step Incomplete', 'Please fill out all required fields before saving.', 'error' );
+            validationResult.components.forEach( function( componentResult ) {
+                if ( componentResult.hasError ) {
+                    helper.toastMessage( 'Step Incomplete', componentResult.message, 'error' );
+                }
+            });
 
         }
 
@@ -195,11 +215,25 @@
 
     // ----------------------------------------------------------------------------------
 
-    handleInputFieldChanged : function( component, event, helper ) {
+    handleInputNameFieldBlur : function( component, event, helper ) {
 
         var inputCmp = event.getSource();
+        var inputValue = inputCmp.get( 'v.value' );
 
-        helper.validateInputs( component, [ inputCmp ] );
+        // predict the developer name from the name, a familiar feature to admins
+        if ( !$A.util.isEmpty( inputValue ) && $A.util.isEmpty( component.get( 'v.record.developerName' ) ) ) {
+            component.set( 'v.record.developerName', inputValue.trim().replace( /[ ]+/g, '_' ) );
+        }
+
+    },
+
+    handleInputListBoxChanged : function( component, event, helper ) {
+
+        var selectedOptions = event.getParam( 'value' );
+
+        if ( !$A.util.isEmpty( selectedOptions ) ) {
+            selectedOptions.sort();
+        }
 
     },
 

@@ -12,6 +12,7 @@ private class MA_MassActionBatchUtilsTest {
 
         Mass_Action_Configuration__c config = new Mass_Action_Configuration__c(
             Name = 'Test Config',
+            DeveloperName__c = 'Test_Config',
             Active__c = true
         );
 
@@ -41,7 +42,7 @@ private class MA_MassActionBatchUtilsTest {
 /*
 BSD 3-Clause License
 
-Copyright (c) 2017, Doug Ayers, douglascayers.com
+Copyright (c) 2018, Doug Ayers, douglascayers.com
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

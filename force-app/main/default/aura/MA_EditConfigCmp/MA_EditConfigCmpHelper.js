@@ -2,13 +2,21 @@
     initScheduleOptions : function( component ) {
 
         var scheduleOptionsHourOfDay = [];
+        var scheduleOptionsDayOfMonth = [];
         var scheduleOptionsMonthOfYear = [];
         var scheduleOptionsDayOfWeek = [];
 
         for ( var i = 0; i < 24; i++ ) {
             scheduleOptionsHourOfDay.push({
                 'label' : ( i == 0 ? '12:00 AM' : i == 12 ? '12:00 PM' : ( i < 12 ? i + ':00 AM' : ( i - 12 ) + ':00 PM' ) ).padStart( 8, '0' ),
-                'value' : i.toString()
+                'value' : i.toString().padStart( 2, '0' ) + '.' + i.toString()
+            });
+        }
+
+        for ( var i = 1; i <= 31; i++ ) {
+            scheduleOptionsDayOfMonth.push({
+                'label' : i.toString(),
+                'value' : i.toString().padStart( 2, '0' ) + '.' + i.toString()
             });
         }
 
@@ -17,9 +25,9 @@
         for ( var i = 0; i < localeMonthNames.length; i++ ) {
             if ( !$A.util.isEmpty( localeMonthNames[i].fullName ) ) {
                 scheduleOptionsMonthOfYear.push({
-                    'label' : localeMonthNames[i].fullName.toUpperCase(), // display in user's locale
-                    'value' : monthValues[i]                              // but capture in english for cron expr.
-                });
+                    'label' : localeMonthNames[i].fullName.toUpperCase(),               // display in user's locale
+                    'value' : i.toString().padStart( 2, '0' ) + '.' + monthValues[i]    // but capture in english for cron expr.
+                });                                                                     // left pad with number for easy sorting
             }
         }
 
@@ -28,13 +36,14 @@
         for ( var i = 0; i < localeWeekdayNames.length; i++ ) {
             if ( !$A.util.isEmpty( localeWeekdayNames[i].fullName ) ) {
                 scheduleOptionsDayOfWeek.push({
-                    'label' : localeWeekdayNames[i].fullName.toUpperCase(), // display in user's locale
-                    'value' : weekdayValues[i]                              // but capture in english for cron expr.
-                });
+                    'label' : localeWeekdayNames[i].fullName.toUpperCase(),             // display in user's locale
+                    'value' : i.toString().padStart( 2, '0' ) + '.' + weekdayValues[i]  // but capture in english for cron expr.
+                });                                                                     // left pad with number for easy sorting
             }
         }
 
         component.set( 'v.scheduleOptionsHourOfDay', scheduleOptionsHourOfDay );
+        component.set( 'v.scheduleOptionsDayOfMonth', scheduleOptionsDayOfMonth );
         component.set( 'v.scheduleOptionsMonthOfYear', scheduleOptionsMonthOfYear );
         component.set( 'v.scheduleOptionsDayOfWeek', scheduleOptionsDayOfWeek );
 
@@ -46,6 +55,12 @@
             component.set( 'v.scheduleSelectionsHourOfDay', record.scheduleHourOfDay.split(',') );
         } else {
             component.set( 'v.scheduleSelectionsHourOfDay', [] );
+        }
+
+        if ( !$A.util.isUndefinedOrNull( record.scheduleDayOfMonth ) ) {
+            component.set( 'v.scheduleSelectionsDayOfMonth', record.scheduleDayOfMonth.split(',') );
+        } else {
+            component.set( 'v.scheduleSelectionsDayOfMonth', [] );
         }
 
         if ( !$A.util.isUndefinedOrNull( record.scheduleMonthOfYear ) ) {
@@ -232,7 +247,16 @@
 
     },
 
+    /**
+     * Given an array of aura components representing inputs (have a v.value attribute)
+     * then returns a validation result object with any errors for each component.
+     */
     validateInputs : function( component, inputCmps ) {
+
+        var validationResult = {
+            hasErrors : false,
+            components : [] // { hasError : boolean, message : string, component : aura.component }
+        };
 
         var sourceType = component.get( 'v.sourceType' );
         var sourceTypeIsReport = ( sourceType === 'Report' );
@@ -252,59 +276,134 @@
         var scheduleFrequenceIsScheduled = ( scheduleFrequency == 'Scheduled' || ( !$A.util.isUndefinedOrNull( scheduleFrequency ) && scheduleFrequency.length && scheduleFrequency[0] == 'Scheduled' ) );
         var scheduleFrequenceIsCustom = ( scheduleFrequency == 'Custom' || ( !$A.util.isUndefinedOrNull( scheduleFrequency ) && scheduleFrequency.length && scheduleFrequency[0] == 'Custom' ) );
 
+        var inputScheduleWeekdayIsEmpty = $A.util.isEmpty( component.get( 'v.scheduleSelectionsDayOfWeek' ) );
+        var inputScheduleDayOfMonthIsEmpty = $A.util.isEmpty( component.get( 'v.scheduleSelectionsDayOfMonth' ) );
+
+        var objectDescribe = component.get( 'v.objectDescribe' );
+
         var hasErrors = false;
 
-        inputCmps.forEach( function( inputCmp, index ) {
+        inputCmps.forEach( function( inputCmp ) {
 
-            var inputIsInvalid = false;
+            var validationComponentResult = {
+                hasError : false,
+                message : null,
+                component : inputCmp
+            };
+
+            var inputLabel = null;
+            var inputValue = null;
+
             var inputIsEmpty = false;
+            var inputIsInvalid = false;
+
+            var errorMessage = null;
 
             if ( !$A.util.isUndefinedOrNull( inputCmp ) ) {
 
-                inputIsEmpty = $A.util.isEmpty( inputCmp.get( 'v.value' ) );
+                inputLabel = inputCmp.get( 'v.label' );
+                inputValue = inputCmp.get( 'v.value' );
+                inputIsEmpty = $A.util.isEmpty( inputValue );
+
+                // populate a default error message,
+                // but don't assign to the validation component result
+                // unless we indeed determine the input component is invalid
+                if ( inputIsEmpty ) {
+                    errorMessage = inputLabel + ' is required.';
+                }
 
                 switch ( inputCmp.getLocalId() ) {
 
                     // Source
-                    case 'inputName'                        : inputIsInvalid = ( inputIsEmpty ); break;
-                    case 'inputSourceType'                  : inputIsInvalid = ( inputIsEmpty ); break;
+
+                    case 'inputName':
+                    case 'inputDeveloperName':
+                    case 'inputSourceType':
+                        inputIsInvalid = ( inputIsEmpty );
+                        break;
 
                     // Source: Report
-                    case 'inputSourceReportFolder'          : inputIsInvalid = ( sourceTypeIsReport && inputIsEmpty ); break;
-                    case 'inputSourceReport'                : inputIsInvalid = ( sourceTypeIsReport && inputIsEmpty ); break;
-                    case 'inputSourceReportColumn'          : inputIsInvalid = ( sourceTypeIsReport && inputIsEmpty ); break;
+
+                    case 'inputSourceReportFolder':
+                    case 'inputSourceReport':
+                    case 'inputSourceReportColumn':
+                        inputIsInvalid = ( sourceTypeIsReport && inputIsEmpty );
+                        break;
 
                     // Source: List View
-                    case 'inputSourceListViewSobjectType'   : inputIsInvalid = ( sourceTypeIsListView && inputIsEmpty ); break;
-                    case 'inputSourceListView'              : inputIsInvalid = ( sourceTypeIsListView && inputIsEmpty ); break;
+
+                    case 'inputSourceListViewSobjectType':
+                    case 'inputSourceListView':
+                        inputIsInvalid = ( sourceTypeIsListView && inputIsEmpty );
+                        break;
 
                     // Target
-                    case 'inputTargetNamedCredential'       : inputIsInvalid = ( inputIsEmpty ); break;
-                    case 'inputTargetType'                  : inputIsInvalid = ( inputIsEmpty ); break;
-                    case 'inputTargetSobjectType'           : inputIsInvalid = ( targetTypeRequiresSobject && inputIsEmpty ); break;
-                    case 'inputTargetAction'                : inputIsInvalid = ( targetTypeRequiresAction && inputIsEmpty ); break;
+
+                    case 'inputTargetNamedCredential':
+                    case 'inputTargetType':
+                        inputIsInvalid = ( inputIsEmpty );
+                        break;
+
+                    case 'inputTargetSobjectType':
+                        inputIsInvalid = ( targetTypeRequiresSobject && inputIsEmpty );
+                        break;
+
+                    case 'inputTargetAction':
+                        inputIsInvalid = ( targetTypeRequiresAction && inputIsEmpty );
+                        break;
 
                     // Target: Field Mappings
-                    case 'inputMappingSourceFieldName'      : inputIsInvalid = ( inputIsEmpty && inputCmp.get( 'v.required' ) ); break;
+
+                    case 'inputMappingSourceFieldName':
+                        inputIsInvalid = ( inputIsEmpty && inputCmp.get( 'v.required' ) );
+                        break;
 
                     // Schedule
-                    case 'inputScheduleFrequency'           : inputIsInvalid = ( inputIsEmpty ); break;
-                    case 'inputScheduleHourOfDay'           : inputIsInvalid = ( scheduleFrequenceIsScheduled && inputIsEmpty ); break;
-                    case 'inputScheduleMonthOfYear'         : inputIsInvalid = ( scheduleFrequenceIsScheduled && inputIsEmpty ); break;
-                    case 'inputScheduleWeekday'             : inputIsInvalid = ( scheduleFrequenceIsScheduled && inputIsEmpty ); break;
-                    case 'inputScheduleCron'                : inputIsInvalid = ( scheduleFrequenceIsCustom && inputIsEmpty ); break;
+
+                    case 'inputScheduleFrequency':
+                        inputIsInvalid = ( inputIsEmpty );
+                        break;
+
+                    case 'inputScheduleHourOfDay':
+                        inputIsInvalid = ( scheduleFrequenceIsScheduled && inputIsEmpty );
+                        break;
+
+                    case 'inputScheduleWeekday':
+                        inputIsInvalid = ( scheduleFrequenceIsScheduled && ( inputIsEmpty == inputScheduleDayOfMonthIsEmpty ) );
+                        errorMessage = 'Select options for either "' + objectDescribe.fields.Schedule_DayOfWeek__c.label + '" or "' + objectDescribe.fields.Schedule_DayOfMonth__c.label + '" but not both. Exactly one is required.';
+                        break;
+
+                    case 'inputScheduleDayOfMonth':
+                        inputIsInvalid = ( scheduleFrequenceIsScheduled && ( inputIsEmpty == inputScheduleWeekdayIsEmpty ) );
+                        errorMessage = 'Select options for either "' + objectDescribe.fields.Schedule_DayOfWeek__c.label + '" or "' + objectDescribe.fields.Schedule_DayOfMonth__c.label + '" but not both. Exactly one is required.';
+                        break;
+
+                    case 'inputScheduleMonthOfYear':
+                        inputIsInvalid = ( scheduleFrequenceIsScheduled && inputIsEmpty );
+                        break;
+
+                    case 'inputScheduleCron':
+                        inputIsInvalid = ( scheduleFrequenceIsCustom && inputIsEmpty );
+                        break;
 
                 }
 
-//                inputCmp.set( 'v.error', inputIsInvalid ); // only applicable to strike components, not base lightning components
+                if ( inputIsInvalid ) {
+                    validationComponentResult.message = errorMessage;
+                }
 
             }
 
             hasErrors = ( hasErrors || inputIsInvalid );
 
+            validationComponentResult.hasError = inputIsInvalid;
+            validationResult.components.push( validationComponentResult );
+
         });
 
-        return !hasErrors;
+        validationResult.hasErrors = hasErrors;
+
+        return validationResult;
     },
 
     // -----------------------------------------------------------------
@@ -336,8 +435,9 @@
          */
         var scheduleFrequency = component.get( 'v.scheduleSelectionsFrequency' );
         var scheduleHourOfDay = component.get( 'v.scheduleSelectionsHourOfDay' );
-        var scheduleMonthOfYear = component.get( 'v.scheduleSelectionsMonthOfYear' );
         var scheduleDayOfWeek = component.get( 'v.scheduleSelectionsDayOfWeek' );
+        var scheduleDayOfMonth = component.get( 'v.scheduleSelectionsDayOfMonth' );
+        var scheduleMonthOfYear = component.get( 'v.scheduleSelectionsMonthOfYear' );
 
         record.scheduleFrequency = ( $A.util.isArray( scheduleFrequency ) ? ( scheduleFrequency.length > 0 ? scheduleFrequency[0] : null ) : scheduleFrequency );
 
@@ -358,13 +458,15 @@
         }
         else if ( record.scheduleFrequency == 'Scheduled' ) {
 
+            // parse the "NN." from the values used for sorting then join them by commas
+
             record.scheduleCron = null;
             record.scheduleSecondOfMinute = '0';
             record.scheduleMinuteOfHour = '0';
-            record.scheduleHourOfDay = ( $A.util.isArray( scheduleHourOfDay ) ? scheduleHourOfDay.join(',') : scheduleHourOfDay );
+            record.scheduleHourOfDay = scheduleHourOfDay.map( function( hourOfDay ) { return hourOfDay.split('.')[1]; } ).join(',');
             record.scheduleDayOfMonth = '?';
-            record.scheduleMonthOfYear = ( $A.util.isArray( scheduleMonthOfYear ) ? scheduleMonthOfYear.join(',') : scheduleMonthOfYear );
-            record.scheduleDayOfWeek = ( $A.util.isArray( scheduleDayOfWeek ) ? scheduleDayOfWeek.join(',') : scheduleDayOfWeek );
+            record.scheduleMonthOfYear = scheduleMonthOfYear.map( function( monthOfYear ) { return monthOfYear.split('.')[1]; } ).join(',');
+            record.scheduleDayOfWeek = scheduleDayOfWeek.map( function( dayOfWeek ) { return dayOfWeek.split('.')[1]; } ).join(',');
 
         }
         else if ( record.scheduleFrequency == 'Custom' ) {
@@ -382,7 +484,7 @@
         // but a target field can only have one mapping then we build up a map
         // of target fields to their source field
         var targetFieldMappings = {};
-        component.get( 'v.targetFieldMappings' ).forEach( function( item, index ) {
+        component.get( 'v.targetFieldMappings' ).forEach( function( item ) {
             targetFieldMappings[item.targetField.name] = item.sourceFieldName;
         });
 

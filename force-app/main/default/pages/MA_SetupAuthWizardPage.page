@@ -75,10 +75,10 @@
                             <a href="https://help.salesforce.com/articleView?id=sso_provider_sfdc.htm&type=5" target="_blank">Auth. Provider</a>, and
                             <a href="https://help.salesforce.com/articleView?id=named_credentials_about.htm&type=5" target="_blank">Named Credential</a>.
                             These metadata components also ensure that custom apps, like Mass Action Scheduler, never actually receive or know your Salesforce password
-                            and that you have explicitly authorized the app to perform Salesforce operations on your behalf. For example, to run a flow at 5am while you are sleeping =)
+                            and that you have explicitly authorized the app to perform Salesforce operations on your behalf. For example, to run a flow at 5am while you are sleeping 🙂
                         </p>
 
-                        <div class="slds-text-heading_medium">3a. Manual Setup (not recommended)</div>
+                        <div class="slds-text-heading_medium">3a. Manual Setup</div>
                         <p class="slds-p-bottom_medium">
                             The manual setup of the Connected App, Auth. Provider, and Named Credential is several clicks and copying and pasting very long and specific values between forms.
                             This is the primary complaint and barrier to adoption of the Mass Action Scheduler app.
@@ -86,7 +86,7 @@
                             However, if desired, you can create these items manually by following the instructions on the <a href="https://github.com/DouglasCAyers/sfdx-mass-action-scheduler/wiki/Pre-Requisites-Instructions">project wiki page</a>.
                         </p>
 
-                        <div class="slds-text-heading_medium">3b. Automated Setup (recommended)</div>
+                        <div class="slds-text-heading_medium">3b. Automated Setup</div>
                         <p class="slds-p-bottom_medium">
                             This setup wizard will automatically configure the
                             <a href="https://help.salesforce.com/articleView?id=connected_app_overview.htm&type=5" target="_blank">Connected App</a>,
@@ -123,12 +123,23 @@
 
                         <div class="slds-text-heading_medium">4. Post Setup</div>
                         <p class="slds-p-bottom_medium">
-                            After the Connected App, Auth. Provider, and Named Credential metadata are created, then you will need to <b>wait 10 minutes</b> for Salesforce login servers
-                            to sync the changes and the Connected App to become available for use. After the 10 minute window, then you need to go to the Named Credential record,
-                            click <b>Edit</b>, ensure the <b>Start Authentication Flow on Save</b> checkbox is selected, then click <b>Save</b>. Salesforce will prompt you to log in with the
-                            user credentials you want Mass Action Scheduler app to use, then Salesforce will prompt you to authorize Mass Action Scheduler to perform requests on your behalf.
-                            At no time will Mass Action Scheduler app be provided your actual Salesforce password, which is a purpose of these security requirements.
-                            <br/><br/>
+                            <ol class="slds-list_ordered" style="list-style-type: lower-alpha;">
+                                <li class="slds-m-vertical_small">
+                                    <b>Wait 10 minutes</b> for the Connected App to become available to the Salesforce login servers, otherwise you will get error <span class="slds-text-color_error">invalid_client_id</span> in step 4b.
+                                </li>
+                                <li class="slds-m-vertical_small">
+                                    In Setup, go to the <a href="/one/one.app#/setup/NamedCredential/home" target="_blank">Named Credential</a> record,
+                                    click <b>Edit</b>, ensure the <b>Start Authentication Flow on Save</b> checkbox is selected, then click <b>Save</b>.
+                                </li>
+                                <li class="slds-m-vertical_small">
+                                    Salesforce will prompt you to log in with the user credentials you want Mass Action Scheduler app to use.
+                                    On the login page, click <b>Use Custom Domain</b> and enter <span id="post-setup-custom-domain">your org's My Domain</span>.
+                                </li>
+                                <li class="slds-m-vertical_small">
+                                    Upon logging in Salesforce will prompt you to authorize Mass Action Scheduler app to perform requests on your behalf.
+                                    At no time will Mass Action Scheduler app be provided your <i>actual</i> Salesforce password, which is a purpose of these security requirements.
+                                </li>
+                            </ol>
                             Once you have done this final step, then you are ready to create your own <a href="{!URLFOR( $Action.Mass_Action_Configuration__c.New )}">Mass Action Configurations</a> to
                             declaratively schedule Process Builder, Flows, Quick Actions, Email Alerts, Workflow Rules, and Apex to process records from Reports and List Views.
                         </p>
@@ -156,6 +167,13 @@
                                 and Salesforce has not completed syncing the changes to the login servers.
                                 Wait 10 minutes then try again. If the issue continues, then delete and re-create the
                                 Connected App, Auth. Provider, and Named Credential.
+                            </p>
+
+                            <div class="slds-text-heading_small slds-text-color_error">Problem Logging In: No CSRF cookie</div>
+                            <p class="slds-p-bottom_small">
+                                In step 4c, when you re-save the Named Credential to provide your credentials, you might get an error
+                                on the first attempt about <b>CSRF: No CSRF cookie</b>. Make sure you enter your Custom Domain on the
+                                Salesforce login page. Re-navigate back to the Named Credential in Setup menu and try again.
                             </p>
 
                         </p>
@@ -206,6 +224,9 @@
 
                     console.log( result );
                     instanceUrl = result.urls.custom_domain;
+
+                    // update instructions with exact domain the user should enter to remove guesswork
+                    $j( '#post-setup-custom-domain' ).html( instanceUrl.split( "https://" )[1] );
 
                     return conn.metadata.create( 'ConnectedApp', buildConnectedApp( label, fullName, consumerKey, ca_consumerSecret ) )
                         .then( function( result ) {
