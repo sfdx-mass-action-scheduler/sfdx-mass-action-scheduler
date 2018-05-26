@@ -26,6 +26,17 @@
     </flexiPageRegions>
     <flexiPageRegions>
         <componentInstances>
+            <componentInstanceProperties>
+                <name>decorate</name>
+                <value>true</value>
+            </componentInstanceProperties>
+            <componentInstanceProperties>
+                <name>richTextValue</name>
+                <value>&lt;div style="text-align: center;"&gt;&lt;span style="color:#FF0000;"&gt;&lt;b&gt;***&lt;/b&gt; Use the&amp;nbsp;&lt;b&gt;Configure&lt;/b&gt;&amp;nbsp;tab to edit this record. Editing the record directly may corrupt the configuration.&amp;nbsp;&lt;b&gt;***&lt;/b&gt;&lt;/span&gt;&lt;/div&gt;</value>
+            </componentInstanceProperties>
+            <componentName>flexipage:richText</componentName>
+        </componentInstances>
+        <componentInstances>
             <componentName>force:detailPanel</componentName>
         </componentInstances>
         <mode>Replace</mode>
