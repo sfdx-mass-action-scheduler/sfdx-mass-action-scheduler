@@ -51,26 +51,32 @@
 
         component.set( 'v.scheduleSelectionsFrequency', record.scheduleFrequency );
 
+        // add the "NN." prefix to the values used for sorting
+        // so match the schedule options format so the selections are visually shown on the config page
+
+        // exactly one of dayOfMonth or dayOfWeek must be specified and the other must be '?',
+        // in our case, '?' means no selections for that value as the other field was specified
+
         if ( !$A.util.isUndefinedOrNull( record.scheduleHourOfDay ) ) {
-            component.set( 'v.scheduleSelectionsHourOfDay', record.scheduleHourOfDay.split(',') );
+            component.set( 'v.scheduleSelectionsHourOfDay', record.scheduleHourOfDay.split(',').map( function( hourOfDay ) { return hourOfDay.padStart( 2, '0' ) + '.' + hourOfDay; } ) );
         } else {
             component.set( 'v.scheduleSelectionsHourOfDay', [] );
         }
 
-        if ( !$A.util.isUndefinedOrNull( record.scheduleDayOfMonth ) ) {
-            component.set( 'v.scheduleSelectionsDayOfMonth', record.scheduleDayOfMonth.split(',') );
+        if ( !$A.util.isUndefinedOrNull( record.scheduleDayOfMonth ) && record.scheduleDayOfMonth != '?' ) {
+            component.set( 'v.scheduleSelectionsDayOfMonth', record.scheduleDayOfMonth.split(',').map( function( dayOfMonth ) { return dayOfMonth.padStart( 2, '0' ) + '.' + dayOfMonth; } ) );
         } else {
             component.set( 'v.scheduleSelectionsDayOfMonth', [] );
         }
 
         if ( !$A.util.isUndefinedOrNull( record.scheduleMonthOfYear ) ) {
-            component.set( 'v.scheduleSelectionsMonthOfYear', record.scheduleMonthOfYear.split(',') );
+            component.set( 'v.scheduleSelectionsMonthOfYear', record.scheduleMonthOfYear.split(',').map( function( monthOfYear ) { return monthValues.indexOf( monthOfYear ).toString().padStart( 2, '0' ) + '.' + monthOfYear; } ) );
         } else {
             component.set( 'v.scheduleSelectionsMonthOfYear', [] );
         }
 
-        if ( !$A.util.isUndefinedOrNull( record.scheduleDayOfWeek ) ) {
-            component.set( 'v.scheduleSelectionsDayOfWeek', record.scheduleDayOfWeek.split(',') );
+        if ( !$A.util.isUndefinedOrNull( record.scheduleDayOfWeek ) && record.scheduleDayOfWeek != '?' ) {
+            component.set( 'v.scheduleSelectionsDayOfWeek', record.scheduleDayOfWeek.split(',').map( function( dayOfWeek ) { return weekdayValues.indexOf( dayOfWeek ).toString().padStart( 2, '0' ) + '.' + dayOfWeek; } ) );
         } else {
             component.set( 'v.scheduleSelectionsDayOfWeek', [] );
         }
@@ -458,15 +464,16 @@
         }
         else if ( record.scheduleFrequency == 'Scheduled' ) {
 
-            // parse the "NN." from the values used for sorting then join them by commas
+            // parse the "NN." from the values used for sorting then join them by commas.
+            // exactly one of dayOfMonth or dayOfWeek must be specified and the other must be '?'
 
             record.scheduleCron = null;
             record.scheduleSecondOfMinute = '0';
             record.scheduleMinuteOfHour = '0';
             record.scheduleHourOfDay = scheduleHourOfDay.map( function( hourOfDay ) { return hourOfDay.split('.')[1]; } ).join(',');
-            record.scheduleDayOfMonth = '?';
+            record.scheduleDayOfMonth = scheduleDayOfMonth.map( function( dayOfMonth ) { return dayOfMonth.split('.')[1]; } ).join(',') || '?';
             record.scheduleMonthOfYear = scheduleMonthOfYear.map( function( monthOfYear ) { return monthOfYear.split('.')[1]; } ).join(',');
-            record.scheduleDayOfWeek = scheduleDayOfWeek.map( function( dayOfWeek ) { return dayOfWeek.split('.')[1]; } ).join(',');
+            record.scheduleDayOfWeek = scheduleDayOfWeek.map( function( dayOfWeek ) { return dayOfWeek.split('.')[1]; } ).join(',') || '?';
 
         }
         else if ( record.scheduleFrequency == 'Custom' ) {
