@@ -99,36 +99,16 @@ Packaged Release History
 Release 1.6
 -----------
 
-**Upgrade Note**
-> I apologize for the inconvenience, but if you have any Mass Action Configuration records that are **active** and whose Schedule Frequency is either **Scheduled** or **Custom**,
-then you must temporarily **deactivate** them in order to upgrade to the 1.6 release. Consider [mass editing them via a list view](https://youtu.be/aqgoskD8jbQ),
-or use a data loader, to set the `Mass_Action_Configuration__c.Active__c` field to `false`, install the 1.6 release,
-then re-activate the records by setting the `Mass_Action_Configuration__c.Active__c` field to `true`.
->
-> The technical reason for this inconvenience is [apex code referenced by scheduled jobs is not updateable](https://help.salesforce.com/articleView?id=000004423&language=en_US&type=1).
-The 1.6 release introduces a [workaround](https://salesforce.stackexchange.com/questions/24446/how-to-deploy-apex-classes-that-are-scheduled) to avoid this issue for future releases.
->
-> If you do not heed this upgrade note, then you may receive the error `This schedulable class has jobs pending or in progress` when trying to install the package
-and be prevented from upgrading.
+**Read first:** [Upgrading to Version 1.6](https://github.com/douglascayers/sfdx-mass-action-scheduler/wiki/Upgrading-to-Version-1.6)
 
 * Install Package ([Production](https://login.salesforce.com/packaging/installPackage.apexp?p0=xxx)) ([Sandbox](https://test.salesforce.com/packaging/installPackage.apexp?p0=xxx))
-* Enhancement [Automatic configuration of Connected App, Auth. Provider, and Named Credential with new setup page](https://github.com/douglascayers/sfdx-mass-action-scheduler/issues/26) ([video](https://youtu.be/CCTF7YMbbWo))
+* Enhancement [Automatic configuration of Connected App, Auth. Provider, and Named Credential with new setup page](https://github.com/douglascayers/sfdx-mass-action-scheduler/issues/26) ([demo video](https://youtu.be/CCTF7YMbbWo))
 * Enhancement [Add Description field because it's always nice to know why your configuration exists](https://github.com/douglascayers/sfdx-mass-action-scheduler/issues/20)
 * Enhancement [Add Unique Name field and easier to chain multiple configurations](https://github.com/douglascayers/sfdx-mass-action-scheduler/issues/12)
 * Enhancement [Add "Day of Month" to Schedule so can select specific days to run configuration](https://github.com/douglascayers/sfdx-mass-action-scheduler/issues/13)
 * Enhancement [Hide "Mass Action Test Named Credential" from Named Credentials options, it is only for internal testing](https://github.com/douglascayers/sfdx-mass-action-scheduler/issues/31)
 * Fixed [Selected Quick Action is not being re-selected in configuration wizard](https://github.com/douglascayers/sfdx-mass-action-scheduler/issues/32)
 * Fixed [Required to assign non-required field mappings](https://github.com/douglascayers/sfdx-mass-action-scheduler/issues/11)
-
-**NEW: Mass Action Configuration Unique Names**
-
-When installing the managed package, a post install Apex class is ran to automatically populate the new
-`Mass_Action_Configuration__c.DeveloperName__c` field with a unique value based on the record's name
-by replacing whitespace with an underscore (e.g. "My Config" becomes "My_Config"). If two or more records
-would cause duplicate unique names, then the code appends a random four letter suffix to make the developer name unique
-(e.g. "My_Config_AYNE"). If there is any error trying to update the records, then the post install script will not
-populate the new developer name field for the records that error and you will be prompted to specify your own unique name
-the next time you save the record on the Configuration page.
 
 ---
 
