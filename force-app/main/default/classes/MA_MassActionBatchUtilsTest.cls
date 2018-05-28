@@ -7,6 +7,11 @@
 @IsTest
 private class MA_MassActionBatchUtilsTest {
 
+    /*
+     * Most of the util methods are tested by
+     * separate test classes on the batchable classes
+     */
+
     @IsTest
     static void test_job_errors() {
 

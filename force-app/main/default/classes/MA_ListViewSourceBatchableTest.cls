@@ -74,11 +74,26 @@ private class MA_ListViewSourceBatchableTest {
 
         Test.startTest();
 
-        Database.executeBatch( new MA_ListViewSourceBatchable( config.Id ), config.Batch_Size__c.intValue() );
+        ID jobId = Database.executeBatch( new MA_ListViewSourceBatchable( config.Id ), config.Batch_Size__c.intValue() );
 
         Test.stopTest();
 
+        AsyncApexJob job = MA_MassActionBatchUtils.getJobById( jobId );
+
+        config = [
+            SELECT
+                Id,
+                Last_Run_Completed_Date__c,
+                Last_Run_Completed_With_Errors__c
+            FROM
+                Mass_Action_Configuration__c
+            WHERE
+                Id = :config.Id
+        ];
+
         System.assertEquals( 0, [ SELECT count() FROM Mass_Action_Log__c WHERE Mass_Action_Configuration__c = :config.Id ] );
+        System.assertEquals( job.CompletedDate, config.Last_Run_Completed_Date__c );
+        System.assertEquals( false, config.Last_Run_Completed_With_Errors__c );
 
     }
 
@@ -115,11 +130,26 @@ private class MA_ListViewSourceBatchableTest {
 
         Test.startTest();
 
-        Database.executeBatch( new MA_ListViewSourceBatchable( config.Id ), config.Batch_Size__c.intValue() );
+        ID jobId = Database.executeBatch( new MA_ListViewSourceBatchable( config.Id ), config.Batch_Size__c.intValue() );
 
         Test.stopTest();
 
+        AsyncApexJob job = MA_MassActionBatchUtils.getJobById( jobId );
+
+        config = [
+            SELECT
+                Id,
+                Last_Run_Completed_Date__c,
+                Last_Run_Completed_With_Errors__c
+            FROM
+                Mass_Action_Configuration__c
+            WHERE
+                Id = :config.Id
+        ];
+
         System.assertEquals( 1, [ SELECT count() FROM Mass_Action_Log__c WHERE Mass_Action_Configuration__c = :config.Id ] );
+        System.assertEquals( job.CompletedDate, config.Last_Run_Completed_Date__c );
+        System.assertEquals( true, config.Last_Run_Completed_With_Errors__c );
 
     }
 

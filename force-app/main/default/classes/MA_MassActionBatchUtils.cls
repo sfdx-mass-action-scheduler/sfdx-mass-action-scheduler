@@ -160,7 +160,7 @@ public class MA_MassActionBatchUtils {
 
     // ----------------------------------------------------
 
-    private static AsyncApexJob getJobById( ID jobId ) {
+    public static AsyncApexJob getJobById( ID jobId ) {
         return [
             SELECT
                 Id,
