@@ -1,7 +1,7 @@
 /**
  * Author: Doug Ayers
  * Website: https://douglascayers.com
- * GitHub: https://github.com/DouglasCAyers/sfdx-mass-action-scheduler
+ * GitHub: https://github.com/douglascayers/sfdx-mass-action-scheduler
  * License: BSD 3-Clause License
  */
 public class MA_InvokeActionHttpRequestMock implements HttpCalloutMock {
