@@ -1,7 +1,7 @@
 /**
  * Author: Doug Ayers
  * Website: https://douglascayers.com
- * GitHub: https://github.com/DouglasCAyers/sfdx-mass-action-scheduler
+ * GitHub: https://github.com/douglascayers/sfdx-mass-action-scheduler
  * License: BSD 3-Clause License
  */
 public with sharing class MA_ListViewSourceBatchable implements Database.Batchable<SObject>, Database.Stateful, Database.AllowsCallouts {
@@ -55,7 +55,7 @@ public with sharing class MA_ListViewSourceBatchable implements Database.Batchab
 
         System.debug( 'MA_ListViewSourceBatchable.finish: ' + context + ', configId=' + this.configId );
 
-        MA_MassActionBatchUtils.logJobErrors( this.configId, context.getJobId() );
+        MA_MassActionBatchUtils.handleBatchJobFinished( this.configId, context.getJobId() );
 
     }
 

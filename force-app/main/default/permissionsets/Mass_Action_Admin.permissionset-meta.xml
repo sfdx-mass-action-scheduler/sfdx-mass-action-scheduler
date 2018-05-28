@@ -31,6 +31,16 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>Mass_Action_Configuration__c.Last_Run_Completed_Date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Mass_Action_Configuration__c.Last_Run_Completed_With_Errors__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>Mass_Action_Configuration__c.Named_Credential__c</field>
         <readable>true</readable>
     </fieldPermissions>

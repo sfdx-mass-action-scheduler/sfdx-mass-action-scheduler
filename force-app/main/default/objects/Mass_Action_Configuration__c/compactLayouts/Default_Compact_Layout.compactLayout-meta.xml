@@ -7,5 +7,6 @@
     <fields>Source_Type__c</fields>
     <fields>Target_Type__c</fields>
     <fields>Target_Action_Name__c</fields>
+    <fields>Last_Run_Completed_Date__c</fields>
     <label>Default Compact Layout</label>
 </CompactLayout>
