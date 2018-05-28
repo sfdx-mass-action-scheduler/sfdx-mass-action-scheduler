@@ -4,40 +4,44 @@
  * GitHub: https://github.com/douglascayers/sfdx-mass-action-scheduler
  * License: BSD 3-Clause License
  */
-public class MA_MassActionSchedulable implements System.Schedulable, Database.AllowsCallouts {
+@IsTest
+private class MA_InstallHandlerTest {
 
-    private ID configId { get; set; }
+    @isTest
+    static void test_new_install() {
 
-    public MA_MassActionSchedulable( ID configId ) {
-        this.configId = configId;
-    }
+        Test.startTest();
 
-    public void execute( System.SchedulableContext context ) {
+        Test.testInstall( new MA_InstallHandler(), null );
 
-        System.debug( 'MA_MassActionSchedulable.execute: ' + context + ', configId=' + this.configId );
-
-        /*
-         * Apex that is scheduled or code that is explicitly called by scheduled apex
-         * is not updateable and throws error "This schedulable class has jobs pending or in progress".
-         * The workaround is to use a dispatcher design pattern that dynamically looks up a handler class,
-         * thereby avoiding the apex lock on the handler code so that it is updateable.
-         * https://help.salesforce.com/articleView?id=000004423&language=en_US&type=1
-         * https://salesforce.stackexchange.com/questions/33838/scheduled-batch-job-from-installhandler-and-further-upgrades-of-managed-package
-         * https://salesforce.stackexchange.com/questions/24446/how-to-deploy-apex-classes-that-are-scheduled
-         */
-
-        Type enqueuer = Type.forName( 'MA_MassActionBatchEnqueuer' );
-
-        MA_MassActionSchedulableDispatched dispatched = (MA_MassActionSchedulableDispatched) enqueuer.newInstance();
-        dispatched.execute( context, this.configId );
+        Test.stopTest();
 
     }
 
-    // ----------------------------------------------------
+    @isTest
+    static void test_upgrade() {
 
-    public interface MA_MassActionSchedulableDispatched {
+        List<Mass_Action_Configuration__c> records = new List<Mass_Action_Configuration__c>();
 
-        void execute( System.SchedulableContext context, ID configId );
+        for ( Integer i = 0; i < 200; i++ ) {
+            records.add( new Mass_Action_Configuration__c(
+                Name = 'duplicate'
+            ));
+        }
+
+        insert records;
+
+        System.assertEquals( records.size(), [ SELECT COUNT() FROM Mass_Action_Configuration__c WHERE Name = 'duplicate' ] );
+        System.assertEquals( records.size(), [ SELECT COUNT() FROM Mass_Action_Configuration__c WHERE DeveloperName__c = null ] );
+
+        Test.startTest();
+
+        Test.testInstall( new MA_InstallHandler(), new Version( 1, 0 ) );
+
+        Test.stopTest();
+
+        System.assertEquals( 1, [ SELECT COUNT() FROM Mass_Action_Configuration__c WHERE DeveloperName__c = 'duplicate' ] );
+        System.assertEquals( records.size() - 1, [ SELECT COUNT() FROM Mass_Action_Configuration__c WHERE DeveloperName__c LIKE 'duplicate_%' ] );
 
     }
 

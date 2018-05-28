@@ -8,8 +8,12 @@
  * Designed for the upgrade to release 1.6 that introduces the Mass_Action_Configuration__c.DeveloperName__c field.
  * Batches over all config records with a blank developer name field and populates one for it based on its name.
  * Automatically retries updating the config record by appending a random suffix to the developer name until generates a unique value.
+ *
+ * This class explicitly uses 'without sharing' because it is invoked by the package install handler
+ * and it is documented that the use of 'with sharing' by apex classes called by the handler may prevent installation.
+ * https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_install_handler.htm
  */
-public with sharing class MA_SetConfigUniqueNameBatchable implements Database.Batchable<SObject> {
+public without sharing class MA_SetConfigUniqueNameBatchable implements Database.Batchable<SObject> {
 
     public Database.QueryLocator start( Database.BatchableContext context ) {
 
