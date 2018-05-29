@@ -109,7 +109,7 @@ Release 1.6 (current)
 
 _Due to Lightning Experience web page caching, please log out and log back in after installing the package for UI changes to appear._
 
-* Install Package ([Production](https://login.salesforce.com/packaging/installPackage.apexp?p0=xxx)) ([Sandbox](https://test.salesforce.com/packaging/installPackage.apexp?p0=xxx))
+* Install Package ([Production](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tf40000035eDz)) ([Sandbox](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tf40000035eDz))
 * [Upgrading to Release 1.6](https://github.com/douglascayers/sfdx-mass-action-scheduler/wiki/Upgrading-to-Release-1.6)
 * [Delivered Features Report](https://github.com/douglascayers/sfdx-mass-action-scheduler/milestone/4?closed=1)
 * [Archived Releases](https://github.com/douglascayers/sfdx-mass-action-scheduler/milestones?state=closed)
