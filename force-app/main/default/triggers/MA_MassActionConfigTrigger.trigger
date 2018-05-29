@@ -1,7 +1,7 @@
 /**
  * Author: Doug Ayers
  * Website: https://douglascayers.com
- * GitHub: https://github.com/DouglasCAyers/sfdx-mass-action-scheduler
+ * GitHub: https://github.com/douglascayers/sfdx-mass-action-scheduler
  * License: BSD 3-Clause License
  */
 trigger MA_MassActionConfigTrigger on Mass_Action_Configuration__c ( before insert, before update, before delete,
@@ -32,7 +32,7 @@ trigger MA_MassActionConfigTrigger on Mass_Action_Configuration__c ( before inse
 /*
 BSD 3-Clause License
 
-Copyright (c) 2017, Doug Ayers, douglascayers.com
+Copyright (c) 2018, Doug Ayers, douglascayers.com
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

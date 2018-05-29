@@ -7,6 +7,7 @@
     <columns>Source_Type__c</columns>
     <columns>Target_Type__c</columns>
     <columns>Target_Action_Name__c</columns>
+    <columns>Last_Run_Completed_Date__c</columns>
     <filterScope>Everything</filterScope>
     <label>All</label>
 </ListView>

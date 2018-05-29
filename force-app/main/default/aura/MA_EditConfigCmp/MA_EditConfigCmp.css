@@ -18,6 +18,13 @@
     width: 100%;
 }
 
-.THIS font-monospace {
-    font-family: 'monospace';
+/**
+ * The lightning:dualListbox component default width
+ * is 15rem for the source and target option lists.
+ * When viewing the page when narrowed then the content
+ * bleeds outside of the grid panel it is in.
+ * This style reduces the width enough to not bleed.
+ */
+.THIS .slds-dueling-list__options {
+    width: 12rem;
 }

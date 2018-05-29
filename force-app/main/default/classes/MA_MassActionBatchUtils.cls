@@ -1,7 +1,7 @@
 /**
  * Author: Doug Ayers
  * Website: https://douglascayers.com
- * GitHub: https://github.com/DouglasCAyers/sfdx-mass-action-scheduler
+ * GitHub: https://github.com/douglascayers/sfdx-mass-action-scheduler
  * License: BSD 3-Clause License
  */
 public class MA_MassActionBatchUtils {
@@ -53,15 +53,54 @@ public class MA_MassActionBatchUtils {
 
     // ----------------------------------------------------
 
-    public static void logJobErrors( ID configId, ID jobId ) {
+    /**
+     * Designed to be invoked during the batch finish method.
+     */
+    public static void handleBatchJobFinished( ID configId, ID jobId ) {
 
-        System.debug( 'MA_MassActionBatchUtils.logJobErrors: configId=' + configId + ', jobId=' + jobId );
-        logJobErrors( configId, getJobById( jobId ), null );
+        System.debug( 'MA_MassActionBatchUtils.handleBatchJobFinished: configId=' + configId + ', jobId=' + jobId );
+
+        // we don't have lookup fields to AsyncApexJob records
+        // so standardizing on the 15 character id, least common denominator
+        // also, must use string variable type because ID variable type
+        // always coerces the assigned value back to 18 characters
+        String jobId15 = String.valueOf( jobId ).left( 15 );
+
+        AsyncApexJob job = getJobById( jobId );
+
+        // this may or may not insert a job error log record,
+        // so run first before querying for count of error logs
+        logJobErrors( configId, job, null );
+
+        // if actual batch job didn't fail with an error,
+        // check if any of the batch executions logged errors
+        Integer jobErrorCount = [
+            SELECT
+                COUNT()
+            FROM
+                Mass_Action_Log__c
+            WHERE
+                Mass_Action_Configuration__c = :configId
+                AND
+                Job_ID__c = :jobId15
+        ];
+
+        Mass_Action_Configuration__c config = new Mass_Action_Configuration__c(
+            Id = configId,
+            Last_Run_Completed_Date__c = job.CompletedDate,
+            Last_Run_Completed_With_Errors__c = ( jobErrorCount > 0 )
+        );
+
+        update config;
 
     }
 
     // ----------------------------------------------------
 
+    /**
+     * Designed to be invoked when an exception is caught during a batch execution.
+     * Exceptions are caught so that one batch execution doesn't halt the entire job.
+     */
     public static void logJobException( ID configId, ID jobId, Exception ex ) {
 
         System.debug( 'MA_MassActionBatchUtils.logJobException: configId=' + configId + ', jobId=' + jobId );
@@ -71,10 +110,19 @@ public class MA_MassActionBatchUtils {
 
     // ----------------------------------------------------
 
+    /**
+     * Analyzes the job results and will create a Mass_Action_Log__c if job failed, or exception argument is not null.
+     */
     @TestVisible
     private static void logJobErrors( ID configId, AsyncApexJob job, Exception ex ) {
 
         System.debug( 'MA_MassActionBatchUtils.logJobErrors: configId=' + configId + ', job=' + job + ', exception=' + ex );
+
+        // we don't have lookup fields to AsyncApexJob records
+        // so standardizing on the 15 character id, least common denominator
+        // also, must use string variable type because ID variable type
+        // always coerces the assigned value back to 18 characters
+        String jobId15 = String.valueOf( job.Id ).left( 15 );
 
         Database.DMLOptions dmo = new Database.DMLOptions();
         dmo.allowFieldTruncation = true;
@@ -93,7 +141,7 @@ public class MA_MassActionBatchUtils {
 
             Mass_Action_Log__c log = new Mass_Action_Log__c(
                 Mass_Action_Configuration__c = configId,
-                Job_ID__c = String.valueOf( job.Id ).left( 15 ),
+                Job_ID__c = jobId15,
                 Submitted_Date__c = job.CreatedDate,
                 Total_Batches__c = job.TotalJobItems,
                 Processed_Batches__c = job.JobItemsProcessed,
@@ -112,11 +160,12 @@ public class MA_MassActionBatchUtils {
 
     // ----------------------------------------------------
 
-    private static AsyncApexJob getJobById( ID jobId ) {
+    public static AsyncApexJob getJobById( ID jobId ) {
         return [
             SELECT
                 Id,
                 CreatedDate,
+                CompletedDate,
                 ExtendedStatus,
                 TotalJobItems,
                 JobItemsProcessed,
@@ -132,7 +181,7 @@ public class MA_MassActionBatchUtils {
 /*
 BSD 3-Clause License
 
-Copyright (c) 2017, Doug Ayers, douglascayers.com
+Copyright (c) 2018, Doug Ayers, douglascayers.com
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

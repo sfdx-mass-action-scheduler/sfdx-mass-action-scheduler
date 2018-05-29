@@ -1,7 +1,7 @@
 /**
  * Author: Doug Ayers
  * Website: https://douglascayers.com
- * GitHub: https://github.com/DouglasCAyers/sfdx-mass-action-scheduler
+ * GitHub: https://github.com/douglascayers/sfdx-mass-action-scheduler
  * License: BSD 3-Clause License
  */
 public with sharing class MA_EditConfigCmpController {
@@ -259,7 +259,18 @@ public with sharing class MA_EditConfigCmpController {
 
         List<Map<String, Object>> options = new List<Map<String, Object>>();
 
-        for ( NamedCredential credential : [ SELECT id, masterLabel, developerName FROM NamedCredential ORDER BY masterLabel ] ) {
+        // exclude test credential, for unit tests only
+        String whereClause = Test.isRunningTest() ? '' : ' WHERE developerName != \'Mass_Action_Test_Named_Credential\' ';
+
+        String query =
+            ' SELECT ' +
+                ' id, masterLabel, developerName ' +
+            ' FROM ' +
+                ' NamedCredential ' +
+            whereClause
+        ;
+
+        for ( NamedCredential credential : Database.query( query ) ) {
             options.add( new Map<String, Object>{
                 'label' => credential.masterLabel,
                 'value' => credential.developerName
@@ -330,11 +341,19 @@ public with sharing class MA_EditConfigCmpController {
 
             List<Mass_Action_Mapping__c> configMappings = new List<Mass_Action_Mapping__c>();
             for ( String targetFieldName : fieldMappings.keySet() ) {
-                configMappings.add( new Mass_Action_Mapping__c(
-                    Mass_Action_Configuration__c = config.Id,
-                    Source_Field_Name__c = fieldMappings.get( targetFieldName ),
-                    Target_Field_Name__c = targetFieldName
-                ));
+
+                // if a target field is not required for the chosen action
+                // then ignore it if there is no source field selected
+                String sourceFieldName = fieldMappings.get( targetFieldName );
+
+                if ( String.isNotBlank( sourceFieldName ) ) {
+                    configMappings.add( new Mass_Action_Mapping__c(
+                        Mass_Action_Configuration__c = config.Id,
+                        Source_Field_Name__c = sourceFieldName,
+                        Target_Field_Name__c = targetFieldName
+                    ));
+                }
+
             }
 
             insert configMappings;
@@ -425,7 +444,7 @@ public with sharing class MA_EditConfigCmpController {
 /*
 BSD 3-Clause License
 
-Copyright (c) 2017, Doug Ayers, douglascayers.com
+Copyright (c) 2018, Doug Ayers, douglascayers.com
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

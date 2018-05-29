@@ -1,7 +1,7 @@
 /**
  * Author: Doug Ayers
  * Website: https://douglascayers.com
- * GitHub: https://github.com/DouglasCAyers/sfdx-mass-action-scheduler
+ * GitHub: https://github.com/douglascayers/sfdx-mass-action-scheduler
  * License: BSD 3-Clause License
  */
 @IsTest
@@ -14,7 +14,8 @@ private class MA_MassActionConfigTriggerHandlerTest {
         ListView lv = [ SELECT Id, Name, DeveloperName, SobjectType FROM ListView WHERE DeveloperName = 'All' AND SobjectType = :objectName AND IsSoqlCompatible = true LIMIT 1 ];
 
         Mass_Action_Configuration__c activeConfig = new Mass_Action_Configuration__c(
-            Name = 'Test Config',
+            Name = 'Test Config 1',
+            DeveloperName__c = 'Test_Config1',
             Named_Credential__c = 'Mass_Action_Test_Named_Credential',
             Active__c = true,
             Batch_Size__c = 200,
@@ -28,7 +29,8 @@ private class MA_MassActionConfigTriggerHandlerTest {
         );
 
         Mass_Action_Configuration__c inactiveConfig = new Mass_Action_Configuration__c(
-            Name = 'Test Config',
+            Name = 'Test Config 2',
+            DeveloperName__c = 'Test_Config2',
             Named_Credential__c = 'Mass_Action_Test_Named_Credential',
             Active__c = false,
             Batch_Size__c = 200,
@@ -64,6 +66,7 @@ private class MA_MassActionConfigTriggerHandlerTest {
 
         Mass_Action_Configuration__c config = new Mass_Action_Configuration__c(
             Name = 'Test Config',
+            DeveloperName__c = 'Test_Config',
             Named_Credential__c = 'Mass_Action_Test_Named_Credential',
             Active__c = false,
             Batch_Size__c = 200,
@@ -106,7 +109,8 @@ private class MA_MassActionConfigTriggerHandlerTest {
         Test.startTest();
 
         Mass_Action_Configuration__c config = new Mass_Action_Configuration__c(
-            name = 'Test'
+            name = 'Test Config',
+            DeveloperName__c = 'Test_Config'
         );
 
         insert config;
@@ -123,7 +127,7 @@ private class MA_MassActionConfigTriggerHandlerTest {
 /*
 BSD 3-Clause License
 
-Copyright (c) 2017, Doug Ayers, douglascayers.com
+Copyright (c) 2018, Doug Ayers, douglascayers.com
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

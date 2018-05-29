@@ -1,6 +1,22 @@
+/**
+ * Author: Doug Ayers
+ * Website: https://douglascayers.com
+ * GitHub: https://github.com/douglascayers/sfdx-mass-action-scheduler
+ * License: BSD 3-Clause License
+ */
+public without sharing class MA_InstallHandler implements System.InstallHandler {
+
+    public void onInstall( InstallContext context ) {
+
+        Database.executeBatch( new MA_SetConfigUniqueNameBatchable() );
+
+    }
+
+}
+/*
 BSD 3-Clause License
 
-Copyright (c) 2017, Appiphony
+Copyright (c) 2018, Doug Ayers, douglascayers.com
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -27,3 +43,4 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/

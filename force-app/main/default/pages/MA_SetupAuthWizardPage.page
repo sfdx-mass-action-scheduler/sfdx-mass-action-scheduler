@@ -1,0 +1,397 @@
+<apex:page >
+
+    <apex:slds />
+
+    <apex:includeScript value="{!URLFOR($Resource.jsforce_1_8_4)}"/>
+    <apex:includeScript value="{!URLFOR($Resource.jquery_3_3_1)}"/>
+    <script>$j = jQuery.noConflict();</script>
+
+    <div class="slds-scope">
+
+        <apex:form id="theForm" styleClass="slds-p-around_large">
+
+            <apex:pageMessages />
+
+            <div id="spinner" class="slds-hide">
+                <div class="slds-spinner_container" style="position:fixed">
+                    <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_brand">
+                        <span class="slds-assistive-text">Loading</span>
+                        <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slds-page-header slds-m-bottom_large">
+                <div class="slds-grid">
+                    <div class="slds-col slds-has-flexi-truncate">
+                        <div class="slds-media slds-no-space slds-grow">
+                            <div class="slds-media__body">
+                                <nav>
+                                    <ol class="slds-breadcrumb slds-line-height_reset">
+                                        <li class="slds-breadcrumb__item">
+                                            <span>Mass Action Scheduler</span>
+                                        </li>
+                                    </ol>
+                                </nav>
+                                <h1 class="slds-page-header__title slds-m-right_small slds-align-middle slds-truncate">
+                                    Authentication Setup Wizard
+                                </h1>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-no-flex slds-grid slds-align-top">
+                        <div class="slds-button-group" role="group">
+                            <!--<apex:commandButton value=" Create Metadata " onclick="createMetadata(); return false;" styleClass="slds-button slds-button_neutral"/>-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slds-card slds-p-around_card-wrapper-spacing">
+                <div class="slds-grid">
+                    <div class="slds-col slds-shrink-none">
+
+                        <apex:image value="{!URLFOR($Resource.MA_SalesforceSecurityLogo)}"/>
+
+                    </div>
+                    <div class="slds-col slds-m-horizontal_large slds-p-top_small">
+
+                        <div class="slds-text-heading_medium">1. Usage</div>
+                        <p class="slds-p-bottom_medium">
+                            Mass Action Scheduler uses the <a href="https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_what_is_rest_api.htm" target="_blank">Salesforce REST API</a>
+                            to provide you a robust configuration wizard as well as
+                            to invoke your Flows, Processes, Quick Actions, Apex, and Workflow Rules per your defined schedules.
+                        </p>
+
+                        <div class="slds-text-heading_medium">2. Security Requirements</div>
+                        <p class="slds-p-bottom_medium">
+                            For security purposes, Salesforce requires Lightning Components to
+                            <a href="https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_understanding_authentication.htm" target="_blank">authenticate</a> to the Salesforce REST API
+                            through <a href="https://help.salesforce.com/articleView?id=remoteaccess_authenticate.htm&type=5" target="_blank">OAuth</a>
+                            via <a href="https://developer.salesforce.com/docs/atlas.en-us.lightning.meta/lightning/apex_api_calls.htm" target="_blank">Apex</a>.
+                            As a Salesforce Admin, you satisfy these requirements by declaratively creating a
+                            <a href="https://help.salesforce.com/articleView?id=connected_app_overview.htm&type=5" target="_blank">Connected App</a>,
+                            <a href="https://help.salesforce.com/articleView?id=sso_provider_sfdc.htm&type=5" target="_blank">Auth. Provider</a>, and
+                            <a href="https://help.salesforce.com/articleView?id=named_credentials_about.htm&type=5" target="_blank">Named Credential</a>.
+                            These metadata components also ensure that custom apps, like Mass Action Scheduler, never actually receive or know your Salesforce password
+                            and that you have explicitly authorized the app to perform Salesforce operations on your behalf. For example, to run a flow at 5am while you are sleeping 🙂
+                        </p>
+
+                        <div class="slds-text-heading_medium">3a. Manual Setup</div>
+                        <p class="slds-p-bottom_medium">
+                            The manual setup of the Connected App, Auth. Provider, and Named Credential is several clicks and copying and pasting very long and specific values between forms.
+                            This is the primary complaint and barrier to adoption of the Mass Action Scheduler app.
+                            Therefore, the automated setup option is recommended and provided as a convenience.
+                            However, if desired, you can create these items manually by following the instructions on the <a href="https://github.com/douglascayers/sfdx-mass-action-scheduler/wiki/Pre-Requisites-Instructions">project wiki page</a>.
+                        </p>
+
+                        <div class="slds-text-heading_medium">3b. Automated Setup</div>
+                        <p class="slds-p-bottom_medium">
+                            This setup wizard will automatically configure the
+                            <a href="https://help.salesforce.com/articleView?id=connected_app_overview.htm&type=5" target="_blank">Connected App</a>,
+                            <a href="https://help.salesforce.com/articleView?id=sso_provider_sfdc.htm&type=5" target="_blank">Auth. Provider</a>, and
+                            <a href="https://help.salesforce.com/articleView?id=named_credentials_about.htm&type=5" target="_blank">Named Credential</a>
+                            metadata required for Mass Action Scheduler to access the Salesforce REST API.
+                            The metadata will be created with the names <b>Mass_Action</b>.
+                        </p>
+
+                        <p class="slds-p-bottom_medium">
+                            <apex:commandButton value=" Create Connected App, Auth. Provider, and Named Credential " onclick="createMetadata(); return false;" styleClass="slds-button slds-button_brand"/>
+                        </p>
+
+                        <p class="slds-p-bottom_medium">
+
+                            <div id="message-template" class="slds-hide">
+                                <div class="slds-notify_container slds-is-relative">
+                                    <div class="slds-notify slds-notify_toast slds-theme_error slds-theme_alert-texture" role="alert">
+                                        <span class="slds-assistive-text">error</span>
+                                        <div class="slds-notify__content">
+                                            <h2 class="slds-text-heading_small "><span class="message-content">test</span></h2>
+                                        </div>
+                                        <button class="slds-button slds-notify__close slds-button_icon-inverse" title="Close" onclick="clearMessages(); return false;">
+                                            X
+                                            <span class="slds-assistive-text">Close</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="messages"><!-- populated by javascript --></div>
+
+                        </p>
+
+                        <div class="slds-text-heading_medium">4. Post Setup</div>
+                        <p class="slds-p-bottom_medium">
+                            <ol class="slds-list_ordered" style="list-style-type: lower-alpha;">
+                                <li class="slds-m-vertical_small">
+                                    <b>Wait 10 minutes</b> for the Connected App to become available to the Salesforce login servers, otherwise you will get error <span class="slds-text-color_error">invalid_client_id</span> in step 4b.
+                                </li>
+                                <li class="slds-m-vertical_small">
+                                    In Setup, go to the <a href="/one/one.app#/setup/NamedCredential/home" target="_blank">Named Credential</a> record,
+                                    click <b>Edit</b>, ensure the <b>Start Authentication Flow on Save</b> checkbox is selected, then click <b>Save</b>.
+                                </li>
+                                <li class="slds-m-vertical_small">
+                                    Salesforce will prompt you to log in with the user credentials you want Mass Action Scheduler app to use.
+                                    On the login page, click <b>Use Custom Domain</b> and enter <span id="post-setup-custom-domain">your org's My Domain</span>.
+                                </li>
+                                <li class="slds-m-vertical_small">
+                                    Upon logging in Salesforce will prompt you to authorize Mass Action Scheduler app to perform requests on your behalf.
+                                    At no time will Mass Action Scheduler app be provided your <i>actual</i> Salesforce password, which is a purpose of these security requirements.
+                                </li>
+                            </ol>
+                            Once you have done this final step, then you are ready to create your own <a href="{!URLFOR( $Action.Mass_Action_Configuration__c.New )}">Mass Action Configurations</a> to
+                            declaratively schedule Process Builder, Flows, Quick Actions, Email Alerts, Workflow Rules, and Apex to process records from Reports and List Views.
+                        </p>
+
+                        <hr/>
+
+                        <div class="slds-text-heading_medium">Troubleshooting Automated Setup Errors</div>
+                        <p class="slds-p-bottom_medium">
+
+                            <div class="slds-text-heading_small slds-text-color_error">error: duplicate value found</div>
+                            <p class="slds-p-bottom_small">
+                                This error means a Connected App or Named Credential already exists with the unique name <b>Mass_Action</b>.
+                                This may occur if you have already created the metadata manually or have already used the automated setup.
+                            </p>
+
+                            <div class="slds-text-heading_small slds-text-color_error">error=This URL Suffix already exists or has been previously used</div>
+                            <p class="slds-p-bottom_small">
+                                This error means an Auth. Provider already exists with the unique name <b>Mass_Action</b>.
+                                This may occur if you have already created the metadata manually or have already used the automated setup.
+                            </p>
+
+                            <div class="slds-text-heading_small slds-text-color_error">error=invalid_client_id</div>
+                            <p class="slds-p-bottom_small">
+                                This error can occur when you save the newly created Named Credential to complete the authentication flow
+                                and Salesforce has not completed syncing the changes to the login servers.
+                                Wait 10 minutes then try again. If the issue continues, then delete and re-create the
+                                Connected App, Auth. Provider, and Named Credential.
+                            </p>
+
+                            <div class="slds-text-heading_small slds-text-color_error">Problem Logging In: No CSRF cookie</div>
+                            <p class="slds-p-bottom_small">
+                                In step 4c, when you re-save the Named Credential to provide your credentials, you might get an error
+                                on the first attempt about <b>CSRF: No CSRF cookie</b>. Make sure you enter your Custom Domain on the
+                                Salesforce login page. Re-navigate back to the Named Credential in Setup menu and try again.
+                            </p>
+
+                        </p>
+
+                    </div>
+                </div>
+            </div>
+
+        </apex:form>
+
+    </div>
+
+    <script>
+
+        var conn = new jsforce.Connection({
+            accessToken : '{!$Api.Session_Id}',
+            version : '42.0'
+        });
+
+        var consumerKey = getRandomLetters( 85 );
+
+        // When creating a connected app, the consumerSecret must be plain/text.
+        // I got errors with large values (80+ chars) or when not solely digits.
+        var ca_consumerSecret = '27037399992987747329';
+
+        // When creating an auth provider, the consumerSecret must be encrypted.
+        // Per the documentation, I created an auth provider with my desired consumer key/secret,
+        // added it to an outbound change set in a sandbox, uploaded the change set, and then clicked
+        // in to the change set's detail page to view its source to learn the encrypted value.
+        // This is the encrypted value of the plain/text consumer secret above.
+        // https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_authproviders.htm
+        var ap_consumerSecret = 'eXmpGxAsEZkrRwGNcRqOXVof6G6o4T+y';
+
+        var label = 'Mass Action';
+        var fullName = 'Mass_Action';
+
+        var instanceUrl = location.host;
+
+        function createMetadata() {
+
+            $j( '#spinner' ).removeClass( 'slds-hide' );
+            clearMessages();
+
+            // for identity function to work in visualforce then I had to make modifications to jsforce source
+            // https://github.com/jsforce/jsforce/issues/611#issuecomment-387623081
+            conn.identity()
+                .then( function( result ) {
+
+                    console.log( result );
+                    instanceUrl = result.urls.custom_domain;
+
+                    // update instructions with exact domain the user should enter to remove guesswork
+                    $j( '#post-setup-custom-domain' ).html( instanceUrl.split( "https://" )[1] );
+
+                    return conn.metadata.create( 'ConnectedApp', buildConnectedApp( label, fullName, consumerKey, ca_consumerSecret ) )
+                        .then( function( result ) {
+                            validateMetadataSaveResult( 'ConnectedApp', result );
+                            showMessage( 'Connected App created with name "' + fullName + '"', 'SUCCESS' );
+                            return conn.metadata.create( 'AuthProvider', buildAuthProvider( label, fullName, consumerKey, ap_consumerSecret ) );
+                        })
+                        .then( function( result ) {
+                            validateMetadataSaveResult( 'AuthProvider', result );
+                            showMessage( 'Auth. Provider created with URL Suffix "' + fullName + '"', 'SUCCESS' );
+                            return conn.metadata.create( 'NamedCredential', buildNamedCredential( label, fullName ) );
+                        })
+                        .then( function( result ) {
+                            validateMetadataSaveResult( 'NamedCredential', result );
+                            showMessage( 'Named Credential created with name "' + fullName + '"', 'SUCCESS' );
+                            return conn.query( 'SELECT Id FROM NamedCredential WHERE DeveloperName = \'' + fullName + '\' LIMIT 1' );
+                        })
+                        .then( function( result ) {
+                            console.log( result );
+                            showMessage( 'Wait <b>10 minutes</b> then complete authentication flow by <a href="/one/one.app#/setup/NamedCredential/page?address=%2F' + result.records[0].Id + '%2Fe" target="_blank">re-saving the Named Credential</a>', 'WARNING' );
+                        });
+
+                })
+                .catch( function( err ) {
+                    console.error( err );
+                    showMessage( err.message, 'ERROR' );
+                })
+                .then( function() {
+                    $j( '#spinner' ).addClass( 'slds-hide' );
+                });
+        }
+
+        function buildConnectedApp( label, fullName, consumerKey, consumerSecret ) {
+            return {
+                fullName : fullName,
+                label : label,
+                description : 'Auto-generated for Mass Action Scheduler using the app\'s Authentication Setup Wizard.',
+                contactEmail : '{!$User.Email}',
+                oauthConfig : {
+                    callbackUrl : instanceUrl + '/services/authcallback/' + fullName,
+                    consumerKey : consumerKey,
+                    consumerSecret : consumerSecret,
+                    scopes : [
+                        'Full',
+                        'RefreshToken'
+                    ]
+                }
+            };
+        }
+
+        function buildAuthProvider( label, fullName, consumerKey, consumerSecret ) {
+            return {
+                fullName : fullName,
+                friendlyName : label,
+                includeOrgIdInIdentifier : true,
+                providerType : 'Salesforce',
+                consumerKey : consumerKey,
+                consumerSecret : consumerSecret
+            };
+        }
+
+        function buildNamedCredential( label, fullName ) {
+            return {
+                fullName : fullName,
+                label : label,
+                authProvider : fullName,
+                endpoint : instanceUrl + '/services/data/v42.0',
+                oauthScope : 'full refresh_token',
+                principalType : 'NamedUser',
+                protocol : 'Oauth'
+            };
+        }
+
+        /**
+         * Validates the metadata save result.
+         * If success is false, then throws error.
+         *
+         * @param type the metadata type (e.g. NamedCredential, CustomObject)
+         * @param result the save result
+         */
+        function validateMetadataSaveResult( type, result ) {
+            console.log( 'validating metadata save result: type=' + type + ', fullName=' + result.fullName );
+            console.log( result );
+            if ( !result.success ) {
+                var message = 'type=' + type + ', name=' + result.fullName + ', error=' + result.errors.message;
+                throw new Error( message );
+            }
+        }
+
+        /**
+         * Shows a dismissable message notification at top of page.
+         *
+         * @param message text to display
+         * @param severity SUCCESS, ERROR
+         */
+        function showMessage( message, severity ) {
+
+            var newMessage = $j( '#message-template' ).children().clone();
+
+            $j( newMessage ).find( 'div[role="alert"]' )
+                .removeClass( 'slds-theme_error' )
+                .removeClass( 'slds-theme_success' )
+                .addClass( 'slds-theme_' + severity.toLowerCase() );
+
+            $j( newMessage ).removeClass( 'slds-hide' );
+
+            $j( newMessage ).find( '.message-content' ).html( message );
+            $j( newMessage ).find( '.slds-assistive-text' ).text( severity );
+
+            $j( '#messages' ).append( newMessage );
+
+        }
+
+        function clearMessages() {
+            $j( '#messages' ).empty();
+        }
+
+        // ----------------------------------------------------------
+
+        function getRandomLetters( num ) {
+            return getRandomString( num, true, true, false, false );
+        }
+
+        function getRandomNumbers( num ) {
+            return getRandomString( num, false, false, true, false );
+        }
+
+        /**
+         * Generates a random string.
+         *
+         * @param num number of characters to generate
+         * @param includeUpperCase A-Z
+         * @param includeLowerCase a-z
+         * @param includeDigits 0-9
+         * @param includeSymbols !@#$%^&*()
+         * @returns {string}
+         */
+        function getRandomString( num, includeUpperCase, includeLowerCase, includeDigits, includeSymbols ) {
+
+            var CHARS = '';
+            if ( includeUpperCase ) {
+                CHARS += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            }
+            if ( includeLowerCase ) {
+                CHARS += 'abcdefghijklmnopqrstuvwxyz';
+            }
+            if ( includeDigits ) {
+                CHARS += '0123456789';
+            }
+            if ( includeSymbols ) {
+                CHARS += '!@#$%^&*()';
+            }
+
+            var randomNumbers = new Uint32Array( num );
+            window.crypto.getRandomValues( randomNumbers ); // fills array with random values
+
+            var text = '';
+            randomNumbers.forEach( function( number ) {
+                var idx = ( number % CHARS.length );
+                text += CHARS.substring( idx, idx + 1 );
+            });
+
+            return text;
+        }
+
+    </script>
+
+</apex:page>

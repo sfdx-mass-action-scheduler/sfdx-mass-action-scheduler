@@ -21,6 +21,26 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>Mass_Action_Configuration__c.Description__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Mass_Action_Configuration__c.DeveloperName__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Mass_Action_Configuration__c.Last_Run_Completed_Date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Mass_Action_Configuration__c.Last_Run_Completed_With_Errors__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>Mass_Action_Configuration__c.Named_Credential__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -163,6 +183,10 @@
         <object>Mass_Action_Mapping__c</object>
         <viewAllRecords>true</viewAllRecords>
     </objectPermissions>
+    <tabSettings>
+        <tab>MA_SetupAuthWizardPageTab</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
     <tabSettings>
         <tab>Mass_Action_Configuration__c</tab>
         <visibility>Visible</visibility>

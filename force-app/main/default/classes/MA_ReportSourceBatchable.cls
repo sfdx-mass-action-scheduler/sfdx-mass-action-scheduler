@@ -1,7 +1,7 @@
 /**
  * Author: Doug Ayers
  * Website: https://douglascayers.com
- * GitHub: https://github.com/DouglasCAyers/sfdx-mass-action-scheduler
+ * GitHub: https://github.com/douglascayers/sfdx-mass-action-scheduler
  * License: BSD 3-Clause License
  */
 public with sharing class MA_ReportSourceBatchable implements Database.Batchable<Reports.ReportDetailRow>, Database.Stateful, Database.AllowsCallouts {
@@ -55,7 +55,7 @@ public with sharing class MA_ReportSourceBatchable implements Database.Batchable
 
         System.debug( 'MA_ReportSourceBatchable.finish: ' + context + ', configId=' + this.configId );
 
-        MA_MassActionBatchUtils.logJobErrors( this.config.Id, context.getJobId() );
+        MA_MassActionBatchUtils.handleBatchJobFinished( this.config.Id, context.getJobId() );
 
     }
 
@@ -99,7 +99,7 @@ public with sharing class MA_ReportSourceBatchable implements Database.Batchable
 /*
 BSD 3-Clause License
 
-Copyright (c) 2017, Doug Ayers, douglascayers.com
+Copyright (c) 2018, Doug Ayers, douglascayers.com
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

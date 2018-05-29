@@ -1,7 +1,7 @@
 /**
  * Author: Doug Ayers
  * Website: https://douglascayers.com
- * GitHub: https://github.com/DouglasCAyers/sfdx-mass-action-scheduler
+ * GitHub: https://github.com/douglascayers/sfdx-mass-action-scheduler
  * License: BSD 3-Clause License
  */
 public class MA_InvocableActionsHttpRequestMock implements HttpCalloutMock {
@@ -43,7 +43,7 @@ public class MA_InvocableActionsHttpRequestMock implements HttpCalloutMock {
                 '     "label" : "Test Flow", ' +
                 '     "name" : "Test_Flow", ' +
                 '     "type" : "FLOW", ' +
-                '     "url" : "/services/data/v41.0/actions/custom/flow/Test_Flow" ' +
+                '     "url" : "/services/data/v42.0/actions/custom/flow/Test_Flow" ' +
                 '   } ] ' +
                 ' } '
             );
@@ -54,7 +54,7 @@ public class MA_InvocableActionsHttpRequestMock implements HttpCalloutMock {
 
                 response.setBody(
                     ' { ' +
-                    '   "Account" : "/services/data/v41.0/actions/custom/quickAction/Account" ' +
+                    '   "Account" : "/services/data/v42.0/actions/custom/quickAction/Account" ' +
                     ' } '
                 );
 
@@ -66,7 +66,7 @@ public class MA_InvocableActionsHttpRequestMock implements HttpCalloutMock {
                     '     "label" : "Test Quick Action", ' +
                     '     "name" : "Test_Quick_Action", ' +
                     '     "type" : "QUICKACTION", ' +
-                    '     "url" : "/services/data/v41.0/actions/custom/quickAction/Account/Test_Quick_Action" ' +
+                    '     "url" : "/services/data/v42.0/actions/custom/quickAction/Account/Test_Quick_Action" ' +
                     '   } ] ' +
                     ' } '
                 );
@@ -79,7 +79,7 @@ public class MA_InvocableActionsHttpRequestMock implements HttpCalloutMock {
 
                 response.setBody(
                     ' { ' +
-                    '   "Account" : "/services/data/v41.0/actions/custom/emailAlert/Account" ' +
+                    '   "Account" : "/services/data/v42.0/actions/custom/emailAlert/Account" ' +
                     ' } '
                 );
 
@@ -91,7 +91,7 @@ public class MA_InvocableActionsHttpRequestMock implements HttpCalloutMock {
                     '     "label" : "Test Email Alert", ' +
                     '     "name" : "Test_Email_Alert", ' +
                     '     "type" : "EMAILALERT", ' +
-                    '     "url" : "/services/data/v41.0/actions/custom/emailAlert/Account/Test_Email_Alert" ' +
+                    '     "url" : "/services/data/v42.0/actions/custom/emailAlert/Account/Test_Email_Alert" ' +
                     '   } ] ' +
                     ' } '
                 );
@@ -106,7 +106,7 @@ public class MA_InvocableActionsHttpRequestMock implements HttpCalloutMock {
                 '     "label" : "Test Apex", ' +
                 '     "name" : "Test_Apex", ' +
                 '     "type" : "APEX", ' +
-                '     "url" : "/services/data/v41.0/actions/custom/apex/Test_Apex" ' +
+                '     "url" : "/services/data/v42.0/actions/custom/apex/Test_Apex" ' +
                 '   } ] ' +
                 ' } '
             );
@@ -120,7 +120,7 @@ public class MA_InvocableActionsHttpRequestMock implements HttpCalloutMock {
 /*
 BSD 3-Clause License
 
-Copyright (c) 2017, Doug Ayers, douglascayers.com
+Copyright (c) 2018, Doug Ayers, douglascayers.com
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

@@ -1,7 +1,7 @@
 /**
  * Author: Doug Ayers
  * Website: https://douglascayers.com
- * GitHub: https://github.com/DouglasCAyers/sfdx-mass-action-scheduler
+ * GitHub: https://github.com/douglascayers/sfdx-mass-action-scheduler
  * License: BSD 3-Clause License
  */
 /*
@@ -31,9 +31,11 @@ public with sharing class MA_MassActionUtils {
                 Id,
                 OwnerId,
                 Name,
+                DeveloperName__c,
                 Named_Credential__c,
                 Active__c,
                 Batch_Size__c,
+                Description__c,
                 // source
                 Source_Type__c,
                 Source_Report_ID__c,
@@ -65,11 +67,13 @@ public with sharing class MA_MassActionUtils {
                         Target_Field_Name__c
                     FROM
                         Mass_Action_Mappings__r
+                    FOR REFERENCE
                 )
             FROM
                 Mass_Action_Configuration__c
             WHERE
                 Id = :recordId
+            FOR VIEW
         ]) {
             config = record;
         }
@@ -431,29 +435,29 @@ public with sharing class MA_MassActionUtils {
         if ( 'Flow' == actionType ) {
 
             endpoint = String.format(
-                    'callout:{0}/actions/custom/flow/{1}',
-                    new String[] { namedCredential, actionName }
+                'callout:{0}/actions/custom/flow/{1}',
+                new String[] { namedCredential, actionName }
             );
 
         } else if ( 'QuickAction' == actionType ) {
 
             endpoint = String.format(
-                    'callout:{0}/actions/custom/quickAction/{1}/{2}',
-                    new String[] { namedCredential, objectName, actionName }
+                'callout:{0}/actions/custom/quickAction/{1}/{2}',
+                new String[] { namedCredential, objectName, actionName }
             );
 
         } else if ( 'EmailAlert' == actionType ) {
 
             endpoint = String.format(
-                    'callout:{0}/actions/custom/emailAlert/{1}/{2}',
-                    new String[] { namedCredential, objectName, actionName }
+                'callout:{0}/actions/custom/emailAlert/{1}/{2}',
+                new String[] { namedCredential, objectName, actionName }
             );
 
         } else if ( 'Apex' == actionType ) {
 
             endpoint = String.format(
-                    'callout:{0}/actions/custom/apex/{1}',
-                    new String[] { namedCredential, actionName }
+                'callout:{0}/actions/custom/apex/{1}',
+                new String[] { namedCredential, actionName }
             );
 
         }
@@ -533,7 +537,7 @@ public with sharing class MA_MassActionUtils {
 /*
 BSD 3-Clause License
 
-Copyright (c) 2017, Doug Ayers, douglascayers.com
+Copyright (c) 2018, Doug Ayers, douglascayers.com
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

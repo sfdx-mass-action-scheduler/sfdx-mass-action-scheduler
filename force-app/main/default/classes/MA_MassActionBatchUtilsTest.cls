@@ -1,17 +1,23 @@
 /**
  * Author: Doug Ayers
  * Website: https://douglascayers.com
- * GitHub: https://github.com/DouglasCAyers/sfdx-mass-action-scheduler
+ * GitHub: https://github.com/douglascayers/sfdx-mass-action-scheduler
  * License: BSD 3-Clause License
  */
 @IsTest
 private class MA_MassActionBatchUtilsTest {
+
+    /*
+     * Most of the util methods are tested by
+     * separate test classes on the batchable classes
+     */
 
     @IsTest
     static void test_job_errors() {
 
         Mass_Action_Configuration__c config = new Mass_Action_Configuration__c(
             Name = 'Test Config',
+            DeveloperName__c = 'Test_Config',
             Active__c = true
         );
 
@@ -41,7 +47,7 @@ private class MA_MassActionBatchUtilsTest {
 /*
 BSD 3-Clause License
 
-Copyright (c) 2017, Doug Ayers, douglascayers.com
+Copyright (c) 2018, Doug Ayers, douglascayers.com
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

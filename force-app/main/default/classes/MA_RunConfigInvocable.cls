@@ -1,25 +1,46 @@
 /**
  * Author: Doug Ayers
  * Website: https://douglascayers.com
- * GitHub: https://github.com/DouglasCAyers/sfdx-mass-action-scheduler
+ * GitHub: https://github.com/douglascayers/sfdx-mass-action-scheduler
  * License: BSD 3-Clause License
  */
 global class MA_RunConfigInvocable {
 
     @InvocableMethod(
-        label = 'Run Mass Action'
+        label = 'MAS: Run Mass Action'
         description = 'Submits background job to run a Mass Action Configuration.'
     )
     global static List<Response> execute( List<Request> requests ) {
 
         List<Response> responses = new List<Response>();
 
+        Map<ID, Mass_Action_Configuration__c> configsByIdMap = getConfigurationsByIdMap( requests );
+        Map<String, Mass_Action_Configuration__c> configsByUniqueNameMap = getConfigurationsByUniqueNameMap( requests );
+
         for ( Request req : requests ) {
 
             System.debug( req );
 
+            Mass_Action_Configuration__c config = null;
+
+            // lookup config by id
+            if ( config == null && String.isNotBlank( req.configId ) ) {
+                config = configsByIdMap.get( req.configId );
+            }
+
+            // lookup config by unique name
+            if ( config == null && String.isNotBlank( req.configUniqueName ) ) {
+                config = configsByUniqueNameMap.get( req.configUniqueName );
+            }
+
+            if ( config == null ) {
+                Exception ex = new System.NoDataFoundException();
+                ex.setMessage( 'No Mass Action Configuration record found for request: ' + req );
+                throw ex;
+            }
+
             Response res = new Response();
-            res.jobId = MA_MassActionBatchUtils.enqueueAction( req.configId );
+            res.jobId = MA_MassActionBatchUtils.enqueueAction( config.Id );
             responses.add( res );
 
             System.debug( res );
@@ -31,12 +52,54 @@ global class MA_RunConfigInvocable {
 
     // ------------------------------------------------------------
 
+    private static Map<ID, Mass_Action_Configuration__c> getConfigurationsByIdMap( List<Request> requests ) {
+
+        Set<String> configIds = new Set<String>();
+        for ( Request req : requests ) {
+            if ( String.isNotBlank( req.configId ) ) {
+                configIds.add( req.configId );
+            }
+        }
+
+        Map<ID, Mass_Action_Configuration__c> configMap = new Map<ID, Mass_Action_Configuration__c>([
+            SELECT Id, DeveloperName__c FROM Mass_Action_Configuration__c WHERE Id IN :configIds
+        ]);
+
+        return configMap;
+    }
+
+    private static Map<String, Mass_Action_Configuration__c> getConfigurationsByUniqueNameMap( List<Request> requests ) {
+
+        Set<String> uniqueNames = new Set<String>();
+        for ( Request req : requests ) {
+            if ( String.isNotBlank( req.configUniqueName ) ) {
+                uniqueNames.add( req.configUniqueName );
+            }
+        }
+
+        Map<String, Mass_Action_Configuration__c> configMap = new Map<String, Mass_Action_Configuration__c>();
+        for ( Mass_Action_Configuration__c config : [ SELECT Id, DeveloperName__c FROM Mass_Action_Configuration__c WHERE DeveloperName__c IN :uniqueNames ] ) {
+            configMap.put( config.DeveloperName__c, config );
+        }
+
+        return configMap;
+    }
+
+    // ------------------------------------------------------------
+
     global class Request {
 
         @InvocableVariable(
-            label = 'Mass Action Configuration ID'
-            description = 'The Salesforce record ID of the Mass Action Configuration to run.'
-            required = true
+            label = 'Configuration Unique Name'
+            description = 'The unique name of the Mass Action Configuration to run. Specify this or the ID.'
+            required = false
+        )
+        global String configUniqueName;
+
+        @InvocableVariable(
+            label = 'Configuration ID'
+            description = 'The Salesforce record ID of the Mass Action Configuration to run. Specify this or the Unique Name.'
+            required = false
         )
         global ID configId;
 
@@ -56,7 +119,7 @@ global class MA_RunConfigInvocable {
 /*
 BSD 3-Clause License
 
-Copyright (c) 2017, Doug Ayers, douglascayers.com
+Copyright (c) 2018, Doug Ayers, douglascayers.com
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
