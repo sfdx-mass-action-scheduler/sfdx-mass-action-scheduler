@@ -93,16 +93,15 @@ There are a few items you need to setup before installing and using this app.
 Please see the [instructions in the wiki](https://github.com/douglascayers/sfdx-mass-action-scheduler/wiki/Pre-Requisites-Instructions) for screen shots and step-by-steps.
 
 
+Packaged Release History
+========================
+
 Support
-=======
+-------
 
 Mass Action Scheduler is an open source project. It's an independent project with its ongoing development happening in the evenings and weekends.
 Maintaining and developing new features takes a considerable amount of time. If your business has found value in my projects, please consider [showing
 your support](https://douglascayers.com/thanks-for-your-support/) by contributing to my [virtual tip jar on PayPal](https://www.paypal.me/douglascayers/). Thank you! ❤️
-
-
-Packaged Release History
-========================
 
 Release 1.6 (current)
 -----------
