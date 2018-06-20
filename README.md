@@ -14,6 +14,8 @@ Declaratively schedule Process Builder, Flows, Quick Actions, Email Alerts, Work
 
 Inspired by Marie Chandra's idea [Ability to Schedule when Process Builder Triggers](https://success.salesforce.com/ideaView?id=08730000000DjEmAAK).
 
+Inspired by Narender Singh's idea [Ability to schedule flows, workflows and processes in process builder](https://success.salesforce.com/ideaView?id=0873A000000EA71QAG).
+
 No more waiting for records to be updated or creating clever workarounds to cause records to be updated to cause these actions to fire.
 
 
