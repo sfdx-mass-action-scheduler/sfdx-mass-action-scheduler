@@ -104,13 +104,13 @@ Mass Action Scheduler is an open source project. It's an independent project wit
 Maintaining and developing new features takes a considerable amount of time. If your business has found value in my projects, please consider [showing
 your support](https://douglascayers.com/thanks-for-your-support/) by contributing to my [virtual tip jar on PayPal](https://www.paypal.me/douglascayers/). Thank you! ❤️
 
-Release 1.7 (current)
+Release 2.0 (current)
 -----------
 
 _Due to Lightning Experience web page caching, please log out and log back in after installing the package for UI changes to appear._
 
 * Install Package ([Production](https://login.salesforce.com/packaging/installPackage.apexp?p0=???)) ([Sandbox](https://test.salesforce.com/packaging/installPackage.apexp?p0=???))
-* [Upgrading to Release 1.6](https://github.com/douglascayers/sfdx-mass-action-scheduler/wiki/Upgrading-to-Release-1.7)
+* [Upgrading to Release 2.0](https://github.com/douglascayers/sfdx-mass-action-scheduler/wiki/Upgrading-to-Release-2.0)
 * [Delivered Features Report](https://github.com/douglascayers/sfdx-mass-action-scheduler/milestone/5?closed=1)
 * [Archived Releases](https://github.com/douglascayers/sfdx-mass-action-scheduler/milestones?state=closed)
 
