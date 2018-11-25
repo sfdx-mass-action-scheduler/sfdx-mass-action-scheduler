@@ -4,7 +4,7 @@ Website: https://douglascayers.com
 GitHub: https://github.com/douglascayers/sfdx-mass-action-scheduler
 License: BSD 3-Clause License
 -->
-<aura:component controller="MA_EditConfigCmpController" implements="flexipage:availableForRecordHome,force:hasRecordId,lightning:actionOverride" access="global">
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId,lightning:actionOverride" access="global">
 
     <aura:attribute name="objectDescribe"
                     type="Object"
@@ -17,6 +17,13 @@ License: BSD 3-Clause License
     <aura:attribute name="record"
                     type="Object"
                     description="The record object to be displayed. This is a wrapper object and not the sobject."/>
+
+    <c:LC_API aura:id="lc_api"/>
+    <c:LC_URL aura:id="lc_url"/>
+
+    <aura:attribute name="urlInfo"
+                    type="Map"
+                    description="Info from LC_URL component."/>
 
     <!-- Lightning Data Service -->
 
@@ -146,10 +153,6 @@ License: BSD 3-Clause License
     <aura:attribute name="isValidToRenderTargetInvocableActions"
                     type="Boolean"
                     description="Indicates conditions are met to fetch and show the target invocable action select options."/>
-
-    <aura:attribute name="targetNamedCredentials"
-                    type="Map[]"
-                    description="SObject select options of Named Credentials to choose for making API callout to REST API to execute target action."/>
 
     <aura:attribute name="targetInvocableActions"
                     type="Map[]"
@@ -397,73 +400,58 @@ License: BSD 3-Clause License
                     <div class="slds-col">
                         <div class="slds-form slds-form_stacked">
 
-                            <lightning:combobox aura:id="inputTargetNamedCredential"
-                                name="inputTargetNamedCredential"
-                                label="{!v.objectDescribe.fields.Named_Credential__c.label + ' - this will be the context user'}"
-                                title="{!v.objectDescribe.fields.Named_Credential__c.helpText}"
-                                value="{!v.record.namedCredential}"
-                                options="{!v.targetNamedCredentials}"
-                                placeholder="Select a Named Credential"
+                            <lightning:combobox aura:id="inputTargetType"
+                                name="inputTargetType"
+                                label="Action Type"
+                                title="{!v.objectDescribe.fields.Target_Type__c.helpText}"
+                                value="{!v.targetType}"
+                                options="{!v.objectDescribe.fields.Target_Type__c.picklistValues}"
+                                placeholder="Select an Action Type"
                                 required="true"
-                                messageWhenValueMissing="Named Credential is required."
+                                messageWhenValueMissing="Action Type is required."
                                 class="slds-p-top_x-small"/>
 
-                            <aura:if isTrue="{!not( empty( v.record.namedCredential ) )}">
+                            <aura:if isTrue="{!equals( v.targetType, 'Workflow' )}">
 
-                                <lightning:combobox aura:id="inputTargetType"
-                                    name="inputTargetType"
-                                    label="Action Type"
-                                    title="{!v.objectDescribe.fields.Target_Type__c.helpText}"
-                                    value="{!v.targetType}"
-                                    options="{!v.objectDescribe.fields.Target_Type__c.picklistValues}"
-                                    placeholder="Select an Action Type"
-                                    required="true"
-                                    messageWhenValueMissing="Action Type is required."
-                                    class="slds-p-top_x-small"/>
+                                <div class="slds-form-element slds-p-top_x-small">
 
-                                <aura:if isTrue="{!equals( v.targetType, 'Workflow' )}">
+                                    <label class="slds-form-element__label">
+                                        <abbr title="required" class="slds-required">*</abbr>
+                                        Action
+                                    </label>
 
-                                    <div class="slds-form-element slds-p-top_x-small">
-
-                                        <label class="slds-form-element__label">
-                                            <abbr title="required" class="slds-required">*</abbr>
-                                            Action
-                                        </label>
-
-                                        <div class="slds-input" disabled="disabled">
-                                            All <b>active</b> Workflow Rules whose <b>Rule Criteria</b> matches records, regardless the <b>Evaluation Criteria</b>, will run.
-                                        </div>
-
+                                    <div class="slds-input" disabled="disabled">
+                                        All <b>active</b> Workflow Rules whose <b>Rule Criteria</b> matches records, regardless the <b>Evaluation Criteria</b>, will run.
                                     </div>
 
-                                </aura:if>
+                                </div>
 
-                                <aura:if isTrue="{!v.targetTypeRequiresSobject}">
-                                    <lightning:combobox aura:id="inputTargetSobjectType"
-                                        name="inputTargetSobjectType"
-                                        label="Object - choose an object that has the custom actions to invoke on the source records"
-                                        title=""
-                                        value="{!v.targetSobjectType}"
-                                        options="{!v.targetSobjectTypes}"
-                                        placeholder="Select an Object"
-                                        required="true"
-                                        messageWhenValueMissing="Object is required."
-                                        class="slds-p-top_x-small"/>
-                                </aura:if>
+                            </aura:if>
 
-                                <aura:if isTrue="{!v.isValidToRenderTargetInvocableActions}">
-                                    <lightning:combobox aura:id="inputTargetAction"
-                                        name="inputTargetAction"
-                                        label="Action"
-                                        title=""
-                                        value="{!v.targetInvocableAction}"
-                                        options="{!v.targetInvocableActions}"
-                                        placeholder="Select an Action"
-                                        required="true"
-                                        messageWhenValueMissing="Action is required."
-                                        class="slds-p-top_x-small"/>
-                                </aura:if>
+                            <aura:if isTrue="{!v.targetTypeRequiresSobject}">
+                                <lightning:combobox aura:id="inputTargetSobjectType"
+                                    name="inputTargetSobjectType"
+                                    label="Object - choose an object that has the custom actions to invoke on the source records"
+                                    title=""
+                                    value="{!v.targetSobjectType}"
+                                    options="{!v.targetSobjectTypes}"
+                                    placeholder="Select an Object"
+                                    required="true"
+                                    messageWhenValueMissing="Object is required."
+                                    class="slds-p-top_x-small"/>
+                            </aura:if>
 
+                            <aura:if isTrue="{!v.isValidToRenderTargetInvocableActions}">
+                                <lightning:combobox aura:id="inputTargetAction"
+                                    name="inputTargetAction"
+                                    label="Action"
+                                    title=""
+                                    value="{!v.targetInvocableAction}"
+                                    options="{!v.targetInvocableActions}"
+                                    placeholder="Select an Action"
+                                    required="true"
+                                    messageWhenValueMissing="Action is required."
+                                    class="slds-p-top_x-small"/>
                             </aura:if>
 
                         </div>
@@ -526,9 +514,9 @@ License: BSD 3-Clause License
                                         <span class="slds-m-right_xx-small">{!targetFieldMapping.targetField.label}</span>
 
                                         <aura:if isTrue="{!not(empty(targetFieldMapping.targetField.description))}">
-                                            <c:strike_tooltip text="{!targetFieldMapping.targetField.description}" placement="auto right">
-                                                <lightning:icon iconName="utility:info" size="xx-small"/>
-                                            </c:strike_tooltip>
+                                            <lightning:helptext
+                                                iconName="utility:info"
+                                                content="{!targetFieldMapping.targetField.description}"/>
                                         </aura:if>
 
                                     </td>

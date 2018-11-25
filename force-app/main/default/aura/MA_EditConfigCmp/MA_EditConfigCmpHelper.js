@@ -1,3 +1,9 @@
+/*
+Author: Doug Ayers
+Website: https://douglascayers.com
+GitHub: https://github.com/douglascayers/sfdx-mass-action-scheduler
+License: BSD 3-Clause License
+ */
 ({
     initScheduleOptions : function( component ) {
 
@@ -6,14 +12,14 @@
         var scheduleOptionsMonthOfYear = [];
         var scheduleOptionsDayOfWeek = [];
 
-        for ( var i = 0; i < 24; i++ ) {
+        for ( let i = 0; i < 24; i++ ) {
             scheduleOptionsHourOfDay.push({
                 'label' : ( i == 0 ? '12:00 AM' : i == 12 ? '12:00 PM' : ( i < 12 ? i + ':00 AM' : ( i - 12 ) + ':00 PM' ) ).padStart( 8, '0' ),
                 'value' : i.toString().padStart( 2, '0' ) + '.' + i.toString()
             });
         }
 
-        for ( var i = 1; i <= 31; i++ ) {
+        for ( let i = 1; i <= 31; i++ ) {
             scheduleOptionsDayOfMonth.push({
                 'label' : i.toString(),
                 'value' : i.toString().padStart( 2, '0' ) + '.' + i.toString()
@@ -22,7 +28,7 @@
 
         var monthValues = [ 'JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC' ];
         var localeMonthNames = $A.get( '$Locale.nameOfMonths' );
-        for ( var i = 0; i < localeMonthNames.length; i++ ) {
+        for ( let i = 0; i < localeMonthNames.length; i++ ) {
             if ( !$A.util.isEmpty( localeMonthNames[i].fullName ) ) {
                 scheduleOptionsMonthOfYear.push({
                     'label' : localeMonthNames[i].fullName.toUpperCase(),               // display in user's locale
@@ -33,7 +39,7 @@
 
         var weekdayValues = [ 'SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT' ];
         var localeWeekdayNames = $A.get( '$Locale.nameOfWeekdays' );
-        for ( var i = 0; i < localeWeekdayNames.length; i++ ) {
+        for ( let i = 0; i < localeWeekdayNames.length; i++ ) {
             if ( !$A.util.isEmpty( localeWeekdayNames[i].fullName ) ) {
                 scheduleOptionsDayOfWeek.push({
                     'label' : localeWeekdayNames[i].fullName.toUpperCase(),             // display in user's locale
@@ -97,9 +103,8 @@
         if ( targetTypeRequiresSobject === true ) {
 
             var targetType = component.get( 'v.targetType' );
-            var targetNamedCredential = component.get( 'v.record.namedCredential' );
 
-            helper.getObjectsWithInvocableActionsAsync( component, targetNamedCredential, targetType )
+            helper.getObjectsWithInvocableActionsAsync( component, targetType )
                 .then( $A.getCallback( function( results ) {
 
                     component.set( 'v.targetSobjectTypes', results );
@@ -129,12 +134,10 @@
         var targetTypeRequiresAction = component.get( 'v.targetTypeRequiresAction' );
         var targetSobjectType = component.get( 'v.targetSobjectType' );
         var targetAction = component.get( 'v.targetInvocableAction' );
-        var targetNamedCredential = component.get( 'v.record.namedCredential' );
 
         var isValidToRenderActions = true;
 
-        if ( $A.util.isEmpty( targetNamedCredential ) ||
-             $A.util.isEmpty( targetType ) ||
+        if ( $A.util.isEmpty( targetType ) ||
              ( !targetTypeRequiresAction ) ||
              ( targetTypeRequiresSobject && $A.util.isEmpty( targetSobjectType ) ) ) {
 
@@ -144,7 +147,7 @@
 
         if ( isValidToRenderActions ) {
 
-            helper.getInvocableActionsAsync( component, targetNamedCredential, targetType, ( targetSobjectType || '' ) )
+            helper.getInvocableActionsAsync( component, targetType, ( targetSobjectType || '' ) )
                 .then( $A.getCallback( function( actions ) {
 
                     component.set( 'v.targetInvocableActions', actions );
@@ -181,7 +184,6 @@
         var targetType = component.get( 'v.targetType' );
         var targetAction = component.get( 'v.targetInvocableAction' );
         var targetSobjectType = component.get( 'v.targetSobjectType' );
-        var targetNamedCredential = component.get( 'v.record.namedCredential' );
 
         var sourceFields = []; // columns from source report or list view
         var targetFields = []; // inputs from target action
@@ -198,7 +200,7 @@
 
                } else if ( sourceType == 'ListView' ) {
 
-                    return helper.getListViewColumnsAsync( component, targetNamedCredential, sourceListViewId )
+                    return helper.getListViewColumnsAsync( component, sourceListViewId )
                         .then( $A.getCallback( function( result ) {
                             sourceFields = result;
                         }));
@@ -207,7 +209,7 @@
 
             })).then( $A.getCallback( function() {
 
-                return helper.getInvocableActionInputsAsync( component, targetNamedCredential, targetType, ( targetAction || '' ), ( targetSobjectType || '' ) )
+                return helper.getInvocableActionInputsAsync( component, targetType, ( targetAction || '' ), ( targetSobjectType || '' ) )
                     .then( $A.getCallback( function( result ) {
                         targetFields = result;
                     }));
@@ -345,7 +347,6 @@
 
                     // Target
 
-                    case 'inputTargetNamedCredential':
                     case 'inputTargetType':
                         inputIsInvalid = ( inputIsEmpty );
                         break;
@@ -495,16 +496,10 @@
             targetFieldMappings[item.targetField.name] = item.sourceFieldName;
         });
 
-        return helper.enqueueAction( component, 'c.saveConfiguration', {
-
-            'wrapperJson' : JSON.stringify( record ),
-            'fieldMappingsJson' : JSON.stringify( targetFieldMappings )
-
-        }).then( $A.getCallback( function( result ) {
-
-            return result;
-
-        }));
+        return helper.enqueueRestRequest( component, 'saveConfiguration', {
+            'wrapperJson' : record,
+            'fieldMappingsJson' : targetFieldMappings
+        });
 
     },
 
@@ -514,13 +509,8 @@
 
         var helper = this;
 
-        return helper.enqueueAction( component, 'c.getConfigurationObjectDescribe', {
-
-        }).then( $A.getCallback( function( objectDescribe ) {
-
-            return objectDescribe;
-
-        }));
+        return helper.enqueueRestRequest( component, 'getConfigurationObjectDescribe', {
+        });
 
     },
 
@@ -528,15 +518,9 @@
 
         var helper = this;
 
-        return helper.enqueueAction( component, 'c.getConfiguration', {
-
+        return helper.enqueueRestRequest( component, 'getConfiguration', {
             'recordId' : recordId
-
-        }).then( $A.getCallback( function( record ) {
-
-            return record;
-
-        }));
+        });
 
     },
 
@@ -546,13 +530,8 @@
 
         var helper = this;
 
-        return helper.enqueueAction( component, 'c.getObjectNames', {
-
-        }).then( $A.getCallback( function( objectNames ) {
-
-            return objectNames;
-
-        }));
+        return helper.enqueueRestRequest( component, 'getObjectNames', {
+        });
 
     },
 
@@ -560,15 +539,9 @@
 
         var helper = this;
 
-        return helper.enqueueAction( component, 'c.getListViewsByObject', {
-
+        return helper.enqueueRestRequest( component, 'getListViewsByObject', {
             'objectName' : objectName
-
-        }).then( $A.getCallback( function( listViews ) {
-
-            return listViews;
-
-        }));
+        });
 
     },
 
@@ -576,32 +549,19 @@
 
         var helper = this;
 
-        return helper.enqueueAction( component, 'c.getListView', {
-
+        return helper.enqueueRestRequest( component, 'getListView', {
             'recordId' : listViewId
-
-        }).then( $A.getCallback( function( record ) {
-
-            return record;
-
-        }));
+        });
 
     },
 
-    getListViewColumnsAsync : function( component, namedCredential, listViewId ) {
+    getListViewColumnsAsync : function( component, listViewId ) {
 
         var helper = this;
 
-        return helper.enqueueAction( component, 'c.getListViewColumns', {
-
-            'namedCredential' : namedCredential,
+        return helper.enqueueRestRequest( component, 'getListViewColumns', {
             'listViewId' : listViewId
-
-        }).then( $A.getCallback( function( listViewColumns ) {
-
-            return listViewColumns;
-
-        }));
+        });
 
     },
 
@@ -611,13 +571,8 @@
 
         var helper = this;
 
-        return helper.enqueueAction( component, 'c.getReportFolders', {
-
-        }).then( $A.getCallback( function( reportFolders ) {
-
-            return reportFolders;
-
-        }));
+        return helper.enqueueRestRequest( component, 'getReportFolders', {
+        });
 
     },
 
@@ -625,15 +580,9 @@
 
         var helper = this;
 
-        return helper.enqueueAction( component, 'c.getReportsByFolder', {
-
+        return helper.enqueueRestRequest( component, 'getReportsByFolder', {
             'folderId' : folderId
-
-        }).then( $A.getCallback( function( reports ) {
-
-            return reports;
-
-        }));
+        });
 
     },
 
@@ -641,15 +590,9 @@
 
         var helper = this;
 
-        return helper.enqueueAction( component, 'c.getReport', {
-
+        return helper.enqueueRestRequest( component, 'getReport', {
             'recordId' : reportId
-
-        }).then( $A.getCallback( function( record ) {
-
-            return record;
-
-        }));
+        });
 
     },
 
@@ -657,15 +600,9 @@
 
         var helper = this;
 
-        return helper.enqueueAction( component, 'c.getReportColumns', {
-
+        return helper.enqueueRestRequest( component, 'getReportColumns', {
             'reportId' : reportId
-
-        }).then( $A.getCallback( function( reportColumns ) {
-
-            return reportColumns;
-
-        }));
+        });
 
     },
 
@@ -675,67 +612,41 @@
 
         var helper = this;
 
-        return helper.enqueueAction( component, 'c.getNamedCredentials', {
-
-        }).then( $A.getCallback( function( namedCredentials ) {
-
-            return namedCredentials;
-
-        }));
+        return helper.enqueueRestRequest( component, 'getNamedCredentials', {
+        });
 
     },
 
-    getObjectsWithInvocableActionsAsync : function( component, namedCredential, actionType ) {
+    getObjectsWithInvocableActionsAsync : function( component, actionType ) {
 
         var helper = this;
 
-        return helper.enqueueAction( component, 'c.getObjectsWithInvocableActions', {
-
-            'namedCredential' : namedCredential,
+        return helper.enqueueRestRequest( component, 'getObjectsWithInvocableActions', {
             'actionType' : actionType
-
-        }).then( $A.getCallback( function( results ) {
-
-            return results;
-
-        }));
+        });
 
     },
 
-    getInvocableActionsAsync : function( component, namedCredential, actionType, objectName ) {
+    getInvocableActionsAsync : function( component, actionType, objectName ) {
 
         var helper = this;
 
-        return helper.enqueueAction( component, 'c.getInvocableActions', {
-
-            'namedCredential' : namedCredential,
+        return helper.enqueueRestRequest( component, 'getInvocableActions', {
             'actionType' : actionType,
             'objectName' : objectName
-
-        }).then( $A.getCallback( function( results ) {
-
-            return results;
-
-        }));
+        });
 
     },
 
-    getInvocableActionInputsAsync : function( component, namedCredential, actionType, actionName, objectName ) {
+    getInvocableActionInputsAsync : function( component, actionType, actionName, objectName ) {
 
         var helper = this;
 
-        return helper.enqueueAction( component, 'c.getInvocableActionInputs', {
-
-            'namedCredential' : namedCredential,
+        return helper.enqueueRestRequest( component, 'getInvocableActionInputs', {
             'actionType' : actionType,
             'actionName' : actionName,
             'objectName' : objectName
-
-        }).then( $A.getCallback( function( results ) {
-
-            return results;
-
-        }));
+        });
 
     },
 
@@ -759,15 +670,13 @@
 
         $A.get( 'e.force:showToast' ).setParams({
             title : title,
-            message : message,
+            message : ( message.message || message ),
             type : ( type || 'info' )
         }).fire();
 
     },
 
     navigateToRecord : function( recordId ) {
-
-        console.log( 'navigating to record: ' + recordId );
 
         var event = $A.get( 'e.force:navigateToSObject' );
 
@@ -791,8 +700,6 @@
 
     navigateToURL : function( url ) {
 
-        console.log( 'navigating to url: ' + url );
-
         var event = $A.get( 'e.force:navigateToURL' );
 
         if ( event ) {
@@ -813,6 +720,64 @@
 
     },
 
+    /**
+     * For posting REST request to the MA_EditConfigRestController apex class.
+     *
+     * @param component
+     *      The Lightning component with a 'urlInfo' and 'lc_api' attributes.
+     *      'urlInfo' is used to generate the REST API URL.
+     *      'lc_api' is used to invoke the REST API as workaround to Lightning session ids.
+     * @param operation
+     *      Name of the actual action to invoke in the REST controller.
+     * @param params
+     *      Parameters to pass to the actual action to invoke.
+     * @returns a promise.
+     */
+    enqueueRestRequest : function( component, operation, params ) {
+
+        var helper = this;
+        var urlInfo = component.get( 'v.urlInfo' );
+
+        helper.showSpinner( component );
+
+        return component.find( 'lc_api' ).restRequest({
+
+            'url' : urlInfo.orgDomainURL + '/services/apexrest/' + urlInfo.namespace + '/config/edit?operation=' + operation,
+            'method' : 'POST',
+            'body' : JSON.stringify( ( params || {} ) )
+
+        }).then( $A.getCallback( function( response ) {
+
+            helper.hideSpinner( component );
+            return response.result;
+
+        })).catch( $A.getCallback( function( err ) {
+
+            helper.hideSpinner( component );
+            console.error( 'Error enqueuing rest request: ' + JSON.stringify({
+                'operation' : operation,
+                'params' : params,
+                'error' : err
+            }, null, 2));
+            throw err;
+
+        }));
+
+    },
+
+    /**
+     * For invoking @AuraEnabled apex actions in a normal
+     * Lightning component fashion.
+     *
+     * @param component
+     *      The Lightning component that specifies the Apex controller
+     *      of the @AuraEnabled method to invoke.
+     * @param actionName
+     *      The @AuraEnabled method name.
+     * @param params
+     *      The @AuraEnabled method parameters.
+     * @returns a promise.
+     */
     enqueueAction : function( component, actionName, params ) {
 
         var helper = this;
@@ -860,7 +825,7 @@
                     console.error( 'Error: ' + errors[i].message );
                 }
             } else {
-                console.error( 'Error: ' + errors );
+                console.error( 'Error: ' + ( errors.message || errors ) );
             }
         } else {
             console.error( 'Unknown error' );
@@ -875,9 +840,40 @@
                     text += '\n' + errors[i].message;
                 }
             } else {
-                text = errors;
+                text = ( errors.message || errors );
             }
         }
         return text;
     }
 })
+/*
+BSD 3-Clause License
+
+Copyright (c) 2018, Doug Ayers, douglascayers.com
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice, this
+  list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of the copyright holder nor the names of its
+  contributors may be used to endorse or promote products derived from
+  this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/

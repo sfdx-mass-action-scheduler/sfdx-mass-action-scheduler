@@ -2,8 +2,8 @@
 
     <apex:slds />
 
-    <apex:includeScript value="{!URLFOR($Resource.jsforce_1_8_4)}"/>
-    <apex:includeScript value="{!URLFOR($Resource.jquery_3_3_1)}"/>
+    <apex:includeScript value="{!URLFOR($Resource.jsforce)}"/>
+    <apex:includeScript value="{!URLFOR($Resource.jquery)}"/>
     <script>$j = jQuery.noConflict();</script>
 
     <div class="slds-scope">

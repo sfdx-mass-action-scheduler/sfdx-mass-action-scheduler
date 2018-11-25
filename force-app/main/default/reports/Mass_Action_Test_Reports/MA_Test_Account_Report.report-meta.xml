@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Report xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
     <columns>
         <field>ACCOUNT_ID</field>
     </columns>
@@ -24,6 +24,8 @@
     <reportType>AccountList</reportType>
     <scope>organization</scope>
     <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
     <sortColumn>ACCOUNT_ID</sortColumn>
     <sortOrder>Asc</sortOrder>
     <timeFrameFilter>

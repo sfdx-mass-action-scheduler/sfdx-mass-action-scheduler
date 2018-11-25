@@ -39,7 +39,7 @@ public with sharing class MA_ReportSourceBatchable implements Database.Batchable
 
             List<Map<String, Object>> targetRowMaps = MA_MassActionUtils.buildActionInputs( sourceRowMaps, this.config.mass_action_mappings__r );
 
-            MA_MassActionUtils.invokeAction( this.config, targetRowMaps );
+            MA_MassActionUtils.invokeAction( MA_MassActionUtils.REST_API_SERVICES_DATA_URL, this.config, targetRowMaps );
 
         } catch ( Exception e ) {
 

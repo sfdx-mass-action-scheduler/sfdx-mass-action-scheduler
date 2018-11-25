@@ -88,9 +88,8 @@ Pre-Requisites
 
 There are a few items you need to setup before installing and using this app.
 
-1. You will need to use **Lightning Experience** because we are using Lightning Components.
-2. You will need to enable **My Domain** because we are using Lightning Components.
-3. You will need to configure a **Named Credential** because the app processes records in background jobs and will need to securely invoke the Salesforce REST API via OAuth when you are not around. 
+1. You will need to use [Lightning Experience](https://trailhead.salesforce.com/en/content/learn/modules/lex_migration_introduction) because we are using Lightning Components.
+2. You will need to enable [My Domain](https://trailhead.salesforce.com/en/content/learn/modules/identity_login/identity_login_my_domain) because we are using Lightning Components.
 
 Please see the [instructions in the wiki](https://github.com/douglascayers/sfdx-mass-action-scheduler/wiki/Pre-Requisites-Instructions) for screen shots and step-by-steps.
 
@@ -105,14 +104,14 @@ Mass Action Scheduler is an open source project. It's an independent project wit
 Maintaining and developing new features takes a considerable amount of time. If your business has found value in my projects, please consider [showing
 your support](https://douglascayers.com/thanks-for-your-support/) by contributing to my [virtual tip jar on PayPal](https://www.paypal.me/douglascayers/). Thank you! ❤️
 
-Release 1.6 (current)
+Release 1.7 (current)
 -----------
 
 _Due to Lightning Experience web page caching, please log out and log back in after installing the package for UI changes to appear._
 
-* Install Package ([Production](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tf40000035eDz)) ([Sandbox](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tf40000035eDz))
-* [Upgrading to Release 1.6](https://github.com/douglascayers/sfdx-mass-action-scheduler/wiki/Upgrading-to-Release-1.6)
-* [Delivered Features Report](https://github.com/douglascayers/sfdx-mass-action-scheduler/milestone/4?closed=1)
+* Install Package ([Production](https://login.salesforce.com/packaging/installPackage.apexp?p0=???)) ([Sandbox](https://test.salesforce.com/packaging/installPackage.apexp?p0=???))
+* [Upgrading to Release 1.6](https://github.com/douglascayers/sfdx-mass-action-scheduler/wiki/Upgrading-to-Release-1.7)
+* [Delivered Features Report](https://github.com/douglascayers/sfdx-mass-action-scheduler/milestone/5?closed=1)
 * [Archived Releases](https://github.com/douglascayers/sfdx-mass-action-scheduler/milestones?state=closed)
 
 ---

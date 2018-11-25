@@ -1,0 +1,13 @@
+<!--
+Author: Doug Ayers
+Website: https://douglascayers.com
+GitHub: https://github.com/douglascayers/sfdx-lightning-api
+License: BSD 3-Clause License
+ -->
+<apex:page controller="LC_VisualforceDomainController"
+           contentType="text/plain"
+           showHeader="false"
+           showChat="false"
+           sideBar="false"
+           applyHtmlTag="false"
+           applyBodyTag="false">{!domainURL}</apex:page>

@@ -148,6 +148,11 @@ public class MA_MassActionConfigWrapper {
             this.scheduleDayOfMonth = config.Schedule_DayOfMonth__c;
             this.scheduleMonthOfYear = config.Schedule_MonthOfYear__c;
             this.scheduleDayOfWeek = config.Schedule_DayOfWeek__c;
+            // system
+            this.createdById = config.CreatedById;
+            this.createdDate = config.CreatedDate;
+            this.lastModifiedById = config.LastModifiedById;
+            this.lastModifiedDate = config.LastModifiedDate;
 
             for ( Mass_Action_Mapping__c mapping : config.Mass_Action_Mappings__r ) {
                 this.fieldMappings.add( new FieldMappingWrapper( mapping ) );
@@ -206,8 +211,6 @@ public class MA_MassActionConfigWrapper {
 
         @AuraEnabled
         public String targetFieldName { get; set; }
-
-        public FieldMappingWrapper() { }
 
         public FieldMappingWrapper( Mass_Action_Mapping__c mapping ) {
             this.sourceFieldName = mapping.Source_Field_Name__c;

@@ -6,6 +6,8 @@
     </brand>
     <description>Declaratively schedule records from Reports or List Views to be processed by Workflow Rules, Process Builder, Flows, and Apex. https://douglascayers.com</description>
     <formFactors>Large</formFactors>
+    <isNavAutoTempTabsDisabled>false</isNavAutoTempTabsDisabled>
+    <isNavPersonalizationDisabled>false</isNavPersonalizationDisabled>
     <label>Mass Action Scheduler</label>
     <navType>Standard</navType>
     <tabs>Mass_Action_Configuration__c</tabs>

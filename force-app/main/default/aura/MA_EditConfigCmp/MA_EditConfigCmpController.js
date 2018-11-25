@@ -1,3 +1,9 @@
+/*
+Author: Doug Ayers
+Website: https://douglascayers.com
+GitHub: https://github.com/douglascayers/sfdx-mass-action-scheduler
+License: BSD 3-Clause License
+ */
 ({
     doInit : function( component, event, helper ) {
 
@@ -8,67 +14,85 @@
         wizard.moveToStage( 0 );
         component.set( 'v.wizardActiveStageIndex', 0 );
 
-        helper.getObjectDescribeAsync( component )
-            .then( $A.getCallback( function( objectDescribe ) {
+        component.find( 'lc_url' ).getUrlInfoAsync()
+            .then( $A.getCallback( function( urlInfo ) {
 
-                component.set( 'v.objectDescribe', objectDescribe );
+                component.set( 'v.urlInfo', urlInfo );
 
-            }));
+            })).then( $A.getCallback( function() {
 
-        helper.getRecordAsync( component, recordId )
-            .then( $A.getCallback( function( record ) {
+                helper.getObjectDescribeAsync( component )
+                    .then( $A.getCallback( function( objectDescribe ) {
 
-                component.set( 'v.record', record );
-                component.set( 'v.sourceType', record.sourceType );
-                component.set( 'v.targetType', record.targetType );
-                component.set( 'v.targetSobjectType', record.targetSobjectType );
-                component.set( 'v.targetInvocableAction', record.targetActionName );
+                        component.set( 'v.objectDescribe', objectDescribe );
 
-                if ( !$A.util.isUndefinedOrNull( record.sourceReportID ) ) {
+                    })).catch( $A.getCallback( function( error ) {
 
-                    helper.getReportAsync( component, record.sourceReportID )
-                        .then( $A.getCallback( function( report ) {
+                        helper.toastMessage( 'Error Getting Object Describe', error, 'error' );
 
-                            if ( !$A.util.isUndefinedOrNull( report ) ) {
-                                component.set( 'v.sourceReport', report );
-                                component.set( 'v.sourceReportId', ( report.Id && report.Id.substring( 0, 15 ) ) );
-                                component.set( 'v.sourceReportFolderId', ( report.OwnerId && report.OwnerId.substring( 0, 15 ) ) );
-                                component.set( 'v.sourceReportColumnName', record.sourceReportColumnName );
-                            }
+                    }));
 
-                        }));
+                helper.getRecordAsync( component, recordId )
+                    .then( $A.getCallback( function( record ) {
 
-                }
+                        component.set( 'v.record', record );
+                        component.set( 'v.sourceType', record.sourceType );
+                        component.set( 'v.targetType', record.targetType );
+                        component.set( 'v.targetSobjectType', record.targetSobjectType );
+                        component.set( 'v.targetInvocableAction', record.targetActionName );
 
-                if ( !$A.util.isUndefinedOrNull( record.sourceListViewID ) ) {
+                        if ( !$A.util.isUndefinedOrNull( record.sourceReportID ) ) {
 
-                    helper.getListViewAsync( component, record.sourceListViewID )
-                        .then( $A.getCallback( function( listView ) {
+                            helper.getReportAsync( component, record.sourceReportID )
+                                .then( $A.getCallback( function( report ) {
 
-                            if ( !$A.util.isUndefinedOrNull( listView ) ) {
-                                component.set( 'v.sourceListView', listView );
-                                component.set( 'v.sourceListViewId', ( listView.Id && listView.Id.substring( 0, 15 ) ) );
-                                component.set( 'v.sourceListViewSobjectType', listView.SobjectType );
-                            }
+                                    if ( !$A.util.isUndefinedOrNull( report ) ) {
+                                        component.set( 'v.sourceReport', report );
+                                        component.set( 'v.sourceReportId', ( report.Id && report.Id.substring( 0, 15 ) ) );
+                                        component.set( 'v.sourceReportFolderId', ( report.OwnerId && report.OwnerId.substring( 0, 15 ) ) );
+                                        component.set( 'v.sourceReportColumnName', record.sourceReportColumnName );
+                                    }
 
-                        }));
+                                })).catch( $A.getCallback( function( error ) {
 
-                }
+                                    helper.toastMessage( 'Error Getting Report', error, 'error' );
 
-                if ( !$A.util.isUndefinedOrNull( record.targetActionName ) ) {
+                                }));
 
-                    helper.renderTargetInvocableActions( component );
+                        }
 
-                }
+                        if ( !$A.util.isUndefinedOrNull( record.sourceListViewID ) ) {
 
-                helper.initScheduleOptions( component );
+                            helper.getListViewAsync( component, record.sourceListViewID )
+                                .then( $A.getCallback( function( listView ) {
 
-            }));
+                                    if ( !$A.util.isUndefinedOrNull( listView ) ) {
+                                        component.set( 'v.sourceListView', listView );
+                                        component.set( 'v.sourceListViewId', ( listView.Id && listView.Id.substring( 0, 15 ) ) );
+                                        component.set( 'v.sourceListViewSobjectType', listView.SobjectType );
+                                    }
 
-        helper.getNamedCredentialsAsync( component )
-            .then( $A.getCallback( function( namedCredentials ) {
+                                })).catch( $A.getCallback( function( error ) {
 
-                component.set( 'v.targetNamedCredentials', namedCredentials );
+                                    helper.toastMessage( 'Error Getting List View', error, 'error' );
+
+                                }));
+
+                        }
+
+                        if ( !$A.util.isUndefinedOrNull( record.targetActionName ) ) {
+
+                            helper.renderTargetInvocableActions( component );
+
+                        }
+
+                        helper.initScheduleOptions( component );
+
+                    }));
+
+            })).catch( $A.getCallback( function( error ) {
+
+                helper.toastMessage( 'Error Getting URLs', error, 'error' );
 
             }));
 
@@ -107,7 +131,6 @@
             } else if ( currentStageIndex === 1 ) {         // Choose Action
 
                 inputCmps = [
-                    component.find( 'inputTargetNamedCredential' ),
                     component.find( 'inputTargetType' ),
                     component.find( 'inputTargetSobjectType' ),
                     component.find( 'inputTargetAction' )
@@ -264,6 +287,10 @@
 
                         component.set( 'v.sourceReportFolders', reportFolders );
 
+                    })).catch( $A.getCallback( function( error ) {
+
+                        helper.toastMessage( 'Error Getting Report Folders', error, 'error' );
+
                     }));
 
             }
@@ -286,6 +313,10 @@
                     .then( $A.getCallback( function( objectNames ) {
 
                         component.set( 'v.sourceListViewSobjectTypes', objectNames );
+
+                    })).catch( $A.getCallback( function( error ) {
+
+                        helper.toastMessage( 'Error Getting Object Names', error, 'error' );
 
                     }));
 
@@ -326,6 +357,10 @@
 
                     component.set( 'v.sourceReports', reports );
 
+                })).catch( $A.getCallback( function( error ) {
+
+                    helper.toastMessage( 'Error Getting Reports By Folder', error, 'error' );
+
                 }));
 
         }
@@ -357,6 +392,10 @@
                         component.set( 'v.sourceReport', report );
                         component.set( 'v.record.sourceReportID', ( report.Id && report.Id.substring( 0, 15 ) ) );
 
+                    })).catch( $A.getCallback( function( error ) {
+
+                        helper.toastMessage( 'Error Getting Report', error, 'error' );
+
                     }));
 
                 helper.getReportColumnsAsync( component, reportId )
@@ -381,6 +420,10 @@
                         } else {
                             component.set( 'v.record.sourceReportColumnName', columnName );
                         }
+
+                    })).catch( $A.getCallback( function( error ) {
+
+                        helper.toastMessage( 'Error Getting Report Columns', error, 'error' );
 
                     }));
 
@@ -412,6 +455,10 @@
 
                     component.set( 'v.sourceListViews', listViews );
 
+                })).catch( $A.getCallback( function( error ) {
+
+                    helper.toastMessage( 'Error Getting List Views By Object', error, 'error' );
+
                 }));
 
         }
@@ -439,6 +486,10 @@
                         component.set( 'v.sourceTypeURL', '/one/one.app#/sObject/' + listView.SobjectType + '/list?filterName=' + listView.Id );
                         component.set( 'v.sourceListView', listView );
                         component.set( 'v.record.sourceListViewID', ( listView.Id && listView.Id.substring( 0, 15 ) ) );
+
+                    })).catch( $A.getCallback( function( error ) {
+
+                        helper.toastMessage( 'Error Getting List View', error, 'error' );
 
                     }));
 
@@ -524,3 +575,34 @@
     }
 
 })
+/*
+BSD 3-Clause License
+
+Copyright (c) 2018, Doug Ayers, douglascayers.com
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice, this
+  list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of the copyright holder nor the names of its
+  contributors may be used to endorse or promote products derived from
+  this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/

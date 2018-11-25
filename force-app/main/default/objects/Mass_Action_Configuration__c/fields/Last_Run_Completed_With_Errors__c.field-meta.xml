@@ -2,7 +2,8 @@
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Last_Run_Completed_With_Errors__c</fullName>
     <defaultValue>false</defaultValue>
-    <description>Indicates if the last run of this configuration completed with errors. It is updated when the batch job finishes. This field is checked if the last run of this configuration created log records reporting any errors, otherwise it is unchecked. Use this field with the Last Run Completed Date in Process Builder to control when to automatically run other configurations conditionally upon a configuration completing successfully or not. For example, run "Config2" only if "Config1" completed without errors.</description>
+    <deprecated>false</deprecated>
+    <description>Indicates if the last run of this configuration completed with errors. It is updated when the batch job finishes. This field is checked if the last run of this configuration created log records reporting any errors, otherwise it is unchecked. Use this field with the Last Run Completed Date in Process Builder to control when to automatically run other configurations conditionally upon a configuration completing successfully or not. For example, run &quot;Config2&quot; only if &quot;Config1&quot; completed without errors.</description>
     <externalId>false</externalId>
     <inlineHelpText>Indicates if the last run of this configuration completed with errors. It is updated when the batch job finishes. This field is checked if the last run of this configuration created log records reporting any errors, otherwise it is unchecked.</inlineHelpText>
     <label>Last Run Completed With Errors</label>

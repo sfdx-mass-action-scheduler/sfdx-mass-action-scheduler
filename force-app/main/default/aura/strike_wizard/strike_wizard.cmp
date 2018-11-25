@@ -67,14 +67,12 @@ License: BSD 3-Clause License
             <ul class="slds-tabs--path__nav" role="tablist">
                 <aura:iteration items="{!v.chevrons}" var="chevron" indexVar="index">
                     <li class="{!'slds-tabs--path__item ' + chevron.class}" role="presentation" id="{!index}" onclick="{!c.chevronClick}">
-                        <!--<c:strike_tooltip text="{!chevron.name}" placement="bottom"> ***** Tooltips no longer supported ***** -->
-                            <a href="javascript:void(0);" class="slds-tabs--path__link">
-                                <span class="slds-tabs--path__stage">
-                                    <lightning:icon variant="bare" class="slds-button__icon" iconName="utility:check" size="x-small" alternativeText="{!chevron.name}"/>
-                                </span>
-                                <span class="slds-tabs--path__title">{!chevron.name}</span>
-                            </a>
-                        <!--</c:strike_tooltip>-->
+                        <a href="javascript:void(0);" class="slds-tabs--path__link">
+                            <span class="slds-tabs--path__stage">
+                                <lightning:icon variant="bare" class="slds-button__icon" iconName="utility:check" size="x-small" alternativeText="{!chevron.name}"/>
+                            </span>
+                            <span class="slds-tabs--path__title">{!chevron.name}</span>
+                        </a>
                     </li>
                 </aura:iteration>
             </ul>

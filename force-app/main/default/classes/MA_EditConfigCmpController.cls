@@ -294,7 +294,8 @@ public with sharing class MA_EditConfigCmpController {
 
         String objectName = MA_MassActionUtils.NAMESPACE_API + 'Mass_Action_Configuration__c';
 
-        DescribeSObjectResult objectDescribe = Schema.getGlobalDescribe().get( objectName ).getDescribe();
+        // https://salesforce.stackexchange.com/questions/218982/why-is-schema-describesobjectstypes-slower-than-schema-getglobaldescribe
+        DescribeSObjectResult objectDescribe = ( (SObject) Type.forName( objectName ).newInstance() ).getSObjectType().getDescribe();
 
         Map<String, Object> describeMap = new Map<String, Object>{
             'name' => objectDescribe.getName(),
