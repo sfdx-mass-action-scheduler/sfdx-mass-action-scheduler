@@ -1,7 +1,10 @@
 {
-    "orgName": "Mass Action Scheduler",
-    "edition": "Developer",
-    "orgPreferences" : {
-        "enabled": ["S1DesktopEnabled"]
+  "orgName" : "Mass Action Scheduler",
+  "edition" : "Developer",
+  "features" : [],
+  "settings" : {
+    "orgPreferenceSettings" : {
+      "s1EncryptedStoragePref2" : false
     }
+  }
 }
