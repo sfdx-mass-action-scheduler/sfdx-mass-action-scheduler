@@ -737,12 +737,13 @@ License: BSD 3-Clause License
 
         var helper = this;
         var urlInfo = component.get( 'v.urlInfo' );
+        var nsslash = ( urlInfo.namespace ? urlInfo.namespace + '/' : '' );
 
         helper.showSpinner( component );
 
         return component.find( 'lc_api' ).restRequest({
 
-            'url' : urlInfo.orgDomainURL + '/services/apexrest/' + urlInfo.namespace + '/config/edit?operation=' + operation,
+            'url' : urlInfo.orgDomainURL + '/services/apexrest/' + nsslash + 'config/edit?operation=' + operation,
             'method' : 'POST',
             'body' : JSON.stringify( ( params || {} ) )
 
