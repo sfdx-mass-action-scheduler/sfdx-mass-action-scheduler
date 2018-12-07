@@ -4,14 +4,14 @@ Website: https://douglascayers.com
 GitHub: https://github.com/douglascayers/sfdx-lightning-api
 License: BSD 3-Clause License
  -->
-<apex:page>
+<apex:page >
 
     <apex:includeScript value="{!$Resource.postmate}"/>
     <apex:includeScript value="{!$Resource.jsforce}"/>
 
     <script>
 
-        var conn = new jsforce.Connection({ accessToken: '{!$API.Session_Id}', version: '44.0' });
+        var conn = new jsforce.Connection({ accessToken: '{!$Api.Session_Id}', version: '44.0' });
 
         var _restRequest;
 

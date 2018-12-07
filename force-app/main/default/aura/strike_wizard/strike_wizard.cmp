@@ -56,22 +56,22 @@ License: BSD 3-Clause License
 
     <div class="slds-grid">
         <aura:if isTrue="{!v.collapseExpandButton}">
-            <lightning:buttonIcon class="slds-button slds-button--icon-border-filled slds-path__trigger slds-no-flex slds-m-horizontal--small slds-flip--vertical"
+            <lightning:buttonIcon class="slds-button slds-button_icon-border-filled slds-path__trigger slds-no-flex slds-m-horizontal_small slds-flip_vertical"
                 iconName="{!if(v.toggleBodyView, 'utility:chevrondown', 'utility:chevronup')}"
                 alternativeText="toggle"
                 size="medium"
                 variant="border"
                 onclick="{!c.toggleBody}"/>
         </aura:if>
-        <div class="slds-tabs--path" role="application">
-            <ul class="slds-tabs--path__nav" role="tablist">
+        <div class="slds-tabs_path" role="application">
+            <ul class="slds-tabs_path__nav" role="tablist">
                 <aura:iteration items="{!v.chevrons}" var="chevron" indexVar="index">
-                    <li class="{!'slds-tabs--path__item ' + chevron.class}" role="presentation" id="{!index}" onclick="{!c.chevronClick}">
-                        <a href="javascript:void(0);" class="slds-tabs--path__link">
-                            <span class="slds-tabs--path__stage">
+                    <li class="{!'slds-tabs_path__item ' + chevron.class}" role="presentation" id="{!index}" onclick="{!c.chevronClick}">
+                        <a href="javascript:void(0);" class="slds-tabs_path__link">
+                            <span class="slds-tabs_path__stage">
                                 <lightning:icon variant="bare" class="slds-button__icon" iconName="utility:check" size="x-small" alternativeText="{!chevron.name}"/>
                             </span>
-                            <span class="slds-tabs--path__title">{!chevron.name}</span>
+                            <span class="slds-tabs_path__title">{!chevron.name}</span>
                         </a>
                     </li>
                 </aura:iteration>
@@ -79,12 +79,12 @@ License: BSD 3-Clause License
         </div>
         <aura:if isTrue="{!and(v.advanceButton, v.displayMode == 'wizard')}">
             <lightning:button aura:id="advanceButton"
-                class="{!'slds-path__mark-complete slds-no-flex sw-advance-button slds-m-left--small' + if(v.toggleButtonStyle == true, '', ' slds-path__mark-current') + if(v.body[0] != null, ' slds-m-horizontal--small', ' slds-m-left--small')}"
+                class="{!'slds-path__mark-complete slds-no-flex sw-advance-button slds-m-left_small' + if(v.toggleButtonStyle == true, '', ' slds-path__mark-current') + if(v.body[0] != null, ' slds-m-horizontal_small', ' slds-m-left_small')}"
                 variant="brand"
                 onclick="{!c.advanceButtonClick}"
                 disabled="{!v.error}">
                 <aura:if isTrue="{!v.toggleButtonStyle}">
-                    <lightning:icon variant="bare" class="slds-button__icon slds-button__icon--left" iconName="utility:check" size="x-small"/>
+                    <lightning:icon variant="bare" class="slds-button__icon slds-button__icon_left" iconName="utility:check" size="x-small"/>
                 </aura:if>
                 {!v.advanceButtonText}
             </lightning:button>

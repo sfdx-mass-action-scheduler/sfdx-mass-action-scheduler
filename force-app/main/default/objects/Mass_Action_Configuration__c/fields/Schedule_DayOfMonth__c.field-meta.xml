@@ -4,7 +4,7 @@
     <deprecated>false</deprecated>
     <description>Day of Month component of cron schedule expression. https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_scheduler.htm</description>
     <externalId>false</externalId>
-    <inlineHelpText>Day of Month component of cron schedule expression.</inlineHelpText>
+    <inlineHelpText>Choose which days of the month this action will run.</inlineHelpText>
     <label>Schedule Day</label>
     <length>255</length>
     <required>false</required>

@@ -48,7 +48,7 @@ License: BSD 3-Clause License
         mode="EDIT"
         targetRecord="{!v.ldsComplexRecord}"
         targetFields="{!v.ldsSimpleRecord}"
-        recordUpdated="{!c.doInit}"/>
+        recordUpdated="{!c.onInit}"/>
 
     <!-- Wizard Attributes -->
 
@@ -60,7 +60,7 @@ License: BSD 3-Clause License
     <aura:attribute name="wizardStageNames"
                     type="String[]"
                     description="In the Wizard, the names of the stages."
-                    default="[ 'Choose Source', 'Choose Action', 'Field Mappings', 'Schedule' ]"/>
+                    default="[ 'Details', 'Choose Source', 'Choose Action', 'Field Mappings', 'Schedule' ]"/>
 
     <!-- Source Attributes -->
 
@@ -212,7 +212,7 @@ License: BSD 3-Clause License
 
     <!-- Events -->
 
-    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:handler name="init" value="{!this}" action="{!c.onInit}"/>
 
     <aura:handler name="change" value="{!v.sourceType}" action="{!c.handleSourceTypeChange}"/>
     <aura:handler name="change" value="{!v.targetType}" action="{!c.handleTargetTypeChange}"/>
@@ -239,17 +239,111 @@ License: BSD 3-Clause License
                     stageNames="{!v.wizardStageNames}"
                     activeChevron="{!v.wizardActiveStageIndex}"
                     displayMode="wizard"
+                    collapseExpandButton="false"
                     disableForwardNavOnIncomplete="true"
-                    processComplete="false"/>
+                    processComplete="false">
+
+                    <!--<aura:if isTrue="{!equals( v.wizardActiveStageIndex, 0 )}">-->
+                        <!-- TODO coaching for each step like when to use reports vs. list views, gotchas, etc -->
+                    <!--</aura:if>-->
+
+                </c:strike_wizard>
 
             </div>
         </div>
 
         <aura:if isTrue="{!not( empty( v.record ) )}">
 
-            <!-- Stage: Choose Source -->
+            <!-- Stage: Details -->
 
             <aura:if isTrue="{!equals( v.wizardActiveStageIndex, 0 )}">
+
+                <div class="slds-grid slds-p-horizontal_medium">
+
+                    <div class="slds-col">
+                        <c:slds_section title="Detail Information"/>
+                    </div>
+
+                </div>
+
+                <div class="slds-grid slds-p-horizontal_medium">
+
+                    <div class="slds-col">
+                        <div class="slds-form slds-form_stacked">
+
+                            <c:slds_label label="{!v.objectDescribe.fields.Name.label}"
+                                          helpText="{!v.objectDescribe.fields.Name.helpText}"/>
+                            <lightning:input aura:id="inputName"
+                                name="inputName"
+                                variant="label-hidden"
+                                label="{!v.objectDescribe.fields.Name.label}"
+                                value="{!v.record.name}"
+                                required="true"
+                                type="text"
+                                messageWhenValueMissing="Name is required."
+                                class="slds-p-top_x-small"
+                                onblur="{!c.handleInputNameFieldBlur}"/>
+
+                            <c:slds_label label="{!v.objectDescribe.fields.DeveloperName__c.label}"
+                                          helpText="{!v.objectDescribe.fields.DeveloperName__c.helpText}"/>
+                            <lightning:input aura:id="inputDeveloperName"
+                                name="inputDeveloperName"
+                                variant="label-hidden"
+                                label="{!v.objectDescribe.fields.DeveloperName__c.label}"
+                                value="{!v.record.developerName}"
+                                required="true"
+                                type="text"
+                                messageWhenValueMissing="Unique Name is required."
+                                class="slds-p-top_x-small"/>
+
+                            <c:slds_label label="{!v.objectDescribe.fields.Description__c.label}"
+                                          helpText="{!v.objectDescribe.fields.Description__c.helpText}"/>
+                            <lightning:textarea aura:id="inputDescription"
+                                name="inputDescription"
+                                variant="label-hidden"
+                                label="{!v.objectDescribe.fields.Description__c.label}"
+                                value="{!v.record.description}"
+                                required="false"
+                                class="slds-p-top_x-small"/>
+
+                            <c:slds_label label="{!v.objectDescribe.fields.Active__c.label}"
+                                          helpText="{!v.objectDescribe.fields.Active__c.helpText}"/>
+                            <lightning:input aura:id="inputActive"
+                                name="inputActive"
+                                variant="label-hidden"
+                                label="{!v.objectDescribe.fields.Active__c.label}"
+                                value="{!v.record.active}"
+                                checked="{!v.record.active}"
+                                required="false"
+                                type="checkbox"
+                                class="slds-p-top_x-small"/>
+
+                            <c:slds_label label="{!v.objectDescribe.fields.Batch_Size__c.label}"
+                                          helpText="{!v.objectDescribe.fields.Batch_Size__c.helpText}"/>
+                            <lightning:input aura:id="inputBatchSize"
+                                name="inputBatchSize"
+                                variant="label-hidden"
+                                label="{!v.objectDescribe.fields.Batch_Size__c.label}"
+                                value="{!v.record.batchSize}"
+                                required="true"
+                                type="number"
+                                min="1"
+                                max="200"
+                                messageWhenValueMissing="Batch Size is required."
+                                messageWhenRangeUnderflow="Batch Size must be between 1 and 200."
+                                messageWhenRangeOverflow="Batch Size must be between 1 and 200."
+                                class="slds-p-top_x-small"/>
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </aura:if>
+
+            <!-- Stage: Choose Source -->
+
+            <aura:if isTrue="{!equals( v.wizardActiveStageIndex, 1 )}">
 
                 <div class="slds-grid slds-p-horizontal_medium">
 
@@ -264,39 +358,12 @@ License: BSD 3-Clause License
                     <div class="slds-col">
                         <div class="slds-form slds-form_stacked">
 
-                            <lightning:input aura:id="inputName"
-                                name="inputName"
-                                label="{!v.objectDescribe.fields.Name.label}"
-                                title="{!v.objectDescribe.fields.Name.helpText}"
-                                value="{!v.record.name}"
-                                required="true"
-                                type="text"
-                                messageWhenValueMissing="Name is required."
-                                class="slds-p-top_x-small"
-                                onblur="{!c.handleInputNameFieldBlur}"/>
-
-                            <lightning:input aura:id="inputDeveloperName"
-                                name="inputDeveloperName"
-                                label="{!v.objectDescribe.fields.DeveloperName__c.label}"
-                                title="{!v.objectDescribe.fields.DeveloperName__c.helpText}"
-                                value="{!v.record.developerName}"
-                                required="true"
-                                type="text"
-                                messageWhenValueMissing="Unique Name is required."
-                                class="slds-p-top_x-small"/>
-
-                            <lightning:textarea aura:id="inputDescription"
-                                name="inputDescription"
-                                label="{!v.objectDescribe.fields.Description__c.label}"
-                                title="{!v.objectDescribe.fields.Description.helpText}"
-                                value="{!v.record.description}"
-                                required="false"
-                                class="slds-p-top_x-small"/>
-
+                            <c:slds_label label="{!v.objectDescribe.fields.Source_Type__c.label}"
+                                          helpText="{!v.objectDescribe.fields.Source_Type__c.helpText}"/>
                             <lightning:combobox aura:id="inputSourceType"
                                 name="inputSourceType"
+                                variant="label-hidden"
                                 label="{!v.objectDescribe.fields.Source_Type__c.label}"
-                                title="{!v.objectDescribe.fields.Source_Type__c.helpText}"
                                 value="{!v.sourceType}"
                                 options="{!v.objectDescribe.fields.Source_Type__c.picklistValues}"
                                 placeholder="Select a Source Type"
@@ -306,9 +373,12 @@ License: BSD 3-Clause License
 
                             <aura:if isTrue="{!equals( v.sourceType, 'Report' )}">
 
+                                <c:slds_label label="Report Folder"
+                                              helpText="Choose a folder that has the report to use as the source records."/>
                                 <lightning:combobox aura:id="inputSourceReportFolder"
                                     name="inputSourceReportFolder"
-                                    label="Report Folder - choose a folder that has the report to use as the source records"
+                                    variant="label-hidden"
+                                    label="Report Folder"
                                     value="{!v.sourceReportFolderId}"
                                     options="{!v.sourceReportFolders}"
                                     placeholder="Select a Report Folder"
@@ -316,10 +386,12 @@ License: BSD 3-Clause License
                                     messageWhenValueMissing="Report Folder is required."
                                     class="slds-p-top_x-small"/>
 
+                                <c:slds_label label="Report (tabular format only)"
+                                              helpText="{!v.objectDescribe.fields.Source_Report_ID__c.helpText}"/>
                                 <lightning:combobox aura:id="inputSourceReport"
                                     name="inputSourceReport"
+                                    variant="label-hidden"
                                     label="Report (tabular format only)"
-                                    title="{!v.objectDescribe.fields.Source_Report_ID__c.helpText}"
                                     value="{!v.sourceReportId}"
                                     options="{!v.sourceReports}"
                                     placeholder="Select a Tabular Report"
@@ -327,10 +399,12 @@ License: BSD 3-Clause License
                                     messageWhenValueMissing="Report is required."
                                     class="slds-p-top_x-small"/>
 
+                                <c:slds_label label="Report Column - choose a column that uniquely identifies each record in the report"
+                                              helpText="{!v.objectDescribe.fields.Source_Report_Column_Name__c.helpText}"/>
                                 <lightning:combobox aura:id="inputSourceReportColumn"
                                     name="inputSourceReportColumn"
+                                    variant="label-hidden"
                                     label="Report Column - choose a column that uniquely identifies each record in the report"
-                                    title="{!v.objectDescribe.fields.Source_Report_Column_Name__c.helpText}"
                                     value="{!v.sourceReportColumnName}"
                                     options="{!v.sourceReportColumns}"
                                     placeholder="Select a Report Column"
@@ -342,9 +416,12 @@ License: BSD 3-Clause License
 
                             <aura:if isTrue="{!equals( v.sourceType, 'ListView')}">
 
+                                <c:slds_label label="Object"
+                                              helpText="Choose an object that has the list view to use as the source records."/>
                                 <lightning:combobox aura:id="inputSourceListViewSobjectType"
                                     name="inputSourceListViewSobjectType"
-                                    label="Object - choose an object that has the list view to use as the source records"
+                                    variant="label-hidden"
+                                    label="Object"
                                     value="{!v.sourceListViewSobjectType}"
                                     options="{!v.sourceListViewSobjectTypes}"
                                     placeholder="Select an Object"
@@ -352,10 +429,12 @@ License: BSD 3-Clause License
                                     messageWhenValueMissing="Object is required."
                                     class="slds-p-top_x-small"/>
 
+                                <c:slds_label label="List View"
+                                              helpText="{!v.objectDescribe.fields.Source_List_View_ID__c.helpText}"/>
                                 <lightning:combobox aura:id="inputSourceListView"
                                     name="inputSourceListView"
+                                    variant="label-hidden"
                                     label="List View"
-                                    title="{!v.objectDescribe.fields.Source_List_View_ID__c.helpText}"
                                     value="{!v.sourceListViewId}"
                                     options="{!v.sourceListViews}"
                                     placeholder="Select a List View"
@@ -385,7 +464,7 @@ License: BSD 3-Clause License
 
             <!-- Stage: Choose Action -->
 
-            <aura:if isTrue="{!equals( v.wizardActiveStageIndex, 1 )}">
+            <aura:if isTrue="{!equals( v.wizardActiveStageIndex, 2 )}">
 
                 <div class="slds-grid slds-p-horizontal_medium">
 
@@ -400,10 +479,12 @@ License: BSD 3-Clause License
                     <div class="slds-col">
                         <div class="slds-form slds-form_stacked">
 
+                            <c:slds_label label="Action Type"
+                                          helpText="{!v.objectDescribe.fields.Target_Type__c.helpText}"/>
                             <lightning:combobox aura:id="inputTargetType"
                                 name="inputTargetType"
+                                variant="label-hidden"
                                 label="Action Type"
-                                title="{!v.objectDescribe.fields.Target_Type__c.helpText}"
                                 value="{!v.targetType}"
                                 options="{!v.objectDescribe.fields.Target_Type__c.picklistValues}"
                                 placeholder="Select an Action Type"
@@ -429,10 +510,12 @@ License: BSD 3-Clause License
                             </aura:if>
 
                             <aura:if isTrue="{!v.targetTypeRequiresSobject}">
+                                <c:slds_label label="Object"
+                                              helpText="Choose an object that has the custom actions to run on the source records."/>
                                 <lightning:combobox aura:id="inputTargetSobjectType"
                                     name="inputTargetSobjectType"
-                                    label="Object - choose an object that has the custom actions to invoke on the source records"
-                                    title=""
+                                    variant="label-hidden"
+                                    label="Object"
                                     value="{!v.targetSobjectType}"
                                     options="{!v.targetSobjectTypes}"
                                     placeholder="Select an Object"
@@ -442,10 +525,12 @@ License: BSD 3-Clause License
                             </aura:if>
 
                             <aura:if isTrue="{!v.isValidToRenderTargetInvocableActions}">
+                                <c:slds_label label="Action"
+                                              helpText="Choose the specific action to run on the source records."/>
                                 <lightning:combobox aura:id="inputTargetAction"
                                     name="inputTargetAction"
+                                    variant="label-hidden"
                                     label="Action"
-                                    title=""
                                     value="{!v.targetInvocableAction}"
                                     options="{!v.targetInvocableActions}"
                                     placeholder="Select an Action"
@@ -463,7 +548,7 @@ License: BSD 3-Clause License
 
             <!-- Stage: Field Mappings -->
 
-            <aura:if isTrue="{!equals( v.wizardActiveStageIndex, 2 )}">
+            <aura:if isTrue="{!equals( v.wizardActiveStageIndex, 3 )}">
 
                 <div class="slds-grid slds-p-horizontal_medium">
 
@@ -514,9 +599,7 @@ License: BSD 3-Clause License
                                         <span class="slds-m-right_xx-small">{!targetFieldMapping.targetField.label}</span>
 
                                         <aura:if isTrue="{!not(empty(targetFieldMapping.targetField.description))}">
-                                            <lightning:helptext
-                                                iconName="utility:info"
-                                                content="{!targetFieldMapping.targetField.description}"/>
+                                            <lightning:helptext content="{!targetFieldMapping.targetField.description}"/>
                                         </aura:if>
 
                                     </td>
@@ -531,7 +614,7 @@ License: BSD 3-Clause License
 
             <!-- Stage: Schedule -->
 
-            <aura:if isTrue="{!equals( v.wizardActiveStageIndex, 3 )}">
+            <aura:if isTrue="{!equals( v.wizardActiveStageIndex, 4 )}">
 
                 <div class="slds-grid slds-p-horizontal_medium">
 
@@ -546,16 +629,18 @@ License: BSD 3-Clause License
                     <div class="slds-col">
                         <div class="slds-form slds-form_stacked">
 
+                            <c:slds_label label="{!v.objectDescribe.fields.Schedule_Frequency__c.label}"
+                                          helpText="{!v.objectDescribe.fields.Schedule_Frequency__c.helpText}"/>
                             <lightning:radioGroup aura:id="inputScheduleFrequency"
                                 name="inputScheduleFrequency"
+                                variant="label-hidden"
                                 label="{!v.objectDescribe.fields.Schedule_Frequency__c.label}"
-                                title="{!v.objectDescribe.fields.Schedule_Frequency__c.helpText}"
                                 value="{!v.scheduleSelectionsFrequency}"
                                 options="{!v.objectDescribe.fields.Schedule_Frequency__c.picklistValues}"
                                 type="button"
                                 required="true"
                                 messageWhenValueMissing="Schedule Frequency is required."
-                                class="slds-p-top_x-small"/>
+                                class="slds-p-top_x-small label-hidden"/>
 
                             <!--
                                 Unfortunately, the radioGroup component changes the value type to an array,
@@ -577,10 +662,12 @@ License: BSD 3-Clause License
 
                                         <div class="slds-col slds-m-vertical_medium">
 
+                                            <c:slds_label label="{!v.objectDescribe.fields.Schedule_HourOfDay__c.label}"
+                                                          helpText="{!v.objectDescribe.fields.Schedule_HourOfDay__c.helpText}"/>
                                             <lightning:dualListbox aura:id="inputScheduleHourOfDay"
                                                 name="inputScheduleHourOfDay"
+                                                variant="label-hidden"
                                                 label="{!v.objectDescribe.fields.Schedule_HourOfDay__c.label}"
-                                                title="{!v.objectDescribe.fields.Schedule_HourOfDay__c.helpText}"
                                                 sourceLabel="Available Options"
                                                 selectedLabel="Selected Options"
                                                 options="{!v.scheduleOptionsHourOfDay}"
@@ -596,10 +683,12 @@ License: BSD 3-Clause License
 
                                         <div class="slds-col slds-m-vertical_medium">
 
+                                            <c:slds_label label="{!v.objectDescribe.fields.Schedule_DayOfWeek__c.label}"
+                                                          helpText="{!v.objectDescribe.fields.Schedule_DayOfWeek__c.helpText}"/>
                                             <lightning:dualListbox aura:id="inputScheduleWeekday"
                                                 name="inputScheduleWeekday"
+                                                variant="label-hidden"
                                                 label="{!v.objectDescribe.fields.Schedule_DayOfWeek__c.label}"
-                                                title="{!v.objectDescribe.fields.Schedule_DayOfWeek__c.helpText}"
                                                 sourceLabel="Available Options"
                                                 selectedLabel="Selected Options"
                                                 options="{!v.scheduleOptionsDayOfWeek}"
@@ -614,10 +703,12 @@ License: BSD 3-Clause License
 
                                         <div class="slds-col slds-m-vertical_medium">
 
+                                            <c:slds_label label="{!v.objectDescribe.fields.Schedule_DayOfMonth__c.label}"
+                                                          helpText="{!v.objectDescribe.fields.Schedule_DayOfMonth__c.helpText}"/>
                                             <lightning:dualListbox aura:id="inputScheduleDayOfMonth"
                                                 name="inputScheduleDayOfMonth"
+                                                variant="label-hidden"
                                                 label="{!v.objectDescribe.fields.Schedule_DayOfMonth__c.label}"
-                                                title="{!v.objectDescribe.fields.Schedule_DayOfMonth__c.helpText}"
                                                 sourceLabel="Available Options"
                                                 selectedLabel="Selected Options"
                                                 options="{!v.scheduleOptionsDayOfMonth}"
@@ -632,10 +723,12 @@ License: BSD 3-Clause License
 
                                         <div class="slds-col slds-m-vertical_medium">
 
+                                            <c:slds_label label="{!v.objectDescribe.fields.Schedule_MonthOfYear__c.label}"
+                                                          helpText="{!v.objectDescribe.fields.Schedule_MonthOfYear__c.helpText}"/>
                                             <lightning:dualListbox aura:id="inputScheduleMonthOfYear"
                                                 name="inputScheduleMonthOfYear"
+                                                variant="label-hidden"
                                                 label="{!v.objectDescribe.fields.Schedule_MonthOfYear__c.label}"
-                                                title="{!v.objectDescribe.fields.Schedule_MonthOfYear__c.helpText}"
                                                 sourceLabel="Available Options"
                                                 selectedLabel="Selected Options"
                                                 options="{!v.scheduleOptionsMonthOfYear}"
@@ -655,10 +748,12 @@ License: BSD 3-Clause License
 
                                 <div class="slds-p-top_medium">
 
+                                    <c:slds_label label="{!v.objectDescribe.fields.Schedule_Cron__c.label}"
+                                                  helpText="{!v.objectDescribe.fields.Schedule_Cron__c.helpText}"/>
                                     <lightning:input aura:id="inputScheduleCron"
                                          name="inputScheduleCron"
+                                         variant="label-hidden"
                                          label="{!v.objectDescribe.fields.Schedule_Cron__c.label}"
-                                         title="{!v.objectDescribe.fields.Schedule_Cron__c.helpText}"
                                          type="text"
                                          value="{!v.record.scheduleCron}"
                                          required="true"/>
@@ -692,7 +787,7 @@ License: BSD 3-Clause License
                         onclick="{!c.handleNavigationButtonClick}"/>
                 </div>
 
-                <aura:if isTrue="{!lessthan( v.wizardActiveStageIndex, 3 )}">
+                <aura:if isTrue="{!lessthan( v.wizardActiveStageIndex, ( v.wizardStageNames.length - 1 ) )}">
 
                     <div class="slds-col slds-p-horizontal_medium">
                         <lightning:button aura:id="wizardNextButton"
@@ -705,7 +800,7 @@ License: BSD 3-Clause License
 
                 </aura:if>
 
-                <aura:if isTrue="{!equals( v.wizardActiveStageIndex, 3 )}">
+                <aura:if isTrue="{!equals( v.wizardActiveStageIndex, ( v.wizardStageNames.length - 1 ) )}">
 
                     <div class="slds-col slds-p-horizontal_medium">
                         <lightning:button aura:id="wizardSaveButton"

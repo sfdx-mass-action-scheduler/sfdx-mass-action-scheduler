@@ -390,7 +390,7 @@ public with sharing class MA_EditConfigCmpController {
                 'name' => fieldDescribe.getName(),
                 'localName' => fieldDescribe.getLocalName(),
                 'label' => fieldDescribe.getLabel(),
-                'helpText' => fieldDescribe.getInlineHelpText(),
+                'helpText' => ( String.isBlank( fieldDescribe.getInlineHelpText() ) ? '' : fieldDescribe.getInlineHelpText() ),
                 'picklistValues' => getPicklistValuesMaps( fieldDescribe.getPicklistValues() )
             });
 

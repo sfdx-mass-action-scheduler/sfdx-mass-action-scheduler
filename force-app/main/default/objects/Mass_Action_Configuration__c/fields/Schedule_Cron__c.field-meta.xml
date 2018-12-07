@@ -4,7 +4,7 @@
     <deprecated>false</deprecated>
     <description>Schedule Cron Expression https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_scheduler.htm</description>
     <externalId>false</externalId>
-    <inlineHelpText>(advanced) Specify your own cron expression to schedule this action</inlineHelpText>
+    <inlineHelpText>Specify your own cron expression to schedule this action. See &quot;Apex Scheduler&quot; in the Salesforce Apex Developer Guide for full details on supported format.</inlineHelpText>
     <label>Schedule Cron</label>
     <length>255</length>
     <required>false</required>

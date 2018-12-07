@@ -5,7 +5,7 @@ GitHub: https://github.com/douglascayers/sfdx-mass-action-scheduler
 License: BSD 3-Clause License
  */
 ({
-    doInit : function( component, event, helper ) {
+    onInit : function( component, event, helper ) {
 
         var recordId = component.get( 'v.recordId' );
 
@@ -115,11 +115,19 @@ License: BSD 3-Clause License
             var isValidToProceed = true;
             var inputCmps = []; // fields to validate to proceed to next step
 
-            if ( currentStageIndex === 0 ) {                // Choose Source
+            if ( currentStageIndex === 0 ) {                // Details
 
                 inputCmps = [
                     component.find( 'inputName' ),
                     component.find( 'inputDeveloperName' ),
+                    component.find( 'inputDescription' ),
+                    component.find( 'inputActive' ),
+                    component.find( 'inputBatchSize' )
+                ];
+
+            } else if ( currentStageIndex === 1 ) {         // Choose Source
+
+                inputCmps = [
                     component.find( 'inputSourceType' ),
                     component.find( 'inputSourceReportFolder' ),
                     component.find( 'inputSourceReport' ),
@@ -128,7 +136,7 @@ License: BSD 3-Clause License
                     component.find( 'inputSourceListView' )
                 ];
 
-            } else if ( currentStageIndex === 1 ) {         // Choose Action
+            } else if ( currentStageIndex === 2 ) {         // Choose Action
 
                 inputCmps = [
                     component.find( 'inputTargetType' ),
@@ -136,7 +144,7 @@ License: BSD 3-Clause License
                     component.find( 'inputTargetAction' )
                 ];
 
-            } else if ( currentStageIndex === 2 ) {         // Field Mappings
+            } else if ( currentStageIndex === 3 ) {         // Field Mappings
 
                 var inputSourceFieldNames = component.find( 'inputMappingSourceFieldName' );
 
@@ -160,7 +168,7 @@ License: BSD 3-Clause License
 
                 // if advancing to field mappings section then
                 // determine the action inputs and any current mappings
-                if ( currentStageIndex === 1 ) {
+                if ( currentStageIndex === 2 ) {
                     helper.renderTargetFieldMappings( component );
                 }
 

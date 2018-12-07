@@ -12,13 +12,16 @@ License: BSD 3-Clause License
                     type="String"
                     description="The ID of the record to be displayed. Provided by force:hasRecordId interface."/>
 
+    <aura:attribute name="record"
+                    type="Mass_Action_Configuration__c"/>
+
+    <!-- Events -->
+
+    <aura:handler name="init" value="{!this}" action="{!c.onInit}"/>
+
     <!-- Markup -->
 
-    <lightning:card >
-
-        <aura:set attribute="title">
-            Run Mass Action now?
-        </aura:set>
+    <lightning:card title="Run Mass Action Now?">
 
         <aura:set attribute="footer">
 
@@ -28,6 +31,7 @@ License: BSD 3-Clause License
 
             <lightning:button label="Run"
                               variant="brand"
+                              disabled="{!not(v.record.active)}"
                               onclick="{!c.handleRunButtonClick}"/>
 
         </aura:set>
@@ -36,9 +40,18 @@ License: BSD 3-Clause License
 
         </aura:set>
 
-        <p class="slds-p-horizontal_small">
+        <p class="slds-p-around_small">
             Submits background batch job that invokes the target action on the source records.
         </p>
+
+        <aura:if isTrue="{!not(v.record.active)}">
+            <div class="slds-notify slds-notify_alert slds-theme_warning" role="alert">
+                <div class="slds-notify__content">
+                    <p>This Mass Action can't be run because it is inactive.</p>
+                    <p>To run, activate this Mass Action then try again.</p>
+                </div>
+            </div>
+        </aura:if>
 
     </lightning:card>
 

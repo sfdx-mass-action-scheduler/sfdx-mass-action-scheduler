@@ -1,4 +1,18 @@
 ({
+    onInit : function( component, event, helper ) {
+
+        helper.enqueueAction( component, 'c.getConfiguration', {
+
+            'recordId' : component.get( 'v.recordId' )
+
+        }).then( $A.getCallback( function( record ) {
+
+            component.set( 'v.record', record );
+
+        }));
+
+    },
+
     handleRunButtonClick : function( component, event, helper ) {
 
         helper.enqueueAction( component, 'c.enqueueAction', {
