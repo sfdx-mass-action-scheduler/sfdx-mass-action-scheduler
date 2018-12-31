@@ -4,7 +4,7 @@
  * GitHub: https://github.com/douglascayers/sfdx-mass-action-scheduler
  * License: BSD 3-Clause License
  */
-global class MA_RunConfigInvocable {
+global with sharing class MA_RunConfigInvocable {
 
     @InvocableMethod(
         label = 'MAS: Run Mass Action'
@@ -87,7 +87,7 @@ global class MA_RunConfigInvocable {
 
     // ------------------------------------------------------------
 
-    global class Request {
+    global inherited sharing class Request {
 
         @InvocableVariable(
             label = 'Configuration Unique Name'
@@ -105,7 +105,7 @@ global class MA_RunConfigInvocable {
 
     }
 
-    global class Response {
+    global inherited sharing class Response {
 
         @InvocableVariable(
             label = 'Job ID'

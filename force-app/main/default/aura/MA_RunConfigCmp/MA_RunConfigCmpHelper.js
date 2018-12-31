@@ -18,16 +18,14 @@
         // https://developer.salesforce.com/docs/atlas.en-us.lightning.meta/lightning/ref_force_showToast.htm
 
         $A.get( 'e.force:showToast' ).setParams({
-            title : title,
-            message : message,
+            title : ( title || 'Message' ),
+            message : ( message || '' ),
             type : ( type || 'info' )
         }).fire();
 
     },
 
     navigateToRecord : function( recordId ) {
-
-        console.log( 'navigating to record: ' + recordId );
 
         var event = $A.get( 'e.force:navigateToSObject' );
 

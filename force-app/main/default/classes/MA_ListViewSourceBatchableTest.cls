@@ -70,7 +70,13 @@ private class MA_ListViewSourceBatchableTest {
 
         insert configFieldMapping;
 
-        Test.setMock( HttpCalloutMock.class, new MA_InvokeActionHttpRequestMock() );
+        Account acct = new Account(
+            Name = 'Test Account'
+        );
+
+        insert acct;
+
+        Test.setMock( HttpCalloutMock.class, new MA_HttpCalloutMock() );
 
         Test.startTest();
 
@@ -126,7 +132,13 @@ private class MA_ListViewSourceBatchableTest {
 
         insert configFieldMapping;
 
-        Test.setMock( HttpCalloutMock.class, new MA_InvokeActionHttpRequestMock() );
+        Account acct = new Account(
+            Name = 'Test Account'
+        );
+
+        insert acct;
+
+        Test.setMock( HttpCalloutMock.class, new MA_HttpCalloutMock() );
 
         Test.startTest();
 

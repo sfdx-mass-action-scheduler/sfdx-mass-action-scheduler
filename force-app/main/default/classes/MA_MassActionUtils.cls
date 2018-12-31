@@ -5,9 +5,9 @@
  * License: BSD 3-Clause License
  */
 /*
- * Most code coverage comes from MA_EditConfigCmpControllerTest
+ * Most code coverage comes from MA_EditConfigRestControllerTest
  */
-public with sharing class MA_MassActionUtils {
+public inherited sharing class MA_MassActionUtils {
 
     // -- private --
 
@@ -21,6 +21,25 @@ public with sharing class MA_MassActionUtils {
     public static final String EMPTY_STRING = '';
 
     public static final String REST_API_SERVICES_DATA_URL = Url.getOrgDomainUrl().toExternalForm() + '/services/data/v44.0';
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * Returns the URL for use with invoking the Salesforce REST APIs.
+     *
+     * @param namedCredential
+     *      (optional) Name of a Named Credential to use, without the 'callout:' prefix.
+     *      If blank then the org's domain URL is used instead.
+     *
+     * @return URL for use with Salesforce REST API (e.g. https://yourinstance.my.salesforce.com/services/data/v44.0 or callout:YourNamedCredential)
+     */
+    public static String getCalloutRestEndpointURL( String namedCredential ) {
+        if ( String.isBlank( namedCredential ) ) {
+            return REST_API_SERVICES_DATA_URL;
+        } else {
+            return 'callout:' + namedCredential;
+        }
+    }
 
     // ------------------------------------------------------------------------
 
@@ -47,6 +66,7 @@ public with sharing class MA_MassActionUtils {
                 Source_Report_ID__c,
                 Source_Report_Column_Name__c,
                 Source_List_View_ID__c,
+                Source_SOQL_Query__c,
                 // target
                 Target_Type__c,
                 Target_SObject_Type__c,
@@ -135,15 +155,17 @@ public with sharing class MA_MassActionUtils {
 
         for ( Map<String, Object> sourceRow : sourceRows ) {
 
+            Map<String, Object> sourceRowLowerCaseKeyMap = MA_MapUtils.convertKeysToLowercase( sourceRow );
+
             Map<String, Object> targetRow = new Map<String, Object>();
 
             for ( Mass_Action_Mapping__c mapping : mappings ) {
 
-                if ( !sourceRow.containsKey( mapping.source_field_name__c ) ) {
+                if ( !sourceRowLowerCaseKeyMap.containsKey( mapping.source_field_name__c ) ) {
                     throw new MA_Exceptions.NoSourceFieldException( sourceRow, mapping.source_field_name__c );
                 }
 
-                targetRow.put( mapping.target_field_name__c, sourceRow.get( mapping.source_field_name__c ) );
+                targetRow.put( mapping.target_field_name__c, sourceRowLowerCaseKeyMap.get( mapping.source_field_name__c ) );
 
             }
 
@@ -566,6 +588,110 @@ public with sharing class MA_MassActionUtils {
             );
 
         }
+
+        return endpoint;
+    }
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * Executes a SOQL query via REST API via http callout.
+     * https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/dome_query.htm
+     *
+     * @param baseURL
+     *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
+     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v44.0').
+     * @param query
+     *      SOQL query to execute.
+     * @param batchSize
+     *      The preferred max number of records to return at a time.
+     *      Choose a value between 200 and 1,000.
+     *      If there are more records than requested, you'll need to use the nextRecordsUrl to retrieve them.
+     *      https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/headers_queryoptions.htm
+     */
+    public static Map<String, Object> executeSoqlQuery( String baseURL, String query, Integer batchSize ) {
+
+        System.debug( 'MA_MassActionUtils.executeSoqlQuery' );
+        System.debug( 'baseURL: ' + baseURL );
+        System.debug( 'query: ' + query );
+        System.debug( 'batchSize: ' + batchSize );
+
+        try {
+
+            HttpRequest req = buildExecuteSoqlQueryHttpRequest( baseURL, query, batchSize );
+            HttpResponse res = sendHttpRequest( req );
+
+            return (Map<String, Object>) JSON.deserializeUntyped( res.getBody() );
+
+        } catch ( MA_Exceptions.InvokeActionException e ) {
+
+            Exception throwable = e;
+
+            // extract the soql error message from "[ { errorCode: xxx, message: yyy } ]"
+            List<Object> errors = (List<Object>) JSON.deserializeUntyped( e.response.getBody() );
+            for ( Object item : errors ) {
+                Map<String, Object> err = (Map<String, Object>) item;
+                throwable = new MA_Exceptions.SOQLQueryRestApiException(
+                    query,
+                    (String) err.get( 'errorType' ),
+                    (String) err.get( 'message' )
+                );
+            }
+
+            throw throwable;
+
+        }
+    }
+
+    /**
+     * Creates an HttpRequest with a configured enpoint to execute a SOQL query
+     * against the REST API. Also sets common headers for an authorized JSON request.
+     *
+     * @param baseURL
+     *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
+     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v44.0').
+     * @param query
+     *      SOQL query to execute.
+     * @param batchSize
+     *      The preferred max number of records to return at a time.
+     *      Choose a value between 200 and 1,000.
+     *      If there are more records than requested, you'll need to use the nextRecordsUrl to retrieve them.
+     *      https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/headers_queryoptions.htm
+     */
+    private static HttpRequest buildExecuteSoqlQueryHttpRequest( String baseURL, String query, Integer batchSize ) {
+
+        HttpRequest req = new HttpRequest();
+        req.setEndpoint( getExecuteSoqlQueryHttpRequestEndpoint( baseURL, query ) );
+        req.setMethod( 'GET' );
+        req.setTimeout( 120000 ); // max wait of 2 mins
+        req.setCompressed( true );
+        req.setHeader( 'Content-Type', 'application/json' );
+        req.setHeader( 'Accepts', 'application/json' );
+        req.setHeader( 'Authorization', 'Bearer ' + UserInfo.getSessionId() );
+
+        if ( batchSize != null ) {
+            req.setHeader( 'Sforce-Query-Options', 'batchSize=' + batchSize );
+        }
+
+        return req;
+    }
+
+    /**
+     * Creates an endpoint URL to execute a SOQL query against the REST API.
+     * Also sets common headers for an authorized JSON request.
+     *
+     * @param baseURL
+     *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
+     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v44.0').
+     * @param query
+     *      SOQL query to execute.
+     */
+    private static String getExecuteSoqlQueryHttpRequestEndpoint( String baseURL, String query ) {
+
+        String endpoint = String.format(
+            '{0}/query/?q={1}',
+            new String[] { baseURL, EncodingUtil.urlEncode( query, 'utf-8' ) }
+        );
 
         return endpoint;
     }

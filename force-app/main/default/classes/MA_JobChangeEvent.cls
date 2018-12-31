@@ -4,27 +4,26 @@
  * GitHub: https://github.com/douglascayers/sfdx-mass-action-scheduler
  * License: BSD 3-Clause License
  */
-public class MA_InvocableActionInputsHttpRequestMock implements HttpCalloutMock {
+/**
+ * Exists only to support a strongly typed payload
+ * that's easy to use in Apex for the Mass_Action_Job_Change_Event__e platform event.
+ */
+public inherited sharing class MA_JobChangeEvent {
 
-    public HttpResponse respond( HttpRequest request ) {
+    /**
+     * Mass Action Configuration record IDs whose scheduled jobs to change.
+     */
+    public List<ID> configIds { get; set; }
 
-        HttpResponse response = new HttpResponse();
-        response.setStatus( 'OK' );
-        response.setStatusCode( 200 );
+    public ScheduleOperation scheduleChangeOperation { get; set; }
 
-        response.setBody(
-            ' { ' +
-            '   "inputs" : [ { ' +
-            '     "label" : "Test Input", ' +
-            '     "name" : "Test_Input", ' +
-            '     "type" : "STRING", ' +
-            '     "required" : true, ' +
-            '     "description" : null ' +
-            '   } ] ' +
-            ' } '
-        );
+    public MA_JobChangeEvent() {
+        this.configIds = new List<ID>();
+    }
 
-        return response;
+    public enum ScheduleOperation {
+        SCHEDULE,
+        UNSCHEDULE
     }
 
 }

@@ -8,7 +8,7 @@
  * Represents some parts of a JSON response from List View REST API.
  * "/services/data/<version>/sobjects/<sobjectName>/listviews/<listViewId>/describe"
  */
-public class MA_ListViewDescribeResult {
+public inherited sharing class MA_ListViewDescribeResult {
 
     public ID id { get; set; }
 

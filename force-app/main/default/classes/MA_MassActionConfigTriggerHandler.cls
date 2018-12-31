@@ -137,30 +137,7 @@ public with sharing class MA_MassActionConfigTriggerHandler {
 
         System.debug( 'MA_MassActionConfigTriggerHandler.unscheduleMassActions' );
 
-        Set<String> jobNames = new Set<String>();
-        for ( Mass_Action_Configuration__c config : configs ) {
-            jobNames.add( 'MA_MassAction_' + config.Id );
-        }
-
-        for ( List<CronTrigger> cronTriggers : [
-            SELECT
-                Id, State, CronJobDetail.Name
-            FROM
-                CronTrigger
-            WHERE
-                CronJobDetail.Name IN :jobNames
-        ]) {
-
-            System.debug( 'CronTriggers to abort: ' + cronTriggers );
-
-            for ( CronTrigger cronTrigger : cronTriggers ) {
-
-                System.debug( 'Aborting job: ' + cronTrigger );
-                System.abortJob( cronTrigger.Id );
-
-            }
-
-        }
+        publishJobChangeEvent( configs, MA_JobChangeEvent.ScheduleOperation.UNSCHEDULE );
 
     }
 
@@ -168,46 +145,32 @@ public with sharing class MA_MassActionConfigTriggerHandler {
 
         System.debug( 'MA_MassActionConfigTriggerHandler.scheduleMassActions' );
 
-        for ( Mass_Action_Configuration__c config : configs ) {
-
-            String jobName = 'MA_MassAction_' + config.Id;
-            String cron = buildCron( config );
-
-            System.schedule( jobName, cron, new MA_MassActionSchedulable( config.Id ) );
-
-        }
-
+        publishJobChangeEvent( configs, MA_JobChangeEvent.ScheduleOperation.SCHEDULE );
     }
 
-    private static String buildCron( Mass_Action_Configuration__c config ) {
+    /**
+     * When users save Mass Action Configurations using the MA_EditConfigCmp component,
+     * it invokes our custom Apex REST endpoint via the LC_API component. Therefore, this
+     * trigger handler ends up being invoked from within the execution context of Apex REST.
+     *
+     * Due to known issue that execution contexts started from Apex REST endpoints
+     * cannot schedule or abort jobs, then our workaround is to use platform events
+     * to move into another execution context.
+     * https://success.salesforce.com/issues_view?id=a1p30000000SyhIAAS
+     */
+    private static void publishJobChangeEvent( List<Mass_Action_Configuration__c> configs, MA_JobChangeEvent.ScheduleOperation scheduleOperation ) {
 
-        System.debug( 'Build Cron: ' + config );
+        System.debug( 'MA_MassActionConfigTriggerHandler.publishJobChangeEvent' );
+        System.debug( 'scheduleOperation=' + scheduleOperation );
 
-        String cron = '';
+        MA_JobChangeEvent eventPayload = new MA_JobChangeEvent();
+        eventPayload.configIds = new List<ID>( new Map<ID, Mass_Action_Configuration__c>( configs ).keySet() );
+        eventPayload.scheduleChangeOperation = scheduleOperation;
 
-        if ( config.Schedule_Frequency__c == 'Scheduled' ) {
+        EventBus.publish( new Mass_Action_Job_Change_Event__e(
+            Payload__c = JSON.serialize( eventPayload )
+        ));
 
-            cron = String.format(
-                '{0} {1} {2} {3} {4} {5}',
-                new String[] {
-                    config.Schedule_SecondOfMinute__c,
-                    config.Schedule_MinuteOfHour__c,
-                    config.Schedule_HourOfDay__c,
-                    config.Schedule_DayOfMonth__c,
-                    config.Schedule_MonthOfYear__c,
-                    config.Schedule_DayOfWeek__c
-                }
-            );
-
-        } else if ( config.Schedule_Frequency__c == 'Custom' ) {
-
-            cron = config.Schedule_Cron__c;
-
-        }
-
-        System.debug( 'Cron: ' + cron );
-
-        return cron;
     }
 
 }

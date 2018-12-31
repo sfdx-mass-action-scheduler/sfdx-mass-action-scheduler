@@ -19,6 +19,10 @@
                 <behavior>Edit</behavior>
                 <field>DeveloperName__c</field>
             </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Named_Credential__c</field>
+            </layoutItems>
         </layoutColumns>
         <layoutColumns>
             <layoutItems>
@@ -87,6 +91,10 @@
             <layoutItems>
                 <behavior>Edit</behavior>
                 <field>Source_List_View_ID__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Source_SOQL_Query__c</field>
             </layoutItems>
         </layoutColumns>
         <style>OneColumn</style>

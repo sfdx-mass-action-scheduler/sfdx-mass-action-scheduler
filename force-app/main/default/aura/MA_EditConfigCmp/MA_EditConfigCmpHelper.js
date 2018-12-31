@@ -173,13 +173,14 @@ License: BSD 3-Clause License
 
     },
 
-    renderTargetFieldMappings : function( component ) {
+    renderTargetFieldMappingsAsync : function( component ) {
 
         var helper = this;
 
         var sourceType = component.get( 'v.sourceType' );
         var sourceReportId = component.get( 'v.sourceReportId' );
         var sourceListViewId = component.get( 'v.sourceListViewId' );
+        var sourceSoqlQuery = component.get( 'v.record.sourceSoqlQuery' )
 
         var targetType = component.get( 'v.targetType' );
         var targetAction = component.get( 'v.targetInvocableAction' );
@@ -188,24 +189,37 @@ License: BSD 3-Clause License
         var sourceFields = []; // columns from source report or list view
         var targetFields = []; // inputs from target action
 
-        var p = Promise.resolve()
+        return Promise.resolve()
             .then( $A.getCallback( function() {
 
-               if ( sourceType == 'Report' ) {
+                if ( sourceType == 'Report' ) {
 
                     return helper.getReportColumnsAsync( component, sourceReportId )
                         .then( $A.getCallback( function( result ) {
                             sourceFields = result;
+                        })).catch( $A.getCallback( function( err ) {
+                            throw new Error( 'Error getting report columns: ' + helper.unwrapAuraErrorMessage( err ) );
                         }));
 
-               } else if ( sourceType == 'ListView' ) {
+                } else if ( sourceType == 'ListView' ) {
 
                     return helper.getListViewColumnsAsync( component, sourceListViewId )
                         .then( $A.getCallback( function( result ) {
                             sourceFields = result;
+                        })).catch( $A.getCallback( function( err ) {
+                            throw new Error( 'Error getting list view columns: ' + helper.unwrapAuraErrorMessage( err ) );
                         }));
 
-               }
+                } else if ( sourceType == 'SOQL' ) {
+
+                    return helper.getSoqlQueryColumnsAsync( component, sourceSoqlQuery )
+                        .then( $A.getCallback( function( result ) {
+                            sourceFields = result;
+                        })).catch( $A.getCallback( function( err ) {
+                            throw new Error( 'Error getting SOQL query columns: ' + helper.unwrapAuraErrorMessage( err ) );
+                        }));
+
+                }
 
             })).then( $A.getCallback( function() {
 
@@ -259,16 +273,12 @@ License: BSD 3-Clause License
      * Given an array of aura components representing inputs (have a v.value attribute)
      * then returns a validation result object with any errors for each component.
      */
-    validateInputs : function( component, inputCmps ) {
-
-        var validationResult = {
-            hasErrors : false,
-            components : [] // { hasError : boolean, message : string, component : aura.component }
-        };
+    validateInputsAsync : function( component, inputCmps ) {
 
         var sourceType = component.get( 'v.sourceType' );
         var sourceTypeIsReport = ( sourceType === 'Report' );
         var sourceTypeIsListView = ( sourceType === 'ListView' );
+        var sourceTypeIsSoqlQuery = ( sourceType === 'SOQL' );
 
         var targetType = component.get( 'v.targetType' );
         var targetTypeIsFlows = ( targetType === 'Flow' );
@@ -289,9 +299,7 @@ License: BSD 3-Clause License
 
         var objectDescribe = component.get( 'v.objectDescribe' );
 
-        var hasErrors = false;
-
-        inputCmps.forEach( function( inputCmp ) {
+        return Promise.all( inputCmps.map( function( inputCmp ) {
 
             var validationComponentResult = {
                 hasError : false,
@@ -299,35 +307,41 @@ License: BSD 3-Clause License
                 component : inputCmp
             };
 
-            var inputLabel = null;
-            var inputValue = null;
-
-            var inputIsEmpty = false;
-            var inputIsInvalid = false;
-
-            var errorMessage = null;
+            var inputValidityAsync = Promise.resolve( validationComponentResult );
 
             if ( !$A.util.isUndefinedOrNull( inputCmp ) ) {
 
-                inputLabel = inputCmp.get( 'v.label' );
-                inputValue = inputCmp.get( 'v.value' );
-                inputIsEmpty = $A.util.isEmpty( inputValue );
+                var inputLabel = inputCmp.get( 'v.label' );
+                var inputValue = inputCmp.get( 'v.value' );
+
+                var inputIsEmpty = $A.util.isEmpty( inputValue );
+                var inputIsInvalid = !inputCmp.checkValidity();
 
                 // populate a default error message,
                 // but don't assign to the validation component result
                 // unless we indeed determine the input component is invalid
-                if ( inputIsEmpty ) {
-                    errorMessage = inputLabel + ' is required.';
-                }
+                var messageWhenValueMissing = inputLabel + ' is required.';
 
                 switch ( inputCmp.getLocalId() ) {
 
-                    // Source
+                    // Details
 
                     case 'inputName':
                     case 'inputDeveloperName':
+                    case 'inputBatchSize':
+                        inputValidityAsync = Promise.resolve({
+                            'invalid': ( inputIsEmpty || inputIsInvalid ),
+                            'messageWhenInvalid': messageWhenValueMissing
+                        });
+                        break;
+
+                    // Source
+
                     case 'inputSourceType':
-                        inputIsInvalid = ( inputIsEmpty );
+                        inputValidityAsync = Promise.resolve({
+                            'invalid': ( inputIsEmpty || inputIsInvalid ),
+                            'messageWhenInvalid': messageWhenValueMissing
+                        });
                         break;
 
                     // Source: Report
@@ -335,82 +349,150 @@ License: BSD 3-Clause License
                     case 'inputSourceReportFolder':
                     case 'inputSourceReport':
                     case 'inputSourceReportColumn':
-                        inputIsInvalid = ( sourceTypeIsReport && inputIsEmpty );
+                        inputValidityAsync = Promise.resolve({
+                            'invalid': ( sourceTypeIsReport && ( inputIsEmpty || inputIsInvalid ) ),
+                            'messageWhenInvalid': messageWhenValueMissing
+                        });
                         break;
 
                     // Source: List View
 
                     case 'inputSourceListViewSobjectType':
                     case 'inputSourceListView':
-                        inputIsInvalid = ( sourceTypeIsListView && inputIsEmpty );
+                        inputValidityAsync = Promise.resolve({
+                            'invalid': ( sourceTypeIsListView && ( inputIsEmpty || inputIsInvalid ) ),
+                            'messageWhenInvalid': messageWhenValueMissing
+                        });
                         break;
+
+                    // Source: SOQL Query
+
+                    case 'inputSourceSoqlQuery':
+                        inputValidityAsync = Promise.resolve({
+                            'invalid': ( sourceTypeIsSoqlQuery && ( inputIsEmpty || inputIsInvalid ) ),
+                            'messageWhenInvalid': messageWhenValueMissing
+                        });
 
                     // Target
 
                     case 'inputTargetType':
-                        inputIsInvalid = ( inputIsEmpty );
+                        inputValidityAsync = Promise.resolve({
+                            'invalid': ( inputIsEmpty || inputIsInvalid ),
+                            'messageWhenInvalid': messageWhenValueMissing
+                        });
                         break;
 
                     case 'inputTargetSobjectType':
-                        inputIsInvalid = ( targetTypeRequiresSobject && inputIsEmpty );
+                        inputValidityAsync = Promise.resolve({
+                            'invalid': ( targetTypeRequiresSobject && ( inputIsEmpty || inputIsInvalid ) ),
+                            'messageWhenInvalid': messageWhenValueMissing
+                        });
                         break;
 
                     case 'inputTargetAction':
-                        inputIsInvalid = ( targetTypeRequiresAction && inputIsEmpty );
+                        inputValidityAsync = Promise.resolve({
+                            'invalid': ( targetTypeRequiresAction && ( inputIsEmpty || inputIsInvalid ) ),
+                            'messageWhenInvalid': messageWhenValueMissing
+                        });
                         break;
 
                     // Target: Field Mappings
 
                     case 'inputMappingSourceFieldName':
-                        inputIsInvalid = ( inputIsEmpty && inputCmp.get( 'v.required' ) );
+                        inputValidityAsync = Promise.resolve({
+                            'invalid': ( ( inputIsEmpty && inputCmp.get( 'v.required' ) ) || inputIsInvalid ),
+                            'messageWhenInvalid': messageWhenValueMissing
+                        });
                         break;
 
                     // Schedule
 
                     case 'inputScheduleFrequency':
-                        inputIsInvalid = ( inputIsEmpty );
+                        inputValidityAsync = Promise.resolve({
+                            'invalid': ( inputIsEmpty || inputIsInvalid ),
+                            'messageWhenInvalid': messageWhenValueMissing
+                        });
                         break;
 
                     case 'inputScheduleHourOfDay':
-                        inputIsInvalid = ( scheduleFrequenceIsScheduled && inputIsEmpty );
+                        inputValidityAsync = Promise.resolve({
+                            'invalid': ( scheduleFrequenceIsScheduled && ( inputIsEmpty || inputIsInvalid ) ),
+                            'messageWhenInvalid': messageWhenValueMissing
+                        });
                         break;
 
                     case 'inputScheduleWeekday':
-                        inputIsInvalid = ( scheduleFrequenceIsScheduled && ( inputIsEmpty == inputScheduleDayOfMonthIsEmpty ) );
-                        errorMessage = 'Select options for either "' + objectDescribe.fields.Schedule_DayOfWeek__c.label + '" or "' + objectDescribe.fields.Schedule_DayOfMonth__c.label + '" but not both. Exactly one is required.';
+                        inputValidityAsync = Promise.resolve({
+                            'invalid': ( scheduleFrequenceIsScheduled && ( ( inputIsEmpty == inputScheduleDayOfMonthIsEmpty ) || inputIsInvalid ) ),
+                            'messageWhenInvalid': `Select options for either "${objectDescribe.fields.Schedule_DayOfWeek__c.label}" or "${objectDescribe.fields.Schedule_DayOfMonth__c.label}" but not both. Exactly one is required.`
+                        });
                         break;
 
                     case 'inputScheduleDayOfMonth':
-                        inputIsInvalid = ( scheduleFrequenceIsScheduled && ( inputIsEmpty == inputScheduleWeekdayIsEmpty ) );
-                        errorMessage = 'Select options for either "' + objectDescribe.fields.Schedule_DayOfWeek__c.label + '" or "' + objectDescribe.fields.Schedule_DayOfMonth__c.label + '" but not both. Exactly one is required.';
+                        inputValidityAsync = Promise.resolve({
+                            'invalid': ( scheduleFrequenceIsScheduled && ( ( inputIsEmpty == inputScheduleWeekdayIsEmpty ) || inputIsInvalid ) ),
+                            'messageWhenInvalid': `Select options for either "${objectDescribe.fields.Schedule_DayOfWeek__c.label}" or "${objectDescribe.fields.Schedule_DayOfMonth__c.label}" but not both. Exactly one is required.`
+                        });
                         break;
 
                     case 'inputScheduleMonthOfYear':
-                        inputIsInvalid = ( scheduleFrequenceIsScheduled && inputIsEmpty );
+                        inputValidityAsync = Promise.resolve({
+                            'invalid': ( scheduleFrequenceIsScheduled && ( inputIsEmpty || inputIsInvalid ) ),
+                            'messageWhenInvalid': messageWhenValueMissing
+                        });
                         break;
 
                     case 'inputScheduleCron':
-                        inputIsInvalid = ( scheduleFrequenceIsCustom && inputIsEmpty );
+                        inputValidityAsync = Promise.resolve({
+                            'invalid': ( scheduleFrequenceIsCustom && ( inputIsEmpty || inputIsInvalid ) ),
+                            'messageWhenInvalid': messageWhenValueMissing
+                        });
+                        break;
+
+                    // Default
+
+                    default:
+                        inputValidityAsync = Promise.resolve({
+                            'invalid': ( inputIsInvalid ),
+                            'messageWhenInvalid': messageWhenValueMissing
+                        });
                         break;
 
                 }
 
-                if ( inputIsInvalid ) {
-                    validationComponentResult.message = errorMessage;
-                }
+                return Promise.resolve( inputValidityAsync )
+                    .then( $A.getCallback( function( inputValidity ) {
+
+                        // Consider the input invalid based on either our custom logic above
+                        // or that the input component's natural validation (e.g. required="true") is violated.
+                        validationComponentResult.hasError = inputValidity.invalid;
+                        validationComponentResult.messageWhenInvalid = inputValidity.messageWhenInvalid;
+
+                        return validationComponentResult;
+
+                    }));
+
+            } else {
+
+                return inputValidityAsync;
 
             }
 
-            hasErrors = ( hasErrors || inputIsInvalid );
+        })).then( $A.getCallback( function( validationComponentResults ) {
 
-            validationComponentResult.hasError = inputIsInvalid;
-            validationResult.components.push( validationComponentResult );
+            var validationResult = {
+                hasErrors : false,
+                components : validationComponentResults
+            };
 
-        });
+            validationComponentResults.forEach( function( validationComponentResult, idx ) {
+                validationResult.hasErrors = ( validationResult.hasErrors || validationComponentResult.hasError );
+            });
 
-        validationResult.hasErrors = hasErrors;
+            return validationResult;
 
-        return validationResult;
+        }));
+
     },
 
     // -----------------------------------------------------------------
@@ -608,6 +690,127 @@ License: BSD 3-Clause License
 
     // -----------------------------------------------------------------
 
+    validateSoqlQueryAsync : function( component, query ) {
+
+        var helper = this;
+
+        var batchSize = 200; // we want smallest payload returned just to validate query works
+
+        return Promise.resolve()
+            .then( $A.getCallback( function() {
+
+                if ( $A.util.isEmpty( query ) ) {
+
+                    return {
+                        'valid': false,
+                        'message': 'SOQL Query is required.'
+                    };
+
+                } else {
+
+                    return helper.getSoqlQueryResultsAsync( component, query, batchSize )
+                        .then( $A.getCallback( function( result ) {
+
+                            // COUNT() queries do not return records, so can't check their attribute for "AggregateResult",
+                            // but if the totalSize is greater than 0 and records is empty then it's using COUNT() aggregate function
+                            if ( ( result.totalSize > 0 && $A.util.isEmpty( result.records ) ) || /AggregateResult/i.test( result.records[0].attributes.type ) ) {
+
+                                return {
+                                    'valid': false,
+                                    'message': 'SOQL aggregate functions like COUNT, SUM, MIN, MAX, AVG, and others are not supported in Batch Apex.'
+                                };
+
+                            } else {
+
+                                return {
+                                    'valid': true
+                                };
+
+                            }
+
+                        })).catch( $A.getCallback( function( err ) {
+
+                            return {
+                                'valid': false,
+                                'message': helper.unwrapAuraErrorMessage( err )
+                            };
+
+                        }));
+
+                }
+
+            }));
+
+    },
+
+    getSoqlQueryResultsAsync : function( component, query, batchSize ) {
+
+        var helper = this;
+
+        return helper.enqueueRestRequest( component, 'getSoqlQueryResults', {
+            'query' : query,
+            'batchSize' : batchSize
+        });
+
+    },
+
+    getSoqlQueryColumnsAsync : function( component, soqlQuery ) {
+
+        var helper = this;
+
+        return Promise.resolve()
+            .then( $A.getCallback( function() {
+
+                if ( $A.util.isUndefinedOrNull( window.SOQLParse ) ) {
+
+                    throw new Error( 'No `window.SOQLParse` function defined. Ensure the static resource exists and "Freeze JavaScript Prototypes" is disabled in Session Settings, then reload the page.' );
+
+                } else {
+
+                    return helper.validateSoqlQueryAsync( component, soqlQuery )
+                        .then( $A.getCallback( function( validationResult ) {
+
+                            if ( validationResult.valid ) {
+
+                                var parseResult = window.SOQLParse.parse( soqlQuery );
+                                // console.log( JSON.stringify( parseResult, null, 2 ) );
+
+                                var sourceFields = [];
+
+                                parseResult.fields.forEach( function( field, idx ) {
+                                    if ( [ 'FieldReference', 'FunctionCall' ].includes( field.type ) ) {
+                                        var fieldName = ( field.alias || ( field.path && field.path.join( '.' ) ) );
+                                        if ( !$A.util.isEmpty( fieldName ) ) {
+                                            sourceFields.push({
+                                                'label': fieldName,
+                                                'value': fieldName
+                                            });
+                                        }
+                                    }
+                                });
+
+                                return sourceFields;
+
+                            } else {
+
+                                throw new Error( validationResult.message );
+
+                            }
+
+                        })).catch( $A.getCallback( function( err ) {
+
+                            throw new Error( 'Error validating SOQL query: ' + helper.unwrapAuraErrorMessage( err ) );
+
+                        }));
+
+                }
+
+            }));
+
+    },
+
+    // -----------------------------------------------------------------
+
     getNamedCredentialsAsync : function( component ) {
 
         var helper = this;
@@ -668,9 +871,17 @@ License: BSD 3-Clause License
 
         // https://developer.salesforce.com/docs/atlas.en-us.lightning.meta/lightning/ref_force_showToast.htm
 
+        var helper = this;
+
+        // convenience so code can toast errors without
+        // themselves figuring out how to get the real message from them
+        if ( message instanceof Error ) {
+            message = helper.unwrapAuraErrorMessage( message );
+        }
+
         $A.get( 'e.force:showToast' ).setParams({
-            title : title,
-            message : ( message.message || message ),
+            title : ( title || 'Message' ),
+            message : ( message || '' ),
             type : ( type || 'info' )
         }).fire();
 
@@ -736,33 +947,56 @@ License: BSD 3-Clause License
     enqueueRestRequest : function( component, operation, params ) {
 
         var helper = this;
-        var urlInfo = component.get( 'v.urlInfo' );
-        var nsslash = ( urlInfo.namespace ? urlInfo.namespace + '/' : '' );
 
         helper.showSpinner( component );
 
-        return component.find( 'lc_api' ).restRequest({
+        return Promise.resolve()
+            .then( $A.getCallback( function() {
 
-            'url' : urlInfo.orgDomainURL + '/services/apexrest/' + nsslash + 'config/edit?operation=' + operation,
-            'method' : 'POST',
-            'body' : JSON.stringify( ( params || {} ) )
+                // return cached value if we've retrieved it before,
+                // otherwise fetch the url info as a promise
+                var urlInfo = component.get( 'v.urlInfo' );
 
-        }).then( $A.getCallback( function( response ) {
+                if ( $A.util.isEmpty( urlInfo ) ) {
+                    return component.find( 'lc_url' ).getUrlInfoAsync();
+                } else {
+                    return urlInfo;
+                }
 
-            helper.hideSpinner( component );
-            return response.result;
+            })).then( $A.getCallback( function( urlInfo ) {
 
-        })).catch( $A.getCallback( function( err ) {
+                component.set( 'v.urlInfo', urlInfo );
 
-            helper.hideSpinner( component );
-            console.error( 'Error enqueuing rest request: ' + JSON.stringify({
-                'operation' : operation,
-                'params' : params,
-                'error' : err
-            }, null, 2));
-            throw err;
+                var nsslash = ( urlInfo.namespace ? urlInfo.namespace + '/' : '' );
 
-        }));
+                return component.find( 'lc_api' ).restRequest({
+
+                    'url' : urlInfo.orgDomainURL + '/services/apexrest/' + nsslash + 'config/edit?operation=' + operation,
+                    'method' : 'POST',
+                    'body' : JSON.stringify( ( params || {} ) )
+
+                });
+
+            })).then( $A.getCallback( function( response ) {
+
+                helper.hideSpinner( component );
+                if ( response.success ) {
+                    return response.result;
+                } else {
+                    throw new Error( response.error );
+                }
+
+            })).catch( $A.getCallback( function( err ) {
+
+                helper.hideSpinner( component );
+                console.error( 'Error enqueuing rest request: ' + JSON.stringify({
+                    'operation' : operation,
+                    'params' : params,
+                    'error' : err.message
+                }, null, 2));
+                throw err;
+
+            }));
 
     },
 
@@ -845,6 +1079,30 @@ License: BSD 3-Clause License
             }
         }
         return text;
+    },
+
+    /**
+     * When using $A.getCallback() function, if an error is thrown
+     * then it wraps the error in an AuraError. The AuraError, unfortunately,
+     * has a new message property whose value is "Error in $A.getCallback[YOUR_ORIGINAL_ERROR_MESSAGE]".
+     * The only way to obtain YOUR_ORIGINAL_ERROR_MESSAGE is to substring
+     * the AuraError text out of its message.
+     */
+    unwrapAuraErrorMessage : function( err ) {
+
+        var message = err.message;
+
+        var startStr = 'Error in $A.getCallback() [';
+        var endStr = ']';
+
+        var startIdx = err.message.indexOf( startStr );
+        var endIdx = err.message.lastIndexOf( endStr );
+
+        if ( startIdx >= 0 && endIdx >= 0 ) {
+            message = err.message.substring( startIdx + startStr.length, endIdx );
+        }
+
+        return message;
     }
 })
 /*

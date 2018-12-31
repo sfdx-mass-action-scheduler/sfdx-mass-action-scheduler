@@ -35,7 +35,7 @@ private class MA_RunConfigCmpControllerTest {
 
         insert configFieldMapping;
 
-        Test.setMock( HttpCalloutMock.class, new MA_InvokeActionHttpRequestMock() );
+        Test.setMock( HttpCalloutMock.class, new MA_HttpCalloutMock() );
 
         Test.startTest();
 
@@ -75,7 +75,7 @@ private class MA_RunConfigCmpControllerTest {
 
         insert configFieldMapping;
 
-        Test.setMock( HttpCalloutMock.class, new MA_InvokeActionHttpRequestMock() );
+        Test.setMock( HttpCalloutMock.class, new MA_HttpCalloutMock() );
 
         Test.startTest();
 

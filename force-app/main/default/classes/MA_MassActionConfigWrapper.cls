@@ -16,7 +16,7 @@
  *
  * Test code coverage provided by MA_EditConfigCmpControllerTest.
  */
-public class MA_MassActionConfigWrapper {
+public inherited sharing class MA_MassActionConfigWrapper {
 
     @AuraEnabled
     public ID recordId { get; set; }
@@ -55,6 +55,9 @@ public class MA_MassActionConfigWrapper {
 
     @AuraEnabled
     public String sourceListViewID { get; set; }
+
+    @AuraEnabled
+    public String sourceSoqlQuery { get; set; }
 
     // target
 
@@ -135,6 +138,7 @@ public class MA_MassActionConfigWrapper {
             this.sourceReportID = config.Source_Report_ID__c;
             this.sourceReportColumnName = config.Source_Report_Column_Name__c;
             this.sourceListViewID = config.Source_List_View_ID__c;
+            this.sourceSoqlQuery = config.Source_SOQL_Query__c;
             // target
             this.targetType = config.Target_Type__c;
             this.targetSobjectType = config.Target_SObject_Type__c;
@@ -176,6 +180,7 @@ public class MA_MassActionConfigWrapper {
             Source_Report_ID__c = this.sourceReportID,
             Source_Report_Column_Name__c = this.sourceReportColumnName,
             Source_List_View_ID__c = this.sourceListViewID,
+            Source_SOQL_Query__c = this.sourceSoqlQuery,
             // target
             Target_Type__c = this.targetType,
             Target_SObject_Type__c = this.targetSobjectType,
@@ -204,7 +209,7 @@ public class MA_MassActionConfigWrapper {
         return config;
     }
 
-    public class FieldMappingWrapper {
+    public inherited sharing class FieldMappingWrapper {
 
         @AuraEnabled
         public String sourceFieldName { get; set; }

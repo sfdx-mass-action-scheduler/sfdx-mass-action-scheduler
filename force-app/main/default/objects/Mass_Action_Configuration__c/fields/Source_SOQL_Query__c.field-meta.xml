@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Source_SOQL_Query__c</fullName>
+    <description>SOQL query that provides the source records. Applicable when Source Type is SOQL. Max SOQL query length limit: https://developer.salesforce.com/docs/atlas.en-us.salesforce_app_limits_cheatsheet.meta/salesforce_app_limits_cheatsheet/salesforce_app_limits_platform_soslsoql.htm</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Enter SOQL query that identifies the records to process. Note that Aggregate functions (COUNT, SUM, MIN, MAX, AVG, etc.) are not supported by Batch Apex.</inlineHelpText>
+    <label>Source SOQL Query</label>
+    <length>20000</length>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>5</visibleLines>
+</CustomField>

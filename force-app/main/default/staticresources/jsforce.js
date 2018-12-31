@@ -4449,7 +4449,7 @@ var events  = require('events'),
 var defaults = {
   loginUrl: "https://login.salesforce.com",
   instanceUrl: "",
-  version: "42.0"
+  version: "44.0"
 };
 
 /*

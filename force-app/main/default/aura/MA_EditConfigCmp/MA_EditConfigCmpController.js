@@ -14,21 +14,17 @@ License: BSD 3-Clause License
         wizard.moveToStage( 0 );
         component.set( 'v.wizardActiveStageIndex', 0 );
 
-        component.find( 'lc_url' ).getUrlInfoAsync()
-            .then( $A.getCallback( function( urlInfo ) {
-
-                component.set( 'v.urlInfo', urlInfo );
-
-            })).then( $A.getCallback( function() {
+        Promise.resolve()
+            .then( $A.getCallback( function() {
 
                 helper.getObjectDescribeAsync( component )
                     .then( $A.getCallback( function( objectDescribe ) {
 
                         component.set( 'v.objectDescribe', objectDescribe );
 
-                    })).catch( $A.getCallback( function( error ) {
+                    })).catch( $A.getCallback( function( err ) {
 
-                        helper.toastMessage( 'Error Getting Object Describe', error, 'error' );
+                        helper.toastMessage( 'Error Getting Object Describe', err, 'error' );
 
                     }));
 
@@ -53,9 +49,9 @@ License: BSD 3-Clause License
                                         component.set( 'v.sourceReportColumnName', record.sourceReportColumnName );
                                     }
 
-                                })).catch( $A.getCallback( function( error ) {
+                                })).catch( $A.getCallback( function( err ) {
 
-                                    helper.toastMessage( 'Error Getting Report', error, 'error' );
+                                    helper.toastMessage( 'Error Getting Report', err, 'error' );
 
                                 }));
 
@@ -72,9 +68,9 @@ License: BSD 3-Clause License
                                         component.set( 'v.sourceListViewSobjectType', listView.SobjectType );
                                     }
 
-                                })).catch( $A.getCallback( function( error ) {
+                                })).catch( $A.getCallback( function( err ) {
 
-                                    helper.toastMessage( 'Error Getting List View', error, 'error' );
+                                    helper.toastMessage( 'Error Getting List View', err, 'error' );
 
                                 }));
 
@@ -88,11 +84,31 @@ License: BSD 3-Clause License
 
                         helper.initScheduleOptions( component );
 
+                    })).catch( $A.getCallback( function( err ) {
+
+                        helper.toastMessage( 'Error Getting Mass Action Configuration', err, 'error' );
+
                     }));
 
-            })).catch( $A.getCallback( function( error ) {
+                helper.getNamedCredentialsAsync( component )
+                    .then( $A.getCallback( function( namedCredentials ) {
 
-                helper.toastMessage( 'Error Getting URLs', error, 'error' );
+                        var emptyOption = {
+                            'label': 'None',
+                            'value': null
+                        };
+
+                        component.set( 'v.targetNamedCredentials', [ emptyOption ].concat( namedCredentials ) );
+
+                    })).catch( $A.getCallback( function( err ) {
+
+                        helper.toastMessage( 'Error Getting Named Credentials', err, 'error' );
+
+                    }));
+
+            })).catch( $A.getCallback( function( err ) {
+
+                helper.toastMessage( 'Error Getting URLs', err, 'error' );
 
             }));
 
@@ -112,7 +128,6 @@ License: BSD 3-Clause License
 
         } else if ( buttonLabel == 'Next' ) {
 
-            var isValidToProceed = true;
             var inputCmps = []; // fields to validate to proceed to next step
 
             if ( currentStageIndex === 0 ) {                // Details
@@ -122,7 +137,8 @@ License: BSD 3-Clause License
                     component.find( 'inputDeveloperName' ),
                     component.find( 'inputDescription' ),
                     component.find( 'inputActive' ),
-                    component.find( 'inputBatchSize' )
+                    component.find( 'inputBatchSize' ),
+                    component.find( 'inputNamedCredential' )
                 ];
 
             } else if ( currentStageIndex === 1 ) {         // Choose Source
@@ -133,7 +149,8 @@ License: BSD 3-Clause License
                     component.find( 'inputSourceReport' ),
                     component.find( 'inputSourceReportColumn' ),
                     component.find( 'inputSourceListViewSobjectType' ),
-                    component.find( 'inputSourceListView' )
+                    component.find( 'inputSourceListView' ),
+                    component.find( 'inputSourceSoqlQuery' )
                 ];
 
             } else if ( currentStageIndex === 2 ) {         // Choose Action
@@ -158,29 +175,45 @@ License: BSD 3-Clause License
 
             }
 
-            var validationResult = helper.validateInputs( component, inputCmps );
+            helper.validateInputsAsync( component, inputCmps )
+                .then( $A.getCallback( function( validationResult ) {
 
-            isValidToProceed = ( !validationResult.hasErrors && isValidToProceed );
+                    var isValidToProceed = !validationResult.hasErrors;
 
-            if ( isValidToProceed ) {
+                    if ( isValidToProceed ) {
 
-                wizard.advanceProgress();
+                        return Promise.resolve()
+                            .then( $A.getCallback( function() {
 
-                // if advancing to field mappings section then
-                // determine the action inputs and any current mappings
-                if ( currentStageIndex === 2 ) {
-                    helper.renderTargetFieldMappings( component );
-                }
+                                // if advancing to field mappings section then
+                                // determine the action inputs and any current mappings
+                                if ( currentStageIndex === 2 ) {
 
-            } else {
+                                    return helper.renderTargetFieldMappingsAsync( component );
+                                }
 
-                validationResult.components.forEach( function( componentResult ) {
-                    if ( componentResult.hasError ) {
-                        helper.toastMessage( 'Step Incomplete', componentResult.message, 'error' );
+                            })).then( $A.getCallback( function() {
+
+                                wizard.advanceProgress();
+
+                            }));
+
+                    } else {
+
+                        validationResult.components.forEach( function( validationComponentResult ) {
+                            if ( validationComponentResult.hasError ) {
+                                helper.toastMessage( 'Step Incomplete', validationComponentResult.messageWhenInvalid, 'error' );
+                                validationComponentResult.component.reportValidity();
+                            }
+                        });
+
                     }
-                });
 
-            }
+                })).catch( $A.getCallback( function( err ) {
+
+                    helper.toastMessage( 'Error Advancing to Next Step', err, 'error' );
+
+                }));
 
         }
 
@@ -197,50 +230,58 @@ License: BSD 3-Clause License
             component.find( 'inputScheduleCron' )
         ];
 
-        var validationResult = helper.validateInputs( component, inputCmps );
+        helper.validateInputsAsync( component, inputCmps )
+            .then( $A.getCallback( function( validationResult ) {
 
-        var isValidToSave = !validationResult.hasErrors;
+                var isValidToSave = !validationResult.hasErrors;
 
-        if ( isValidToSave ) {
+                if ( isValidToSave ) {
 
-            helper.saveRecordAsync( component )
-                .then( $A.getCallback( function( result ) {
+                    return helper.saveRecordAsync( component )
+                        .then( $A.getCallback( function( result ) {
 
-                    if ( result.success ) {
+                            if ( result.success ) {
 
-                        helper.toastMessage( 'Save Successful', '', 'success' );
+                                helper.toastMessage( 'Save Successful', '', 'success' );
 
-                        // Cause lightning data service to invalidate it's cache.
-                        // I added this after realizing the compact layout was not
-                        // picking up changes to fields by this component.
-                        // I started out firing the force:refreshView event but
-                        // that only worked if the record already existed, if we
-                        // just saved a new record then we needed to still navigate to it.
-                        // And I didn't know how to listen for the refreshView event to complete
-                        // but I did find that I could use a callback in the LDS reloadRecord method.
-                        var lds = component.find( 'lds' );
-                        lds.set( 'v.recordId', result.recordId );
-                        lds.reloadRecord( true, function() {
-                            helper.navigateToRecord( result.recordId );
-                        });
+                                // Cause lightning data service to invalidate it's cache.
+                                // I added this after realizing the compact layout was not
+                                // picking up changes to fields by this component.
+                                // I started out firing the force:refreshView event but
+                                // that only worked if the record already existed, if we
+                                // just saved a new record then we needed to still navigate to it.
+                                // And I didn't know how to listen for the refreshView event to complete
+                                // but I did find that I could use a callback in the LDS reloadRecord method.
+                                var lds = component.find( 'lds' );
+                                lds.set( 'v.recordId', result.recordId );
+                                lds.reloadRecord( true, function() {
+                                    helper.navigateToRecord( result.recordId );
+                                });
 
-                    }
+                            } else {
 
-                })).catch( $A.getCallback( function( error ) {
+                                helper.toastMessage( 'Save Failed', '', 'error' );
 
-                    helper.toastMessage( 'Error', error, 'error' );
+                            }
 
-                }));
+                        }));
 
-        } else {
+                } else {
 
-            validationResult.components.forEach( function( componentResult ) {
-                if ( componentResult.hasError ) {
-                    helper.toastMessage( 'Step Incomplete', componentResult.message, 'error' );
+                    validationResult.components.forEach( function( validationComponentResult ) {
+                        if ( validationComponentResult.hasError ) {
+                            helper.toastMessage( 'Step Incomplete', validationComponentResult.messageWhenInvalid, 'error' );
+                            validationComponentResult.component.reportValidity();
+                        }
+                    });
+
                 }
-            });
 
-        }
+            })).catch( $A.getCallback( function( err ) {
+
+                helper.toastMessage( 'Error Saving Configuration', err, 'error' );
+
+            }));
 
     },
 
@@ -295,9 +336,9 @@ License: BSD 3-Clause License
 
                         component.set( 'v.sourceReportFolders', reportFolders );
 
-                    })).catch( $A.getCallback( function( error ) {
+                    })).catch( $A.getCallback( function( err ) {
 
-                        helper.toastMessage( 'Error Getting Report Folders', error, 'error' );
+                        helper.toastMessage( 'Error Getting Report Folders', err, 'error' );
 
                     }));
 
@@ -322,13 +363,19 @@ License: BSD 3-Clause License
 
                         component.set( 'v.sourceListViewSobjectTypes', objectNames );
 
-                    })).catch( $A.getCallback( function( error ) {
+                    })).catch( $A.getCallback( function( err ) {
 
-                        helper.toastMessage( 'Error Getting Object Names', error, 'error' );
+                        helper.toastMessage( 'Error Getting Object Names', err, 'error' );
 
                     }));
 
             }
+
+        }
+
+        if ( sourceType != 'SOQL' ) {
+
+            record.sourceSoqlQuery = null;
 
         }
 
@@ -365,9 +412,9 @@ License: BSD 3-Clause License
 
                     component.set( 'v.sourceReports', reports );
 
-                })).catch( $A.getCallback( function( error ) {
+                })).catch( $A.getCallback( function( err ) {
 
-                    helper.toastMessage( 'Error Getting Reports By Folder', error, 'error' );
+                    helper.toastMessage( 'Error Getting Reports By Folder', err, 'error' );
 
                 }));
 
@@ -400,9 +447,9 @@ License: BSD 3-Clause License
                         component.set( 'v.sourceReport', report );
                         component.set( 'v.record.sourceReportID', ( report.Id && report.Id.substring( 0, 15 ) ) );
 
-                    })).catch( $A.getCallback( function( error ) {
+                    })).catch( $A.getCallback( function( err ) {
 
-                        helper.toastMessage( 'Error Getting Report', error, 'error' );
+                        helper.toastMessage( 'Error Getting Report', err, 'error' );
 
                     }));
 
@@ -429,9 +476,9 @@ License: BSD 3-Clause License
                             component.set( 'v.record.sourceReportColumnName', columnName );
                         }
 
-                    })).catch( $A.getCallback( function( error ) {
+                    })).catch( $A.getCallback( function( err ) {
 
-                        helper.toastMessage( 'Error Getting Report Columns', error, 'error' );
+                        helper.toastMessage( 'Error Getting Report Columns', err, 'error' );
 
                     }));
 
@@ -463,9 +510,9 @@ License: BSD 3-Clause License
 
                     component.set( 'v.sourceListViews', listViews );
 
-                })).catch( $A.getCallback( function( error ) {
+                })).catch( $A.getCallback( function( err ) {
 
-                    helper.toastMessage( 'Error Getting List Views By Object', error, 'error' );
+                    helper.toastMessage( 'Error Getting List Views By Object', err, 'error' );
 
                 }));
 
@@ -495,13 +542,56 @@ License: BSD 3-Clause License
                         component.set( 'v.sourceListView', listView );
                         component.set( 'v.record.sourceListViewID', ( listView.Id && listView.Id.substring( 0, 15 ) ) );
 
-                    })).catch( $A.getCallback( function( error ) {
+                    })).catch( $A.getCallback( function( err ) {
 
-                        helper.toastMessage( 'Error Getting List View', error, 'error' );
+                        helper.toastMessage( 'Error Getting List View', err, 'error' );
 
                     }));
 
             }
+
+        }
+
+    },
+
+    // ----------------------------------------------------------------------------------
+
+    handleValidateSourceSoqlQuery : function( component, event, helper ) {
+
+        var query = component.get( 'v.record.sourceSoqlQuery' );
+        var batchSize = 200; // we want smallest payload returned just to validate query works
+
+        if ( $A.util.isEmpty( query ) ) {
+
+            helper.toastMessage( 'No SOQL Query', 'Please specify a SOQL query then try again.', 'error' );
+
+        } else {
+
+            helper.getSoqlQueryResultsAsync( component, query, batchSize )
+                .then( $A.getCallback( function( result ) {
+
+                    if ( result.totalSize == 0 ) {
+
+                        helper.toastMessage( 'No Records Found', 'The query found no records. Please review the query and your sharing settings to confirm this is expected.', 'info' );
+
+                    }
+                    // COUNT() queries do not return records, so can't check their attribute for "AggregateResult",
+                    // but if the totalSize is greater than 0 and records is empty then it's using COUNT() aggregate function
+                    else if ( $A.util.isEmpty( result.records ) || /AggregateResult/i.test( result.records[0].attributes.type ) ) {
+
+                        helper.toastMessage( 'No Aggregate Functions', 'SOQL aggregate functions like COUNT, SUM, MIN, MAX, AVG, and others are not supported in Batch Apex.', 'error' );
+
+                    } else {
+
+                        helper.toastMessage( 'Success', `The query runs and would return ${$A.localizationService.formatNumber(result.totalSize)} records.`, 'success' );
+
+                    }
+
+                })).catch( $A.getCallback( function( err ) {
+
+                    helper.toastMessage( 'Error Running SOQL Query', err, 'error' );
+
+                }));
 
         }
 

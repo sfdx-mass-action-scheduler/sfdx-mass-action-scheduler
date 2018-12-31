@@ -1,4 +1,10 @@
-<apex:page >
+<!--
+Author: Doug Ayers
+Website: https://douglascayers.com
+GitHub: https://github.com/douglascayers/sfdx-mass-action-scheduler
+License: BSD 3-Clause License
+ -->
+<apex:page controller="MA_SetupAuthWizardPageController">
 
     <apex:slds />
 
@@ -190,54 +196,49 @@
 
         var conn = new jsforce.Connection({
             accessToken : '{!$Api.Session_Id}',
-            version : '42.0'
+            version : '44.0'
         });
 
-        var consumerKey = getRandomLetters( 85 );
+        const consumerKey = getRandomLetters( 85 );
 
-        // When creating a connected app, the consumerSecret must be plain/text.
-        // I got errors with large values (80+ chars) or when not solely digits.
-        var ca_consumerSecret = '27037399992987747329';
+        // When creating a connected app, the consumerSecret must be plain text.
+        // http://releasenotes.docs.salesforce.com/en-us/spring19/release-notes/rn_identity_client_secret_resize.htm
+        const consumerSecret = '4CB36F0D9CC8ACF7FD5CA005C438A6E165FE57810AD4B6DADB8136E8C4B6DB35';
 
         // When creating an auth provider, the consumerSecret must be encrypted.
-        // Per the documentation, I created an auth provider with my desired consumer key/secret,
-        // added it to an outbound change set in a sandbox, uploaded the change set, and then clicked
-        // in to the change set's detail page to view its source to learn the encrypted value.
-        // This is the encrypted value of the plain/text consumer secret above.
+        // Since the algorithm to encrypt the plain text consumerSecret is secret,
+        // then to learn the encrypted value I created an Auth Provider with a known key/secret
+        // then retrieved its metadata using Salesforce CLI with `force:source:retrieve --metadata AuthProvider` command.
+        // This is the encrypted value of the plain text consumer secret above.
         // https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_authproviders.htm
-        var ap_consumerSecret = 'eXmpGxAsEZkrRwGNcRqOXVof6G6o4T+y';
-
-        var label = 'Mass Action';
-        var fullName = 'Mass_Action';
-
-        var instanceUrl = location.host;
+        const encryptedConsumerSecret = 'RVbMTqpAyU71sOoFzY5lswGqjWgOsrdIfrP4SsaNMKbq4DCxPCyygFAkyYlIdnsrtD7gSIIxK8/kEiL7vfBBXHBBGPdiC2rX';
 
         function createMetadata() {
 
             $j( '#spinner' ).removeClass( 'slds-hide' );
             clearMessages();
 
-            // for identity function to work in visualforce then I had to make modifications to jsforce source
-            // https://github.com/jsforce/jsforce/issues/611#issuecomment-387623081
-            conn.identity()
-                .then( function( result ) {
+            Promise.resolve()
+                .then( function() {
 
-                    console.log( result );
-                    instanceUrl = result.urls.custom_domain;
+                    let label = 'Mass Action';
+                    let fullName = 'Mass_Action';
+                    let orgDomainURL = '{!orgDomainURL}';
+                    let myDomain = '{!myDomain}';
 
                     // update instructions with exact domain the user should enter to remove guesswork
-                    $j( '#post-setup-custom-domain' ).html( instanceUrl.split( "https://" )[1] );
+                    $j( '#post-setup-custom-domain' ).html( `<code>${myDomain}</code>` );
 
-                    return conn.metadata.create( 'ConnectedApp', buildConnectedApp( label, fullName, consumerKey, ca_consumerSecret ) )
+                    return conn.metadata.create( 'ConnectedApp', buildConnectedApp( label, fullName, orgDomainURL, consumerKey, consumerSecret ) )
                         .then( function( result ) {
                             validateMetadataSaveResult( 'ConnectedApp', result );
                             showMessage( 'Connected App created with name "' + fullName + '"', 'SUCCESS' );
-                            return conn.metadata.create( 'AuthProvider', buildAuthProvider( label, fullName, consumerKey, ap_consumerSecret ) );
+                            return conn.metadata.create( 'AuthProvider', buildAuthProvider( label, fullName, orgDomainURL, consumerKey, encryptedConsumerSecret ) );
                         })
                         .then( function( result ) {
                             validateMetadataSaveResult( 'AuthProvider', result );
                             showMessage( 'Auth. Provider created with URL Suffix "' + fullName + '"', 'SUCCESS' );
-                            return conn.metadata.create( 'NamedCredential', buildNamedCredential( label, fullName ) );
+                            return conn.metadata.create( 'NamedCredential', buildNamedCredential( label, fullName, orgDomainURL ) );
                         })
                         .then( function( result ) {
                             validateMetadataSaveResult( 'NamedCredential', result );
@@ -259,14 +260,14 @@
                 });
         }
 
-        function buildConnectedApp( label, fullName, consumerKey, consumerSecret ) {
+        function buildConnectedApp( label, fullName, orgDomainURL, consumerKey, consumerSecret ) {
             return {
                 fullName : fullName,
                 label : label,
                 description : 'Auto-generated for Mass Action Scheduler using the app\'s Authentication Setup Wizard.',
                 contactEmail : '{!$User.Email}',
                 oauthConfig : {
-                    callbackUrl : instanceUrl + '/services/authcallback/' + fullName,
+                    callbackUrl : orgDomainURL + '/services/authcallback/' + fullName,
                     consumerKey : consumerKey,
                     consumerSecret : consumerSecret,
                     scopes : [
@@ -277,7 +278,7 @@
             };
         }
 
-        function buildAuthProvider( label, fullName, consumerKey, consumerSecret ) {
+        function buildAuthProvider( label, fullName, orgDomainURL, consumerKey, consumerSecret ) {
             return {
                 fullName : fullName,
                 friendlyName : label,
@@ -288,12 +289,12 @@
             };
         }
 
-        function buildNamedCredential( label, fullName ) {
+        function buildNamedCredential( label, fullName, orgDomainURL ) {
             return {
                 fullName : fullName,
                 label : label,
                 authProvider : fullName,
-                endpoint : instanceUrl + '/services/data/v42.0',
+                endpoint : orgDomainURL + '/services/data/v44.0',
                 oauthScope : 'full refresh_token',
                 principalType : 'NamedUser',
                 protocol : 'Oauth'
@@ -395,3 +396,34 @@
     </script>
 
 </apex:page>
+<!--
+BSD 3-Clause License
+
+Copyright (c) 2018, Doug Ayers, douglascayers.com
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice, this
+  list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of the copyright holder nor the names of its
+  contributors may be used to endorse or promote products derived from
+  this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->

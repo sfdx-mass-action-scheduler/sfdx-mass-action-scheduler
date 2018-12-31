@@ -6,6 +6,8 @@ License: BSD 3-Clause License
 -->
 <aura:component implements="flexipage:availableForRecordHome,force:hasRecordId,lightning:actionOverride" access="global">
 
+    <ltng:require scripts="{!$Resource.soqlparse}"/>
+
     <aura:attribute name="objectDescribe"
                     type="Object"
                     description="SObject and Field describe info"/>
@@ -154,6 +156,10 @@ License: BSD 3-Clause License
                     type="Boolean"
                     description="Indicates conditions are met to fetch and show the target invocable action select options."/>
 
+    <aura:attribute name="targetNamedCredentials"
+                    type="Map[]"
+                    description="SObject select options of Named Credentials to choose for making API callout to REST API to execute target action."/>
+
     <aura:attribute name="targetInvocableActions"
                     type="Map[]"
                     description="Action select options within the currently selected target type and target sobject."/>
@@ -252,7 +258,8 @@ License: BSD 3-Clause License
             </div>
         </div>
 
-        <aura:if isTrue="{!not( empty( v.record ) )}">
+        <!-- avoid showing form until have data for input labels and values, also avoids errors in debug mode -->
+        <aura:if isTrue="{!and( not( empty( v.record ) ), not( empty( v.objectDescribe ) ) )}">
 
             <!-- Stage: Details -->
 
@@ -332,6 +339,18 @@ License: BSD 3-Clause License
                                 messageWhenValueMissing="Batch Size is required."
                                 messageWhenRangeUnderflow="Batch Size must be between 1 and 200."
                                 messageWhenRangeOverflow="Batch Size must be between 1 and 200."
+                                class="slds-p-top_x-small"/>
+
+                            <c:slds_label label="{!v.objectDescribe.fields.Named_Credential__c.label}"
+                                          helpText="{!v.objectDescribe.fields.Named_Credential__c.helpText}"/>
+                            <lightning:combobox aura:id="inputNamedCredential"
+                                name="inputNamedCredential"
+                                variant="label-hidden"
+                                label="{!v.objectDescribe.fields.Named_Credential__c.label}"
+                                value="{!v.record.namedCredential}"
+                                required="false"
+                                options="{!v.targetNamedCredentials}"
+                                placeholder="Select a Named Credential"
                                 class="slds-p-top_x-small"/>
 
                         </div>
@@ -414,7 +433,7 @@ License: BSD 3-Clause License
 
                             </aura:if>
 
-                            <aura:if isTrue="{!equals( v.sourceType, 'ListView')}">
+                            <aura:if isTrue="{!equals( v.sourceType, 'ListView' )}">
 
                                 <c:slds_label label="Object"
                                               helpText="Choose an object that has the list view to use as the source records."/>
@@ -444,10 +463,32 @@ License: BSD 3-Clause License
 
                             </aura:if>
 
+                            <aura:if isTrue="{!equals( v.sourceType, 'SOQL' )}">
+
+                                <c:slds_label label="SOQL Query"
+                                              helpText="{!v.objectDescribe.fields.Source_SOQL_Query__c.helpText}"/>
+                                <lightning:textarea aura:id="inputSourceSoqlQuery"
+                                    name="inputSourceSoqlQuery"
+                                    variant="label-hidden"
+                                    label="{!v.objectDescribe.fields.Source_SOQL_Query__c.label}"
+                                    value="{!v.record.sourceSoqlQuery}"
+                                    required="true"
+                                    maxlength="{!v.objectDescribe.fields.Source_SOQL_Query__c.length}"
+                                    messageWhenValueMissing="SOQL Query is required."
+                                    messageWhenTooLong="SOQL Query is too long."
+                                    class="slds-p-top_x-small"/>
+
+                                <lightning:button aura:id="validateSourceSoqlQueryButton"
+                                    label="Validate Query"
+                                    iconName="utility:table"
+                                    disabled="{!empty(v.record.sourceSoqlQuery)}"
+                                    onclick="{!c.handleValidateSourceSoqlQuery}"/>
+
+                            </aura:if>
+
                             <aura:if isTrue="{!not(empty(v.sourceTypeURL))}">
 
                                 <div class="slds-form-element">
-                                    <!--<label class="slds-form-element__label" for="input-unique-id">Form Element Label</label>-->
                                     <div class="slds-form-element__control">
                                         <a href="{!v.sourceTypeURL}" target="_blank">View selected source to confirm fields and filters</a>
                                     </div>

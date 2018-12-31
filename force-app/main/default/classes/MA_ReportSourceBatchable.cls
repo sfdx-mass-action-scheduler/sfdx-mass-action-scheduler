@@ -4,7 +4,7 @@
  * GitHub: https://github.com/douglascayers/sfdx-mass-action-scheduler
  * License: BSD 3-Clause License
  */
-public with sharing class MA_ReportSourceBatchable implements Database.Batchable<Reports.ReportDetailRow>, Database.Stateful, Database.AllowsCallouts {
+public with sharing class MA_ReportSourceBatchable implements Database.Batchable<Reports.ReportDetailRow>, Database.Stateful, Database.AllowsCallouts, Database.RaisesPlatformEvents {
 
     private ID configId { get; set; }
 
@@ -39,7 +39,7 @@ public with sharing class MA_ReportSourceBatchable implements Database.Batchable
 
             List<Map<String, Object>> targetRowMaps = MA_MassActionUtils.buildActionInputs( sourceRowMaps, this.config.mass_action_mappings__r );
 
-            MA_MassActionUtils.invokeAction( MA_MassActionUtils.REST_API_SERVICES_DATA_URL, this.config, targetRowMaps );
+            MA_MassActionUtils.invokeAction( MA_MassActionUtils.getCalloutRestEndpointURL( this.config.Named_Credential__c ), this.config, targetRowMaps );
 
         } catch ( Exception e ) {
 

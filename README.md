@@ -48,12 +48,12 @@ Almost any process automation you configure can be scheduled.
 
 | Actions               | Supported Types |
 |-----------------------|-----------------|
-| **Process Builder**   | Processes that start when invoked by another process | 
+| **Process Builder**   | Processes that start when invoked by another process |
 | **Flows**             | Auto-launched flows (no screens). Any that can be called from Process Builder |
 | **Quick Actions**     | Create a Record, Update a Record, and Log a Call types |
 | **Email Alerts**      | All |
 | **Workflow Rules**    | Active rules |
-| **Apex**              | Classes annotated with @InvocableMethod | 
+| **Apex**              | Classes annotated with @InvocableMethod |
 
 
 Scheduling
@@ -90,6 +90,9 @@ There are a few items you need to setup before installing and using this app.
 
 1. You will need to use [Lightning Experience](https://trailhead.salesforce.com/en/content/learn/modules/lex_migration_introduction) because we are using Lightning Components.
 2. You will need to enable [My Domain](https://trailhead.salesforce.com/en/content/learn/modules/identity_login/identity_login_my_domain) because we are using Lightning Components.
+3. You will need to disable [Freeze JavaScript Prototypes](https://developer.salesforce.com/docs/atlas.en-us.lightning.meta/lightning/security_freeze_prototypes.htm) because we [share JavaScript code](https://developer.salesforce.com/docs/atlas.en-us.lightning.meta/lightning/security_share_code.htm) using static resources.
+    * From Setup, enter `session` in the Quick Find box, then click **Session Settings**.
+    * Uncheck **Freeze JavaScript Prototypes** and click **Save**.
 
 Please see the [instructions in the wiki](https://github.com/douglascayers/sfdx-mass-action-scheduler/wiki/Pre-Requisites-Instructions) for screen shots and step-by-steps.
 

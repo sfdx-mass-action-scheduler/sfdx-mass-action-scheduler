@@ -4,7 +4,7 @@
  * GitHub: https://github.com/douglascayers/sfdx-mass-action-scheduler
  * License: BSD 3-Clause License
  */
-public class MA_MassActionBatchUtils {
+public inherited sharing class MA_MassActionBatchUtils {
 
     public static ID enqueueAction( ID configId ) {
 
@@ -23,6 +23,10 @@ public class MA_MassActionBatchUtils {
             } else if ( config.Source_Type__c == 'ListView' ) {
 
                 jobId = enqueueListViewJob( config );
+
+            } else if ( config.Source_Type__c == 'SOQL' ) {
+
+                jobId = enqueueSoqlJob( config );
 
             } else {
 
@@ -49,6 +53,11 @@ public class MA_MassActionBatchUtils {
     private static ID enqueueListViewJob( Mass_Action_Configuration__c config ) {
 
         return Database.executeBatch( new MA_ListViewSourceBatchable( config.Id ), config.Batch_Size__c.intValue() );
+    }
+
+    private static ID enqueueSoqlJob( Mass_Action_Configuration__c config ) {
+
+        return Database.executeBatch( new MA_SoqlSourceBatchable( config.Id ), config.Batch_Size__c.intValue() );
     }
 
     // ----------------------------------------------------

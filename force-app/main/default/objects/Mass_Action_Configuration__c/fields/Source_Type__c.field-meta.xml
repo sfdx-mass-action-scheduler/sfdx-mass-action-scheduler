@@ -23,6 +23,11 @@
                 <default>false</default>
                 <label>List View</label>
             </value>
+            <value>
+                <fullName>SOQL</fullName>
+                <default>false</default>
+                <label>SOQL</label>
+            </value>
         </valueSetDefinition>
     </valueSet>
 </CustomField>

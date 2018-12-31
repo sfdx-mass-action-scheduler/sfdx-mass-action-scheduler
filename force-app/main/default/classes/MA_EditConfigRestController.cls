@@ -30,13 +30,17 @@ global with sharing class MA_EditConfigRestController {
         RestRequest req = RestContext.request;
         RestResponse res = RestContext.response;
 
+        Map<String, String> requestUrlParams;
+        Map<String, Object> requestBodyParams;
+        Map<String, Object> responseBodyParams;
+
         try {
 
             System.debug( req );
 
-            Map<String, String> requestUrlParams = req.params;
-            Map<String, Object> requestBodyParams = (Map<String, Object>) JSON.deserializeUntyped( ( req.requestBody == null ) ? '{}' : req.requestBody.toString() );
-            Map<String, Object> responseBodyParams = new Map<String, Object>{ 'success' => true };
+            requestUrlParams = req.params;
+            requestBodyParams = (Map<String, Object>) JSON.deserializeUntyped( ( req.requestBody == null ) ? '{}' : req.requestBody.toString() );
+            responseBodyParams = new Map<String, Object>{ 'success' => true };
 
             String operation = requestUrlParams.get( 'operation' );
 
@@ -45,24 +49,23 @@ global with sharing class MA_EditConfigRestController {
 
             handleRequestOperation( operation, requestBodyParams, responseBodyParams );
 
-            if ( (Boolean) responseBodyParams.get( 'success' ) ) {
-                res.responseBody = Blob.valueOf( JSON.serializePretty( responseBodyParams ) );
-                res.statusCode = 200;
-            } else {
-                res.responseBody = Blob.valueOf( (String) responseBodyParams.get( 'error' ) );
-                res.statusCode = 400;
-            }
-
         } catch ( Exception e ) {
 
-            res.responseBody = Blob.valueOf( e.getMessage() );
-            res.statusCode = 400;
+            System.debug( LoggingLevel.ERROR, e.getMessage() + ' : ' + e.getStackTraceString() );
+
+            responseBodyParams = new Map<String, Object>{
+                'success' => false,
+                'error' => e.getMessage()
+            };
 
         }
 
+        res.responseBody = Blob.valueOf( JSON.serializePretty( responseBodyParams ) );
+        res.statusCode = 200;//( (Boolean) responseBodyParams.get( 'success' ) ) ? 200 : 400;
+
         // To avoid customers having to setup their own CORS Whitelist then
         // I whitelist their VF domain for them on the fly in the http response.
-        // https://github.com/douglascayers/sfdx-lightning-api-component#access-denied-or-no-access-control-allow-origin-header-is-present-on-the-requested-resource-origin-httpsyourinstancevisualforcecom-is-therefore-not-allowed-access
+        // https://github.com/douglascayers/sfdx-lightning-api-component-component#access-denied-or-no-access-control-allow-origin-header-is-present-on-the-requested-resource-origin-httpsyourinstancevisualforcecom-is-therefore-not-allowed-access
         res.addHeader( 'Access-Control-Allow-Origin', req.headers.get( 'Origin' ) );
         res.addHeader( 'Content-Type', 'application/json; charset=utf-8' );
 
@@ -171,6 +174,16 @@ global with sharing class MA_EditConfigRestController {
                 responseBody.put( 'result', getListViewColumns(
                     MA_MassActionUtils.REST_API_SERVICES_DATA_URL,
                     (ID) requestBody.get( 'listViewId' )
+                ));
+            }
+
+            // -----------------------------------------------------------------------------
+
+            when 'getSoqlQueryResults' {
+                responseBody.put( 'result', getSoqlQueryResults(
+                    MA_MassActionUtils.REST_API_SERVICES_DATA_URL,
+                    (String) requestBody.get( 'query' ),
+                    (Integer) requestBody.get( 'batchSize' )
                 ));
             }
 
@@ -463,12 +476,26 @@ global with sharing class MA_EditConfigRestController {
 
     // -----------------------------------------------------------------------------
 
+    /**
+     * The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
+     * or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v44.0').
+     */
+    private static Map<String, Object> getSoqlQueryResults( String baseURL, String query, Integer batchSize ) {
+
+        return MA_MassActionUtils.executeSoqlQuery( baseURL, query, batchSize );
+
+    }
+
+    // -----------------------------------------------------------------------------
+
     private static List<Map<String, Object>> getNamedCredentials() {
 
         List<Map<String, Object>> options = new List<Map<String, Object>>();
 
         // exclude test credential, for unit tests only
-        String whereClause = Test.isRunningTest() ? '' : ' WHERE developerName != \'Mass_Action_Test_Named_Credential\' ';
+        String whereClause = Test.isRunningTest() ?
+                ' WHERE developerName  = \'Mass_Action_Test_Named_Credential\' ' :
+                ' WHERE developerName != \'Mass_Action_Test_Named_Credential\' ' ;
 
         String query =
             ' SELECT ' +
@@ -596,7 +623,13 @@ global with sharing class MA_EditConfigRestController {
                 'localName' => fieldDescribe.getLocalName(),
                 'label' => fieldDescribe.getLabel(),
                 'helpText' => fieldDescribe.getInlineHelpText(),
-                'picklistValues' => getPicklistValuesMaps( fieldDescribe.getPicklistValues() )
+                'byteLength' => fieldDescribe.getByteLength(),
+                'length' => fieldDescribe.getLength(),
+                'type' => fieldDescribe.getType(),
+                'picklistValues' => getPicklistValuesMaps( fieldDescribe.getPicklistValues() ),
+                'isAccessible' => fieldDescribe.isAccessible(),
+                'isCreateable' => fieldDescribe.isCreateable(),
+                'isUpdateable' => fieldDescribe.isUpdateable()
             });
 
         }
