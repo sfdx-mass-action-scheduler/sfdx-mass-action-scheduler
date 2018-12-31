@@ -45,7 +45,7 @@ public with sharing class MA_ReportSourceBatchable implements Database.Batchable
 
             System.debug( LoggingLevel.ERROR, e.getMessage() + ' : ' + e.getStackTraceString() );
 
-            MA_MassActionBatchUtils.logJobException( this.config.Id, context.getJobId(), e );
+            MA_MassActionBatchUtils.logJobException( this.configId, context.getJobId(), e );
 
         }
 

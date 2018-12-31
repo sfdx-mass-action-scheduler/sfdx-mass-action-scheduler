@@ -473,6 +473,7 @@ License: BSD 3-Clause License
                                     label="{!v.objectDescribe.fields.Source_SOQL_Query__c.label}"
                                     value="{!v.record.sourceSoqlQuery}"
                                     required="true"
+                                    onblur="{!c.handleOnBlurInputSourceSoqlQuery}"
                                     maxlength="{!v.objectDescribe.fields.Source_SOQL_Query__c.length}"
                                     messageWhenValueMissing="SOQL Query is required."
                                     messageWhenTooLong="SOQL Query is too long."
@@ -863,6 +864,12 @@ License: BSD 3-Clause License
 
         </aura:if>
 
+    </div>
+
+    <div class="slds-theme_shade slds-box slds-box_small slds-m-vertical_medium slds-text-align_center">
+        <span><a href="https://douglascayers.github.io/sfdx-mass-action-scheduler/" target="_blank">Mass Action Scheduler</a></span>
+        <span class="slds-m-horizontal_xx-small">is developed with love by</span>
+        <span><a href="https://douglascayers.com" target="_blank">Doug Ayers</a></span>
     </div>
 
 </aura:component>

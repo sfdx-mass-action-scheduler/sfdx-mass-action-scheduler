@@ -45,7 +45,7 @@ public with sharing class MA_ListViewSourceBatchable implements Database.Batchab
 
             System.debug( LoggingLevel.ERROR, e.getMessage() + ' : ' + e.getStackTraceString() );
 
-            MA_MassActionBatchUtils.logJobException( this.config.Id, context.getJobId(), e );
+            MA_MassActionBatchUtils.logJobException( this.configId, context.getJobId(), e );
 
         }
 

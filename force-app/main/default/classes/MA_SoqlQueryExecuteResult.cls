@@ -5,37 +5,24 @@
  * License: BSD 3-Clause License
  */
 /*
- * Represents some parts of a JSON response from List View REST API.
- * "/services/data/<version>/sobjects/<sobjectName>/listviews/<listViewId>/describe"
+ * Represents some parts of a JSON response from SOQL Query REST API.
+ * "/services/data/<version>/query/?q=<soql>"
  */
-public inherited sharing class MA_ListViewDescribeResult {
+public inherited sharing class MA_SoqlQueryExecuteResult {
 
-    public ID id { get; set; }
+    public Integer totalSize { get; set; }
 
-    public String query { get; set; }
+    public Boolean done { get; set; }
 
-    public String sobjectType { get; set; }
+    public String nextRecordsUrl { get; set; }
 
-    public List<Map<String, String>> columns { get; set; }
+    public List<Map<String, Object>> records { get; set; }
 
-    public MA_ListViewDescribeResult() {
-        this.columns = new List<Map<String, String>>();
-    }
-
-    /**
-     * Extract a list of single property from the columns map.
-     * For example, to get all of the 'fieldNameOrPath' properties.
-     * Conceptually, it's like this: https://stackoverflow.com/questions/19590865/from-an-array-of-objects-extract-value-of-a-property-as-array
-     */
-    public List<String> getColumnProperty( String property ) {
-
-        List<String> values = new List<String>();
-
-        for ( Map<String, String> column : columns ) {
-            values.add( column.get( property ) );
-        }
-
-        return values;
+    public MA_SoqlQueryExecuteResult() {
+        this.totalSize = 0;
+        this.done = false;
+        this.nextRecordsUrl = null;
+        this.records = new List<Map<String, Object>>();
     }
 
 }

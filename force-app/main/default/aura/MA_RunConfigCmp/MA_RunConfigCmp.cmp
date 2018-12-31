@@ -44,7 +44,7 @@ License: BSD 3-Clause License
             Submits background batch job that invokes the target action on the source records.
         </p>
 
-        <aura:if isTrue="{!not(v.record.active)}">
+        <aura:if isTrue="{!and(not(empty(v.record)), not(v.record.active))}">
             <div class="slds-notify slds-notify_alert slds-theme_warning" role="alert">
                 <div class="slds-notify__content">
                     <p>This Mass Action can't be run because it is inactive.</p>

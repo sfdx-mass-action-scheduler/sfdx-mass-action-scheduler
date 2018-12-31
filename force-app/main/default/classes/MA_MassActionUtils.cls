@@ -18,8 +18,6 @@ public inherited sharing class MA_MassActionUtils {
     public static final String NAMESPACE = String.isBlank( MY_NAMESPACE ) ? '' : MY_NAMESPACE;
     public static final String NAMESPACE_API = String.isBlank( MY_NAMESPACE ) ? '' : MY_NAMESPACE + '__';
 
-    public static final String EMPTY_STRING = '';
-
     public static final String REST_API_SERVICES_DATA_URL = Url.getOrgDomainUrl().toExternalForm() + '/services/data/v44.0';
 
     // ------------------------------------------------------------------------
@@ -48,6 +46,9 @@ public inherited sharing class MA_MassActionUtils {
      * Returns null if no record is found.
      */
     public static Mass_Action_Configuration__c getConfiguration( ID recordId ) {
+
+        System.debug( 'MA_MassActionUtils.getConfiguration' );
+        System.debug( 'recordId: ' + recordId );
 
         Mass_Action_Configuration__c config = null;
 
@@ -113,6 +114,10 @@ public inherited sharing class MA_MassActionUtils {
      */
     public static MA_ListViewDescribeResult describeListView( String baseURL, ID listViewId ) {
 
+        System.debug( 'MA_MassActionUtils.describeListView' );
+        System.debug( 'baseURL: ' + baseURL );
+        System.debug( 'listViewId: ' + listViewId );
+
         ListView listView = [ SELECT id, sobjectType FROM ListView WHERE id = :listViewId LIMIT 1 ];
 
         String endpoint = String.format(
@@ -161,11 +166,11 @@ public inherited sharing class MA_MassActionUtils {
 
             for ( Mass_Action_Mapping__c mapping : mappings ) {
 
-                if ( !sourceRowLowerCaseKeyMap.containsKey( mapping.source_field_name__c ) ) {
+                if ( !sourceRowLowerCaseKeyMap.containsKey( mapping.source_field_name__c.toLowerCase() ) ) {
                     throw new MA_Exceptions.NoSourceFieldException( sourceRow, mapping.source_field_name__c );
                 }
 
-                targetRow.put( mapping.target_field_name__c, sourceRowLowerCaseKeyMap.get( mapping.source_field_name__c ) );
+                targetRow.put( mapping.target_field_name__c, sourceRowLowerCaseKeyMap.get( mapping.source_field_name__c.toLowerCase() ) );
 
             }
 
@@ -189,6 +194,7 @@ public inherited sharing class MA_MassActionUtils {
     public static void invokeAction( String baseURL, Mass_Action_Configuration__c config, List<Map<String, Object>> targetRowMaps ) {
 
         System.debug( 'MA_MassActionUtils.invokeAction' );
+        System.debug( 'baseURL: ' + baseURL );
         System.debug( 'config: ' + config );
 
         HttpRequest req = buildInvokeActionHttpRequest( baseURL, config, targetRowMaps );
@@ -212,7 +218,7 @@ public inherited sharing class MA_MassActionUtils {
         System.debug( 'baseURL: ' + baseURL );
         System.debug( 'actionType: ' + actionType );
 
-        HttpRequest req = buildInvocableActionsHttpRequest( baseURL, actionType, EMPTY_STRING );
+        HttpRequest req = buildInvocableActionsHttpRequest( baseURL, actionType, '' );
         HttpResponse res = sendHttpRequest( req );
 
         List<String> objectNames = parseActionObjectsHttpResponse( res );
@@ -609,7 +615,7 @@ public inherited sharing class MA_MassActionUtils {
      *      If there are more records than requested, you'll need to use the nextRecordsUrl to retrieve them.
      *      https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/headers_queryoptions.htm
      */
-    public static Map<String, Object> executeSoqlQuery( String baseURL, String query, Integer batchSize ) {
+    public static MA_SoqlQueryExecuteResult executeSoqlQuery( String baseURL, String query, Integer batchSize ) {
 
         System.debug( 'MA_MassActionUtils.executeSoqlQuery' );
         System.debug( 'baseURL: ' + baseURL );
@@ -621,7 +627,7 @@ public inherited sharing class MA_MassActionUtils {
             HttpRequest req = buildExecuteSoqlQueryHttpRequest( baseURL, query, batchSize );
             HttpResponse res = sendHttpRequest( req );
 
-            return (Map<String, Object>) JSON.deserializeUntyped( res.getBody() );
+            return parseSoqlQueryHttpResponse( res );
 
         } catch ( MA_Exceptions.InvokeActionException e ) {
 
@@ -641,6 +647,10 @@ public inherited sharing class MA_MassActionUtils {
             throw throwable;
 
         }
+    }
+
+    public static MA_SoqlQueryExecuteResult executeSoqlQuery( String baseURL, String query ) {
+        return executeSoqlQuery( baseURL, query, null );
     }
 
     /**
@@ -699,6 +709,117 @@ public inherited sharing class MA_MassActionUtils {
     // ------------------------------------------------------------------------
 
     /**
+     * Executes a SOQL query via REST API via http callout.
+     * https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/dome_query.htm
+     *
+     * @param baseURL
+     *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
+     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v44.0').
+     * @param nextRecordsId
+     *      The last path part in the 'nextRecordsUrl' property from a query response
+     *      that identifies the next page of records to return.
+     * @param batchSize
+     *      The preferred max number of records to return at a time.
+     *      Choose a value between 200 and 1,000.
+     *      If there are more records than requested, you'll need to use the nextRecordsUrl to retrieve them.
+     *      https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/headers_queryoptions.htm
+     */
+    public static MA_SoqlQueryExecuteResult executeSoqlQueryNextRecords( String baseURL, String nextRecordsId, Integer batchSize ) {
+
+        System.debug( 'MA_MassActionUtils.executeSoqlQueryNextRecords' );
+        System.debug( 'baseURL: ' + baseURL );
+        System.debug( 'nextRecordsId: ' + nextRecordsId );
+        System.debug( 'batchSize: ' + batchSize );
+
+        try {
+
+            HttpRequest req = buildExecuteSoqlQueryNextRecordsHttpRequest( baseURL, nextRecordsId, batchSize );
+            HttpResponse res = sendHttpRequest( req );
+
+            return parseSoqlQueryHttpResponse( res );
+
+        } catch ( MA_Exceptions.InvokeActionException e ) {
+
+            Exception throwable = e;
+
+            // extract the soql error message from "[ { errorCode: xxx, message: yyy } ]"
+            List<Object> errors = (List<Object>) JSON.deserializeUntyped( e.response.getBody() );
+            for ( Object item : errors ) {
+                Map<String, Object> err = (Map<String, Object>) item;
+                throwable = new MA_Exceptions.SOQLQueryRestApiException(
+                    nextRecordsId,
+                    (String) err.get( 'errorType' ),
+                    (String) err.get( 'message' )
+                );
+            }
+
+            throw throwable;
+
+        }
+    }
+
+    public static MA_SoqlQueryExecuteResult executeSoqlQueryNextRecords( String baseURL, String nextRecordsId ) {
+        return executeSoqlQueryNextRecords( baseURL, nextRecordsId, null );
+    }
+
+    /**
+     * Creates an HttpRequest with a configured enpoint to execute a SOQL query
+     * against the REST API. Also sets common headers for an authorized JSON request.
+     *
+     * @param baseURL
+     *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
+     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v44.0').
+     * @param nextRecordsId
+     *      The last path part in the 'nextRecordsUrl' property from a query response
+     *      that identifies the next page of records to return.
+     * @param batchSize
+     *      The preferred max number of records to return at a time.
+     *      Choose a value between 200 and 1,000.
+     *      If there are more records than requested, you'll need to use the nextRecordsUrl to retrieve them.
+     *      https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/headers_queryoptions.htm
+     */
+    private static HttpRequest buildExecuteSoqlQueryNextRecordsHttpRequest( String baseURL, String nextRecordsId, Integer batchSize ) {
+
+        HttpRequest req = new HttpRequest();
+        req.setEndpoint( getExecuteSoqlQueryNextRecordsHttpRequestEndpoint( baseURL, nextRecordsId ) );
+        req.setMethod( 'GET' );
+        req.setTimeout( 120000 ); // max wait of 2 mins
+        req.setCompressed( true );
+        req.setHeader( 'Content-Type', 'application/json' );
+        req.setHeader( 'Accepts', 'application/json' );
+        req.setHeader( 'Authorization', 'Bearer ' + UserInfo.getSessionId() );
+
+        if ( batchSize != null ) {
+            req.setHeader( 'Sforce-Query-Options', 'batchSize=' + batchSize );
+        }
+
+        return req;
+    }
+
+    /**
+     * Creates an endpoint URL to execute a SOQL query against the REST API.
+     * Also sets common headers for an authorized JSON request.
+     *
+     * @param baseURL
+     *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
+     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v44.0').
+     * @param nextRecordsId
+     *      The last path part in the 'nextRecordsUrl' property from a query response
+     *      that identifies the next page of records to return.
+     */
+    private static String getExecuteSoqlQueryNextRecordsHttpRequestEndpoint( String baseURL, String nextRecordsId ) {
+
+        String endpoint = String.format(
+            '{0}/query/{1}',
+            new String[] { baseURL, EncodingUtil.urlEncode( nextRecordsId, 'utf-8' ) }
+        );
+
+        return endpoint;
+    }
+
+    // ------------------------------------------------------------------------
+
+    /**
      * Sends the http request and returns the http response.
      * Logs the request/response.
      * Throws exception if status code is not 200 OK.
@@ -725,6 +846,32 @@ public inherited sharing class MA_MassActionUtils {
     }
 
     // ------------------------------------------------------------------------
+
+    /**
+     * JSON deserializes the response.
+     *
+     * Since Apex won't deserialize into a type that uses generic Object data type,
+     * then I'm manually casting the untyped deserialization result to my generic map type.
+     * This way, my Apex class that represents a SOQL query result can generically store
+     * a list of records as objects (not sobjects, because some results may be aggregate results).
+     *
+     * https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_methods_system_json_overview.htm
+     */
+    private static MA_SoqlQueryExecuteResult parseSoqlQueryHttpResponse( HttpResponse res ) {
+
+        Map<String, Object> responseMap = ( Map<String, Object> ) JSON.deserializeUntyped( res.getBody() );
+
+        MA_SoqlQueryExecuteResult result = new MA_SoqlQueryExecuteResult();
+        result.totalSize = ( Integer ) responseMap.get( 'totalSize' );
+        result.done = ( Boolean ) responseMap.get( 'done' );
+        result.nextRecordsUrl = ( String ) responseMap.get( 'nextRecordsUrl' );
+
+        for ( Object item : ( List<Object> ) responseMap.get( 'records' ) ) {
+            result.records.add( ( Map<String, Object> ) item );
+        }
+
+        return result;
+    }
 
     /**
      * JSON deserializes the response and converts the map of key-value pairs into a list of keys.

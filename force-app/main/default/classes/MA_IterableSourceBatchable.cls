@@ -4,34 +4,35 @@
  * GitHub: https://github.com/douglascayers/sfdx-mass-action-scheduler
  * License: BSD 3-Clause License
  */
-public with sharing class MA_SoqlSourceBatchable implements Database.Batchable<SObject>, Database.Stateful, Database.AllowsCallouts, Database.RaisesPlatformEvents {
+public with sharing class MA_IterableSourceBatchable implements Database.Batchable<Map<String, Object>>, Database.Stateful, Database.AllowsCallouts, Database.RaisesPlatformEvents {
 
     private ID configId { get; set; }
 
     private Mass_Action_Configuration__c config { get; set; }
 
-    public MA_SoqlSourceBatchable( ID configId ) {
+    private Iterable<Map<String, Object>> iterable { get; set; }
+
+    public MA_IterableSourceBatchable( ID configId, Iterable<Map<String, Object>> iterable ) {
         this.configId = configId;
+        this.iterable = iterable;
     }
 
     // ------------------------------------------------------------------------
 
-    public Iterable<SObject> start( Database.BatchableContext context ) {
+    public Iterable<Map<String, Object>> start( Database.BatchableContext context ) {
 
-        System.debug( 'MA_SoqlSourceBatchable.start: ' + context + ', configId=' + this.configId );
+        System.debug( 'MA_IterableSourceBatchable.start: ' + context + ', configId=' + this.configId );
 
         this.config = MA_MassActionUtils.getConfiguration( this.configId );
 
-        return Database.getQueryLocator( this.config.Source_SOQL_Query__c );
+        return this.iterable;
     }
 
-    public void execute( Database.BatchableContext context, List<SObject> records ) {
+    public void execute( Database.BatchableContext context, List<Map<String, Object>> sourceRowMaps ) {
+
+        System.debug( 'MA_IterableSourceBatchable.execute: ' + context + ', configId=' + this.configId );
 
         try {
-
-            System.debug( 'MA_SoqlSourceBatchable.execute: ' + context + ', configId=' + this.configId );
-
-            List<Map<String, Object>> sourceRowMaps = convertRecordsToMaps( records );
 
             List<Map<String, Object>> targetRowMaps = MA_MassActionUtils.buildActionInputs( sourceRowMaps, this.config.mass_action_mappings__r );
 
@@ -49,47 +50,13 @@ public with sharing class MA_SoqlSourceBatchable implements Database.Batchable<S
 
     public void finish( Database.BatchableContext context ) {
 
-        System.debug( 'MA_SoqlSourceBatchable.finish: ' + context + ', configId=' + this.configId );
+        System.debug( 'MA_IterableSourceBatchable.finish: ' + context + ', configId=' + this.configId );
 
         MA_MassActionBatchUtils.handleBatchJobFinished( this.configId, context.getJobId() );
 
     }
 
     // ------------------------------------------------------------------------
-
-    private List<Map<String, Object>> convertRecordsToMaps( List<SObject> records ) {
-
-        List<Map<String, Object>> maps = new List<Map<String, Object>>();
-        Map<String, SObjectField> fieldsMap = records.getSObjectType().getDescribe().fields.getMap();
-
-        for ( SObject record : records ) {
-            maps.add( convertRecordToMap( record, fieldsMap ) );
-        }
-
-        return maps;
-    }
-
-    private Map<String, Object> convertRecordToMap( SObject record, Map<String, SObjectField> fieldsMap ) {
-
-        Map<String, Object> recordMap = new Map<String, Object>();
-
-        for ( String fieldName : fieldsMap.keySet() ) {
-            // As of Winter '19, Apex does not provide a way to
-            // inspect a SOQL query to know which fields were queried.
-            // We can get a map of populated field values, but that map only
-            // has entries for fields from the query that were non-null.
-            // I want a map of all fields that were queried.
-            // As a workaround, we iterate all the fields from the sobject describe
-            // and attempt to grab the value from the queried record.
-            DescribeFieldResult fieldDesc = fieldsMap.get( fieldName ).getDescribe();
-            recordMap.put( fieldDesc.getName(), null );
-        }
-
-        // overlay onto map the values returned by soql query
-        recordMap.putAll( record.getPopulatedFieldsAsMap() );
-
-        return recordMap;
-    }
 
 }
 /*

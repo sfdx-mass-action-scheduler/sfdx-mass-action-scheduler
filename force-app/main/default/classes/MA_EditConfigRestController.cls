@@ -480,7 +480,7 @@ global with sharing class MA_EditConfigRestController {
      * The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
      * or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v44.0').
      */
-    private static Map<String, Object> getSoqlQueryResults( String baseURL, String query, Integer batchSize ) {
+    private static MA_SoqlQueryExecuteResult getSoqlQueryResults( String baseURL, String query, Integer batchSize ) {
 
         return MA_MassActionUtils.executeSoqlQuery( baseURL, query, batchSize );
 

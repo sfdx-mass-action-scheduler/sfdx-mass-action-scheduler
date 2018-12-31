@@ -293,9 +293,17 @@ License: BSD 3-Clause License
         var inputValue = inputCmp.get( 'v.value' );
 
         // predict the developer name from the name, a familiar feature to admins
-        if ( !$A.util.isEmpty( inputValue ) && $A.util.isEmpty( component.get( 'v.record.developerName' ) ) ) {
+        if ( !helper.isEmpty( inputValue ) && helper.isEmpty( component.get( 'v.record.developerName' ) ) ) {
             component.set( 'v.record.developerName', inputValue.trim().replace( /[ ]+/g, '_' ) );
         }
+
+    },
+
+    handleOnBlurInputSourceSoqlQuery : function( component, event, helper ) {
+
+        var inputCmp = event.getSource();
+        var inputValue = inputCmp.get( 'v.value' );
+        inputCmp.set( 'v.value', inputValue.trim() );
 
     },
 
@@ -303,7 +311,7 @@ License: BSD 3-Clause License
 
         var selectedOptions = event.getParam( 'value' );
 
-        if ( !$A.util.isEmpty( selectedOptions ) ) {
+        if ( !helper.isEmpty( selectedOptions ) ) {
             selectedOptions.sort();
         }
 
@@ -329,7 +337,7 @@ License: BSD 3-Clause License
 
         } else {
 
-            if ( $A.util.isEmpty( component.get( 'v.sourceReportFolders' ) ) ) {
+            if ( helper.isEmpty( component.get( 'v.sourceReportFolders' ) ) ) {
 
                 helper.getReportFoldersAsync( component )
                     .then( $A.getCallback( function( reportFolders ) {
@@ -356,7 +364,7 @@ License: BSD 3-Clause License
 
         } else {
 
-            if ( $A.util.isEmpty( component.get( 'v.sourceListViewSobjectTypes' ) ) ) {
+            if ( helper.isEmpty( component.get( 'v.sourceListViewSobjectTypes' ) ) ) {
 
                 helper.getObjectNamesAsync( component )
                     .then( $A.getCallback( function( objectNames ) {
@@ -429,7 +437,7 @@ License: BSD 3-Clause License
 
         if ( sourceType == 'Report' ) {
 
-            if ( $A.util.isEmpty( reportId ) ) {
+            if ( helper.isEmpty( reportId ) ) {
 
                 component.set( 'v.sourceTypeURL', null );
                 component.set( 'v.sourceReport', null );
@@ -527,7 +535,7 @@ License: BSD 3-Clause License
 
         if ( sourceType == 'ListView' ) {
 
-            if ( $A.util.isEmpty( listViewId ) ) {
+            if ( helper.isEmpty( listViewId ) ) {
 
                 component.set( 'v.sourceTypeURL', null );
                 component.set( 'v.sourceListView', null );
@@ -559,41 +567,33 @@ License: BSD 3-Clause License
     handleValidateSourceSoqlQuery : function( component, event, helper ) {
 
         var query = component.get( 'v.record.sourceSoqlQuery' );
-        var batchSize = 200; // we want smallest payload returned just to validate query works
 
-        if ( $A.util.isEmpty( query ) ) {
+        helper.validateSoqlQueryAsync( component, query )
+            .then( $A.getCallback( function( validationResult ) {
 
-            helper.toastMessage( 'No SOQL Query', 'Please specify a SOQL query then try again.', 'error' );
+                if ( validationResult.valid ) {
 
-        } else {
-
-            helper.getSoqlQueryResultsAsync( component, query, batchSize )
-                .then( $A.getCallback( function( result ) {
-
-                    if ( result.totalSize == 0 ) {
+                    if ( validationResult.result.totalSize == 0 ) {
 
                         helper.toastMessage( 'No Records Found', 'The query found no records. Please review the query and your sharing settings to confirm this is expected.', 'info' );
 
-                    }
-                    // COUNT() queries do not return records, so can't check their attribute for "AggregateResult",
-                    // but if the totalSize is greater than 0 and records is empty then it's using COUNT() aggregate function
-                    else if ( $A.util.isEmpty( result.records ) || /AggregateResult/i.test( result.records[0].attributes.type ) ) {
-
-                        helper.toastMessage( 'No Aggregate Functions', 'SOQL aggregate functions like COUNT, SUM, MIN, MAX, AVG, and others are not supported in Batch Apex.', 'error' );
-
                     } else {
 
-                        helper.toastMessage( 'Success', `The query runs and would return ${$A.localizationService.formatNumber(result.totalSize)} records.`, 'success' );
+                        helper.toastMessage( 'Success', `The query runs and would return ${$A.localizationService.formatNumber(validationResult.result.totalSize)} records.`, 'success' );
 
                     }
 
-                })).catch( $A.getCallback( function( err ) {
+                } else {
 
-                    helper.toastMessage( 'Error Running SOQL Query', err, 'error' );
+                    helper.toastMessage( 'Invalid SOQL Query', validationResult.message, 'error' );
 
-                }));
+                }
 
-        }
+            })).catch( $A.getCallback( function( err ) {
+
+                helper.toastMessage( 'Error Validating SOQL Query', err, 'error' );
+
+            }));
 
     },
 
@@ -609,7 +609,7 @@ License: BSD 3-Clause License
         var targetTypeRequiresSobject = false;
         var targetTypeRequiresAction = false;
 
-        if ( $A.util.isEmpty( targetType ) || targetType == 'Workflow' ) {
+        if ( helper.isEmpty( targetType ) || targetType == 'Workflow' ) {
 
             targetTypeRequiresSobject = false;
             targetTypeRequiresAction = false;

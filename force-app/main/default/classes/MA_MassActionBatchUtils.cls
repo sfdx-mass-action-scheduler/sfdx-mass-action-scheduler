@@ -57,7 +57,7 @@ public inherited sharing class MA_MassActionBatchUtils {
 
     private static ID enqueueSoqlJob( Mass_Action_Configuration__c config ) {
 
-        return Database.executeBatch( new MA_SoqlSourceBatchable( config.Id ), config.Batch_Size__c.intValue() );
+        return Database.executeBatch( new MA_IterableSourceBatchable( config.Id, new MA_SoqlSourceIterable( config.Id ) ), config.Batch_Size__c.intValue() );
     }
 
     // ----------------------------------------------------

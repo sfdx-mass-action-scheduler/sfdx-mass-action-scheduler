@@ -7,6 +7,8 @@ License: BSD 3-Clause License
 ({
     initScheduleOptions : function( component ) {
 
+        var helper = this;
+
         var scheduleOptionsHourOfDay = [];
         var scheduleOptionsDayOfMonth = [];
         var scheduleOptionsMonthOfYear = [];
@@ -29,7 +31,7 @@ License: BSD 3-Clause License
         var monthValues = [ 'JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC' ];
         var localeMonthNames = $A.get( '$Locale.nameOfMonths' );
         for ( let i = 0; i < localeMonthNames.length; i++ ) {
-            if ( !$A.util.isEmpty( localeMonthNames[i].fullName ) ) {
+            if ( !helper.isEmpty( localeMonthNames[i].fullName ) ) {
                 scheduleOptionsMonthOfYear.push({
                     'label' : localeMonthNames[i].fullName.toUpperCase(),               // display in user's locale
                     'value' : i.toString().padStart( 2, '0' ) + '.' + monthValues[i]    // but capture in english for cron expr.
@@ -40,7 +42,7 @@ License: BSD 3-Clause License
         var weekdayValues = [ 'SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT' ];
         var localeWeekdayNames = $A.get( '$Locale.nameOfWeekdays' );
         for ( let i = 0; i < localeWeekdayNames.length; i++ ) {
-            if ( !$A.util.isEmpty( localeWeekdayNames[i].fullName ) ) {
+            if ( !helper.isEmpty( localeWeekdayNames[i].fullName ) ) {
                 scheduleOptionsDayOfWeek.push({
                     'label' : localeWeekdayNames[i].fullName.toUpperCase(),             // display in user's locale
                     'value' : i.toString().padStart( 2, '0' ) + '.' + weekdayValues[i]  // but capture in english for cron expr.
@@ -137,9 +139,9 @@ License: BSD 3-Clause License
 
         var isValidToRenderActions = true;
 
-        if ( $A.util.isEmpty( targetType ) ||
+        if ( helper.isEmpty( targetType ) ||
              ( !targetTypeRequiresAction ) ||
-             ( targetTypeRequiresSobject && $A.util.isEmpty( targetSobjectType ) ) ) {
+             ( targetTypeRequiresSobject && helper.isEmpty( targetSobjectType ) ) ) {
 
             isValidToRenderActions = false;
 
@@ -275,6 +277,8 @@ License: BSD 3-Clause License
      */
     validateInputsAsync : function( component, inputCmps ) {
 
+        var helper = this;
+
         var sourceType = component.get( 'v.sourceType' );
         var sourceTypeIsReport = ( sourceType === 'Report' );
         var sourceTypeIsListView = ( sourceType === 'ListView' );
@@ -294,8 +298,8 @@ License: BSD 3-Clause License
         var scheduleFrequenceIsScheduled = ( scheduleFrequency == 'Scheduled' || ( !$A.util.isUndefinedOrNull( scheduleFrequency ) && scheduleFrequency.length && scheduleFrequency[0] == 'Scheduled' ) );
         var scheduleFrequenceIsCustom = ( scheduleFrequency == 'Custom' || ( !$A.util.isUndefinedOrNull( scheduleFrequency ) && scheduleFrequency.length && scheduleFrequency[0] == 'Custom' ) );
 
-        var inputScheduleWeekdayIsEmpty = $A.util.isEmpty( component.get( 'v.scheduleSelectionsDayOfWeek' ) );
-        var inputScheduleDayOfMonthIsEmpty = $A.util.isEmpty( component.get( 'v.scheduleSelectionsDayOfMonth' ) );
+        var inputScheduleWeekdayIsEmpty = helper.isEmpty( component.get( 'v.scheduleSelectionsDayOfWeek' ) );
+        var inputScheduleDayOfMonthIsEmpty = helper.isEmpty( component.get( 'v.scheduleSelectionsDayOfMonth' ) );
 
         var objectDescribe = component.get( 'v.objectDescribe' );
 
@@ -314,7 +318,7 @@ License: BSD 3-Clause License
                 var inputLabel = inputCmp.get( 'v.label' );
                 var inputValue = inputCmp.get( 'v.value' );
 
-                var inputIsEmpty = $A.util.isEmpty( inputValue );
+                var inputIsEmpty = helper.isEmpty( inputValue );
                 var inputIsInvalid = !inputCmp.checkValidity();
 
                 // populate a default error message,
@@ -699,7 +703,7 @@ License: BSD 3-Clause License
         return Promise.resolve()
             .then( $A.getCallback( function() {
 
-                if ( $A.util.isEmpty( query ) ) {
+                if ( helper.isEmpty( query ) ) {
 
                     return {
                         'valid': false,
@@ -708,34 +712,65 @@ License: BSD 3-Clause License
 
                 } else {
 
-                    return helper.getSoqlQueryResultsAsync( component, query, batchSize )
-                        .then( $A.getCallback( function( result ) {
+                    if ( $A.util.isUndefinedOrNull( window.SOQLParse ) ) {
 
-                            // COUNT() queries do not return records, so can't check their attribute for "AggregateResult",
-                            // but if the totalSize is greater than 0 and records is empty then it's using COUNT() aggregate function
-                            if ( ( result.totalSize > 0 && $A.util.isEmpty( result.records ) ) || /AggregateResult/i.test( result.records[0].attributes.type ) ) {
+                        throw new Error( 'No `window.SOQLParse` function defined. Ensure the static resource exists and "Freeze JavaScript Prototypes" is disabled in Session Settings, then reload the page.' );
+
+                    } else {
+
+                        return helper.getSoqlQueryResultsAsync( component, query, batchSize )
+                            .then( $A.getCallback( function( result ) {
+
+                                var hasAggregateFunctions = false;
+                                var isAggregateQuery = ( ( result.records && result.records.length > 0 ) && /AggregateResult/i.test( result.records[0].attributes.type ) );
+
+                                var parseResult = window.SOQLParse.parse( query );
+
+                                // https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_agg_functions.htm
+                                var aggregateFunctionNames = [
+                                    'COUNT',
+                                    'COUNT_DISTINCT',
+                                    'MIN',
+                                    'MAX',
+                                    'AVG',
+                                    'SUM'
+                                ];
+
+                                parseResult.fields.forEach( function( field, idx ) {
+                                    if ( field.type == 'FunctionCall' && aggregateFunctionNames.includes( field.name.toUpperCase() ) ) {
+                                        hasAggregateFunctions = true;
+                                    }
+                                });
+
+                                if ( hasAggregateFunctions || isAggregateQuery ) {
+
+                                    return {
+                                        'valid': false,
+                                        'message': 'SOQL aggregate functions like COUNT, MIN, MAX, AVG, SUM and others are not supported in Batch Apex.',
+                                        'result': result,
+                                        'parseResult': parseResult
+                                    };
+
+                                } else {
+
+                                    return {
+                                        'valid': true,
+                                        'result': result,
+                                        'parseResult': parseResult
+                                    };
+
+                                }
+
+                            })).catch( $A.getCallback( function( err ) {
 
                                 return {
                                     'valid': false,
-                                    'message': 'SOQL aggregate functions like COUNT, SUM, MIN, MAX, AVG, and others are not supported in Batch Apex.'
+                                    'message': helper.unwrapAuraErrorMessage( err ),
                                 };
 
-                            } else {
+                            }));
 
-                                return {
-                                    'valid': true
-                                };
-
-                            }
-
-                        })).catch( $A.getCallback( function( err ) {
-
-                            return {
-                                'valid': false,
-                                'message': helper.unwrapAuraErrorMessage( err )
-                            };
-
-                        }));
+                    }
 
                 }
 
@@ -761,49 +796,38 @@ License: BSD 3-Clause License
         return Promise.resolve()
             .then( $A.getCallback( function() {
 
-                if ( $A.util.isUndefinedOrNull( window.SOQLParse ) ) {
+                return helper.validateSoqlQueryAsync( component, soqlQuery )
+                    .then( $A.getCallback( function( validationResult ) {
 
-                    throw new Error( 'No `window.SOQLParse` function defined. Ensure the static resource exists and "Freeze JavaScript Prototypes" is disabled in Session Settings, then reload the page.' );
+                        if ( validationResult.valid ) {
 
-                } else {
+                            var sourceFields = [];
 
-                    return helper.validateSoqlQueryAsync( component, soqlQuery )
-                        .then( $A.getCallback( function( validationResult ) {
-
-                            if ( validationResult.valid ) {
-
-                                var parseResult = window.SOQLParse.parse( soqlQuery );
-                                // console.log( JSON.stringify( parseResult, null, 2 ) );
-
-                                var sourceFields = [];
-
-                                parseResult.fields.forEach( function( field, idx ) {
-                                    if ( [ 'FieldReference', 'FunctionCall' ].includes( field.type ) ) {
-                                        var fieldName = ( field.alias || ( field.path && field.path.join( '.' ) ) );
-                                        if ( !$A.util.isEmpty( fieldName ) ) {
-                                            sourceFields.push({
-                                                'label': fieldName,
-                                                'value': fieldName
-                                            });
-                                        }
+                            validationResult.parseResult.fields.forEach( function( field, idx ) {
+                                if ( [ 'FieldReference', 'FunctionCall' ].includes( field.type ) ) {
+                                    var fieldName = ( field.alias || ( field.path && field.path.join( '.' ) ) );
+                                    if ( !helper.isEmpty( fieldName ) ) {
+                                        sourceFields.push({
+                                            'label': fieldName,
+                                            'value': fieldName
+                                        });
                                     }
-                                });
+                                }
+                            });
 
-                                return sourceFields;
+                            return sourceFields;
 
-                            } else {
+                        } else {
 
-                                throw new Error( validationResult.message );
+                            throw new Error( validationResult.message );
 
-                            }
+                        }
 
-                        })).catch( $A.getCallback( function( err ) {
+                    })).catch( $A.getCallback( function( err ) {
 
-                            throw new Error( 'Error validating SOQL query: ' + helper.unwrapAuraErrorMessage( err ) );
+                        throw new Error( 'Error validating SOQL query: ' + helper.unwrapAuraErrorMessage( err ) );
 
-                        }));
-
-                }
+                    }));
 
             }));
 
@@ -854,6 +878,18 @@ License: BSD 3-Clause License
     },
 
     // -----------------------------------------------------------------
+
+    /**
+     * The $A.util.isEmpty() function does not check for blank strings (only whitespace).
+     * This method trims string arguments first so '   ' is considered empty.
+     */
+    isEmpty : function( value ) {
+        if ( ( typeof value ).toLowerCase() === 'string' ) {
+            return $A.util.isEmpty( value.trim() );
+        } else {
+            return $A.util.isEmpty( value );
+        }
+    },
 
     showSpinner : function( component ) {
 
@@ -957,7 +993,7 @@ License: BSD 3-Clause License
                 // otherwise fetch the url info as a promise
                 var urlInfo = component.get( 'v.urlInfo' );
 
-                if ( $A.util.isEmpty( urlInfo ) ) {
+                if ( helper.isEmpty( urlInfo ) ) {
                     return component.find( 'lc_url' ).getUrlInfoAsync();
                 } else {
                     return urlInfo;

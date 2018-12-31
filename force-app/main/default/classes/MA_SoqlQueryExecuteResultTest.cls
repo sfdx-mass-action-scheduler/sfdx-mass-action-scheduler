@@ -4,38 +4,29 @@
  * GitHub: https://github.com/douglascayers/sfdx-mass-action-scheduler
  * License: BSD 3-Clause License
  */
-/*
- * Represents some parts of a JSON response from List View REST API.
- * "/services/data/<version>/sobjects/<sobjectName>/listviews/<listViewId>/describe"
- */
-public inherited sharing class MA_ListViewDescribeResult {
+@IsTest
+private class MA_SoqlQueryExecuteResultTest {
 
-    public ID id { get; set; }
+    @IsTest
+    static void test_object() {
 
-    public String query { get; set; }
+        Test.startTest();
 
-    public String sobjectType { get; set; }
+        MA_SoqlQueryExecuteResult result = new MA_SoqlQueryExecuteResult();
+        result.totalSize = 1;
+        result.done = true;
+        result.nextRecordsUrl = 'https://nextRecordsUrl';
+        result.records = new List<Map<String, Object>>{
+            new Map<String, Object>{
+                'attributes' => new Map<String, Object>{
+                    'type' => 'Account'
+                },
+                'Name' => 'Test Account'
+            }
+        };
 
-    public List<Map<String, String>> columns { get; set; }
+        Test.stopTest();
 
-    public MA_ListViewDescribeResult() {
-        this.columns = new List<Map<String, String>>();
-    }
-
-    /**
-     * Extract a list of single property from the columns map.
-     * For example, to get all of the 'fieldNameOrPath' properties.
-     * Conceptually, it's like this: https://stackoverflow.com/questions/19590865/from-an-array-of-objects-extract-value-of-a-property-as-array
-     */
-    public List<String> getColumnProperty( String property ) {
-
-        List<String> values = new List<String>();
-
-        for ( Map<String, String> column : columns ) {
-            values.add( column.get( property ) );
-        }
-
-        return values;
     }
 
 }
