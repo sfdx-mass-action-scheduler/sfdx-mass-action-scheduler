@@ -1,12 +1,12 @@
 Mass Action Scheduler
 =======================
 
-![screen shot](images/wizard-choose-source.png)
+![screen shot](images/wizard-details.png)
 
 Overview
 --------
 
-Declaratively schedule Process Builder, Flows, Quick Actions, Email Alerts, Workflow Rules, and Apex to process records from Reports and List Views.
+Declaratively schedule Process Builder, Flows, Quick Actions, Email Alerts, Workflow Rules, and Apex to process records from Reports, List Views, and SOQL queries.
 
 * **Declarative** - no code necessary, never write batch apex again for queries that can be expressed in a report or list view and actions that can be expressed in a declarative alternative
 * **On Platform** - everything happens in Salesforce so no exporting or uploading data
@@ -39,6 +39,7 @@ Identify the records you want to process with list views or tabular reports.
 |-------------------|-------------|
 | **List Views**    | Simple filters. For up to [50 million records](https://help.salesforce.com/articleView?id=000176644&type=1). |
 | **Reports**       | Complex filters like [Cross Filters](https://help.salesforce.com/articleView?id=reports_cross_filters_create.htm&type=5). For up to [~10 thousand records](https://github.com/douglascayers/sfdc-add-campaign-members-by-report/issues/17#issuecomment-332382142). |
+| **SOQL**          | You know exactly what you want to query and don't want to create a list view or report. For up to [50 million records](https://help.salesforce.com/articleView?id=000176644&type=1). |    
 
 
 Actions
@@ -93,6 +94,7 @@ There are a few items you need to setup before installing and using this app.
 3. You will need to disable [Freeze JavaScript Prototypes](https://developer.salesforce.com/docs/atlas.en-us.lightning.meta/lightning/security_freeze_prototypes.htm) because we [share JavaScript code](https://developer.salesforce.com/docs/atlas.en-us.lightning.meta/lightning/security_share_code.htm) using static resources.
     * From Setup, enter `session` in the Quick Find box, then click **Session Settings**.
     * Uncheck **Freeze JavaScript Prototypes** and click **Save**.
+    * For a technical explanation on why this is needed, read my [blog post](https://douglascayers.com/2018/12/30/sharing-javascript-code-in-lightning-aura-components-and-freezing-javascript-prototypes/).
 
 Please see the [instructions in the wiki](https://github.com/douglascayers/sfdx-mass-action-scheduler/wiki/Pre-Requisites-Instructions) for screen shots and step-by-steps.
 
