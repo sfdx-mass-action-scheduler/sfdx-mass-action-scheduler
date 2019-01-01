@@ -187,6 +187,14 @@ global with sharing class MA_EditConfigRestController {
                 ));
             }
 
+            when 'getSoqlQueryNextRecordsResults' {
+                responseBody.put( 'result', getSoqlQueryNextRecordsResults(
+                    MA_MassActionUtils.REST_API_SERVICES_DATA_URL,
+                    (String) requestBody.get( 'nextRecordsId' ),
+                    (Integer) requestBody.get( 'batchSize' )
+                ));
+            }
+
             // -----------------------------------------------------------------------------
 
             when 'getNamedCredentials' {
@@ -372,10 +380,13 @@ global with sharing class MA_EditConfigRestController {
 
     private static Report getReport( ID recordId ) {
 
+        Report rpt = null;
+
         for ( Report record : [ SELECT id, name, ownerId, owner.name, folderName FROM Report WHERE id = :recordId LIMIT 1 ] ) {
-            return record;
+            rpt = record;
         }
-        return null;
+
+        return rpt;
     }
 
     private static List<Map<String, Object>> getReportColumns( ID reportId ) {
@@ -443,10 +454,13 @@ global with sharing class MA_EditConfigRestController {
 
     private static ListView getListView( ID recordId ) {
 
+        ListView lv = null;
+
         for ( ListView record : [ SELECT id, name, sobjectType FROM ListView WHERE id = :recordId LIMIT 1 ] ) {
-            return record;
+            lv = record;
         }
-        return null;
+
+        return lv;
     }
 
     /**
@@ -486,16 +500,30 @@ global with sharing class MA_EditConfigRestController {
 
     }
 
+    /**
+     * The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
+     * or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v44.0').
+     */
+    private static MA_SoqlQueryExecuteResult getSoqlQueryNextRecordsResults( String baseURL, String nextRecordsId, Integer batchSize ) {
+
+        return MA_MassActionUtils.executeSoqlQueryNextRecords( baseURL, nextRecordsId, batchSize );
+
+    }
+
     // -----------------------------------------------------------------------------
 
     private static List<Map<String, Object>> getNamedCredentials() {
 
         List<Map<String, Object>> options = new List<Map<String, Object>>();
 
-        // exclude test credential, for unit tests only
-        String whereClause = Test.isRunningTest() ?
-                ' WHERE developerName  = \'Mass_Action_Test_Named_Credential\' ' :
-                ' WHERE developerName != \'Mass_Action_Test_Named_Credential\' ' ;
+        // for production use, filter out our test named credential
+        String whereClause = ' WHERE developerName != \'Mass_Action_Test_Named_Credential\' ';
+
+        // for code coverage, this is a separate if statement rather than if/else
+        // because with if/else one of the paths would never get tested =/
+        if ( Test.isRunningTest() ) {
+            whereClause = ' WHERE developerName  = \'Mass_Action_Test_Named_Credential\' ';
+        }
 
         String query =
             ' SELECT ' +

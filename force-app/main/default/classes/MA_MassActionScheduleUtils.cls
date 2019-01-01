@@ -81,7 +81,7 @@ public inherited sharing class MA_MassActionScheduleUtils {
 
     }
 
-    private static String buildCron( Mass_Action_Configuration__c config ) {
+    public static String buildCron( Mass_Action_Configuration__c config ) {
 
         System.debug( 'Build Cron: ' + config );
 

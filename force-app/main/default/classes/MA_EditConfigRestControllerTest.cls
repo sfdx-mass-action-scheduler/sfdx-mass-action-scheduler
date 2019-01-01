@@ -479,14 +479,39 @@ private class MA_EditConfigRestControllerTest {
         Test.stopTest();
 
         List<Object> listViewColumns = (List<Object>) responseBodyMap.get( 'result' );
-        System.assertEquals( 1, listViewColumns.size() );
+        System.assertEquals( 3, listViewColumns.size() );
+
+        Boolean hasAccountIdColumn = false;
+        Boolean hasAccountNameColumn = false;
+        Boolean hasOwnerIdColumn = false;
 
         for ( Object item : listViewColumns ) {
+
             Map<String, Object> listViewColumn = (Map<String, Object>) item;
-            System.assertEquals( 'Account ID', listViewColumn.get( 'label' ) );
-            System.assertEquals( 'Id', listViewColumn.get( 'value' ) );
-            System.assertEquals( 'ID', listViewColumn.get( 'dataType' ) );
+
+            switch on ( (String) listViewColumn.get( 'label' ) ) {
+                when 'Account ID' {
+                    System.assertEquals( 'Id', listViewColumn.get( 'value' ) );
+                    System.assertEquals( 'ID', listViewColumn.get( 'dataType' ) );
+                    hasAccountIdColumn = true;
+                }
+                when 'Account Name' {
+                    System.assertEquals( 'Name', listViewColumn.get( 'value' ) );
+                    System.assertEquals( 'STRING', listViewColumn.get( 'dataType' ) );
+                    hasAccountNameColumn = true;
+                }
+                when 'Owner ID' {
+                    System.assertEquals( 'Owner.Id', listViewColumn.get( 'value' ) );
+                    System.assertEquals( 'ID', listViewColumn.get( 'dataType' ) );
+                    hasOwnerIdColumn = true;
+                }
+            }
+
         }
+
+        System.assert( hasAccountIdColumn, 'missing Account ID column' );
+        System.assert( hasAccountNameColumn, 'missing Account Name column' );
+        System.assert( hasOwnerIdColumn, 'missing Owner ID column' );
 
     }
 
@@ -502,17 +527,17 @@ private class MA_EditConfigRestControllerTest {
 
         Test.startTest();
 
-        // Test Success
+        // Test Success (no next records url)
 
         Map<String, Object> responseBodyMap = test_handlePost( 'getSoqlQueryResults', new Map<String, Object>{
-            'query' => query,
-            'batchSize' => 200
+            'query' => query
         });
 
         Map<String, Object> result = (Map<String, Object>) responseBodyMap.get( 'result' );
 
         System.assertEquals( 1, (Integer) result.get( 'totalSize' ) );
         System.assertEquals( true, (Boolean) result.get( 'done' ) );
+        System.assert( String.isBlank( (String) result.get( 'nextRecordsUrl' ) ) );
 
         List<Object> records = (List<Object>) result.get( 'records' );
         System.assertEquals( 1, records.size() );
@@ -520,7 +545,29 @@ private class MA_EditConfigRestControllerTest {
         for ( Object item : records ) {
             Map<String, Object> row = (Map<String, Object>) item;
             System.assertEquals( '001f400000CukanAAB', row.get( Account.Id.getDescribe().getName() ) );
-            System.assertEquals( 'Test Account', row.get( Account.Name.getDescribe().getName() ) );
+            System.assertEquals( 'Test Account 1', row.get( Account.Name.getDescribe().getName() ) );
+        }
+
+        // Test Success (yes next records url)
+
+        responseBodyMap = test_handlePost( 'getSoqlQueryResults', new Map<String, Object>{
+            'query' => query,
+            'batchSize' => 500
+        });
+
+        result = (Map<String, Object>) responseBodyMap.get( 'result' );
+
+        System.assertEquals( 501, (Integer) result.get( 'totalSize' ), 'should be 1 more than requested query options batch size' );
+        System.assertEquals( false, (Boolean) result.get( 'done' ) );
+        System.assert( String.isNotBlank( (String) result.get( 'nextRecordsUrl' ) ) );
+
+        records = (List<Object>) result.get( 'records' );
+        System.assertEquals( 1, records.size() );
+
+        for ( Object item : records ) {
+            Map<String, Object> row = (Map<String, Object>) item;
+            System.assertEquals( '001f400000CukanAAB', row.get( Account.Id.getDescribe().getName() ) );
+            System.assertEquals( 'Test Account 1', row.get( Account.Name.getDescribe().getName() ) );
         }
 
         // Test Error
@@ -529,6 +576,56 @@ private class MA_EditConfigRestControllerTest {
 
             responseBodyMap = test_handlePost( 'getSoqlQueryResults', new Map<String, Object>{
                 'query' => 'TEST_FAIL'
+            });
+
+            System.assertEquals( false, responseBodyMap.get( 'success' ), 'should fail' );
+            System.assertEquals( 'Test Fail', responseBodyMap.get( 'error' ), 'failed for wrong reason' );
+
+        } catch ( Exception e ) {
+
+            System.debug( LoggingLevel.ERROR, e.getMessage() + ' : ' + e.getStackTraceString() );
+            System.assert( false, 'failed for wrong reason: ' + e.getMessage() );
+
+        }
+
+        Test.stopTest();
+
+    }
+
+    @IsTest
+    static void test_getSoqlQueryNextRecordsResults() {
+
+        Test.startTest();
+
+        // Test Success
+
+        Integer queryOptionsBatchSize = 500;
+
+        Map<String, Object> responseBodyMap = test_handlePost( 'getSoqlQueryNextRecordsResults', new Map<String, Object>{
+            'nextRecordsId' => '01gf400001MMCpeAAH-' + queryOptionsBatchSize
+        });
+
+        Map<String, Object> result = (Map<String, Object>) responseBodyMap.get( 'result' );
+
+        System.assertEquals( queryOptionsBatchSize + 1, (Integer) result.get( 'totalSize' ), 'should be one more than query options batch size' );
+        System.assertEquals( true, (Boolean) result.get( 'done' ) );
+        System.assert( String.isBlank( (String) result.get( 'nextRecordsUrl' ) ) );
+
+        List<Object> records = (List<Object>) result.get( 'records' );
+        System.assertEquals( 1, records.size() );
+
+        for ( Object item : records ) {
+            Map<String, Object> row = (Map<String, Object>) item;
+            System.assertEquals( '001f400000lxT2JAAU', row.get( Account.Id.getDescribe().getName() ) );
+            System.assertEquals( 'Test Account 2', row.get( Account.Name.getDescribe().getName() ) );
+        }
+
+        // Test Error
+
+        try {
+
+            responseBodyMap = test_handlePost( 'getSoqlQueryNextRecordsResults', new Map<String, Object>{
+                'nextRecordsId' => 'TEST_FAIL'
             });
 
             System.assertEquals( false, responseBodyMap.get( 'success' ), 'should fail' );
@@ -798,6 +895,39 @@ private class MA_EditConfigRestControllerTest {
         Test.stopTest();
 
         System.assertEquals( false, responseBodyMap.get( 'success' ), 'should fail' );
+
+    }
+
+    @IsTest
+    static void test_calloutMock_noMatchingURL() {
+
+        Test.setMock( HttpCalloutMock.class, new MA_HttpCalloutMock() );
+
+        Test.startTest();
+
+        // Test GET
+
+        HttpRequest getReq = new HttpRequest();
+        getReq.setMethod( 'GET' );
+        getReq.setEndpoint( 'nowhere' );
+
+        HttpResponse getRes = new Http().send( getReq );
+        System.assertEquals( 'ERROR', getRes.getStatus() );
+        System.assertEquals( 400, getRes.getStatusCode() );
+        System.assert( getRes.getBody().startsWithIgnoreCase( 'Unsupported endpoint' ) );
+
+        // Test POST
+
+        HttpRequest postReq = new HttpRequest();
+        postReq.setMethod( 'POST' );
+        postReq.setEndpoint( 'nowhere' );
+
+        HttpResponse postRes = new Http().send( postReq );
+        System.assertEquals( 'ERROR', postRes.getStatus() );
+        System.assertEquals( 400, postRes.getStatusCode() );
+        System.assert( postRes.getBody().startsWithIgnoreCase( 'Unsupported endpoint' ) );
+
+        Test.stopTest();
 
     }
 

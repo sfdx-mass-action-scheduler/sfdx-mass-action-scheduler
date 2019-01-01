@@ -611,7 +611,7 @@ public inherited sharing class MA_MassActionUtils {
      *      SOQL query to execute.
      * @param batchSize
      *      The preferred max number of records to return at a time.
-     *      Choose a value between 200 and 1,000.
+     *      Choose a value between 200 and 2,000.
      *      If there are more records than requested, you'll need to use the nextRecordsUrl to retrieve them.
      *      https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/headers_queryoptions.htm
      */
@@ -649,10 +649,6 @@ public inherited sharing class MA_MassActionUtils {
         }
     }
 
-    public static MA_SoqlQueryExecuteResult executeSoqlQuery( String baseURL, String query ) {
-        return executeSoqlQuery( baseURL, query, null );
-    }
-
     /**
      * Creates an HttpRequest with a configured enpoint to execute a SOQL query
      * against the REST API. Also sets common headers for an authorized JSON request.
@@ -664,7 +660,7 @@ public inherited sharing class MA_MassActionUtils {
      *      SOQL query to execute.
      * @param batchSize
      *      The preferred max number of records to return at a time.
-     *      Choose a value between 200 and 1,000.
+     *      Choose a value between 200 and 2,000.
      *      If there are more records than requested, you'll need to use the nextRecordsUrl to retrieve them.
      *      https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/headers_queryoptions.htm
      */
@@ -720,7 +716,7 @@ public inherited sharing class MA_MassActionUtils {
      *      that identifies the next page of records to return.
      * @param batchSize
      *      The preferred max number of records to return at a time.
-     *      Choose a value between 200 and 1,000.
+     *      Choose a value between 200 and 2,000.
      *      If there are more records than requested, you'll need to use the nextRecordsUrl to retrieve them.
      *      https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/headers_queryoptions.htm
      */
@@ -758,10 +754,6 @@ public inherited sharing class MA_MassActionUtils {
         }
     }
 
-    public static MA_SoqlQueryExecuteResult executeSoqlQueryNextRecords( String baseURL, String nextRecordsId ) {
-        return executeSoqlQueryNextRecords( baseURL, nextRecordsId, null );
-    }
-
     /**
      * Creates an HttpRequest with a configured enpoint to execute a SOQL query
      * against the REST API. Also sets common headers for an authorized JSON request.
@@ -774,7 +766,7 @@ public inherited sharing class MA_MassActionUtils {
      *      that identifies the next page of records to return.
      * @param batchSize
      *      The preferred max number of records to return at a time.
-     *      Choose a value between 200 and 1,000.
+     *      Choose a value between 200 and 2,000.
      *      If there are more records than requested, you'll need to use the nextRecordsUrl to retrieve them.
      *      https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/headers_queryoptions.htm
      */

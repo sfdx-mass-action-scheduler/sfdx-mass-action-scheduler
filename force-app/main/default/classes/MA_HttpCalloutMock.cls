@@ -4,6 +4,9 @@
  * GitHub: https://github.com/douglascayers/sfdx-mass-action-scheduler
  * License: BSD 3-Clause License
  */
+/*
+ * Most code coverage comes from MA_EditConfigRestControllerTest
+ */
 public inherited sharing class MA_HttpCalloutMock implements HttpCalloutMock {
 
     public HttpResponse respond( HttpRequest request ) {
@@ -37,13 +40,25 @@ public inherited sharing class MA_HttpCalloutMock implements HttpCalloutMock {
             response.setBody(
                 ' { ' +
                 '   "id" : "00Bf40000017w5h", ' +
-                '   "query" : "SELECT Id FROM Account", ' +
+                '   "query" : "SELECT Id, Name, Owner.Id FROM Account", ' +
                 '   "sobjectType" : "Account", ' +
-                '   "columns" : [ { ' +
-                '     "label" : "Account ID", ' +
-                '     "fieldNameOrPath" : "Id", ' +
-                '     "type" : "id" ' +
-                '   } ] ' +
+                '   "columns" : [ ' +
+                '     { ' +
+                '       "label" : "Account ID", ' +
+                '       "fieldNameOrPath" : "Id", ' +
+                '       "type" : "id" ' +
+                '     }, ' +
+                '     { ' +
+                '       "label" : "Account Name", ' +
+                '       "fieldNameOrPath" : "Name", ' +
+                '       "type" : "string" ' +
+                '     }, ' +
+                '     { ' +
+                '       "label" : "Owner ID", ' +
+                '       "fieldNameOrPath" : "Owner.Id", ' +
+                '       "type" : "id" ' +
+                '     } ' +
+                '   ] ' +
                 ' } '
             );
 
@@ -195,24 +210,78 @@ public inherited sharing class MA_HttpCalloutMock implements HttpCalloutMock {
         // SOQL Query (success)
         else if ( matches( request.getEndpoint(), '(.*)/query(/)?\\?q=SELECT(.*)' ) ) {
 
+            Boolean isDone = true;
+            String nextRecordsUrl = null;
+            Integer batchSize = null;
+            Integer totalSize = 1;
+
+            String queryOptions = request.getHeader( 'Sforce-Query-Options' );
+
+            // get batch size query option, if set
+            if ( String.isNotEmpty( queryOptions ) ) {
+                for ( String optionPair : queryOptions.split( ';' ) ) {
+                    if ( optionPair.deleteWhitespace().startsWithIgnoreCase( 'batchSize=' ) ) {
+                        batchSize = Integer.valueOf( optionPair.split( '=' )[1].trim() );
+                    }
+                }
+            }
+
+            // if a batch size was given, simulate that there's another page of records to return
+            if ( batchSize != null ) {
+                isDone = false;
+                nextRecordsUrl = request.getEndpoint().substringBefore( '/query' ) + '/query/01gf400001MMCpeAAH-' + batchSize;
+                totalSize = batchSize + 1;
+            }
+
             response.setBody(
                 ' { ' +
-                '   "totalSize" : 1, ' +
-                '   "done" : true, ' +
+                '   "totalSize" : ' + totalSize + ', ' +
+                '   "done" : ' + isDone + ', ' +
+        ( String.isNotBlank( nextRecordsUrl ) ?
+            (   '   "nextRecordsUrl" : "' + nextRecordsUrl + '", ' ) :
+                ''
+        ) +
                 '   "records" : [ { ' +
                 '     "attributes" : { ' +
                 '       "type" : "Account", ' +
                 '       "url" : "/services/data/v44.0/sobjects/Account/001f400000CukanAAB" ' +
                 '     }, ' +
                 '     "Id" : "001f400000CukanAAB", ' +
-                '     "Name" : "Test Account" ' +
+                '     "Name" : "Test Account 1" ' +
+                '   } ] ' +
+                ' } '
+            );
+
+        }
+        // SOQL Query Next Records URL
+        else if ( matches( request.getEndpoint(), '(.*)/query/(\\w){15,18}-(\\d+)(.*)' ) ) {
+
+            Pattern p = Pattern.compile( '(\\w){15,18}-(\\d+)' );
+            Matcher m = p.matcher( request.getEndpoint() );
+
+            Integer totalSize = 2;
+            while ( m.find() ) {
+                totalSize = Integer.valueOf( m.group().substringAfter( '-' ) ) + 1;
+            }
+
+            response.setBody(
+                ' { ' +
+                '   "totalSize" : ' + totalSize + ', ' +
+                '   "done" : true, ' +
+                '   "records" : [ { ' +
+                '     "attributes" : { ' +
+                '       "type" : "Account", ' +
+                '       "url" : "/services/data/v44.0/sobjects/Account/001f400000lxT2JAAU" ' +
+                '     }, ' +
+                '     "Id" : "001f400000lxT2JAAU", ' +
+                '     "Name" : "Test Account 2" ' +
                 '   } ] ' +
                 ' } '
             );
 
         }
         // SOQL Query (failure)
-        else if ( matches( request.getEndpoint(), '(.*)/query(/)?\\?q=TEST_FAIL(.*)' ) ) {
+        else if ( matches( request.getEndpoint(), '(.*)/query(/)?(\\?q=)?TEST_FAIL(.*)' ) ) {
 
             response.setStatus( 'ERROR' );
             response.setStatusCode( 400 );

@@ -16,6 +16,12 @@ public with sharing class MA_SoqlSourceIterable implements Iterator<Map<String, 
 
     private Iterator<Map<String, Object>> currentPageIterator { get; set; }
 
+    // Not to be confused with Batch Apex batch size, this is the value
+    // used in the 'Sforce-Query-Options' header with REST API to chunk
+    // up the amount of query records returned. This value is between 200 to 2,000.
+    // https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/headers_queryoptions.htm
+    private Integer queryOptionsBatchSize { get; set; }
+
     public MA_SoqlSourceIterable( ID configId ) {
 
         System.debug( 'MA_SoqlSourceIterable: configId=' + configId );
@@ -26,17 +32,24 @@ public with sharing class MA_SoqlSourceIterable implements Iterator<Map<String, 
 
     }
 
+    public MA_SoqlSourceIterable( ID configId, Integer queryOptionsBatchSize ) {
+        this( configId );
+        this.queryOptionsBatchSize = queryOptionsBatchSize;
+    }
+
     // ------------------------------------------------------------------------
 
     public Map<String, Object> next() {
 
         System.debug( 'MA_SoqlSourceIterable.next' );
 
+        Map<String, Object> record = null;
+
         if ( hasNext() ) {
-            return this.currentPageIterator.next();
+            record = this.currentPageIterator.next();
         }
 
-        return null;
+        return record;
     }
 
     public Boolean hasNext() {
@@ -61,10 +74,10 @@ public with sharing class MA_SoqlSourceIterable implements Iterator<Map<String, 
         MA_SoqlQueryExecuteResult queryResult = new MA_SoqlQueryExecuteResult();
 
         if ( String.isEmpty( this.nextRecordsURL ) ) {
-            queryResult = MA_MassActionUtils.executeSoqlQuery( baseURL, this.config.Source_SOQL_Query__c );
+            queryResult = MA_MassActionUtils.executeSoqlQuery( baseURL, this.config.Source_SOQL_Query__c, this.queryOptionsBatchSize );
         } else {
             String nextRecordsId = this.nextRecordsURL.substringAfterLast( '/' );
-            queryResult = MA_MassActionUtils.executeSoqlQueryNextRecords( baseURL, nextRecordsId );
+            queryResult = MA_MassActionUtils.executeSoqlQueryNextRecords( baseURL, nextRecordsId, this.queryOptionsBatchSize );
         }
 
         this.hasRunQuery = true;
@@ -80,7 +93,7 @@ public with sharing class MA_SoqlSourceIterable implements Iterator<Map<String, 
 
         System.debug( 'MA_SoqlSourceIterable.iterator' );
 
-        return new MA_SoqlSourceIterable( this.config.Id );
+        return new MA_SoqlSourceIterable( this.config.Id, this.queryOptionsBatchSize );
     }
 
 }

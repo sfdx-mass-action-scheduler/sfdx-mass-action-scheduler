@@ -64,7 +64,7 @@ private class MA_ListViewSourceBatchableTest {
 
         Mass_Action_Mapping__c configFieldMapping = new Mass_Action_Mapping__c(
             Mass_Action_Configuration__c = config.Id,
-            Source_Field_Name__c = 'Id',
+            Source_Field_Name__c = 'Owner.Id', // for code coverage, using a multiple field source name
             Target_Field_Name__c = 'ContextId'
         );
 

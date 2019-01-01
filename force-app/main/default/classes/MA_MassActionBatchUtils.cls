@@ -170,20 +170,36 @@ public inherited sharing class MA_MassActionBatchUtils {
     // ----------------------------------------------------
 
     public static AsyncApexJob getJobById( ID jobId ) {
-        return [
-            SELECT
-                Id,
-                CreatedDate,
-                CompletedDate,
-                ExtendedStatus,
-                TotalJobItems,
-                JobItemsProcessed,
-                NumberOfErrors
-            FROM
-                AsyncApexJob
-            WHERE
-                Id = :jobId
-        ];
+
+        AsyncApexJob job;
+
+        if ( Test.isRunningTest() ) {
+            job = MA_AsyncApexJobMock.getJobById( jobId );
+        }
+
+        // acrobatics for test coverage and the fact that
+        // AsyncApexJob records can't truly be mocked
+        if ( job == null && !MA_AsyncApexJobMock.MOCK_JOB_IDS.contains( jobId ) ) {
+            for ( AsyncApexJob item : [
+                SELECT
+                    Id,
+                    CreatedDate,
+                    CompletedDate,
+                    ExtendedStatus,
+                    TotalJobItems,
+                    JobItemsProcessed,
+                    NumberOfErrors
+                FROM
+                    AsyncApexJob
+                WHERE
+                    Id = :jobId
+                LIMIT 1
+            ]) {
+                job = item;
+            }
+        }
+
+        return job;
     }
 
 }
