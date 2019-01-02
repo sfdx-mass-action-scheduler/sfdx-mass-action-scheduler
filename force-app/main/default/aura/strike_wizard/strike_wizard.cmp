@@ -31,7 +31,7 @@ License: BSD 3-Clause License
     <aura:attribute name="initialized" type="Boolean" default="{!false}" access="private"/>
     <aura:attribute name="advanceButtonText" type="String" default="Mark Stage as Completed" access="private"/>
     <aura:attribute name="toggleButtonStyle" type="Boolean" default="{!true}" access="private"/>
-    <aura:attribute name="toggleBodyView" type="Boolean" default="{!true}" access="private"/>
+    <aura:attribute name="toggleBodyView" type="Boolean" default="{!true}" access="public"/> <!-- Doug, 12/31/2018, I exposed this attribute -->
 
     <!-- HANDLERS AND EVENTS-->
     <aura:handler name="init" value="{!this}" action="{!c.init}"/>
@@ -58,12 +58,13 @@ License: BSD 3-Clause License
         <aura:if isTrue="{!v.collapseExpandButton}">
             <lightning:buttonIcon class="slds-button slds-button_icon-border-filled slds-path__trigger slds-no-flex slds-m-horizontal_small slds-flip_vertical"
                 iconName="{!if(v.toggleBodyView, 'utility:chevrondown', 'utility:chevronup')}"
+                title="Toggle coaching and guidance"
                 alternativeText="toggle"
                 size="medium"
                 variant="border"
                 onclick="{!c.toggleBody}"/>
         </aura:if>
-        <div class="slds-tabs_path" role="application">
+        <div class="{!'slds-tabs_path slds-path slds-path_has-coaching' + if(v.toggleBodyView, ' slds-is-expanded ', '')}" role="application">
             <ul class="slds-tabs_path__nav" role="tablist">
                 <aura:iteration items="{!v.chevrons}" var="chevron" indexVar="index">
                     <li class="{!'slds-tabs_path__item ' + chevron.class}" role="presentation" id="{!index}" onclick="{!c.chevronClick}">

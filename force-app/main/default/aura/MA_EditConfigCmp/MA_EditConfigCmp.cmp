@@ -4,7 +4,7 @@ Website: https://douglascayers.com
 GitHub: https://github.com/douglascayers/sfdx-mass-action-scheduler
 License: BSD 3-Clause License
 -->
-<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId,lightning:actionOverride" access="global">
+<aura:component controller="MA_EditConfigCmpController" implements="flexipage:availableForRecordHome,force:hasRecordId,lightning:actionOverride" access="global">
 
     <ltng:require scripts="{!$Resource.soqlparse}"/>
 
@@ -245,13 +245,341 @@ License: BSD 3-Clause License
                     stageNames="{!v.wizardStageNames}"
                     activeChevron="{!v.wizardActiveStageIndex}"
                     displayMode="wizard"
-                    collapseExpandButton="false"
+                    collapseExpandButton="true"
+                    toggleBodyView="false"
                     disableForwardNavOnIncomplete="true"
                     processComplete="false">
 
-                    <!--<aura:if isTrue="{!equals( v.wizardActiveStageIndex, 0 )}">-->
-                        <!-- TODO coaching for each step like when to use reports vs. list views, gotchas, etc -->
-                    <!--</aura:if>-->
+                    <div class="slds-box">
+
+                            <!-- Stage: Details -->
+
+                            <aura:if isTrue="{!equals( v.wizardActiveStageIndex, 0 )}">
+
+                                <c:MA_WizardCoachingCmp>
+
+                                    <aura:set attribute="leftTitle" value="About This Step"/>
+                                    <aura:set attribute="leftContent">
+                                        <p>
+                                            Describe the purpose of this Mass Action Configuration.
+                                            Your future self and those that come after you will appreciate it.
+                                        </p>
+                                        <p>
+                                            Pro Tip: After you've saved this record, use the <a href="https://github.com/douglascayers/sfdx-mass-action-scheduler/wiki/How-to-Customize-the-Quick-Edit-Page-Layout" target="_blank">Quick Edit</a> button to edit details
+                                            without needing to step through the entire wizard each time.
+                                        </p>
+                                        <p>
+                                            Each step of this wizard includes tips and advice.
+                                            You can also find more documentation, examples, and support at these resources:
+                                        </p>
+                                        <p>
+                                            <ul>
+                                                <li>For discussion and feedback <a href="https://success.salesforce.com/_ui/core/chatter/groups/GroupProfilePage?g=0F93A000000LhvN" target="_blank">post in the community group</a> or raise well defined issues and ideas via the <a href="https://github.com/douglascayers/sfdx-mass-action-scheduler/issues" target="_blank">Issues feature</a>.</li>
+                                                <li>Read the <a href="https://github.com/douglascayers/sfdx-mass-action-scheduler/wiki" target="_blank">wiki page</a> for further documentation on Mass Action Scheduler.</li>
+                                                <li>Read the <a href="https://github.com/douglascayers/sfdx-mass-action-scheduler/wiki/Frequently-Asked-Questions" target="_blank">FAQ page</a> to help troubleshoot technical issues.</li>
+                                            </ul>
+                                        </p>
+                                    </aura:set>
+
+                                    <aura:set attribute="rightTitle" value="Guidance"/>
+                                    <aura:set attribute="rightContent">
+                                        <p>
+                                            <b>Active</b> configurations can be run manually or on a schedule.
+                                        </p>
+                                        <p>
+                                            <b>Inactive</b> configurations do not run.
+                                            If a configuration is scheduled, it's Apex job is unscheduled for future runs until you re-activate it again.
+                                        </p>
+                                        <p>
+                                            <b>Batch Size</b> controls the number of times the target action from the Choose Action step is invoked per save transaction.
+                                            As when using Data Loader, you may need to reduce the batch size to stay within <a href="https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm" target="_blank">governor limits</a>.
+                                        </p>
+                                        <p>
+                                            <b>Named Credential</b> is optional and is a way to <a href="https://github.com/douglascayers/sfdx-mass-action-scheduler/wiki/Specify-the-Context-User-via-Named-Credentials" target="_blank">specify the context user</a> performing the actions.
+                                            That is to say the user who has their name stamped as the "Last Modified By" on any updated records
+                                            by the target action from the Choose Action step.
+                                            If not specified, then the user who last activates the configuration, or who manually runs it, is the context user.
+                                        </p>
+                                    </aura:set>
+
+                                </c:MA_WizardCoachingCmp>
+
+                            </aura:if>
+
+                            <!-- Stage: Choose Source -->
+
+                            <aura:if isTrue="{!equals( v.wizardActiveStageIndex, 1 )}">
+
+                                <c:MA_WizardCoachingCmp>
+
+                                    <aura:set attribute="leftTitle" value="About This Step"/>
+                                    <aura:set attribute="leftContent">
+                                        <p>
+                                            Select the source of the records you want to process.
+                                        </p>
+                                        <p>
+                                            <b>List Views</b> are easy to create and support simple filter criteria.
+                                            Learn how to create list views with the <a href="https://trailhead.salesforce.com/content/learn/modules/lex_customization/lex_customization_list?trail_id=lex_admin_implementation" target="_blank">Create and Customize List Views</a> unit on Trailhead.
+                                        </p>
+                                        <p>
+                                            <b>Reports</b> are powerful and support complex filter criteria
+                                            like <a href="https://help.salesforce.com/articleView?id=reports_cross_filters_create.htm" target="_blank">Cross Filters</a>.
+                                            Learn how to create reports with the <a href="https://trailhead.salesforce.com/content/learn/modules/lex_implementation_reports_dashboards?trail_id=lex_admin_implementation" target="_blank">Reports &amp; Dashboards for Lightning Experience</a> module on Trailhead.
+                                        </p>
+                                        <p>
+                                            <b>SOQL</b> queries are an advanced technique to search for specific records. Simple queries can be helpful when you don't want to deal with the overhead of creating a list view or a report.
+                                            Learn how to write SOQL queries with the <a href="https://trailhead.salesforce.com/en/content/learn/modules/apex_database/apex_database_soql?trail_id=force_com_dev_beginner" target="_blank">Write SOQL Queries</a> unit on Trailhead.
+                                        </p>
+                                    </aura:set>
+
+                                    <aura:set attribute="rightTitle" value="Guidance"/>
+                                    <aura:set attribute="rightContent">
+
+                                        <p>
+                                            <p>
+                                                <b>Stay within limits</b>. If your source type would return more than its record limit then either modify filters to reduce the row count or use a different source type.
+                                                For example, a report that returns 30 thousand records would need to be split into three smaller reports or switch to another source type.
+                                            </p>
+                                            <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                                                <thead>
+                                                    <tr class="slds-line-height_reset">
+                                                        <th class="slds-text-title_caps slds-cell-wrap">Source Type</th>
+                                                        <th class="slds-text-title_caps slds-cell-wrap">Limits</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td class="slds-cell-wrap">List Views</td>
+                                                        <td class="slds-cell-wrap">Up to 50 million records</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="slds-cell-wrap">Reports</td>
+                                                        <td class="slds-cell-wrap">
+                                                            Up to 10 thousand records
+                                                            <br/>
+                                                            <a href="https://help.salesforce.com/articleView?id=reports_changing_format.htm" target="_blank">Tabular report format</a> only.
+                                                            <br/>
+                                                            Report must be saved in a <a href="https://trailhead.salesforce.com/content/learn/projects/create-reports-and-dashboards-for-sales-and-marketing-managers?trail_id=learn-admin-essentials" target="_blank">custom folder</a>.
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="slds-cell-wrap">SOQL</td>
+                                                        <td class="slds-cell-wrap">Up to 50 million records</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </p>
+
+                                        <p>
+                                            <b>Alias SOQL aggregate functions</b>. Aggregate functions like <code>COUNT</code>, <code>MIN</code>, <code>MAX</code>, <code>AVG</code>, <code>SUM</code> and others
+                                            must be <a href="https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_groupby_alias.htm" target="_blank">aliased</a> to be selectable in the Field Mappings step.
+                                            For example, consider the query <code>SELECT COUNT(Id) <b>cnt</b>, Type FROM Account GROUP BY Type</code>.
+                                            Without the <b>cnt</b> alias then only the <b>Type</b> field would be available on the Field Mappings step.
+                                        </p>
+
+                                        <p>
+                                            <b>Test your data source before automating</b>.
+                                            Confirm fields and filters by first previewing list views and running reports.
+                                            Execute SOQL queries in a tool like <a href="https://help.salesforce.com/articleView?id=code_dev_console_tab_query_editor.htm" target="_blank">Developer Console</a> or <a href="https://developer.salesforce.com/docs/atlas.en-us.dataLoader.meta/dataLoader/data_loader.htm" target="_blank">Data Loader</a>.
+                                        </p>
+
+                                    </aura:set>
+
+                                </c:MA_WizardCoachingCmp>
+
+                            </aura:if>
+
+                            <!-- Stage: Choose Action -->
+
+                            <aura:if isTrue="{!equals( v.wizardActiveStageIndex, 2 )}">
+
+                                <c:MA_WizardCoachingCmp>
+
+                                    <aura:set attribute="leftTitle" value="About This Step"/>
+                                    <aura:set attribute="leftContent">
+                                        <p>
+                                            Select the target action you want to process the source records.
+                                        </p>
+                                        <p>
+                                            Note, Process Builders and Flows are grouped together because the <a href="https://developer.salesforce.com/docs/atlas.en-us.api_action.meta/api_action/actions_obj_flow.htm" target="_blank">REST API</a> does not distinguish between them.
+                                            You may like to use a naming convention to help you tell them apart. For example, adding the word "Flow" to the names of your flows (e.g. "My Account Flow").
+                                        </p>
+                                        <p>
+                                            If you don't see the action you want listed, ensure that it is <b>active</b> and is a <b>supported type</b>.
+                                        </p>
+                                    </aura:set>
+
+                                    <aura:set attribute="rightTitle" value="Guidance"/>
+                                    <aura:set attribute="rightContent">
+                                        <p>
+                                            <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                                                <thead>
+                                                    <tr class="slds-line-height_reset">
+                                                        <th class="slds-text-title_caps slds-cell-wrap">Action Type</th>
+                                                        <th class="slds-text-title_caps slds-cell-wrap">Supported Types</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td class="slds-cell-wrap"><b>Process Builder</b></td>
+                                                        <td class="slds-cell-wrap">Processes that start when <a href="https://help.salesforce.com/articleView?id=process_start.htm" target="_blank">invoked by another process</a>, not when a record is created or updated.</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="slds-cell-wrap"><b>Flows</b></td>
+                                                        <td class="slds-cell-wrap">Autolaunched flows. Flows that <a href="https://help.salesforce.com/articleView?id=vpm_admin_flow_type.htm" target="_blank">don't require user interaction</a> like screens.</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="slds-cell-wrap"><b>Quick Actions</b></td>
+                                                        <td class="slds-cell-wrap">Create a Record, Update a Record, and Log a Call types.</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="slds-cell-wrap"><b>Email Alerts</b></td>
+                                                        <td class="slds-cell-wrap">All</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="slds-cell-wrap"><b>Workflow Rules</b></td>
+                                                        <td class="slds-cell-wrap">Active rules.</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="slds-cell-wrap"><b>Apex</b></td>
+                                                        <td class="slds-cell-wrap">Classes annotated with <a href="https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_InvocableMethod.htm" target="_blank">@InvocableMethod</a>.</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </p>
+                                    </aura:set>
+
+                                </c:MA_WizardCoachingCmp>
+
+                            </aura:if>
+
+                            <!-- Stage: Field Mappings -->
+
+                            <aura:if isTrue="{!equals( v.wizardActiveStageIndex, 3 )}">
+
+                                <c:MA_WizardCoachingCmp>
+
+                                    <aura:set attribute="leftTitle" value="About This Step"/>
+                                    <aura:set attribute="leftContent">
+                                        <p>
+                                            Map source fields as inputs to the target action.
+                                        </p>
+                                        <p>
+                                            For example, some action types like Process Builder, Workflow Rules, and Email Alerts require a record ID to be mapped to them from the source data.
+                                        </p>
+                                    </aura:set>
+
+                                    <aura:set attribute="rightTitle" value="Guidance"/>
+                                    <aura:set attribute="rightContent">
+                                        <p>
+                                            <b>Don't see the Source Field you're looking for?</b>
+                                            <ul>
+                                                <li>Confirm the field is included in your source type.</li>
+                                                <li>Ensure that your user has <a href="https://trailhead.salesforce.com/content/learn/modules/data_security?trail_id=security" target="_blank">read object and field permissions</a>.</li>
+                                                <li>If using a Named Credential, ensure that user also has appropriate object and field permissions.</li>
+                                                <li>
+                                                    If using SOQL, alias the aggregate functions. Aggregate functions like <code>COUNT</code>, <code>MIN</code>, <code>MAX</code>, <code>AVG</code>, <code>SUM</code> and others
+                                                    must be <a href="https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_groupby_alias.htm" target="_blank">aliased</a> to be selectable in the Field Mappings step.
+                                                    For example, consider the query <code>SELECT COUNT(Id) <b>cnt</b>, Type FROM Account GROUP BY Type</code>.
+                                                    Without the <b>cnt</b> alias then only the <b>Type</b> field would be available on the Field Mappings step.
+                                                </li>
+                                                <li>
+                                                    If using SOQL, child relationship queries are not shown in the Field Mappings step.
+                                                    For example, consider the query <code>SELECT Id, Name, ( SELECT FirstName FROM Contacts ) FROM Account</code>.
+                                                    The child relationship query <code>SELECT FirstName FROM Contacts</code> is ignored.
+                                                    Therefore, and for performance, do not use child relationship queries in your <code>SELECT</code> statement.
+                                                </li>
+                                            </ul>
+                                        </p>
+                                        <p>
+                                            <b>Don't see the Target Field you're looking for?</b>
+                                            <ul>
+                                                <li>For Flows, ensure the variable's <a href="https://help.salesforce.com/articleView?id=vpm_designer_resources_variable.htm" target="_blank">Input/Output Type</a> is "Input Only" or "Input and Output".</li>
+                                                <li>For Apex, ensure the class variable has the <a href="https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_InvocableVariable.htm" target="_blank">@InvocableVariable</a> annotation.</li>
+                                                <li>For Quick Actions, ensure the field is on the <a href="https://help.salesforce.com/articleView?id=action_layout_editor_about.htm" target="_blank">action's layout</a>.</li>
+                                            </ul>
+                                        </p>
+                                    </aura:set>
+
+                                </c:MA_WizardCoachingCmp>
+
+                            </aura:if>
+
+                            <!-- Stage: Schedule -->
+
+                            <aura:if isTrue="{!equals( v.wizardActiveStageIndex, 4 )}">
+
+                                <c:MA_WizardCoachingCmp>
+
+                                    <aura:set attribute="leftTitle" value="About This Step"/>
+                                    <aura:set attribute="leftContent">
+                                        <p>
+                                            Choose the schedule frequency when to run this Mass Action Configuration.
+                                        </p>
+                                        <p>
+                                            <b>On Demand</b> runs only when you click the <b>Run</b> button or if you use Process Builder, Flow, or Apex to
+                                            invoke the provided <code>MA_RunConfigInvocable</code> invocable Apex class (labeled "MAS: Run Mass Action").
+                                        </p>
+                                        <p>
+                                            <b>Scheduled</b> provides simple options to choose the hour, day, month, and year to run the configuration repeatedly.
+                                        </p>
+                                        <p>
+                                            <b>Custom</b> allows you to specify your own cron expression which allows more advanced options than the provided simple scheduler.
+                                            Learn more about how to write cron expressions in the "Using the System.Schedule Method" section of the <a href="https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_scheduler.htm" target="_blank">Apex Scheduler</a> documentation.
+                                        </p>
+                                        <p>
+                                            Note, only <b>active</b> configurations will run regardless the schedule frequency chosen.
+                                        </p>
+                                    </aura:set>
+
+                                    <aura:set attribute="rightTitle" value="Guidance"/>
+                                    <aura:set attribute="rightContent">
+                                        <p>
+                                            Salesforce has a limit on the number of scheduled Apex jobs at one time. Traditionally this is 100 scheduled jobs.
+                                            If you encounter an error trying to save an active configuration with a scheduled or custom frequency,
+                                            you may have reached the limit and need to either deactivate other configurations or unschedule other Apex jobs in your org.
+                                            Learn more about these limits in the "Apex Scheduler Limits" section of the <a href="https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_scheduler.htm" target="_blank">Apex Scheduler</a> documentation.
+                                        </p>
+                                        <p>
+                                            <b>Example cron expressions for custom schedule frequency:</b>
+                                                <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                                                    <thead>
+                                                        <tr class="slds-line-height_reset">
+                                                            <th class="slds-text-title_caps slds-cell-wrap">Expression</th>
+                                                            <th class="slds-text-title_caps slds-cell-wrap">Description</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td class="slds-cell-wrap"><code>0 0 13 * * ?</code></td>
+                                                            <td class="slds-cell-wrap">Runs every day at 1 PM.</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="slds-cell-wrap"><code>0 0 22 ? * 6L</code></td>
+                                                            <td class="slds-cell-wrap">Runs the last Friday of every month at 10 PM.</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="slds-cell-wrap"><code>0 0 10 ? * MON-FRI	</code></td>
+                                                            <td class="slds-cell-wrap">Runs Monday through Friday at 10 AM.</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="slds-cell-wrap"><code>0 0 20 * * ? 2010</code></td>
+                                                            <td class="slds-cell-wrap">Runs every day at 8 PM during the year 2010.</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="slds-cell-wrap"><code>0 0 8 13 2 ?</code></td>
+                                                            <td class="slds-cell-wrap">Runs every 13th of February at 8 AM.</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                        </p>
+                                    </aura:set>
+
+                                </c:MA_WizardCoachingCmp>
+
+                            </aura:if>
+
+                    </div>
 
                 </c:strike_wizard>
 
@@ -544,7 +872,11 @@ License: BSD 3-Clause License
                                     </label>
 
                                     <div class="slds-input" disabled="disabled">
-                                        All <b>active</b> Workflow Rules whose <b>Rule Criteria</b> matches records, regardless the <b>Evaluation Criteria</b>, will run.
+                                        For each source record, all <b>active</b> Workflow Rules will run whose <b>Rule Criteria</b> matches the record.
+                                        <br/>
+                                        <b>Evaluation Criteria</b>, which normally decides when a rule fires, is ignored because you are explicitly running the rules with Mass Action Scheduler.
+                                        <br/>
+                                        Learn more with the <a href="https://help.salesforce.com/articleView?id=workflow_rules_define.htm" target="_blank">Set the Criteria for Your Workflow Rule</a> help article.
                                     </div>
 
                                 </div>
@@ -864,12 +1196,6 @@ License: BSD 3-Clause License
 
         </aura:if>
 
-    </div>
-
-    <div class="slds-theme_shade slds-box slds-box_small slds-m-vertical_medium slds-text-align_center">
-        <span><a href="https://douglascayers.github.io/sfdx-mass-action-scheduler/" target="_blank">Mass Action Scheduler</a></span>
-        <span class="slds-m-horizontal_xx-small">is developed with love by</span>
-        <span><a href="https://douglascayers.com" target="_blank">Doug Ayers</a></span>
     </div>
 
 </aura:component>

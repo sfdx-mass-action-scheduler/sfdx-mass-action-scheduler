@@ -137,7 +137,8 @@ public with sharing class MA_MassActionConfigTriggerHandler {
 
         System.debug( 'MA_MassActionConfigTriggerHandler.unscheduleMassActions' );
 
-        publishJobChangeEvent( configs, MA_JobChangeEvent.ScheduleOperation.UNSCHEDULE );
+        // publishJobChangeEvent( configs, MA_JobChangeEvent.ScheduleOperation.UNSCHEDULE );
+        MA_MassActionScheduleUtils.unscheduleMassActions( toIds( configs ) );
 
     }
 
@@ -145,7 +146,17 @@ public with sharing class MA_MassActionConfigTriggerHandler {
 
         System.debug( 'MA_MassActionConfigTriggerHandler.scheduleMassActions' );
 
-        publishJobChangeEvent( configs, MA_JobChangeEvent.ScheduleOperation.SCHEDULE );
+        // publishJobChangeEvent( configs, MA_JobChangeEvent.ScheduleOperation.SCHEDULE );
+        MA_MassActionScheduleUtils.scheduleMassActions( toIds( configs ) );
+
+    }
+
+    private static List<ID> toIds( List<SObject> records ) {
+        List<ID> ids = new List<ID>();
+        for ( SObject record : records ) {
+            ids.add( record.Id );
+        }
+        return ids;
     }
 
     /**
@@ -158,6 +169,7 @@ public with sharing class MA_MassActionConfigTriggerHandler {
      * to move into another execution context.
      * https://success.salesforce.com/issues_view?id=a1p30000000SyhIAAS
      */
+    /*
     private static void publishJobChangeEvent( List<Mass_Action_Configuration__c> configs, MA_JobChangeEvent.ScheduleOperation scheduleOperation ) {
 
         System.debug( 'MA_MassActionConfigTriggerHandler.publishJobChangeEvent' );
@@ -172,6 +184,7 @@ public with sharing class MA_MassActionConfigTriggerHandler {
         ));
 
     }
+    */
 
 }
 /*

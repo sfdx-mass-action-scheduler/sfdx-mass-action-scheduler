@@ -109,6 +109,59 @@ public inherited sharing class MA_MassActionUtils {
     }
 
     /**
+     * This method accepts the JSON serialization of the configuration and field mappings
+     * because when defining the method params as the custom class type was getting internal server error.
+     * I think possibly related to general serialization bugs with Lightning:
+     * https://developer.salesforce.com/forums/?id=906F00000005GiwIAE
+     * https://blog.texei.com/lightning-components-auraenabled-method-parameters-whats-working-and-what-s-not-83c351356104
+     */
+    public static Map<String, Object> saveConfiguration( String wrapperJson, String fieldMappingsJson ) {
+
+        System.debug( 'MA_MassActionUtils.saveConfiguration' );
+        System.debug( wrapperJson );
+        System.debug( fieldMappingsJson );
+
+        Map<String, Object> result = new Map<String, Object>();
+
+        MA_MassActionConfigWrapper wrapper = (MA_MassActionConfigWrapper) JSON.deserializeStrict( wrapperJson, MA_MassActionConfigWrapper.class );
+        Map<String, String> fieldMappings = (Map<String, String>) JSON.deserializeStrict( fieldMappingsJson, Map<String, String>.class );
+
+        System.debug( wrapper );
+        System.debug( fieldMappings );
+
+        Mass_Action_Configuration__c config = wrapper.toConfiguration();
+        upsert config;
+
+        delete [ SELECT Id FROM Mass_Action_Mapping__c WHERE Mass_Action_Configuration__c = :config.Id ];
+
+        List<Mass_Action_Mapping__c> configMappings = new List<Mass_Action_Mapping__c>();
+        for ( String targetFieldName : fieldMappings.keySet() ) {
+
+            // if a target field is not required for the chosen action
+            // then ignore it if there is no source field selected
+            String sourceFieldName = fieldMappings.get( targetFieldName );
+
+            if ( String.isNotBlank( sourceFieldName ) ) {
+                configMappings.add( new Mass_Action_Mapping__c(
+                    Mass_Action_Configuration__c = config.Id,
+                    Source_Field_Name__c = sourceFieldName,
+                    Target_Field_Name__c = targetFieldName
+                ));
+            }
+
+        }
+
+        insert configMappings;
+
+        result.put( 'success', true );
+        result.put( 'recordId', config.Id );
+
+        return result;
+    }
+
+    // ------------------------------------------------------------------------
+
+    /**
      * The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
      * or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v44.0').
      */

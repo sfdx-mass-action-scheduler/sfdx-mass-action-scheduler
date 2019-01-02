@@ -48,10 +48,23 @@ private class MA_MassActionConfigTriggerHandlerTest {
         Test.startTest();
 
         insert activeConfig;    // should publish event to schedule job
+
+        System.debug( [ SELECT Id, Name FROM CronJobDetail ] ); // remove if emitting platform events for scheduling
+        System.assertEquals( 1, [ SELECT count() FROM CronJobDetail WHERE Name LIKE :('%' + activeConfig.Id) ] );
+
         insert inactiveConfig;  // since inactive, should NOT publish an event
+
+        System.debug( [ SELECT Id, Name FROM CronJobDetail ] ); // remove if emitting platform events for scheduling
+        System.assertEquals( 0, [ SELECT count() FROM CronJobDetail WHERE Name LIKE :('%' + inactiveConfig.Id) ] );
 
         Test.stopTest();
 
+        /*
+         * 1/1/2019, I switched from emitting platform events in the trigger to schedule jobs.
+         * See MA_EditConfigCmpHelper.saveRecordAsync for full details.
+         */
+
+        /*
         List<EventBusSubscriber> eventBusSubscribers = new List<EventBusSubscriber>([
             SELECT
                 Name, Status, Position, Type, Topic
@@ -63,6 +76,7 @@ private class MA_MassActionConfigTriggerHandlerTest {
         ]);
 
         System.assertEquals( 1, eventBusSubscribers[0].Position );
+        */
 
     }
 
@@ -98,14 +112,29 @@ private class MA_MassActionConfigTriggerHandlerTest {
 
         insert config; // since inactive, should NOT publish event to schedule job
 
+        System.debug( [ SELECT Id, Name FROM CronJobDetail ] ); // remove if emitting platform events for scheduling
+        System.assertEquals( 0, [ SELECT count() FROM CronJobDetail WHERE Name LIKE :('%' + config.Id) ] );
+
         config.Active__c = true;
         update config; // since active, should publish event to unschedule old job and schedule new job
+
+        System.debug( [ SELECT Id, Name FROM CronJobDetail ] ); // remove if emitting platform events for scheduling
+        System.assertEquals( 1, [ SELECT count() FROM CronJobDetail WHERE Name LIKE :('%' + config.Id) ] );
 
         config.Active__c = false;
         update config; // since inactive, should publish event to unschedule job
 
+        System.debug( [ SELECT Id, Name FROM CronJobDetail ] ); // remove if emitting platform events for scheduling
+        System.assertEquals( 0, [ SELECT count() FROM CronJobDetail WHERE Name LIKE :('%' + config.Id) ] );
+
         Test.stopTest();
 
+        /*
+         * 1/1/2019, I switched from emitting platform events in the trigger to schedule jobs.
+         * See MA_EditConfigCmpHelper.saveRecordAsync for full details.
+         */
+
+        /*
         List<EventBusSubscriber> eventBusSubscribers = new List<EventBusSubscriber>([
             SELECT
                 Name, Status, Position, Type, Topic
@@ -117,6 +146,7 @@ private class MA_MassActionConfigTriggerHandlerTest {
         ]);
 
         System.assertEquals( 3, eventBusSubscribers[0].Position );
+        */
 
     }
 

@@ -375,7 +375,21 @@ License: BSD 3-Clause License
                         inputValidityAsync = Promise.resolve({
                             'invalid': ( sourceTypeIsSoqlQuery && ( inputIsEmpty || inputIsInvalid ) ),
                             'messageWhenInvalid': messageWhenValueMissing
-                        });
+                        }).then( $A.getCallback( function( inputValidity ) {
+                            // if we haven't already determined the field to be invalid
+                            // then perform more rigorous soql query validation
+                            if ( sourceTypeIsSoqlQuery && !inputValidity.invalid ) {
+                                return helper.validateSoqlQueryAsync( component, inputValue )
+                                    .then( $A.getCallback( function( validationResult ) {
+                                        return {
+                                            'invalid': !validationResult.valid,
+                                            'messageWhenInvalid': validationResult.message
+                                        };
+                                    }));
+                            }
+                            return inputValidity;
+                        }));
+                        break;
 
                     // Target
 
@@ -582,9 +596,32 @@ License: BSD 3-Clause License
             targetFieldMappings[item.targetField.name] = item.sourceFieldName;
         });
 
-        return helper.enqueueRestRequest( component, 'saveConfiguration', {
-            'wrapperJson' : record,
-            'fieldMappingsJson' : targetFieldMappings
+        /*
+         * https://success.salesforce.com/issues_view?id=a1p30000000SyhIAAS
+         * Due to known issue that execution contexts started from Apex REST endpoints
+         * cannot schedule or abort jobs, then my first workaround attempt was
+         * to modify the trigger to emit a platform event to get into a different
+         * context. However, platform events run as the "Automated Process" user.
+         * That wouldn't normally be a problem except when our jobs run they make
+         * API callouts using the either a Named Credential or the user's Session ID.
+         * If the configuration record doesn't use Named Credentials (one of the major
+         * features of Version 2.0), then the "Automated Process" user's session id is null
+         * and the http callout fails. Womp womp.
+         *
+         * Therefore, for saving the configuration record, instead of going through
+         * the Apex REST API and instead of the trigger emitting a platform event,
+         * this method goes through normal AuraEnabled apex method and the trigger
+         * schedules and aborts the job synchronously. This ensures the job itself
+         * runs as a real user with a valid session id.
+         */
+
+        // return helper.enqueueRestRequest( component, 'saveConfiguration', {
+        //     'wrapperJson' : record,
+        //     'fieldMappingsJson' : targetFieldMappings
+        // });
+        return helper.enqueueAction( component, 'c.saveConfiguration', {
+            'wrapperJson' : JSON.stringify( record ),
+            'fieldMappingsJson' : JSON.stringify( targetFieldMappings )
         });
 
     },
@@ -698,8 +735,6 @@ License: BSD 3-Clause License
 
         var helper = this;
 
-        var batchSize = 200; // we want smallest payload returned just to validate query works
-
         return Promise.resolve()
             .then( $A.getCallback( function() {
 
@@ -714,52 +749,35 @@ License: BSD 3-Clause License
 
                     if ( $A.util.isUndefinedOrNull( window.SOQLParse ) ) {
 
-                        throw new Error( 'No `window.SOQLParse` function defined. Ensure the static resource exists and "Freeze JavaScript Prototypes" is disabled in Session Settings, then reload the page.' );
+                        throw new Error( 'No `window.SOQLParse` function defined. To use SOQL source type, ensure the static resource exists and "Freeze JavaScript Prototypes" is disabled in Session Settings, then reload the page.' );
 
                     } else {
+
+                        var batchSize = 200; // we want smallest payload returned just to validate query works
 
                         return helper.getSoqlQueryResultsAsync( component, query, batchSize )
                             .then( $A.getCallback( function( result ) {
 
-                                var hasAggregateFunctions = false;
-                                var isAggregateQuery = ( ( result.records && result.records.length > 0 ) && /AggregateResult/i.test( result.records[0].attributes.type ) );
-
                                 var parseResult = window.SOQLParse.parse( query );
+                                console.log( JSON.stringify( parseResult, null, 2 ) );
 
-                                // https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_agg_functions.htm
-                                var aggregateFunctionNames = [
-                                    'COUNT',
-                                    'COUNT_DISTINCT',
-                                    'MIN',
-                                    'MAX',
-                                    'AVG',
-                                    'SUM'
-                                ];
-
-                                parseResult.fields.forEach( function( field, idx ) {
-                                    if ( field.type == 'FunctionCall' && aggregateFunctionNames.includes( field.name.toUpperCase() ) ) {
-                                        hasAggregateFunctions = true;
+                                for ( var i = 0; i < parseResult.fields.length; i++ ) {
+                                    var field = parseResult.fields[i];
+                                    if ( [ 'Query' ].includes( field.type ) ) {
+                                        return {
+                                            'valid': false,
+                                            'message': `Child relationship queries are not supported in the SELECT statement. Please remove query on "${field.object.name}" relationship.`,
+                                            'result': result,
+                                            'parseResult': parseResult
+                                        };
                                     }
-                                });
-
-                                if ( hasAggregateFunctions || isAggregateQuery ) {
-
-                                    return {
-                                        'valid': false,
-                                        'message': 'SOQL aggregate functions like COUNT, MIN, MAX, AVG, SUM and others are not supported in Batch Apex.',
-                                        'result': result,
-                                        'parseResult': parseResult
-                                    };
-
-                                } else {
-
-                                    return {
-                                        'valid': true,
-                                        'result': result,
-                                        'parseResult': parseResult
-                                    };
-
                                 }
+
+                                return {
+                                    'valid': true,
+                                    'result': result,
+                                    'parseResult': parseResult
+                                };
 
                             })).catch( $A.getCallback( function( err ) {
 

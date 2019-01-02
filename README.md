@@ -8,7 +8,7 @@ Overview
 
 Declaratively schedule Process Builder, Flows, Quick Actions, Email Alerts, Workflow Rules, and Apex to process records from Reports, List Views, and SOQL queries.
 
-* **Declarative** - no code necessary, never write batch apex again for queries that can be expressed in a report or list view and actions that can be expressed in a declarative alternative
+* **Declarative** - no code necessary, never write Batch Apex again for queries that can be expressed in a report or list view and actions that can be expressed in a declarative alternative
 * **On Platform** - everything happens in Salesforce so no exporting or uploading data
 * **Timely** - run actions manually or schedule hourly, daily, weekly, or any time in between
 
@@ -33,13 +33,13 @@ Documentation and Discussion
 Data Sources
 ------------
 
-Identify the records you want to process with list views or tabular reports.
+Identify the records you want to process with list views, tabular reports, or a SOQL query.
 
 | Data Sources      | When to Use |
 |-------------------|-------------|
-| **List Views**    | Simple filters. For up to [50 million records](https://help.salesforce.com/articleView?id=000176644&type=1). |
+| **List Views**    | Simple filters. For up to 50 million records. |
 | **Reports**       | Complex filters like [Cross Filters](https://help.salesforce.com/articleView?id=reports_cross_filters_create.htm&type=5). For up to [~10 thousand records](https://github.com/douglascayers/sfdc-add-campaign-members-by-report/issues/17#issuecomment-332382142). |
-| **SOQL**          | You know exactly what you want to query and don't want to create a list view or report. For up to [50 million records](https://help.salesforce.com/articleView?id=000176644&type=1). |    
+| **SOQL**          | You know exactly what you want to query and don't want to create a list view or report. For up to 50 million records. |    
 
 
 Actions
@@ -114,7 +114,7 @@ Release 2.0 (current)
 
 _Due to Lightning Experience web page caching, please log out and log back in after installing the package for UI changes to appear._
 
-* Install Package ([Production](https://login.salesforce.com/packaging/installPackage.apexp?p0=???)) ([Sandbox](https://test.salesforce.com/packaging/installPackage.apexp?p0=???))
+* Install Package ([Production](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tf4000003vWNm)) ([Sandbox](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tf4000003vWNm))
 * [Upgrading to Release 2.0](https://github.com/douglascayers/sfdx-mass-action-scheduler/wiki/Upgrading-to-Release-2.0)
 * [Delivered Features Report](https://github.com/douglascayers/sfdx-mass-action-scheduler/milestone/5?closed=1)
 * [Archived Releases](https://github.com/douglascayers/sfdx-mass-action-scheduler/milestones?state=closed)
@@ -125,11 +125,44 @@ Installing the Source Code (Developers)
 ---------------------------------------
 
 This repository is organized using [Salesforce DX](https://trailhead.salesforce.com/en/trails/sfdx_get_started).
-You may install the unmanaged code from GitHub and make any desired adjustments.
+You may install the source code from GitHub and make any desired adjustments.
 You are responsible for ensuring unit tests meet your org's validation rules and other requirements.
-You can conveniently deploy the source to a new scratch org using [Wade Wegner](https://github.com/wadewegner/deploy-to-sfdx)'s deploy tool:
 
-[![Deploy from GitHub](https://deploy-to-sfdx.com/dist/assets/images/DeployToSFDX.svg)](https://deploy-to-sfdx.com?template=https://github.com/douglascayers/sfdx-mass-action-scheduler)
+First, clone the repository.
+
+```
+git clone https://github.com/douglascayers/sfdx-mass-action-scheduler.git
+```
+
+Change directory into the project folder.
+
+```
+cd sfdx-mass-action-scheduler
+```
+
+Create a new scratch org.
+
+```
+sfdx force:org:create -a mas -s -f config/project-scratch-def.json
+```
+
+Push the source metadata into your scratch org.
+
+```
+sfdx force:source:push
+```
+
+Assign the permission set to your user. 
+
+```
+sfdx force:user:permset:assign -n Mass_Action_Admin
+```
+
+Open the scratch org and enjoy!
+
+```
+sfdx force:org:open --path //lightning/o/Mass_Action_Configuration__c/list
+```
 
 
 Credits
