@@ -8,7 +8,7 @@
  * Represents some parts of a JSON response from List View REST API.
  * "/services/data/<version>/sobjects/<sobjectName>/listviews/<listViewId>/describe"
  */
-public class MA_ListViewDescribeResult {
+public inherited sharing class MA_ListViewDescribeResult {
 
     public ID id { get; set; }
 
@@ -17,6 +17,10 @@ public class MA_ListViewDescribeResult {
     public String sobjectType { get; set; }
 
     public List<Map<String, String>> columns { get; set; }
+
+    public MA_ListViewDescribeResult() {
+        this.columns = new List<Map<String, String>>();
+    }
 
     /**
      * Extract a list of single property from the columns map.

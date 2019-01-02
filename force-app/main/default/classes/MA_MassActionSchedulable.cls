@@ -4,7 +4,7 @@
  * GitHub: https://github.com/douglascayers/sfdx-mass-action-scheduler
  * License: BSD 3-Clause License
  */
-public class MA_MassActionSchedulable implements System.Schedulable, Database.AllowsCallouts {
+public with sharing class MA_MassActionSchedulable implements System.Schedulable, Database.AllowsCallouts {
 
     private ID configId { get; set; }
 

@@ -64,13 +64,19 @@ private class MA_ListViewSourceBatchableTest {
 
         Mass_Action_Mapping__c configFieldMapping = new Mass_Action_Mapping__c(
             Mass_Action_Configuration__c = config.Id,
-            Source_Field_Name__c = 'Id',
+            Source_Field_Name__c = 'Owner.Id', // for code coverage, using a multiple field source name
             Target_Field_Name__c = 'ContextId'
         );
 
         insert configFieldMapping;
 
-        Test.setMock( HttpCalloutMock.class, new MA_InvokeActionHttpRequestMock() );
+        Account acct = new Account(
+            Name = 'Test Account'
+        );
+
+        insert acct;
+
+        Test.setMock( HttpCalloutMock.class, new MA_HttpCalloutMock() );
 
         Test.startTest();
 
@@ -126,7 +132,13 @@ private class MA_ListViewSourceBatchableTest {
 
         insert configFieldMapping;
 
-        Test.setMock( HttpCalloutMock.class, new MA_InvokeActionHttpRequestMock() );
+        Account acct = new Account(
+            Name = 'Test Account'
+        );
+
+        insert acct;
+
+        Test.setMock( HttpCalloutMock.class, new MA_HttpCalloutMock() );
 
         Test.startTest();
 

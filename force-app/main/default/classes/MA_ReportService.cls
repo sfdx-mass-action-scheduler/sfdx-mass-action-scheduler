@@ -133,7 +133,7 @@ public with sharing class MA_ReportService {
      * from the given column, meaning that if a value has already been returned
      * by this iterator then that value will be skipped next time.
      */
-    public class ReportRowIterator implements Iterable<Reports.ReportDetailRow>, Iterator<Reports.ReportDetailRow> {
+    public inherited sharing class ReportRowIterator implements Iterable<Reports.ReportDetailRow>, Iterator<Reports.ReportDetailRow> {
         /** @description The id of the report to iterate over */
         @TestVisible
         private Id reportId;

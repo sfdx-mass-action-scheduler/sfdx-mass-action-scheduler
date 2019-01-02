@@ -2,5 +2,5 @@
 <StaticResource xmlns="http://soap.sforce.com/2006/04/metadata">
     <cacheControl>Private</cacheControl>
     <contentType>image/png</contentType>
-    <description>Salesforce cloud logo with the word "Security" underneath.</description>
+    <description>Salesforce cloud logo with the word &quot;Security&quot; underneath.</description>
 </StaticResource>

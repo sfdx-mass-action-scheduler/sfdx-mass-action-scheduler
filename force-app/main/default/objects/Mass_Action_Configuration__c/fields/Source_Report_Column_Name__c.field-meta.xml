@@ -4,7 +4,7 @@
     <deprecated>false</deprecated>
     <description>Report column name that holds unique record values for sorting and paginating. Needed for workaround with Reports API to process more than 2,000 rows. Applicable when Source Type is Report.</description>
     <externalId>false</externalId>
-    <inlineHelpText>Report column name that holds unique record values for sorting and paginating. Needed for workaround with Reports API to process more than 2,000 rows. Applicable when Source Type is Report.</inlineHelpText>
+    <inlineHelpText>Choose a column that uniquely identifies each record in the report. For example, &quot;Account ID&quot;. Uniqueness ensures predictable sorting and pagination to avoid processing a record multiple times.</inlineHelpText>
     <label>Source Report Column Name</label>
     <length>255</length>
     <required>false</required>

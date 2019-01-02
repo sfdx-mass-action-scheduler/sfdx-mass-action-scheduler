@@ -42,7 +42,7 @@ private class MA_ReportSourceBatchableTest {
 
         insert configFieldMapping;
 
-        Test.setMock( HttpCalloutMock.class, new MA_InvokeActionHttpRequestMock() );
+        Test.setMock( HttpCalloutMock.class, new MA_HttpCalloutMock() );
 
         Test.startTest();
 
@@ -97,7 +97,7 @@ private class MA_ReportSourceBatchableTest {
 
         insert configFieldMapping;
 
-        Test.setMock( HttpCalloutMock.class, new MA_InvokeActionHttpRequestMock() );
+        Test.setMock( HttpCalloutMock.class, new MA_HttpCalloutMock() );
 
         Test.startTest();
 

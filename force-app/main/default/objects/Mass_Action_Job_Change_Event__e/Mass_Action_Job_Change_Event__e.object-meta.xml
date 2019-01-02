@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>As a workaround to known issue https://success.salesforce.com/issues_view?id=a1p30000000SyhIAAS, this platform event allows apex jobs (CronTrigger) to be scheduled and aborted from Apex REST execution context by moving the logic to another asynchronous execution context.</description>
+    <eventType>StandardVolume</eventType>
+    <label>Mass Action Job Change Event</label>
+    <pluralLabel>Mass Action Job Change Events</pluralLabel>
+</CustomObject>

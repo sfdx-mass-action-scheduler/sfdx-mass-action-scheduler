@@ -1,0 +1,84 @@
+<!--
+Author: Doug Ayers
+Website: https://douglascayers.com
+GitHub: https://github.com/douglascayers/sfdx-lightning-api-component
+License: BSD 3-Clause License
+ -->
+<aura:component controller="LC_APIController">
+
+    <ltng:require scripts="{!$Resource.postmate}"
+                  afterScriptsLoaded="{!c.onScriptsLoaded}"/>
+
+    <!--
+        Makes REST API request and returns a promise that resolves to the response.
+
+        @param request
+            JSON object with properties:
+            'url'     (String, required) The Salesforce REST endpoint to call.
+            'method'  (String, optional) The http method like 'get' or 'post'. Default is 'get'.
+            'body'    (String, optional) The request body, varies by the endpoint you're calling.
+            'headers' (Map, optional)    String key-value pairs of http headers to send.
+                                         Default is { 'Content-Type' : 'application/json' }.
+                                         Your headers are merged with the default headers,
+                                         overwriting any existing keys.
+
+        Example usage:
+            component.find( 'lcAPI' ).restRequest({
+                'url' : '/services/data/v43.0/sobjects/Account',
+                'method' : 'post',
+                'body' : JSON.stringify({
+                    'Name' : 'Salesforce',
+                    'BillingStreet' : '1 Market Street',
+                    'BillingCity' : 'San Francisco',
+                    'BillingState' : 'CA'
+                }),
+                'headers' : {
+                    'Sforce-Query-Options' : 'batchSize=200'
+                }
+            }).then( $A.getCallback( function( response ) {
+                // handle response
+            })).catch( $A.getCallback( function( err ) {
+                // handle error
+            }));
+     -->
+    <aura:method name="restRequest" action="{!c.onRestRequest}">
+        <aura:attribute name="request"
+                        type="Map"
+                        required="true"
+                        description="Supports these keys: url (string), method (string), body (string), headers (map)."/>
+    </aura:method>
+
+    <div aura:id="postmate" class="slds-hide"></div>
+
+</aura:component>
+<!--
+BSD 3-Clause License
+
+Copyright (c) 2018, Doug Ayers, douglascayers.com
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice, this
+  list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of the copyright holder nor the names of its
+  contributors may be used to endorse or promote products derived from
+  this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->

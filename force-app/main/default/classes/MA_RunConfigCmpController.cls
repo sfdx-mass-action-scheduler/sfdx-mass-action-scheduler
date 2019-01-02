@@ -28,6 +28,13 @@ public with sharing class MA_RunConfigCmpController {
         return result;
     }
 
+    @AuraEnabled
+    public static MA_MassActionConfigWrapper getConfiguration( ID recordId ) {
+
+        // return json without org's namespace so our code doesn't have to worry about it
+        return new MA_MassActionConfigWrapper( MA_MassActionUtils.getConfiguration( recordId ) );
+    }
+
 }
 /*
 BSD 3-Clause License

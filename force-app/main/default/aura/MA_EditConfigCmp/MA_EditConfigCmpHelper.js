@@ -1,19 +1,27 @@
+/*
+Author: Doug Ayers
+Website: https://douglascayers.com
+GitHub: https://github.com/douglascayers/sfdx-mass-action-scheduler
+License: BSD 3-Clause License
+ */
 ({
     initScheduleOptions : function( component ) {
+
+        var helper = this;
 
         var scheduleOptionsHourOfDay = [];
         var scheduleOptionsDayOfMonth = [];
         var scheduleOptionsMonthOfYear = [];
         var scheduleOptionsDayOfWeek = [];
 
-        for ( var i = 0; i < 24; i++ ) {
+        for ( let i = 0; i < 24; i++ ) {
             scheduleOptionsHourOfDay.push({
                 'label' : ( i == 0 ? '12:00 AM' : i == 12 ? '12:00 PM' : ( i < 12 ? i + ':00 AM' : ( i - 12 ) + ':00 PM' ) ).padStart( 8, '0' ),
                 'value' : i.toString().padStart( 2, '0' ) + '.' + i.toString()
             });
         }
 
-        for ( var i = 1; i <= 31; i++ ) {
+        for ( let i = 1; i <= 31; i++ ) {
             scheduleOptionsDayOfMonth.push({
                 'label' : i.toString(),
                 'value' : i.toString().padStart( 2, '0' ) + '.' + i.toString()
@@ -22,8 +30,8 @@
 
         var monthValues = [ 'JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC' ];
         var localeMonthNames = $A.get( '$Locale.nameOfMonths' );
-        for ( var i = 0; i < localeMonthNames.length; i++ ) {
-            if ( !$A.util.isEmpty( localeMonthNames[i].fullName ) ) {
+        for ( let i = 0; i < localeMonthNames.length; i++ ) {
+            if ( !helper.isEmpty( localeMonthNames[i].fullName ) ) {
                 scheduleOptionsMonthOfYear.push({
                     'label' : localeMonthNames[i].fullName.toUpperCase(),               // display in user's locale
                     'value' : i.toString().padStart( 2, '0' ) + '.' + monthValues[i]    // but capture in english for cron expr.
@@ -33,8 +41,8 @@
 
         var weekdayValues = [ 'SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT' ];
         var localeWeekdayNames = $A.get( '$Locale.nameOfWeekdays' );
-        for ( var i = 0; i < localeWeekdayNames.length; i++ ) {
-            if ( !$A.util.isEmpty( localeWeekdayNames[i].fullName ) ) {
+        for ( let i = 0; i < localeWeekdayNames.length; i++ ) {
+            if ( !helper.isEmpty( localeWeekdayNames[i].fullName ) ) {
                 scheduleOptionsDayOfWeek.push({
                     'label' : localeWeekdayNames[i].fullName.toUpperCase(),             // display in user's locale
                     'value' : i.toString().padStart( 2, '0' ) + '.' + weekdayValues[i]  // but capture in english for cron expr.
@@ -97,9 +105,8 @@
         if ( targetTypeRequiresSobject === true ) {
 
             var targetType = component.get( 'v.targetType' );
-            var targetNamedCredential = component.get( 'v.record.namedCredential' );
 
-            helper.getObjectsWithInvocableActionsAsync( component, targetNamedCredential, targetType )
+            helper.getObjectsWithInvocableActionsAsync( component, targetType )
                 .then( $A.getCallback( function( results ) {
 
                     component.set( 'v.targetSobjectTypes', results );
@@ -129,14 +136,12 @@
         var targetTypeRequiresAction = component.get( 'v.targetTypeRequiresAction' );
         var targetSobjectType = component.get( 'v.targetSobjectType' );
         var targetAction = component.get( 'v.targetInvocableAction' );
-        var targetNamedCredential = component.get( 'v.record.namedCredential' );
 
         var isValidToRenderActions = true;
 
-        if ( $A.util.isEmpty( targetNamedCredential ) ||
-             $A.util.isEmpty( targetType ) ||
+        if ( helper.isEmpty( targetType ) ||
              ( !targetTypeRequiresAction ) ||
-             ( targetTypeRequiresSobject && $A.util.isEmpty( targetSobjectType ) ) ) {
+             ( targetTypeRequiresSobject && helper.isEmpty( targetSobjectType ) ) ) {
 
             isValidToRenderActions = false;
 
@@ -144,7 +149,7 @@
 
         if ( isValidToRenderActions ) {
 
-            helper.getInvocableActionsAsync( component, targetNamedCredential, targetType, ( targetSobjectType || '' ) )
+            helper.getInvocableActionsAsync( component, targetType, ( targetSobjectType || '' ) )
                 .then( $A.getCallback( function( actions ) {
 
                     component.set( 'v.targetInvocableActions', actions );
@@ -170,44 +175,57 @@
 
     },
 
-    renderTargetFieldMappings : function( component ) {
+    renderTargetFieldMappingsAsync : function( component ) {
 
         var helper = this;
 
         var sourceType = component.get( 'v.sourceType' );
         var sourceReportId = component.get( 'v.sourceReportId' );
         var sourceListViewId = component.get( 'v.sourceListViewId' );
+        var sourceSoqlQuery = component.get( 'v.record.sourceSoqlQuery' )
 
         var targetType = component.get( 'v.targetType' );
         var targetAction = component.get( 'v.targetInvocableAction' );
         var targetSobjectType = component.get( 'v.targetSobjectType' );
-        var targetNamedCredential = component.get( 'v.record.namedCredential' );
 
         var sourceFields = []; // columns from source report or list view
         var targetFields = []; // inputs from target action
 
-        var p = Promise.resolve()
+        return Promise.resolve()
             .then( $A.getCallback( function() {
 
-               if ( sourceType == 'Report' ) {
+                if ( sourceType == 'Report' ) {
 
                     return helper.getReportColumnsAsync( component, sourceReportId )
                         .then( $A.getCallback( function( result ) {
                             sourceFields = result;
+                        })).catch( $A.getCallback( function( err ) {
+                            throw new Error( 'Error getting report columns: ' + helper.unwrapAuraErrorMessage( err ) );
                         }));
 
-               } else if ( sourceType == 'ListView' ) {
+                } else if ( sourceType == 'ListView' ) {
 
-                    return helper.getListViewColumnsAsync( component, targetNamedCredential, sourceListViewId )
+                    return helper.getListViewColumnsAsync( component, sourceListViewId )
                         .then( $A.getCallback( function( result ) {
                             sourceFields = result;
+                        })).catch( $A.getCallback( function( err ) {
+                            throw new Error( 'Error getting list view columns: ' + helper.unwrapAuraErrorMessage( err ) );
                         }));
 
-               }
+                } else if ( sourceType == 'SOQL' ) {
+
+                    return helper.getSoqlQueryColumnsAsync( component, sourceSoqlQuery )
+                        .then( $A.getCallback( function( result ) {
+                            sourceFields = result;
+                        })).catch( $A.getCallback( function( err ) {
+                            throw new Error( 'Error getting SOQL query columns: ' + helper.unwrapAuraErrorMessage( err ) );
+                        }));
+
+                }
 
             })).then( $A.getCallback( function() {
 
-                return helper.getInvocableActionInputsAsync( component, targetNamedCredential, targetType, ( targetAction || '' ), ( targetSobjectType || '' ) )
+                return helper.getInvocableActionInputsAsync( component, targetType, ( targetAction || '' ), ( targetSobjectType || '' ) )
                     .then( $A.getCallback( function( result ) {
                         targetFields = result;
                     }));
@@ -257,16 +275,14 @@
      * Given an array of aura components representing inputs (have a v.value attribute)
      * then returns a validation result object with any errors for each component.
      */
-    validateInputs : function( component, inputCmps ) {
+    validateInputsAsync : function( component, inputCmps ) {
 
-        var validationResult = {
-            hasErrors : false,
-            components : [] // { hasError : boolean, message : string, component : aura.component }
-        };
+        var helper = this;
 
         var sourceType = component.get( 'v.sourceType' );
         var sourceTypeIsReport = ( sourceType === 'Report' );
         var sourceTypeIsListView = ( sourceType === 'ListView' );
+        var sourceTypeIsSoqlQuery = ( sourceType === 'SOQL' );
 
         var targetType = component.get( 'v.targetType' );
         var targetTypeIsFlows = ( targetType === 'Flow' );
@@ -282,14 +298,12 @@
         var scheduleFrequenceIsScheduled = ( scheduleFrequency == 'Scheduled' || ( !$A.util.isUndefinedOrNull( scheduleFrequency ) && scheduleFrequency.length && scheduleFrequency[0] == 'Scheduled' ) );
         var scheduleFrequenceIsCustom = ( scheduleFrequency == 'Custom' || ( !$A.util.isUndefinedOrNull( scheduleFrequency ) && scheduleFrequency.length && scheduleFrequency[0] == 'Custom' ) );
 
-        var inputScheduleWeekdayIsEmpty = $A.util.isEmpty( component.get( 'v.scheduleSelectionsDayOfWeek' ) );
-        var inputScheduleDayOfMonthIsEmpty = $A.util.isEmpty( component.get( 'v.scheduleSelectionsDayOfMonth' ) );
+        var inputScheduleWeekdayIsEmpty = helper.isEmpty( component.get( 'v.scheduleSelectionsDayOfWeek' ) );
+        var inputScheduleDayOfMonthIsEmpty = helper.isEmpty( component.get( 'v.scheduleSelectionsDayOfMonth' ) );
 
         var objectDescribe = component.get( 'v.objectDescribe' );
 
-        var hasErrors = false;
-
-        inputCmps.forEach( function( inputCmp ) {
+        return Promise.all( inputCmps.map( function( inputCmp ) {
 
             var validationComponentResult = {
                 hasError : false,
@@ -297,35 +311,41 @@
                 component : inputCmp
             };
 
-            var inputLabel = null;
-            var inputValue = null;
-
-            var inputIsEmpty = false;
-            var inputIsInvalid = false;
-
-            var errorMessage = null;
+            var inputValidityAsync = Promise.resolve( validationComponentResult );
 
             if ( !$A.util.isUndefinedOrNull( inputCmp ) ) {
 
-                inputLabel = inputCmp.get( 'v.label' );
-                inputValue = inputCmp.get( 'v.value' );
-                inputIsEmpty = $A.util.isEmpty( inputValue );
+                var inputLabel = inputCmp.get( 'v.label' );
+                var inputValue = inputCmp.get( 'v.value' );
+
+                var inputIsEmpty = helper.isEmpty( inputValue );
+                var inputIsInvalid = !inputCmp.checkValidity();
 
                 // populate a default error message,
                 // but don't assign to the validation component result
                 // unless we indeed determine the input component is invalid
-                if ( inputIsEmpty ) {
-                    errorMessage = inputLabel + ' is required.';
-                }
+                var messageWhenValueMissing = inputLabel + ' is required.';
 
                 switch ( inputCmp.getLocalId() ) {
 
-                    // Source
+                    // Details
 
                     case 'inputName':
                     case 'inputDeveloperName':
+                    case 'inputBatchSize':
+                        inputValidityAsync = Promise.resolve({
+                            'invalid': ( inputIsEmpty || inputIsInvalid ),
+                            'messageWhenInvalid': messageWhenValueMissing
+                        });
+                        break;
+
+                    // Source
+
                     case 'inputSourceType':
-                        inputIsInvalid = ( inputIsEmpty );
+                        inputValidityAsync = Promise.resolve({
+                            'invalid': ( inputIsEmpty || inputIsInvalid ),
+                            'messageWhenInvalid': messageWhenValueMissing
+                        });
                         break;
 
                     // Source: Report
@@ -333,83 +353,164 @@
                     case 'inputSourceReportFolder':
                     case 'inputSourceReport':
                     case 'inputSourceReportColumn':
-                        inputIsInvalid = ( sourceTypeIsReport && inputIsEmpty );
+                        inputValidityAsync = Promise.resolve({
+                            'invalid': ( sourceTypeIsReport && ( inputIsEmpty || inputIsInvalid ) ),
+                            'messageWhenInvalid': messageWhenValueMissing
+                        });
                         break;
 
                     // Source: List View
 
                     case 'inputSourceListViewSobjectType':
                     case 'inputSourceListView':
-                        inputIsInvalid = ( sourceTypeIsListView && inputIsEmpty );
+                        inputValidityAsync = Promise.resolve({
+                            'invalid': ( sourceTypeIsListView && ( inputIsEmpty || inputIsInvalid ) ),
+                            'messageWhenInvalid': messageWhenValueMissing
+                        });
+                        break;
+
+                    // Source: SOQL Query
+
+                    case 'inputSourceSoqlQuery':
+                        inputValidityAsync = Promise.resolve({
+                            'invalid': ( sourceTypeIsSoqlQuery && ( inputIsEmpty || inputIsInvalid ) ),
+                            'messageWhenInvalid': messageWhenValueMissing
+                        }).then( $A.getCallback( function( inputValidity ) {
+                            // if we haven't already determined the field to be invalid
+                            // then perform more rigorous soql query validation
+                            if ( sourceTypeIsSoqlQuery && !inputValidity.invalid ) {
+                                return helper.validateSoqlQueryAsync( component, inputValue )
+                                    .then( $A.getCallback( function( validationResult ) {
+                                        return {
+                                            'invalid': !validationResult.valid,
+                                            'messageWhenInvalid': validationResult.message
+                                        };
+                                    }));
+                            }
+                            return inputValidity;
+                        }));
                         break;
 
                     // Target
 
-                    case 'inputTargetNamedCredential':
                     case 'inputTargetType':
-                        inputIsInvalid = ( inputIsEmpty );
+                        inputValidityAsync = Promise.resolve({
+                            'invalid': ( inputIsEmpty || inputIsInvalid ),
+                            'messageWhenInvalid': messageWhenValueMissing
+                        });
                         break;
 
                     case 'inputTargetSobjectType':
-                        inputIsInvalid = ( targetTypeRequiresSobject && inputIsEmpty );
+                        inputValidityAsync = Promise.resolve({
+                            'invalid': ( targetTypeRequiresSobject && ( inputIsEmpty || inputIsInvalid ) ),
+                            'messageWhenInvalid': messageWhenValueMissing
+                        });
                         break;
 
                     case 'inputTargetAction':
-                        inputIsInvalid = ( targetTypeRequiresAction && inputIsEmpty );
+                        inputValidityAsync = Promise.resolve({
+                            'invalid': ( targetTypeRequiresAction && ( inputIsEmpty || inputIsInvalid ) ),
+                            'messageWhenInvalid': messageWhenValueMissing
+                        });
                         break;
 
                     // Target: Field Mappings
 
                     case 'inputMappingSourceFieldName':
-                        inputIsInvalid = ( inputIsEmpty && inputCmp.get( 'v.required' ) );
+                        inputValidityAsync = Promise.resolve({
+                            'invalid': ( ( inputIsEmpty && inputCmp.get( 'v.required' ) ) || inputIsInvalid ),
+                            'messageWhenInvalid': messageWhenValueMissing
+                        });
                         break;
 
                     // Schedule
 
                     case 'inputScheduleFrequency':
-                        inputIsInvalid = ( inputIsEmpty );
+                        inputValidityAsync = Promise.resolve({
+                            'invalid': ( inputIsEmpty || inputIsInvalid ),
+                            'messageWhenInvalid': messageWhenValueMissing
+                        });
                         break;
 
                     case 'inputScheduleHourOfDay':
-                        inputIsInvalid = ( scheduleFrequenceIsScheduled && inputIsEmpty );
+                        inputValidityAsync = Promise.resolve({
+                            'invalid': ( scheduleFrequenceIsScheduled && ( inputIsEmpty || inputIsInvalid ) ),
+                            'messageWhenInvalid': messageWhenValueMissing
+                        });
                         break;
 
                     case 'inputScheduleWeekday':
-                        inputIsInvalid = ( scheduleFrequenceIsScheduled && ( inputIsEmpty == inputScheduleDayOfMonthIsEmpty ) );
-                        errorMessage = 'Select options for either "' + objectDescribe.fields.Schedule_DayOfWeek__c.label + '" or "' + objectDescribe.fields.Schedule_DayOfMonth__c.label + '" but not both. Exactly one is required.';
+                        inputValidityAsync = Promise.resolve({
+                            'invalid': ( scheduleFrequenceIsScheduled && ( ( inputIsEmpty == inputScheduleDayOfMonthIsEmpty ) || inputIsInvalid ) ),
+                            'messageWhenInvalid': `Select options for either "${objectDescribe.fields.Schedule_DayOfWeek__c.label}" or "${objectDescribe.fields.Schedule_DayOfMonth__c.label}" but not both. Exactly one is required.`
+                        });
                         break;
 
                     case 'inputScheduleDayOfMonth':
-                        inputIsInvalid = ( scheduleFrequenceIsScheduled && ( inputIsEmpty == inputScheduleWeekdayIsEmpty ) );
-                        errorMessage = 'Select options for either "' + objectDescribe.fields.Schedule_DayOfWeek__c.label + '" or "' + objectDescribe.fields.Schedule_DayOfMonth__c.label + '" but not both. Exactly one is required.';
+                        inputValidityAsync = Promise.resolve({
+                            'invalid': ( scheduleFrequenceIsScheduled && ( ( inputIsEmpty == inputScheduleWeekdayIsEmpty ) || inputIsInvalid ) ),
+                            'messageWhenInvalid': `Select options for either "${objectDescribe.fields.Schedule_DayOfWeek__c.label}" or "${objectDescribe.fields.Schedule_DayOfMonth__c.label}" but not both. Exactly one is required.`
+                        });
                         break;
 
                     case 'inputScheduleMonthOfYear':
-                        inputIsInvalid = ( scheduleFrequenceIsScheduled && inputIsEmpty );
+                        inputValidityAsync = Promise.resolve({
+                            'invalid': ( scheduleFrequenceIsScheduled && ( inputIsEmpty || inputIsInvalid ) ),
+                            'messageWhenInvalid': messageWhenValueMissing
+                        });
                         break;
 
                     case 'inputScheduleCron':
-                        inputIsInvalid = ( scheduleFrequenceIsCustom && inputIsEmpty );
+                        inputValidityAsync = Promise.resolve({
+                            'invalid': ( scheduleFrequenceIsCustom && ( inputIsEmpty || inputIsInvalid ) ),
+                            'messageWhenInvalid': messageWhenValueMissing
+                        });
+                        break;
+
+                    // Default
+
+                    default:
+                        inputValidityAsync = Promise.resolve({
+                            'invalid': ( inputIsInvalid ),
+                            'messageWhenInvalid': messageWhenValueMissing
+                        });
                         break;
 
                 }
 
-                if ( inputIsInvalid ) {
-                    validationComponentResult.message = errorMessage;
-                }
+                return Promise.resolve( inputValidityAsync )
+                    .then( $A.getCallback( function( inputValidity ) {
+
+                        // Consider the input invalid based on either our custom logic above
+                        // or that the input component's natural validation (e.g. required="true") is violated.
+                        validationComponentResult.hasError = inputValidity.invalid;
+                        validationComponentResult.messageWhenInvalid = inputValidity.messageWhenInvalid;
+
+                        return validationComponentResult;
+
+                    }));
+
+            } else {
+
+                return inputValidityAsync;
 
             }
 
-            hasErrors = ( hasErrors || inputIsInvalid );
+        })).then( $A.getCallback( function( validationComponentResults ) {
 
-            validationComponentResult.hasError = inputIsInvalid;
-            validationResult.components.push( validationComponentResult );
+            var validationResult = {
+                hasErrors : false,
+                components : validationComponentResults
+            };
 
-        });
+            validationComponentResults.forEach( function( validationComponentResult, idx ) {
+                validationResult.hasErrors = ( validationResult.hasErrors || validationComponentResult.hasError );
+            });
 
-        validationResult.hasErrors = hasErrors;
+            return validationResult;
 
-        return validationResult;
+        }));
+
     },
 
     // -----------------------------------------------------------------
@@ -495,16 +596,33 @@
             targetFieldMappings[item.targetField.name] = item.sourceFieldName;
         });
 
-        return helper.enqueueAction( component, 'c.saveConfiguration', {
+        /*
+         * https://success.salesforce.com/issues_view?id=a1p30000000SyhIAAS
+         * Due to known issue that execution contexts started from Apex REST endpoints
+         * cannot schedule or abort jobs, then my first workaround attempt was
+         * to modify the trigger to emit a platform event to get into a different
+         * context. However, platform events run as the "Automated Process" user.
+         * That wouldn't normally be a problem except when our jobs run they make
+         * API callouts using the either a Named Credential or the user's Session ID.
+         * If the configuration record doesn't use Named Credentials (one of the major
+         * features of Version 2.0), then the "Automated Process" user's session id is null
+         * and the http callout fails. Womp womp.
+         *
+         * Therefore, for saving the configuration record, instead of going through
+         * the Apex REST API and instead of the trigger emitting a platform event,
+         * this method goes through normal AuraEnabled apex method and the trigger
+         * schedules and aborts the job synchronously. This ensures the job itself
+         * runs as a real user with a valid session id.
+         */
 
+        // return helper.enqueueRestRequest( component, 'saveConfiguration', {
+        //     'wrapperJson' : record,
+        //     'fieldMappingsJson' : targetFieldMappings
+        // });
+        return helper.enqueueAction( component, 'c.saveConfiguration', {
             'wrapperJson' : JSON.stringify( record ),
             'fieldMappingsJson' : JSON.stringify( targetFieldMappings )
-
-        }).then( $A.getCallback( function( result ) {
-
-            return result;
-
-        }));
+        });
 
     },
 
@@ -514,13 +632,8 @@
 
         var helper = this;
 
-        return helper.enqueueAction( component, 'c.getConfigurationObjectDescribe', {
-
-        }).then( $A.getCallback( function( objectDescribe ) {
-
-            return objectDescribe;
-
-        }));
+        return helper.enqueueRestRequest( component, 'getConfigurationObjectDescribe', {
+        });
 
     },
 
@@ -528,15 +641,9 @@
 
         var helper = this;
 
-        return helper.enqueueAction( component, 'c.getConfiguration', {
-
+        return helper.enqueueRestRequest( component, 'getConfiguration', {
             'recordId' : recordId
-
-        }).then( $A.getCallback( function( record ) {
-
-            return record;
-
-        }));
+        });
 
     },
 
@@ -546,13 +653,8 @@
 
         var helper = this;
 
-        return helper.enqueueAction( component, 'c.getObjectNames', {
-
-        }).then( $A.getCallback( function( objectNames ) {
-
-            return objectNames;
-
-        }));
+        return helper.enqueueRestRequest( component, 'getObjectNames', {
+        });
 
     },
 
@@ -560,15 +662,9 @@
 
         var helper = this;
 
-        return helper.enqueueAction( component, 'c.getListViewsByObject', {
-
+        return helper.enqueueRestRequest( component, 'getListViewsByObject', {
             'objectName' : objectName
-
-        }).then( $A.getCallback( function( listViews ) {
-
-            return listViews;
-
-        }));
+        });
 
     },
 
@@ -576,32 +672,19 @@
 
         var helper = this;
 
-        return helper.enqueueAction( component, 'c.getListView', {
-
+        return helper.enqueueRestRequest( component, 'getListView', {
             'recordId' : listViewId
-
-        }).then( $A.getCallback( function( record ) {
-
-            return record;
-
-        }));
+        });
 
     },
 
-    getListViewColumnsAsync : function( component, namedCredential, listViewId ) {
+    getListViewColumnsAsync : function( component, listViewId ) {
 
         var helper = this;
 
-        return helper.enqueueAction( component, 'c.getListViewColumns', {
-
-            'namedCredential' : namedCredential,
+        return helper.enqueueRestRequest( component, 'getListViewColumns', {
             'listViewId' : listViewId
-
-        }).then( $A.getCallback( function( listViewColumns ) {
-
-            return listViewColumns;
-
-        }));
+        });
 
     },
 
@@ -611,13 +694,8 @@
 
         var helper = this;
 
-        return helper.enqueueAction( component, 'c.getReportFolders', {
-
-        }).then( $A.getCallback( function( reportFolders ) {
-
-            return reportFolders;
-
-        }));
+        return helper.enqueueRestRequest( component, 'getReportFolders', {
+        });
 
     },
 
@@ -625,15 +703,9 @@
 
         var helper = this;
 
-        return helper.enqueueAction( component, 'c.getReportsByFolder', {
-
+        return helper.enqueueRestRequest( component, 'getReportsByFolder', {
             'folderId' : folderId
-
-        }).then( $A.getCallback( function( reports ) {
-
-            return reports;
-
-        }));
+        });
 
     },
 
@@ -641,15 +713,9 @@
 
         var helper = this;
 
-        return helper.enqueueAction( component, 'c.getReport', {
-
+        return helper.enqueueRestRequest( component, 'getReport', {
             'recordId' : reportId
-
-        }).then( $A.getCallback( function( record ) {
-
-            return record;
-
-        }));
+        });
 
     },
 
@@ -657,15 +723,131 @@
 
         var helper = this;
 
-        return helper.enqueueAction( component, 'c.getReportColumns', {
-
+        return helper.enqueueRestRequest( component, 'getReportColumns', {
             'reportId' : reportId
+        });
 
-        }).then( $A.getCallback( function( reportColumns ) {
+    },
 
-            return reportColumns;
+    // -----------------------------------------------------------------
 
-        }));
+    validateSoqlQueryAsync : function( component, query ) {
+
+        var helper = this;
+
+        return Promise.resolve()
+            .then( $A.getCallback( function() {
+
+                if ( helper.isEmpty( query ) ) {
+
+                    return {
+                        'valid': false,
+                        'message': 'SOQL Query is required.'
+                    };
+
+                } else {
+
+                    if ( $A.util.isUndefinedOrNull( window.SOQLParse ) ) {
+
+                        throw new Error( 'No `window.SOQLParse` function defined. To use SOQL source type, ensure the static resource exists and "Freeze JavaScript Prototypes" is disabled in Session Settings, then reload the page.' );
+
+                    } else {
+
+                        var batchSize = 200; // we want smallest payload returned just to validate query works
+
+                        return helper.getSoqlQueryResultsAsync( component, query, batchSize )
+                            .then( $A.getCallback( function( result ) {
+
+                                var parseResult = window.SOQLParse.parse( query );
+                                console.log( JSON.stringify( parseResult, null, 2 ) );
+
+                                for ( var i = 0; i < parseResult.fields.length; i++ ) {
+                                    var field = parseResult.fields[i];
+                                    if ( [ 'Query' ].includes( field.type ) ) {
+                                        return {
+                                            'valid': false,
+                                            'message': `Child relationship queries are not supported in the SELECT statement. Please remove query on "${field.object.name}" relationship.`,
+                                            'result': result,
+                                            'parseResult': parseResult
+                                        };
+                                    }
+                                }
+
+                                return {
+                                    'valid': true,
+                                    'result': result,
+                                    'parseResult': parseResult
+                                };
+
+                            })).catch( $A.getCallback( function( err ) {
+
+                                return {
+                                    'valid': false,
+                                    'message': helper.unwrapAuraErrorMessage( err ),
+                                };
+
+                            }));
+
+                    }
+
+                }
+
+            }));
+
+    },
+
+    getSoqlQueryResultsAsync : function( component, query, batchSize ) {
+
+        var helper = this;
+
+        return helper.enqueueRestRequest( component, 'getSoqlQueryResults', {
+            'query' : query,
+            'batchSize' : batchSize
+        });
+
+    },
+
+    getSoqlQueryColumnsAsync : function( component, soqlQuery ) {
+
+        var helper = this;
+
+        return Promise.resolve()
+            .then( $A.getCallback( function() {
+
+                return helper.validateSoqlQueryAsync( component, soqlQuery )
+                    .then( $A.getCallback( function( validationResult ) {
+
+                        if ( validationResult.valid ) {
+
+                            var sourceFields = [];
+
+                            validationResult.parseResult.fields.forEach( function( field, idx ) {
+                                if ( [ 'FieldReference', 'FunctionCall' ].includes( field.type ) ) {
+                                    var fieldName = ( field.alias || ( field.path && field.path.join( '.' ) ) );
+                                    if ( !helper.isEmpty( fieldName ) ) {
+                                        sourceFields.push({
+                                            'label': fieldName,
+                                            'value': fieldName
+                                        });
+                                    }
+                                }
+                            });
+
+                            return sourceFields;
+
+                        } else {
+
+                            throw new Error( validationResult.message );
+
+                        }
+
+                    })).catch( $A.getCallback( function( err ) {
+
+                        throw new Error( 'Error validating SOQL query: ' + helper.unwrapAuraErrorMessage( err ) );
+
+                    }));
+
+            }));
 
     },
 
@@ -675,71 +857,57 @@
 
         var helper = this;
 
-        return helper.enqueueAction( component, 'c.getNamedCredentials', {
-
-        }).then( $A.getCallback( function( namedCredentials ) {
-
-            return namedCredentials;
-
-        }));
+        return helper.enqueueRestRequest( component, 'getNamedCredentials', {
+        });
 
     },
 
-    getObjectsWithInvocableActionsAsync : function( component, namedCredential, actionType ) {
+    getObjectsWithInvocableActionsAsync : function( component, actionType ) {
 
         var helper = this;
 
-        return helper.enqueueAction( component, 'c.getObjectsWithInvocableActions', {
-
-            'namedCredential' : namedCredential,
+        return helper.enqueueRestRequest( component, 'getObjectsWithInvocableActions', {
             'actionType' : actionType
-
-        }).then( $A.getCallback( function( results ) {
-
-            return results;
-
-        }));
+        });
 
     },
 
-    getInvocableActionsAsync : function( component, namedCredential, actionType, objectName ) {
+    getInvocableActionsAsync : function( component, actionType, objectName ) {
 
         var helper = this;
 
-        return helper.enqueueAction( component, 'c.getInvocableActions', {
-
-            'namedCredential' : namedCredential,
+        return helper.enqueueRestRequest( component, 'getInvocableActions', {
             'actionType' : actionType,
             'objectName' : objectName
-
-        }).then( $A.getCallback( function( results ) {
-
-            return results;
-
-        }));
+        });
 
     },
 
-    getInvocableActionInputsAsync : function( component, namedCredential, actionType, actionName, objectName ) {
+    getInvocableActionInputsAsync : function( component, actionType, actionName, objectName ) {
 
         var helper = this;
 
-        return helper.enqueueAction( component, 'c.getInvocableActionInputs', {
-
-            'namedCredential' : namedCredential,
+        return helper.enqueueRestRequest( component, 'getInvocableActionInputs', {
             'actionType' : actionType,
             'actionName' : actionName,
             'objectName' : objectName
-
-        }).then( $A.getCallback( function( results ) {
-
-            return results;
-
-        }));
+        });
 
     },
 
     // -----------------------------------------------------------------
+
+    /**
+     * The $A.util.isEmpty() function does not check for blank strings (only whitespace).
+     * This method trims string arguments first so '   ' is considered empty.
+     */
+    isEmpty : function( value ) {
+        if ( ( typeof value ).toLowerCase() === 'string' ) {
+            return $A.util.isEmpty( value.trim() );
+        } else {
+            return $A.util.isEmpty( value );
+        }
+    },
 
     showSpinner : function( component ) {
 
@@ -757,17 +925,23 @@
 
         // https://developer.salesforce.com/docs/atlas.en-us.lightning.meta/lightning/ref_force_showToast.htm
 
+        var helper = this;
+
+        // convenience so code can toast errors without
+        // themselves figuring out how to get the real message from them
+        if ( message instanceof Error ) {
+            message = helper.unwrapAuraErrorMessage( message );
+        }
+
         $A.get( 'e.force:showToast' ).setParams({
-            title : title,
-            message : message,
+            title : ( title || 'Message' ),
+            message : ( message || '' ),
             type : ( type || 'info' )
         }).fire();
 
     },
 
     navigateToRecord : function( recordId ) {
-
-        console.log( 'navigating to record: ' + recordId );
 
         var event = $A.get( 'e.force:navigateToSObject' );
 
@@ -791,8 +965,6 @@
 
     navigateToURL : function( url ) {
 
-        console.log( 'navigating to url: ' + url );
-
         var event = $A.get( 'e.force:navigateToURL' );
 
         if ( event ) {
@@ -813,6 +985,88 @@
 
     },
 
+    /**
+     * For posting REST request to the MA_EditConfigRestController apex class.
+     *
+     * @param component
+     *      The Lightning component with a 'urlInfo' and 'lc_api' attributes.
+     *      'urlInfo' is used to generate the REST API URL.
+     *      'lc_api' is used to invoke the REST API as workaround to Lightning session ids.
+     * @param operation
+     *      Name of the actual action to invoke in the REST controller.
+     * @param params
+     *      Parameters to pass to the actual action to invoke.
+     * @returns a promise.
+     */
+    enqueueRestRequest : function( component, operation, params ) {
+
+        var helper = this;
+
+        helper.showSpinner( component );
+
+        return Promise.resolve()
+            .then( $A.getCallback( function() {
+
+                // return cached value if we've retrieved it before,
+                // otherwise fetch the url info as a promise
+                var urlInfo = component.get( 'v.urlInfo' );
+
+                if ( helper.isEmpty( urlInfo ) ) {
+                    return component.find( 'lc_url' ).getUrlInfoAsync();
+                } else {
+                    return urlInfo;
+                }
+
+            })).then( $A.getCallback( function( urlInfo ) {
+
+                component.set( 'v.urlInfo', urlInfo );
+
+                var nsslash = ( urlInfo.namespace ? urlInfo.namespace + '/' : '' );
+
+                return component.find( 'lc_api' ).restRequest({
+
+                    'url' : urlInfo.orgDomainURL + '/services/apexrest/' + nsslash + 'config/edit?operation=' + operation,
+                    'method' : 'POST',
+                    'body' : JSON.stringify( ( params || {} ) )
+
+                });
+
+            })).then( $A.getCallback( function( response ) {
+
+                helper.hideSpinner( component );
+                if ( response.success ) {
+                    return response.result;
+                } else {
+                    throw new Error( response.error );
+                }
+
+            })).catch( $A.getCallback( function( err ) {
+
+                helper.hideSpinner( component );
+                console.error( 'Error enqueuing rest request: ' + JSON.stringify({
+                    'operation' : operation,
+                    'params' : params,
+                    'error' : err.message
+                }, null, 2));
+                throw err;
+
+            }));
+
+    },
+
+    /**
+     * For invoking @AuraEnabled apex actions in a normal
+     * Lightning component fashion.
+     *
+     * @param component
+     *      The Lightning component that specifies the Apex controller
+     *      of the @AuraEnabled method to invoke.
+     * @param actionName
+     *      The @AuraEnabled method name.
+     * @param params
+     *      The @AuraEnabled method parameters.
+     * @returns a promise.
+     */
     enqueueAction : function( component, actionName, params ) {
 
         var helper = this;
@@ -860,7 +1114,7 @@
                     console.error( 'Error: ' + errors[i].message );
                 }
             } else {
-                console.error( 'Error: ' + errors );
+                console.error( 'Error: ' + ( errors.message || errors ) );
             }
         } else {
             console.error( 'Unknown error' );
@@ -875,9 +1129,64 @@
                     text += '\n' + errors[i].message;
                 }
             } else {
-                text = errors;
+                text = ( errors.message || errors );
             }
         }
         return text;
+    },
+
+    /**
+     * When using $A.getCallback() function, if an error is thrown
+     * then it wraps the error in an AuraError. The AuraError, unfortunately,
+     * has a new message property whose value is "Error in $A.getCallback[YOUR_ORIGINAL_ERROR_MESSAGE]".
+     * The only way to obtain YOUR_ORIGINAL_ERROR_MESSAGE is to substring
+     * the AuraError text out of its message.
+     */
+    unwrapAuraErrorMessage : function( err ) {
+
+        var message = err.message;
+
+        var startStr = 'Error in $A.getCallback() [';
+        var endStr = ']';
+
+        var startIdx = err.message.indexOf( startStr );
+        var endIdx = err.message.lastIndexOf( endStr );
+
+        if ( startIdx >= 0 && endIdx >= 0 ) {
+            message = err.message.substring( startIdx + startStr.length, endIdx );
+        }
+
+        return message;
     }
 })
+/*
+BSD 3-Clause License
+
+Copyright (c) 2018, Doug Ayers, douglascayers.com
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice, this
+  list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of the copyright holder nor the names of its
+  contributors may be used to endorse or promote products derived from
+  this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/

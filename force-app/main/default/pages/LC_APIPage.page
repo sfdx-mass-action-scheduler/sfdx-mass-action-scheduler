@@ -1,0 +1,98 @@
+<!--
+Author: Doug Ayers
+Website: https://douglascayers.com
+GitHub: https://github.com/douglascayers/sfdx-lightning-api-component
+License: BSD 3-Clause License
+ -->
+<apex:page >
+
+    <apex:includeScript value="{!$Resource.postmate}"/>
+    <apex:includeScript value="{!$Resource.jsforce}"/>
+
+    <script>
+
+        var conn = new jsforce.Connection({ accessToken: '{!$Api.Session_Id}', version: '44.0' });
+
+        var _restRequest;
+
+        // Expose your model to the Parent. Property values may be functions, promises, or regular values
+        const handshake = new Postmate.Model({
+
+            restRequest : function( request ) {
+                _restRequest = request;
+            },
+
+            restResponse : function() {
+                return new Promise( function( resolve, reject ) {
+                    conn.request( _restRequest ).then( function( response ) {
+                        resolve({
+                            success: true,
+                            data: response
+                        });
+                    }).catch( function( err ) {
+                        // Have to resolve because if reject
+                        // then whole post message operation fails,
+                        // so wrapping our response with our own
+                        // success flag to denote if any errors.
+                        try {
+                            // If the server's response body was JSON but the status code
+                            // indicated an error, the response body is treated
+                            // as a string and set to Error.message property.
+                            // To propogate the original JSON payload as JSON then
+                            // we do JSON.parse here. If the parse fails then
+                            // just resolve with the Error.message string anyways.
+                            resolve({
+                                success: false,
+                                data: JSON.parse( err.message )
+                            });
+                        } catch ( e ) {
+                            resolve({
+                                success: false,
+                                data: err.message // postMessage cannot deserialize the Error object, so pick off the message
+                            });
+                        }
+                    });
+                });
+            }
+
+        });
+
+        // When parent <-> child handshake is complete, events may be emitted to the parent
+        handshake.then( function( parent ) {
+
+        });
+
+    </script>
+
+</apex:page>
+<!--
+BSD 3-Clause License
+
+Copyright (c) 2018, Doug Ayers, douglascayers.com
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice, this
+  list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of the copyright holder nor the names of its
+  contributors may be used to endorse or promote products derived from
+  this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->

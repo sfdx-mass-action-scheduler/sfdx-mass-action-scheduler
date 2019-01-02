@@ -5,16 +5,39 @@
  * License: BSD 3-Clause License
  */
 /*
- * Most code coverage comes from MA_EditConfigCmpControllerTest
+ * Most code coverage comes from MA_EditConfigRestControllerTest
  */
-public with sharing class MA_MassActionUtils {
+public inherited sharing class MA_MassActionUtils {
+
+    // -- private --
 
     private static final String MY_NAMESPACE = [ SELECT NamespacePrefix FROM ApexClass WHERE Name = 'MA_MassActionUtils' LIMIT 1 ].NamespacePrefix;
+
+    // -- public --
 
     public static final String NAMESPACE = String.isBlank( MY_NAMESPACE ) ? '' : MY_NAMESPACE;
     public static final String NAMESPACE_API = String.isBlank( MY_NAMESPACE ) ? '' : MY_NAMESPACE + '__';
 
-    public static final String EMPTY_STRING = '';
+    public static final String REST_API_SERVICES_DATA_URL = Url.getOrgDomainUrl().toExternalForm() + '/services/data/v44.0';
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * Returns the URL for use with invoking the Salesforce REST APIs.
+     *
+     * @param namedCredential
+     *      (optional) Name of a Named Credential to use, without the 'callout:' prefix.
+     *      If blank then the org's domain URL is used instead.
+     *
+     * @return URL for use with Salesforce REST API (e.g. https://yourinstance.my.salesforce.com/services/data/v44.0 or callout:YourNamedCredential)
+     */
+    public static String getCalloutRestEndpointURL( String namedCredential ) {
+        if ( String.isBlank( namedCredential ) ) {
+            return REST_API_SERVICES_DATA_URL;
+        } else {
+            return 'callout:' + namedCredential;
+        }
+    }
 
     // ------------------------------------------------------------------------
 
@@ -23,6 +46,9 @@ public with sharing class MA_MassActionUtils {
      * Returns null if no record is found.
      */
     public static Mass_Action_Configuration__c getConfiguration( ID recordId ) {
+
+        System.debug( 'MA_MassActionUtils.getConfiguration' );
+        System.debug( 'recordId: ' + recordId );
 
         Mass_Action_Configuration__c config = null;
 
@@ -41,6 +67,7 @@ public with sharing class MA_MassActionUtils {
                 Source_Report_ID__c,
                 Source_Report_Column_Name__c,
                 Source_List_View_ID__c,
+                Source_SOQL_Query__c,
                 // target
                 Target_Type__c,
                 Target_SObject_Type__c,
@@ -81,13 +108,74 @@ public with sharing class MA_MassActionUtils {
         return config;
     }
 
-    public static MA_ListViewDescribeResult describeListView( String namedCredential, ID listViewId ) {
+    /**
+     * This method accepts the JSON serialization of the configuration and field mappings
+     * because when defining the method params as the custom class type was getting internal server error.
+     * I think possibly related to general serialization bugs with Lightning:
+     * https://developer.salesforce.com/forums/?id=906F00000005GiwIAE
+     * https://blog.texei.com/lightning-components-auraenabled-method-parameters-whats-working-and-what-s-not-83c351356104
+     */
+    public static Map<String, Object> saveConfiguration( String wrapperJson, String fieldMappingsJson ) {
+
+        System.debug( 'MA_MassActionUtils.saveConfiguration' );
+        System.debug( wrapperJson );
+        System.debug( fieldMappingsJson );
+
+        Map<String, Object> result = new Map<String, Object>();
+
+        MA_MassActionConfigWrapper wrapper = (MA_MassActionConfigWrapper) JSON.deserializeStrict( wrapperJson, MA_MassActionConfigWrapper.class );
+        Map<String, String> fieldMappings = (Map<String, String>) JSON.deserializeStrict( fieldMappingsJson, Map<String, String>.class );
+
+        System.debug( wrapper );
+        System.debug( fieldMappings );
+
+        Mass_Action_Configuration__c config = wrapper.toConfiguration();
+        upsert config;
+
+        delete [ SELECT Id FROM Mass_Action_Mapping__c WHERE Mass_Action_Configuration__c = :config.Id ];
+
+        List<Mass_Action_Mapping__c> configMappings = new List<Mass_Action_Mapping__c>();
+        for ( String targetFieldName : fieldMappings.keySet() ) {
+
+            // if a target field is not required for the chosen action
+            // then ignore it if there is no source field selected
+            String sourceFieldName = fieldMappings.get( targetFieldName );
+
+            if ( String.isNotBlank( sourceFieldName ) ) {
+                configMappings.add( new Mass_Action_Mapping__c(
+                    Mass_Action_Configuration__c = config.Id,
+                    Source_Field_Name__c = sourceFieldName,
+                    Target_Field_Name__c = targetFieldName
+                ));
+            }
+
+        }
+
+        insert configMappings;
+
+        result.put( 'success', true );
+        result.put( 'recordId', config.Id );
+
+        return result;
+    }
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
+     * or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v44.0').
+     */
+    public static MA_ListViewDescribeResult describeListView( String baseURL, ID listViewId ) {
+
+        System.debug( 'MA_MassActionUtils.describeListView' );
+        System.debug( 'baseURL: ' + baseURL );
+        System.debug( 'listViewId: ' + listViewId );
 
         ListView listView = [ SELECT id, sobjectType FROM ListView WHERE id = :listViewId LIMIT 1 ];
 
         String endpoint = String.format(
-            'callout:{0}/sobjects/{1}/listviews/{2}/describe',
-            new String[] { namedCredential, listView.sobjectType, listView.id }
+            '{0}/sobjects/{1}/listviews/{2}/describe',
+            new String[] { baseURL, listView.sobjectType, listView.id }
         );
 
         HttpRequest req = new HttpRequest();
@@ -97,6 +185,7 @@ public with sharing class MA_MassActionUtils {
         req.setCompressed( true );
         req.setHeader( 'Content-Type', 'application/json' );
         req.setHeader( 'Accepts', 'application/json' );
+        req.setHeader( 'Authorization', 'Bearer ' + UserInfo.getSessionId() );
 
         HttpResponse res = sendHttpRequest( req );
 
@@ -124,15 +213,17 @@ public with sharing class MA_MassActionUtils {
 
         for ( Map<String, Object> sourceRow : sourceRows ) {
 
+            Map<String, Object> sourceRowLowerCaseKeyMap = MA_MapUtils.convertKeysToLowercase( sourceRow );
+
             Map<String, Object> targetRow = new Map<String, Object>();
 
             for ( Mass_Action_Mapping__c mapping : mappings ) {
 
-                if ( !sourceRow.containsKey( mapping.source_field_name__c ) ) {
+                if ( !sourceRowLowerCaseKeyMap.containsKey( mapping.source_field_name__c.toLowerCase() ) ) {
                     throw new MA_Exceptions.NoSourceFieldException( sourceRow, mapping.source_field_name__c );
                 }
 
-                targetRow.put( mapping.target_field_name__c, sourceRow.get( mapping.source_field_name__c ) );
+                targetRow.put( mapping.target_field_name__c, sourceRowLowerCaseKeyMap.get( mapping.source_field_name__c.toLowerCase() ) );
 
             }
 
@@ -153,12 +244,13 @@ public with sharing class MA_MassActionUtils {
      * Invokes REST API via http callout.
      * https://developer.salesforce.com/docs/atlas.en-us.api_action.meta/api_action/actions_intro_invoking.htm
      */
-    public static void invokeAction( Mass_Action_Configuration__c config, List<Map<String, Object>> targetRowMaps ) {
+    public static void invokeAction( String baseURL, Mass_Action_Configuration__c config, List<Map<String, Object>> targetRowMaps ) {
 
         System.debug( 'MA_MassActionUtils.invokeAction' );
+        System.debug( 'baseURL: ' + baseURL );
         System.debug( 'config: ' + config );
 
-        HttpRequest req = buildInvokeActionHttpRequest( config, targetRowMaps );
+        HttpRequest req = buildInvokeActionHttpRequest( baseURL, config, targetRowMaps );
         HttpResponse res = sendHttpRequest( req );
 
     }
@@ -167,18 +259,19 @@ public with sharing class MA_MassActionUtils {
      * Invokes REST API via http callout.
      * You call this method to get list of object names that can be used with getInvocableActions(..) method.
      *
-     * @param namedCredential
-     *      To authenticate to REST API
+     * @param baseURL
+     *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
+     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v44.0').
      * @param actionType
      *      Value from picklist Mass_Action_Configuration__c.Target_Type__c (e.g. 'QuickAction', 'EmailAlert')
      */
-    public static List<String> getObjectsWithInvocableActions( String namedCredential, String actionType ) {
+    public static List<String> getObjectsWithInvocableActions( String baseURL, String actionType ) {
 
         System.debug( 'MA_MassActionUtils.getObjectsWithInvocableActions' );
-        System.debug( 'namedCredential: ' + namedCredential );
+        System.debug( 'baseURL: ' + baseURL );
         System.debug( 'actionType: ' + actionType );
 
-        HttpRequest req = buildInvocableActionsHttpRequest( namedCredential, actionType, EMPTY_STRING );
+        HttpRequest req = buildInvocableActionsHttpRequest( baseURL, actionType, '' );
         HttpResponse res = sendHttpRequest( req );
 
         List<String> objectNames = parseActionObjectsHttpResponse( res );
@@ -190,21 +283,22 @@ public with sharing class MA_MassActionUtils {
      * Invokes REST API via http callout.
      * You call this method to get list of available actions for given type and object.
      *
-     * @param namedCredential
-     *      To authenticate to REST API
+     * @param baseURL
+     *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
+     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v44.0').
      * @param actionType
      *      Value from picklist Mass_Action_Configuration__c.Target_Type__c (e.g. 'QuickAction', 'EmailAlert')
      * @param objectName
      *      API name of object whose actions to get of the given type (e.g. 'Account', 'Foo__c')
      */
-    public static List<Map<String, Object>> getInvocableActions( String namedCredential, String actionType, String objectName ) {
+    public static List<Map<String, Object>> getInvocableActions( String baseURL, String actionType, String objectName ) {
 
         System.debug( 'MA_MassActionUtils.getInvocableActions' );
-        System.debug( 'namedCredential: ' + namedCredential );
+        System.debug( 'baseURL: ' + baseURL );
         System.debug( 'actionType: ' + actionType );
         System.debug( 'objectName: ' + objectName );
 
-        HttpRequest req = buildInvocableActionsHttpRequest( namedCredential, actionType, objectName );
+        HttpRequest req = buildInvocableActionsHttpRequest( baseURL, actionType, objectName );
         HttpResponse res = sendHttpRequest( req );
 
         List<Map<String, Object>> actions = parseActionsHttpResponse( res );
@@ -212,15 +306,29 @@ public with sharing class MA_MassActionUtils {
         return actions;
     }
 
-    public static List<Map<String, Object>> getInvocableActionInputs( String namedCredential, String actionType, String actionName, String objectName ) {
+    /**
+     * Gets the input variables for the given invocable action.
+     * Use this to know what to prompt user for when binding source fields to target fields.
+     *
+     * @param baseURL
+     *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
+     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v44.0').
+     * @param actionType
+     *      Value from picklist Mass_Action_Configuration__c.Target_Type__c (e.g. 'QuickAction', 'EmailAlert')
+     * @param actionName
+     *      API Name of the invocable action whose inputs to request.
+     * @param objectName
+     *      API Name of the object whose action to request.
+     */
+    public static List<Map<String, Object>> getInvocableActionInputs( String baseURL, String actionType, String actionName, String objectName ) {
 
         System.debug( 'MA_MassActionUtils.getInvocableActionInputs' );
-        System.debug( 'namedCredential: ' + namedCredential );
+        System.debug( 'baseURL: ' + baseURL );
         System.debug( 'actionType: ' + actionType );
         System.debug( 'actionName: ' + actionName );
         System.debug( 'objectName: ' + objectName );
 
-        HttpRequest req = buildInvocableActionInputsHttpRequest( namedCredential, actionType, actionName, objectName );
+        HttpRequest req = buildInvocableActionInputsHttpRequest( baseURL, actionType, actionName, objectName );
         HttpResponse res = sendHttpRequest( req );
 
         List<Map<String, Object>> inputs = parseActionInputsHttpResponse( res );
@@ -230,57 +338,80 @@ public with sharing class MA_MassActionUtils {
 
     // ------------------------------------------------------------------------
 
-    private static HttpRequest buildInvokeActionHttpRequest( Mass_Action_Configuration__c config, List<Map<String, Object>> targetRowMaps ) {
+    /**
+     * Creates an HttpRequest with a configured enpoint to invoke the target action
+     * per the configuration. Also sets common headers for an authorized JSON request.
+     *
+     * @param baseURL
+     *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
+     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v44.0').
+     * @param config
+     *      Mass Action Configuration record.
+     * @param targetRowMaps
+     *      Field mappings from the data source (e.g. list view or report) and
+     *      inputs to the target action (e.g. quick action, apex, process, etc.).
+     */
+    private static HttpRequest buildInvokeActionHttpRequest( String baseURL, Mass_Action_Configuration__c config, List<Map<String, Object>> targetRowMaps ) {
 
         HttpRequest req = new HttpRequest();
-        req.setEndpoint( getInvokeActionHttpRequestEndpoint( config ) );
+        req.setEndpoint( getInvokeActionHttpRequestEndpoint( baseURL, config ) );
         req.setBody( getInvokeActionHttpRequestBody( config, targetRowMaps ) );
         req.setMethod( 'POST' );
         req.setTimeout( 120000 ); // max wait of 2 mins
         req.setCompressed( true );
         req.setHeader( 'Content-Type', 'application/json' );
         req.setHeader( 'Accepts', 'application/json' );
+        req.setHeader( 'Authorization', 'Bearer ' + UserInfo.getSessionId() );
 
         return req;
     }
 
-    private static String getInvokeActionHttpRequestEndpoint( Mass_Action_Configuration__c config ) {
+    /**
+     * Creates an endpoint URL to REST API to invoke the target action per the configuration.
+     *
+     * @param baseURL
+     *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
+     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v44.0').
+     * @param config
+     *      Mass Action Configuration record.
+     */
+    private static String getInvokeActionHttpRequestEndpoint( String baseURL, Mass_Action_Configuration__c config ) {
 
         String endpoint = null;
 
         if ( 'Workflow' == config.target_type__c ) {
 
             endpoint = String.format(
-                'callout:{0}/process/rules',
-                new String[] { config.named_credential__c }
+                '{0}/process/rules',
+                new String[] { baseURL }
             );
 
         } else if ( 'Flow' == config.target_type__c ) {
 
             endpoint = String.format(
-                'callout:{0}/actions/custom/flow/{1}',
-                new String[] { config.named_credential__c, config.target_action_name__c }
+                '{0}/actions/custom/flow/{1}',
+                new String[] { baseURL, config.target_action_name__c }
             );
 
         } else if ( 'QuickAction' == config.target_type__c ) {
 
             endpoint = String.format(
-                'callout:{0}/actions/custom/quickAction/{1}/{2}',
-                new String[] { config.named_credential__c, config.target_sobject_type__c, config.target_action_name__c }
+                '{0}/actions/custom/quickAction/{1}/{2}',
+                new String[] { baseURL, config.target_sobject_type__c, config.target_action_name__c }
             );
 
         } else if ( 'EmailAlert' == config.target_type__c ) {
 
             endpoint = String.format(
-                'callout:{0}/actions/custom/emailAlert/{1}/{2}',
-                new String[] { config.named_credential__c, config.target_sobject_type__c, config.target_action_name__c }
+                '{0}/actions/custom/emailAlert/{1}/{2}',
+                new String[] { baseURL, config.target_sobject_type__c, config.target_action_name__c }
             );
 
         } else if ( 'Apex' == config.target_type__c ) {
 
             endpoint = String.format(
-                'callout:{0}/actions/custom/apex/{1}',
-                new String[] { config.named_credential__c, config.target_action_name__c }
+                '{0}/actions/custom/apex/{1}',
+                new String[] { baseURL, config.target_action_name__c }
             );
 
         }
@@ -363,49 +494,75 @@ public with sharing class MA_MassActionUtils {
 
     // ------------------------------------------------------------------------
 
-    private static HttpRequest buildInvocableActionsHttpRequest( String namedCredential, String actionType, String objectName ) {
+    /**
+     * Creates an HttpRequest with a configured enpoint to retrieve invocable actions
+     * for the given object accessible by the REST API. Also sets common headers for
+     * an authorized JSON request.
+     *
+     * @param baseURL
+     *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
+     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v44.0').
+     * @param actionType
+     *      Value from picklist Mass_Action_Configuration__c.Target_Type__c (e.g. 'QuickAction', 'EmailAlert')
+     * @param objectName
+     *      API Name of the object whose actions to request.
+     */
+    private static HttpRequest buildInvocableActionsHttpRequest( String baseURL, String actionType, String objectName ) {
 
         HttpRequest req = new HttpRequest();
-        req.setEndpoint( getInvocableActionsHttpRequestEndpoint( namedCredential, actionType, objectName ) );
+        req.setEndpoint( getInvocableActionsHttpRequestEndpoint( baseURL, actionType, objectName ) );
         req.setMethod( 'GET' );
         req.setTimeout( 120000 ); // max wait of 2 mins
         req.setCompressed( true );
         req.setHeader( 'Content-Type', 'application/json' );
         req.setHeader( 'Accepts', 'application/json' );
+        req.setHeader( 'Authorization', 'Bearer ' + UserInfo.getSessionId() );
 
         return req;
     }
 
-    private static String getInvocableActionsHttpRequestEndpoint( String namedCredential, String actionType, String objectName ) {
+    /**
+     * Creates an endpoint URL to retrieve invocable actions for the given object
+     * accessible by the REST API. Also sets common headers for an authorized JSON request.
+     *
+     * @param baseURL
+     *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
+     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v44.0').
+     * @param actionType
+     *      Value from picklist Mass_Action_Configuration__c.Target_Type__c (e.g. 'QuickAction', 'EmailAlert')
+     * @param objectName
+     *      API Name of the object whose actions to request.
+     */
+    private static String getInvocableActionsHttpRequestEndpoint( String baseURL, String actionType, String objectName ) {
 
         String endpoint = null;
 
         if ( 'Flow' == actionType ) {
 
             endpoint = String.format(
-                'callout:{0}/actions/custom/flow',
-                new String[] { namedCredential }
+                '{0}/actions/custom/flow',
+                new String[] { baseURL }
             );
 
         } else if ( 'QuickAction' == actionType ) {
 
             endpoint = String.format(
-                'callout:{0}/actions/custom/quickAction/{1}',
-                new String[] { namedCredential, objectName }
+                '{0}/actions/custom/quickAction/{1}',
+                new String[] { baseURL, objectName }
             );
 
         } else if ( 'EmailAlert' == actionType ) {
 
             endpoint = String.format(
-                'callout:{0}/actions/custom/emailAlert/{1}',
-                new String[] { namedCredential, objectName }
+                '{0}/actions/custom/emailAlert/{1}',
+                new String[] { baseURL, objectName }
             );
 
         } else if ( 'Apex' == actionType ) {
 
             endpoint = String.format(
-                'callout:{0}/actions/custom/apex',
-                new String[] { namedCredential }
+                '{0}/actions/custom/apex',
+                new String[] { baseURL }
             );
 
         }
@@ -415,49 +572,78 @@ public with sharing class MA_MassActionUtils {
 
     // ------------------------------------------------------------------------
 
-    private static HttpRequest buildInvocableActionInputsHttpRequest( String namedCredential, String actionType, String actionName, String objectName ) {
+    /**
+     * Creates an HttpRequest with a configured enpoint to retrieve inputs for an invocable action
+     * for the given object accessible by the REST API. Also sets common headers for an authorized JSON request.
+     *
+     * @param baseURL
+     *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
+     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v44.0').
+     * @param actionType
+     *      Value from picklist Mass_Action_Configuration__c.Target_Type__c (e.g. 'QuickAction', 'EmailAlert')
+     * @param actionName
+     *      API Name of the invocable action whose inputs to request.
+     * @param objectName
+     *      API Name of the object whose action to request.
+     */
+    private static HttpRequest buildInvocableActionInputsHttpRequest( String baseURL, String actionType, String actionName, String objectName ) {
 
         HttpRequest req = new HttpRequest();
-        req.setEndpoint( getInvocableActionInputsHttpRequestEndpoint( namedCredential, actionType, actionName, objectName ) );
+        req.setEndpoint( getInvocableActionInputsHttpRequestEndpoint( baseURL, actionType, actionName, objectName ) );
         req.setMethod( 'GET' );
         req.setTimeout( 120000 ); // max wait of 2 mins
         req.setCompressed( true );
         req.setHeader( 'Content-Type', 'application/json' );
         req.setHeader( 'Accepts', 'application/json' );
+        req.setHeader( 'Authorization', 'Bearer ' + UserInfo.getSessionId() );
 
         return req;
     }
 
-    private static String getInvocableActionInputsHttpRequestEndpoint( String namedCredential, String actionType, String actionName, String objectName ) {
+    /**
+     * Creates an endpoint URL to retrieve inputs for an invocable action
+     * for the given object accessible by the REST API. Also sets common headers for an authorized JSON request.
+     *
+     * @param baseURL
+     *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
+     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v44.0').
+     * @param actionType
+     *      Value from picklist Mass_Action_Configuration__c.Target_Type__c (e.g. 'QuickAction', 'EmailAlert')
+     * @param actionName
+     *      API Name of the invocable action whose inputs to request.
+     * @param objectName
+     *      API Name of the object whose action to request.
+     */
+    private static String getInvocableActionInputsHttpRequestEndpoint( String baseURL, String actionType, String actionName, String objectName ) {
 
         String endpoint = null;
 
         if ( 'Flow' == actionType ) {
 
             endpoint = String.format(
-                'callout:{0}/actions/custom/flow/{1}',
-                new String[] { namedCredential, actionName }
+                '{0}/actions/custom/flow/{1}',
+                new String[] { baseURL, actionName }
             );
 
         } else if ( 'QuickAction' == actionType ) {
 
             endpoint = String.format(
-                'callout:{0}/actions/custom/quickAction/{1}/{2}',
-                new String[] { namedCredential, objectName, actionName }
+                '{0}/actions/custom/quickAction/{1}/{2}',
+                new String[] { baseURL, objectName, actionName }
             );
 
         } else if ( 'EmailAlert' == actionType ) {
 
             endpoint = String.format(
-                'callout:{0}/actions/custom/emailAlert/{1}/{2}',
-                new String[] { namedCredential, objectName, actionName }
+                '{0}/actions/custom/emailAlert/{1}/{2}',
+                new String[] { baseURL, objectName, actionName }
             );
 
         } else if ( 'Apex' == actionType ) {
 
             endpoint = String.format(
-                'callout:{0}/actions/custom/apex/{1}',
-                new String[] { namedCredential, actionName }
+                '{0}/actions/custom/apex/{1}',
+                new String[] { baseURL, actionName }
             );
 
         }
@@ -467,6 +653,222 @@ public with sharing class MA_MassActionUtils {
 
     // ------------------------------------------------------------------------
 
+    /**
+     * Executes a SOQL query via REST API via http callout.
+     * https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/dome_query.htm
+     *
+     * @param baseURL
+     *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
+     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v44.0').
+     * @param query
+     *      SOQL query to execute.
+     * @param batchSize
+     *      The preferred max number of records to return at a time.
+     *      Choose a value between 200 and 2,000.
+     *      If there are more records than requested, you'll need to use the nextRecordsUrl to retrieve them.
+     *      https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/headers_queryoptions.htm
+     */
+    public static MA_SoqlQueryExecuteResult executeSoqlQuery( String baseURL, String query, Integer batchSize ) {
+
+        System.debug( 'MA_MassActionUtils.executeSoqlQuery' );
+        System.debug( 'baseURL: ' + baseURL );
+        System.debug( 'query: ' + query );
+        System.debug( 'batchSize: ' + batchSize );
+
+        try {
+
+            HttpRequest req = buildExecuteSoqlQueryHttpRequest( baseURL, query, batchSize );
+            HttpResponse res = sendHttpRequest( req );
+
+            return parseSoqlQueryHttpResponse( res );
+
+        } catch ( MA_Exceptions.InvokeActionException e ) {
+
+            Exception throwable = e;
+
+            // extract the soql error message from "[ { errorCode: xxx, message: yyy } ]"
+            List<Object> errors = (List<Object>) JSON.deserializeUntyped( e.response.getBody() );
+            for ( Object item : errors ) {
+                Map<String, Object> err = (Map<String, Object>) item;
+                throwable = new MA_Exceptions.SOQLQueryRestApiException(
+                    query,
+                    (String) err.get( 'errorType' ),
+                    (String) err.get( 'message' )
+                );
+            }
+
+            throw throwable;
+
+        }
+    }
+
+    /**
+     * Creates an HttpRequest with a configured enpoint to execute a SOQL query
+     * against the REST API. Also sets common headers for an authorized JSON request.
+     *
+     * @param baseURL
+     *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
+     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v44.0').
+     * @param query
+     *      SOQL query to execute.
+     * @param batchSize
+     *      The preferred max number of records to return at a time.
+     *      Choose a value between 200 and 2,000.
+     *      If there are more records than requested, you'll need to use the nextRecordsUrl to retrieve them.
+     *      https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/headers_queryoptions.htm
+     */
+    private static HttpRequest buildExecuteSoqlQueryHttpRequest( String baseURL, String query, Integer batchSize ) {
+
+        HttpRequest req = new HttpRequest();
+        req.setEndpoint( getExecuteSoqlQueryHttpRequestEndpoint( baseURL, query ) );
+        req.setMethod( 'GET' );
+        req.setTimeout( 120000 ); // max wait of 2 mins
+        req.setCompressed( true );
+        req.setHeader( 'Content-Type', 'application/json' );
+        req.setHeader( 'Accepts', 'application/json' );
+        req.setHeader( 'Authorization', 'Bearer ' + UserInfo.getSessionId() );
+
+        if ( batchSize != null ) {
+            req.setHeader( 'Sforce-Query-Options', 'batchSize=' + batchSize );
+        }
+
+        return req;
+    }
+
+    /**
+     * Creates an endpoint URL to execute a SOQL query against the REST API.
+     * Also sets common headers for an authorized JSON request.
+     *
+     * @param baseURL
+     *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
+     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v44.0').
+     * @param query
+     *      SOQL query to execute.
+     */
+    private static String getExecuteSoqlQueryHttpRequestEndpoint( String baseURL, String query ) {
+
+        String endpoint = String.format(
+            '{0}/query/?q={1}',
+            new String[] { baseURL, EncodingUtil.urlEncode( query, 'utf-8' ) }
+        );
+
+        return endpoint;
+    }
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * Executes a SOQL query via REST API via http callout.
+     * https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/dome_query.htm
+     *
+     * @param baseURL
+     *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
+     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v44.0').
+     * @param nextRecordsId
+     *      The last path part in the 'nextRecordsUrl' property from a query response
+     *      that identifies the next page of records to return.
+     * @param batchSize
+     *      The preferred max number of records to return at a time.
+     *      Choose a value between 200 and 2,000.
+     *      If there are more records than requested, you'll need to use the nextRecordsUrl to retrieve them.
+     *      https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/headers_queryoptions.htm
+     */
+    public static MA_SoqlQueryExecuteResult executeSoqlQueryNextRecords( String baseURL, String nextRecordsId, Integer batchSize ) {
+
+        System.debug( 'MA_MassActionUtils.executeSoqlQueryNextRecords' );
+        System.debug( 'baseURL: ' + baseURL );
+        System.debug( 'nextRecordsId: ' + nextRecordsId );
+        System.debug( 'batchSize: ' + batchSize );
+
+        try {
+
+            HttpRequest req = buildExecuteSoqlQueryNextRecordsHttpRequest( baseURL, nextRecordsId, batchSize );
+            HttpResponse res = sendHttpRequest( req );
+
+            return parseSoqlQueryHttpResponse( res );
+
+        } catch ( MA_Exceptions.InvokeActionException e ) {
+
+            Exception throwable = e;
+
+            // extract the soql error message from "[ { errorCode: xxx, message: yyy } ]"
+            List<Object> errors = (List<Object>) JSON.deserializeUntyped( e.response.getBody() );
+            for ( Object item : errors ) {
+                Map<String, Object> err = (Map<String, Object>) item;
+                throwable = new MA_Exceptions.SOQLQueryRestApiException(
+                    nextRecordsId,
+                    (String) err.get( 'errorType' ),
+                    (String) err.get( 'message' )
+                );
+            }
+
+            throw throwable;
+
+        }
+    }
+
+    /**
+     * Creates an HttpRequest with a configured enpoint to execute a SOQL query
+     * against the REST API. Also sets common headers for an authorized JSON request.
+     *
+     * @param baseURL
+     *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
+     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v44.0').
+     * @param nextRecordsId
+     *      The last path part in the 'nextRecordsUrl' property from a query response
+     *      that identifies the next page of records to return.
+     * @param batchSize
+     *      The preferred max number of records to return at a time.
+     *      Choose a value between 200 and 2,000.
+     *      If there are more records than requested, you'll need to use the nextRecordsUrl to retrieve them.
+     *      https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/headers_queryoptions.htm
+     */
+    private static HttpRequest buildExecuteSoqlQueryNextRecordsHttpRequest( String baseURL, String nextRecordsId, Integer batchSize ) {
+
+        HttpRequest req = new HttpRequest();
+        req.setEndpoint( getExecuteSoqlQueryNextRecordsHttpRequestEndpoint( baseURL, nextRecordsId ) );
+        req.setMethod( 'GET' );
+        req.setTimeout( 120000 ); // max wait of 2 mins
+        req.setCompressed( true );
+        req.setHeader( 'Content-Type', 'application/json' );
+        req.setHeader( 'Accepts', 'application/json' );
+        req.setHeader( 'Authorization', 'Bearer ' + UserInfo.getSessionId() );
+
+        if ( batchSize != null ) {
+            req.setHeader( 'Sforce-Query-Options', 'batchSize=' + batchSize );
+        }
+
+        return req;
+    }
+
+    /**
+     * Creates an endpoint URL to execute a SOQL query against the REST API.
+     * Also sets common headers for an authorized JSON request.
+     *
+     * @param baseURL
+     *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
+     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v44.0').
+     * @param nextRecordsId
+     *      The last path part in the 'nextRecordsUrl' property from a query response
+     *      that identifies the next page of records to return.
+     */
+    private static String getExecuteSoqlQueryNextRecordsHttpRequestEndpoint( String baseURL, String nextRecordsId ) {
+
+        String endpoint = String.format(
+            '{0}/query/{1}',
+            new String[] { baseURL, EncodingUtil.urlEncode( nextRecordsId, 'utf-8' ) }
+        );
+
+        return endpoint;
+    }
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * Sends the http request and returns the http response.
+     * Logs the request/response.
+     * Throws exception if status code is not 200 OK.
+     */
     private static HttpResponse sendHttpRequest( HttpRequest req ) {
 
         System.debug( req );
@@ -490,6 +892,35 @@ public with sharing class MA_MassActionUtils {
 
     // ------------------------------------------------------------------------
 
+    /**
+     * JSON deserializes the response.
+     *
+     * Since Apex won't deserialize into a type that uses generic Object data type,
+     * then I'm manually casting the untyped deserialization result to my generic map type.
+     * This way, my Apex class that represents a SOQL query result can generically store
+     * a list of records as objects (not sobjects, because some results may be aggregate results).
+     *
+     * https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_methods_system_json_overview.htm
+     */
+    private static MA_SoqlQueryExecuteResult parseSoqlQueryHttpResponse( HttpResponse res ) {
+
+        Map<String, Object> responseMap = ( Map<String, Object> ) JSON.deserializeUntyped( res.getBody() );
+
+        MA_SoqlQueryExecuteResult result = new MA_SoqlQueryExecuteResult();
+        result.totalSize = ( Integer ) responseMap.get( 'totalSize' );
+        result.done = ( Boolean ) responseMap.get( 'done' );
+        result.nextRecordsUrl = ( String ) responseMap.get( 'nextRecordsUrl' );
+
+        for ( Object item : ( List<Object> ) responseMap.get( 'records' ) ) {
+            result.records.add( ( Map<String, Object> ) item );
+        }
+
+        return result;
+    }
+
+    /**
+     * JSON deserializes the response and converts the map of key-value pairs into a list of keys.
+     */
     private static List<String> parseActionObjectsHttpResponse( HttpResponse res ) {
 
         List<String> objectNames = new List<String>();
@@ -503,6 +934,9 @@ public with sharing class MA_MassActionUtils {
         return objectNames;
     }
 
+    /**
+     * JSON deserializes the 'actions' property of the response.
+     */
     private static List<Map<String, Object>> parseActionsHttpResponse( HttpResponse res ) {
 
         List<Map<String, Object>> actions = new List<Map<String, Object>>();
@@ -518,6 +952,9 @@ public with sharing class MA_MassActionUtils {
         return actions;
     }
 
+    /**
+     * JSON deserializes the 'inputs' property of the response.
+     */
     private static List<Map<String, Object>> parseActionInputsHttpResponse( HttpResponse res ) {
 
         List<Map<String, Object>> inputs = new List<Map<String, Object>>();

@@ -4,13 +4,31 @@
  * GitHub: https://github.com/douglascayers/sfdx-mass-action-scheduler
  * License: BSD 3-Clause License
  */
-public class MA_Exceptions {
+public inherited sharing class MA_Exceptions {
+
+    /**
+     * Thrown by MA_MassActionUtils when encounter error
+     * executing a SOQL query via REST API.
+     */
+    public inherited sharing class SOQLQueryRestApiException extends Exception {
+
+        public String query { get; set; }
+
+        public String errorType { get; set; }
+
+        public SOQLQueryRestApiException( String query, String errorType, String message ) {
+            this.query = query;
+            this.errorType = errorType;
+            this.setMessage( message );
+        }
+
+    }
 
     /**
      * Thrown by MA_MassActionBatchUtils when configuration record
      * has an unknown source type and no batch class for it.
      */
-    public class UnsupportedSourceTypeException extends Exception {
+    public inherited sharing class UnsupportedSourceTypeException extends Exception {
 
         public ID configId { get; set; }
 
@@ -31,7 +49,7 @@ public class MA_Exceptions {
      * Indicates that in a Mass_Action_Mapping__c record the
      * source field name was not a key in the source data map.
      */
-    public class NoSourceFieldException extends Exception {
+    public inherited sharing class NoSourceFieldException extends Exception {
 
         public Map<String, Object> sourceData { get; set; }
 
@@ -54,7 +72,7 @@ public class MA_Exceptions {
      * immediately known and thus not thrown with this exception but instead
      * reported by standard Salesforce behavior.
      */
-    public class InvokeActionException extends Exception {
+    public inherited sharing class InvokeActionException extends Exception {
 
         public HttpRequest request { get; set; }
 

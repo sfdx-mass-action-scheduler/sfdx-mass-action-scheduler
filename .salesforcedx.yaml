@@ -1,7 +1,0 @@
-scratch-org-def: config/project-scratch-def.json
-assign-permset: true
-permset-name: Mass_Action_Admin
-run-apex-tests: true
-delete-scratch-org: false
-show-scratch-org-url: true
-open-path: /one/one.app#/sObject/Mass_Action_Configuration__c/list

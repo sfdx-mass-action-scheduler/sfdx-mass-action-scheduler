@@ -18,7 +18,7 @@ Custom = user provided own cron expression</description>
             <value>
                 <fullName>Manual</fullName>
                 <default>true</default>
-                <label>Manual</label>
+                <label>On Demand</label>
             </value>
             <value>
                 <fullName>Scheduled</fullName>

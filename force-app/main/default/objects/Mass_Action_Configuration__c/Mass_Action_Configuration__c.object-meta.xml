@@ -71,7 +71,6 @@
     <description>A configuration of inputs (reports, list views, queries) and actions (process builder, flows, apex) that can be scheduled.</description>
     <enableActivities>false</enableActivities>
     <enableBulkApi>true</enableBulkApi>
-    <enableChangeDataCapture>false</enableChangeDataCapture>
     <enableFeeds>false</enableFeeds>
     <enableHistory>false</enableHistory>
     <enableReports>true</enableReports>

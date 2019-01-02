@@ -4,7 +4,7 @@
     <deprecated>false</deprecated>
     <description>Minute component of cron schedule expression. https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_scheduler.htm</description>
     <externalId>false</externalId>
-    <inlineHelpText>Minute component of cron schedule expression.</inlineHelpText>
+    <inlineHelpText>Choose which minutes of the hour this action will run.</inlineHelpText>
     <label>Schedule Minute</label>
     <length>255</length>
     <required>false</required>

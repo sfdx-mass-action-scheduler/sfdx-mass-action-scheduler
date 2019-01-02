@@ -13,7 +13,7 @@
  * and it is documented that the use of 'with sharing' by apex classes called by the handler may prevent installation.
  * https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_install_handler.htm
  */
-public without sharing class MA_SetConfigUniqueNameBatchable implements Database.Batchable<SObject> {
+public without sharing class MA_SetConfigUniqueNameBatchable implements Database.Batchable<SObject>, Database.RaisesPlatformEvents {
 
     public Database.QueryLocator start( Database.BatchableContext context ) {
 
@@ -116,7 +116,7 @@ public without sharing class MA_SetConfigUniqueNameBatchable implements Database
 
             if ( useRandomSuffix ) {
 
-                String randomSuffix = '_' + getRandomLetters( 4 );
+                String randomSuffix = '_' + MA_StringUtils.getRandomLetters( 4 );
 
                 // ensure room for random suffix
                 uniqueName = uniqueName.left( Mass_Action_Configuration__c.DeveloperName__c.getDescribe().getLength() - randomSuffix.length() );
@@ -129,20 +129,6 @@ public without sharing class MA_SetConfigUniqueNameBatchable implements Database
         }
 
         return uniqueName;
-    }
-
-    private String getRandomLetters( Integer length ) {
-
-        final String[] LETTERS = 'A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z'.split(',');
-
-        String text = '';
-
-        for ( Integer i = 0; i < length; i++ ) {
-            Integer index = Math.mod( Math.abs( Crypto.getRandomInteger() ), LETTERS.size() );
-            text += LETTERS[index];
-        }
-
-        return text;
     }
 
 }

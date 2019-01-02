@@ -4,7 +4,7 @@
  * GitHub: https://github.com/douglascayers/sfdx-mass-action-scheduler
  * License: BSD 3-Clause License
  */
-public with sharing class MA_ListViewSourceBatchable implements Database.Batchable<SObject>, Database.Stateful, Database.AllowsCallouts {
+public with sharing class MA_ListViewSourceBatchable implements Database.Batchable<SObject>, Database.Stateful, Database.AllowsCallouts, Database.RaisesPlatformEvents {
 
     private ID configId { get; set; }
 
@@ -24,7 +24,7 @@ public with sharing class MA_ListViewSourceBatchable implements Database.Batchab
 
         this.config = MA_MassActionUtils.getConfiguration( this.configId );
 
-        this.listViewDescribe = MA_MassActionUtils.describeListView( this.config.named_credential__c, this.config.source_list_view_id__c );
+        this.listViewDescribe = MA_MassActionUtils.describeListView( MA_MassActionUtils.getCalloutRestEndpointURL( this.config.Named_Credential__c ), this.config.source_list_view_id__c );
 
         return Database.getQueryLocator( this.listViewDescribe.query );
     }
@@ -39,13 +39,13 @@ public with sharing class MA_ListViewSourceBatchable implements Database.Batchab
 
             List<Map<String, Object>> targetRowMaps = MA_MassActionUtils.buildActionInputs( sourceRowMaps, this.config.mass_action_mappings__r );
 
-            MA_MassActionUtils.invokeAction( this.config, targetRowMaps );
+            MA_MassActionUtils.invokeAction( MA_MassActionUtils.getCalloutRestEndpointURL( this.config.Named_Credential__c ), this.config, targetRowMaps );
 
         } catch ( Exception e ) {
 
             System.debug( LoggingLevel.ERROR, e.getMessage() + ' : ' + e.getStackTraceString() );
 
-            MA_MassActionBatchUtils.logJobException( this.config.Id, context.getJobId(), e );
+            MA_MassActionBatchUtils.logJobException( this.configId, context.getJobId(), e );
 
         }
 

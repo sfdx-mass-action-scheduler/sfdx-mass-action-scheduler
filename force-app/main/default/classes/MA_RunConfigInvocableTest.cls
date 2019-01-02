@@ -43,7 +43,7 @@ private class MA_RunConfigInvocableTest {
 
         Mass_Action_Configuration__c config = [ SELECT Id FROM Mass_Action_Configuration__c WHERE DeveloperName__c = 'Test_Config' LIMIT 1 ];
 
-        Test.setMock( HttpCalloutMock.class, new MA_InvokeActionHttpRequestMock() );
+        Test.setMock( HttpCalloutMock.class, new MA_HttpCalloutMock() );
 
         Test.startTest();
 
@@ -60,7 +60,7 @@ private class MA_RunConfigInvocableTest {
     @IsTest
     static void test_invocable_by_unique_name() {
 
-        Test.setMock( HttpCalloutMock.class, new MA_InvokeActionHttpRequestMock() );
+        Test.setMock( HttpCalloutMock.class, new MA_HttpCalloutMock() );
 
         Test.startTest();
 
@@ -77,7 +77,7 @@ private class MA_RunConfigInvocableTest {
     @IsTest
     static void test_invocable_no_data_found() {
 
-        Test.setMock( HttpCalloutMock.class, new MA_InvokeActionHttpRequestMock() );
+        Test.setMock( HttpCalloutMock.class, new MA_HttpCalloutMock() );
 
         Test.startTest();
 

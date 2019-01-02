@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Description__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Help yourself and others know why and what this configuration is for by adding a description. You&#39;ll thank yourself later =)</description>
     <externalId>false</externalId>
+    <inlineHelpText>Help yourself and others know why and what this configuration is for by adding a description. You&#39;ll thank yourself later =)</inlineHelpText>
     <label>Description</label>
     <length>32000</length>
     <trackTrending>false</trackTrending>

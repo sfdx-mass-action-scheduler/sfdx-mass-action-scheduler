@@ -12,8 +12,138 @@ private class MA_MassActionBatchUtilsTest {
      * separate test classes on the batchable classes
      */
 
+    /**
+     * The Report object is read-only in Apex. It must be created via Metadata API.
+     * Therefore our test relies on existing data being available to us, unfortunately.
+     * Also, when testing Reports API the test will run with SeeAllData = true, regardless the annotation here.
+     * I include the annotation for clarity.
+     * https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_analytics_test_reports.htm
+     */
+    @IsTest( SeeAllData = true )
+    static void test_enqueue_report_job() {
+
+        Report r = [ SELECT Id FROM Report WHERE DeveloperName = 'MA_Test_Account_Report' ];
+
+        Mass_Action_Configuration__c config = new Mass_Action_Configuration__c(
+            Name = 'Test Config',
+            DeveloperName__c = 'Test_Config',
+            Named_Credential__c = 'Mass_Action_Test_Named_Credential',
+            Active__c = true,
+            Batch_Size__c = 200,
+            Source_Type__c = 'Report',
+            Source_Report_ID__c = r.Id,
+            Source_Report_Column_Name__c = 'ACCOUNT_ID',
+            Target_Type__c = 'Workflow',
+            Target_SObject_Type__c = 'Account',
+            Schedule_Frequency__c = 'Manual'
+        );
+
+        insert config;
+
+        Mass_Action_Mapping__c configFieldMapping = new Mass_Action_Mapping__c(
+            Mass_Action_Configuration__c = config.Id,
+            Source_Field_Name__c = 'ACCOUNT_ID',
+            Target_Field_Name__c = 'ContextId'
+        );
+
+        insert configFieldMapping;
+
+        Test.setMock( HttpCalloutMock.class, new MA_HttpCalloutMock() );
+
+        Test.startTest();
+
+        ID jobId = MA_MassActionBatchUtils.enqueueAction( config.Id );
+        System.assertNotEquals( null, jobId );
+
+        Test.stopTest();
+
+        System.assertEquals( 1, [ SELECT COUNT() FROM AsyncApexJob WHERE Id = :jobId ] );
+
+    }
+
     @IsTest
-    static void test_job_errors() {
+    static void test_enqueue_listView_job() {
+
+        String objectName = MA_MassActionUtils.NAMESPACE_API + 'Mass_Action_Configuration__c';
+        ListView lv = [ SELECT Id, Name, DeveloperName, SobjectType FROM ListView WHERE DeveloperName = 'All' AND SobjectType = :objectName AND IsSoqlCompatible = true LIMIT 1 ];
+
+        Mass_Action_Configuration__c config = new Mass_Action_Configuration__c(
+            Name = 'Test Config',
+            DeveloperName__c = 'Test_Config',
+            Active__c = true,
+            Batch_Size__c = 200,
+            Named_Credential__c = 'Mass_Action_Test_Named_Credential',
+            Source_Type__c = 'ListView',
+            Source_List_View_ID__c = lv.Id,
+            Target_Type__c = 'Workflow',
+            Target_SObject_Type__c = 'Account',
+            Schedule_Frequency__c = 'Manual'
+        );
+
+        insert config;
+
+        Mass_Action_Mapping__c configFieldMapping = new Mass_Action_Mapping__c(
+            Mass_Action_Configuration__c = config.Id,
+            Source_Field_Name__c = 'Id',
+            Target_Field_Name__c = 'ContextId'
+        );
+
+        insert configFieldMapping;
+
+        Test.setMock( HttpCalloutMock.class, new MA_HttpCalloutMock() );
+
+        Test.startTest();
+
+        ID jobId = MA_MassActionBatchUtils.enqueueAction( config.Id );
+        System.assertNotEquals( null, jobId );
+
+        Test.stopTest();
+
+        System.assertEquals( 1, [ SELECT COUNT() FROM AsyncApexJob WHERE Id = :jobId ] );
+
+    }
+
+    @IsTest
+    static void test_enqueue_soql_job() {
+
+        Mass_Action_Configuration__c config = new Mass_Action_Configuration__c(
+            Name = 'Test Config',
+            DeveloperName__c = 'Test_Config',
+            Active__c = true,
+            Batch_Size__c = 200,
+            Named_Credential__c = 'Mass_Action_Test_Named_Credential',
+            Source_Type__c = 'SOQL',
+            Source_SOQL_Query__c = 'SELECT Id, Name FROM Account',
+            Target_Type__c = 'Workflow',
+            Target_SObject_Type__c = 'Account',
+            Schedule_Frequency__c = 'Manual'
+        );
+
+        insert config;
+
+        Mass_Action_Mapping__c configFieldMapping = new Mass_Action_Mapping__c(
+            Mass_Action_Configuration__c = config.Id,
+            Source_Field_Name__c = 'Id',
+            Target_Field_Name__c = 'ContextId'
+        );
+
+        insert configFieldMapping;
+
+        Test.setMock( HttpCalloutMock.class, new MA_HttpCalloutMock() );
+
+        Test.startTest();
+
+        ID jobId = MA_MassActionBatchUtils.enqueueAction( config.Id );
+        System.assertNotEquals( null, jobId );
+
+        Test.stopTest();
+
+        System.assertEquals( 1, [ SELECT COUNT() FROM AsyncApexJob WHERE Id = :jobId ] );
+
+    }
+
+    @IsTest
+    static void test_log_job_exception() {
 
         Mass_Action_Configuration__c config = new Mass_Action_Configuration__c(
             Name = 'Test Config',
@@ -23,23 +153,72 @@ private class MA_MassActionBatchUtilsTest {
 
         insert config;
 
-        // this object has non-writable fields so we use the json serialization trick to populate a mock record
-        AsyncApexJob job = (AsyncApexJob) JSON.deserialize( JSON.serialize( new Map<String, Object>{
-            'Id' => '707f400000pCeDXAA0',
-            'ExtendedStatus' => 'Test Error',
-            'TotalJobItems' => 1,
-            'JobItemsProcessed' => 1,
-            'NumberOfErrors' => 1,
-            'CreatedDate' => DateTime.now()
-        }), AsyncApexJob.class );
+        Exception ex = new System.UnexpectedException( 'Test Exception' );
 
         Test.startTest();
 
-        MA_MassActionBatchUtils.logJobErrors( config.Id, job, null );
+        MA_MassActionBatchUtils.logJobException( config.Id, MA_AsyncApexJobMock.FAIL_JOB_ID, ex );
+
+        Test.stopTest();
+
+        System.assertEquals( 1, [ SELECT count() FROM Mass_Action_Log__c WHERE Mass_Action_Configuration__c = :config.Id ] );
+
+    }
+
+    @IsTest
+    static void test_log_job_errors() {
+
+        Mass_Action_Configuration__c config = new Mass_Action_Configuration__c(
+            Name = 'Test Config',
+            DeveloperName__c = 'Test_Config',
+            Active__c = true
+        );
+
+        insert config;
+
+        AsyncApexJob job = MA_AsyncApexJobMock.getJobById( MA_AsyncApexJobMock.FAIL_JOB_ID );
+
+        Test.startTest();
+
+        MA_MassActionBatchUtils.logJobErrors( config.Id, job, new System.UnexpectedException( 'Test Exception' ) );
 
         Test.stopTest();
 
         System.assertEquals( 1, [ SELECT count() FROM Mass_Action_Log__c WHERE Mass_Action_Configuration__c = :config.Id AND Message__c = :job.ExtendedStatus ] );
+
+    }
+
+    @IsTest
+    static void test_mock_job_pass() {
+
+        Test.startTest();
+
+        AsyncApexJob job = MA_AsyncApexJobMock.getJobById( MA_AsyncApexJobMock.PASS_JOB_ID );
+
+        System.assertEquals( MA_AsyncApexJobMock.PASS_JOB_ID, job.Id );
+        System.assertEquals( 'Test Job Success', job.ExtendedStatus );
+        System.assertEquals( 1, job.TotalJobItems );
+        System.assertEquals( 1, job.TotalJobItems );
+        System.assertEquals( 0, job.NumberOfErrors );
+
+        Test.stopTest();
+
+    }
+
+    @IsTest
+    static void test_mock_job_fail() {
+
+        Test.startTest();
+
+        AsyncApexJob job = MA_AsyncApexJobMock.getJobById( MA_AsyncApexJobMock.FAIL_JOB_ID );
+
+        System.assertEquals( MA_AsyncApexJobMock.FAIL_JOB_ID, job.Id );
+        System.assertEquals( 'Test Job Failure', job.ExtendedStatus );
+        System.assertEquals( 1, job.TotalJobItems );
+        System.assertEquals( 1, job.TotalJobItems );
+        System.assertEquals( 1, job.NumberOfErrors );
+
+        Test.stopTest();
 
     }
 
