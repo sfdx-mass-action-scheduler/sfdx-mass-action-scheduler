@@ -191,44 +191,62 @@ License: BSD 3-Clause License
         var sourceFields = []; // columns from source report or list view
         var targetFields = []; // inputs from target action
 
+        // provide empty option for source field mapping
+        // so user can unmap a field without navigating away
+        sourceFields.push({
+            'label': '--None--',
+            'vaue': null
+        });
+
         return Promise.resolve()
             .then( $A.getCallback( function() {
 
                 if ( sourceType == 'Report' ) {
 
                     return helper.getReportColumnsAsync( component, sourceReportId )
-                        .then( $A.getCallback( function( result ) {
-                            sourceFields = result;
-                        })).catch( $A.getCallback( function( err ) {
+                        .catch( $A.getCallback( function ( err ) {
                             throw new Error( 'Error getting report columns: ' + helper.unwrapAuraErrorMessage( err ) );
                         }));
 
                 } else if ( sourceType == 'ListView' ) {
 
                     return helper.getListViewColumnsAsync( component, sourceListViewId )
-                        .then( $A.getCallback( function( result ) {
-                            sourceFields = result;
-                        })).catch( $A.getCallback( function( err ) {
+                        .catch( $A.getCallback( function ( err ) {
                             throw new Error( 'Error getting list view columns: ' + helper.unwrapAuraErrorMessage( err ) );
                         }));
 
                 } else if ( sourceType == 'SOQL' ) {
 
                     return helper.getSoqlQueryColumnsAsync( component, sourceSoqlQuery )
-                        .then( $A.getCallback( function( result ) {
-                            sourceFields = result;
-                        })).catch( $A.getCallback( function( err ) {
+                        .catch( $A.getCallback( function ( err ) {
                             throw new Error( 'Error getting SOQL query columns: ' + helper.unwrapAuraErrorMessage( err ) );
                         }));
 
                 }
 
+            })).then( $A.getCallback( function( sourceFieldsResult ) {
+
+                if ( !$A.util.isEmpty( sourceFieldsResult ) ) {
+                    // performs in-place sort of array
+                    sourceFieldsResult.sort( function( first, second ) {
+                        return first.label.localeCompare( second.label );
+                    });
+                    sourceFields.push( ...sourceFieldsResult );
+                }
+
             })).then( $A.getCallback( function() {
 
-                return helper.getInvocableActionInputsAsync( component, targetType, ( targetAction || '' ), ( targetSobjectType || '' ) )
-                    .then( $A.getCallback( function( result ) {
-                        targetFields = result;
-                    }));
+                return helper.getInvocableActionInputsAsync( component, targetType, ( targetAction || '' ), ( targetSobjectType || '' ) );
+
+            })).then( $A.getCallback( function( targetFieldsResult ) {
+
+                if ( !$A.util.isEmpty( targetFieldsResult ) ) {
+                    // performs in-place sort of array
+                    targetFieldsResult.sort( function( first, second ) {
+                        return first.name.localeCompare( second.name );
+                    });
+                    targetFields.push( ...targetFieldsResult );
+                }
 
             })).then( $A.getCallback( function() {
 
