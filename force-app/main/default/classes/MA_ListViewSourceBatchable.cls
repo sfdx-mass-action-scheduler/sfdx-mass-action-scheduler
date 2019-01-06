@@ -24,7 +24,7 @@ public with sharing class MA_ListViewSourceBatchable implements Database.Batchab
 
         this.config = MA_MassActionUtils.getConfiguration( this.configId );
 
-        this.listViewDescribe = MA_MassActionUtils.describeListView( MA_MassActionUtils.getCalloutRestEndpointURL( this.config.Named_Credential__c ), this.config.source_list_view_id__c );
+        this.listViewDescribe = MA_MassActionUtils.describeListView( MA_MassActionUtils.getCalloutRestEndpointURL( this.config.Named_Credential__c ), this.config.Source_List_View_ID__c );
 
         return Database.getQueryLocator( this.listViewDescribe.query );
     }
@@ -37,7 +37,7 @@ public with sharing class MA_ListViewSourceBatchable implements Database.Batchab
 
             List<Map<String, Object>> sourceRowMaps = convertRecordsToMaps( records, this.listViewDescribe );
 
-            List<Map<String, Object>> targetRowMaps = MA_MassActionUtils.buildActionInputs( sourceRowMaps, this.config.mass_action_mappings__r );
+            List<Map<String, Object>> targetRowMaps = MA_MassActionUtils.buildActionInputs( sourceRowMaps, this.config.Mass_Action_Mappings__r );
 
             MA_MassActionUtils.invokeAction( MA_MassActionUtils.getCalloutRestEndpointURL( this.config.Named_Credential__c ), this.config, targetRowMaps );
 

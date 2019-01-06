@@ -34,9 +34,7 @@ global with sharing class MA_RunConfigInvocable {
             }
 
             if ( config == null ) {
-                Exception ex = new System.NoDataFoundException();
-                ex.setMessage( 'No Mass Action Configuration record found for request: ' + req );
-                throw ex;
+                throw MA_Exceptions.buildException( NoDataFoundException.class, 'No Mass Action Configuration record found for request: ' + req );
             }
 
             Response res = new Response();

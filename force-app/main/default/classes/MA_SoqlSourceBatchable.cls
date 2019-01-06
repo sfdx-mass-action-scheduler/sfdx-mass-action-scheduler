@@ -33,7 +33,7 @@ public with sharing class MA_SoqlSourceBatchable implements Database.Batchable<S
 
             List<Map<String, Object>> sourceRowMaps = convertRecordsToMaps( records );
 
-            List<Map<String, Object>> targetRowMaps = MA_MassActionUtils.buildActionInputs( sourceRowMaps, this.config.mass_action_mappings__r );
+            List<Map<String, Object>> targetRowMaps = MA_MassActionUtils.buildActionInputs( sourceRowMaps, this.config.Mass_Action_Mappings__r );
 
             MA_MassActionUtils.invokeAction( MA_MassActionUtils.getCalloutRestEndpointURL( this.config.Named_Credential__c ), this.config, targetRowMaps );
 

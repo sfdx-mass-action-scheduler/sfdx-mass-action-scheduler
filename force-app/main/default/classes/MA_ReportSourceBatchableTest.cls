@@ -63,7 +63,7 @@ private class MA_ReportSourceBatchableTest {
                 Id = :config.Id
         ];
 
-        System.assertEquals( 0, [ SELECT count() FROM Mass_Action_Log__c WHERE Mass_Action_Configuration__c = :config.Id ] );
+        System.assertEquals( 0, [ SELECT COUNT() FROM Mass_Action_Log__c WHERE Mass_Action_Configuration__c = :config.Id ] );
         System.assertEquals( job.CompletedDate, config.Last_Run_Completed_Date__c );
         System.assertEquals( false, config.Last_Run_Completed_With_Errors__c );
 
@@ -118,7 +118,7 @@ private class MA_ReportSourceBatchableTest {
                 Id = :config.Id
         ];
 
-        System.assertEquals( 1, [ SELECT count() FROM Mass_Action_Log__c WHERE Mass_Action_Configuration__c = :config.Id ] );
+        System.assertEquals( 1, [ SELECT COUNT() FROM Mass_Action_Log__c WHERE Mass_Action_Configuration__c = :config.Id ] );
         System.assertEquals( job.CompletedDate, config.Last_Run_Completed_Date__c );
         System.assertEquals( true, config.Last_Run_Completed_With_Errors__c );
 

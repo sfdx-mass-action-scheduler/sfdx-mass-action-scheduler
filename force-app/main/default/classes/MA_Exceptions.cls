@@ -89,6 +89,14 @@ public inherited sharing class MA_Exceptions {
 
     }
 
+    // ------------------------------------------------------------------------
+
+    public static Exception buildException( Type t, String message ) {
+        Exception ex = (Exception) t.newInstance();
+        ex.setMessage( message );
+        return ex;
+    }
+
 }
 /*
 BSD 3-Clause License

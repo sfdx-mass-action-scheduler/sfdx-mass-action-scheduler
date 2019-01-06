@@ -48,8 +48,8 @@ private class MA_MassActionScheduleUtilsTest {
         insert configA;
         insert configB;
 
-        System.assertEquals( 0, [ SELECT count() FROM CronJobDetail WHERE Name LIKE :('%' + configA.Id) ] );
-        System.assertEquals( 0, [ SELECT count() FROM CronJobDetail WHERE Name LIKE :('%' + configB.Id) ] );
+        System.assertEquals( 0, [ SELECT COUNT() FROM CronJobDetail WHERE Name LIKE :('%' + configA.Id) ] );
+        System.assertEquals( 0, [ SELECT COUNT() FROM CronJobDetail WHERE Name LIKE :('%' + configB.Id) ] );
 
         Test.startTest();
 
@@ -58,8 +58,8 @@ private class MA_MassActionScheduleUtilsTest {
         Test.stopTest();
 
         System.debug( [ SELECT Id, Name FROM CronJobDetail ] );
-        System.assertEquals( 1, [ SELECT count() FROM CronJobDetail WHERE Name LIKE :('%' + configA.Id) ] );
-        System.assertEquals( 1, [ SELECT count() FROM CronJobDetail WHERE Name LIKE :('%' + configB.Id) ] );
+        System.assertEquals( 1, [ SELECT COUNT() FROM CronJobDetail WHERE Name LIKE :('%' + configA.Id) ] );
+        System.assertEquals( 1, [ SELECT COUNT() FROM CronJobDetail WHERE Name LIKE :('%' + configB.Id) ] );
 
         CronTrigger triggerA = [ SELECT Id, CronJobDetail.Name, CronExpression FROM CronTrigger WHERE CronJobDetail.Name LIKE :('%' + configA.Id) ];
         System.assertEquals( MA_MassActionScheduleUtils.buildCron( configA ), triggerA.CronExpression );
@@ -112,8 +112,8 @@ private class MA_MassActionScheduleUtilsTest {
 
         MA_MassActionScheduleUtils.scheduleMassActions( new List<ID>{ configA.Id, configB.Id } );
 
-        System.assertEquals( 1, [ SELECT count() FROM CronJobDetail WHERE Name LIKE :('%' + configA.Id) ] );
-        System.assertEquals( 1, [ SELECT count() FROM CronJobDetail WHERE Name LIKE :('%' + configB.Id) ] );
+        System.assertEquals( 1, [ SELECT COUNT() FROM CronJobDetail WHERE Name LIKE :('%' + configA.Id) ] );
+        System.assertEquals( 1, [ SELECT COUNT() FROM CronJobDetail WHERE Name LIKE :('%' + configB.Id) ] );
 
         Test.startTest();
 
@@ -122,8 +122,8 @@ private class MA_MassActionScheduleUtilsTest {
         Test.stopTest();
 
         System.debug( [ SELECT Id, Name FROM CronJobDetail ] );
-        System.assertEquals( 0, [ SELECT count() FROM CronJobDetail WHERE Name LIKE :('%' + configA.Id) ] );
-        System.assertEquals( 0, [ SELECT count() FROM CronJobDetail WHERE Name LIKE :('%' + configB.Id) ] );
+        System.assertEquals( 0, [ SELECT COUNT() FROM CronJobDetail WHERE Name LIKE :('%' + configA.Id) ] );
+        System.assertEquals( 0, [ SELECT COUNT() FROM CronJobDetail WHERE Name LIKE :('%' + configB.Id) ] );
 
     }
 

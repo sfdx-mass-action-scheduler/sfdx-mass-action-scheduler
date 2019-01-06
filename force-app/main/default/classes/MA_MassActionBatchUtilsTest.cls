@@ -161,7 +161,7 @@ private class MA_MassActionBatchUtilsTest {
 
         Test.stopTest();
 
-        System.assertEquals( 1, [ SELECT count() FROM Mass_Action_Log__c WHERE Mass_Action_Configuration__c = :config.Id ] );
+        System.assertEquals( 1, [ SELECT COUNT() FROM Mass_Action_Log__c WHERE Mass_Action_Configuration__c = :config.Id ] );
 
     }
 
@@ -184,7 +184,7 @@ private class MA_MassActionBatchUtilsTest {
 
         Test.stopTest();
 
-        System.assertEquals( 1, [ SELECT count() FROM Mass_Action_Log__c WHERE Mass_Action_Configuration__c = :config.Id AND Message__c = :job.ExtendedStatus ] );
+        System.assertEquals( 1, [ SELECT COUNT() FROM Mass_Action_Log__c WHERE Mass_Action_Configuration__c = :config.Id AND Message__c = :job.ExtendedStatus ] );
 
     }
 
