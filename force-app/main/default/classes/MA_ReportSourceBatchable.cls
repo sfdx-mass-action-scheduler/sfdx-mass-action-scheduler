@@ -24,9 +24,9 @@ public with sharing class MA_ReportSourceBatchable implements Database.Batchable
 
         this.config = MA_MassActionUtils.getConfiguration( this.configId );
 
-        this.reportDescribe = Reports.ReportManager.describeReport( config.source_report_id__c );
+        this.reportDescribe = Reports.ReportManager.describeReport( config.Source_Report_ID__c );
 
-        return new MA_ReportService.ReportRowIterator( this.config.source_report_id__c, this.config.source_report_column_name__c );
+        return new MA_ReportService.ReportRowIterator( this.config.Source_Report_ID__c, this.config.Source_Report_Column_Name__c );
     }
 
     public void execute( Database.BatchableContext context, List<Reports.ReportDetailRow> sourceRows ) {
@@ -37,7 +37,7 @@ public with sharing class MA_ReportSourceBatchable implements Database.Batchable
 
             List<Map<String, Object>> sourceRowMaps = convertReportRowsToMaps( sourceRows, this.reportDescribe );
 
-            List<Map<String, Object>> targetRowMaps = MA_MassActionUtils.buildActionInputs( sourceRowMaps, this.config.mass_action_mappings__r );
+            List<Map<String, Object>> targetRowMaps = MA_MassActionUtils.buildActionInputs( sourceRowMaps, this.config.Mass_Action_Mappings__r );
 
             MA_MassActionUtils.invokeAction( MA_MassActionUtils.getCalloutRestEndpointURL( this.config.Named_Credential__c ), this.config, targetRowMaps );
 
@@ -77,18 +77,71 @@ public with sharing class MA_ReportSourceBatchable implements Database.Batchable
         Map<String, Object> rowMap = new Map<String, Object>();
 
         List<String> columnNames = reportDescribe.getReportMetadata().getDetailColumns();
-
+        Map<String,Reports.DetailColumn> detailColumnsMap = reportDescribe.getReportExtendedMetadata().getDetailColumnInfo();
         List<Reports.ReportDataCell> dataCells = rowData.getDataCells();
 
         for ( Integer i = 0; i < columnNames.size(); i++ ) {
 
+            String columnName = columnNames[i];
             Reports.ReportDataCell dataCell = dataCells[i];
+            Reports.DetailColumn detailColumn = detailColumnsMap.get( columnName );
 
-            // a report row data cell's value typically is either the record id, picklist value, or null
-            // the label has the actual data that is displayed in the report
-            // if the cell value is null then the label is actually a placeholder hyphen '-' so we check for that to remain null
-            // so that we don't inadvertently pass a non-null value into target actions when the value truly is null
-            rowMap.put( columnNames[i], ( dataCell.getValue() != null ? dataCell.getLabel() : null ) );
+            Object cellValue = null;
+
+            switch on ( detailColumn.getDataType() ) {
+
+                when BOOLEAN_DATA {
+                    // important to grab the value and not the label
+                    // otherwise get the text literal "true"/false
+                    // instead of the boolean true/false
+                    // which led to https://github.com/douglascayers/sfdx-mass-action-scheduler/issues/64
+                    cellValue = dataCell.getValue();
+                }
+
+                when DATE_DATA {
+                    // important to grab the value and not the label
+                    // because label will be formatted in running user's locale
+                    // and will fail to map to date inputs on target action
+                    cellValue = dataCell.getValue();
+                }
+
+                when DATETIME_DATA {
+                    // important to grab the value and not the label
+                    // because label will be formatted in running user's locale
+                    // and will fail to map to date inputs on target action
+                    cellValue = dataCell.getValue();
+                }
+
+                when CURRENCY_DATA {
+                    // grab the numerical amount instead
+                    // instead of the label which is text formatted with currency symbol
+                    // this allows the cell value to map to currency inputs on target action
+                    Reports.ReportCurrency currencyData = (Reports.ReportCurrency) dataCell.getValue();
+                    cellValue = currencyData.getAmount();
+                }
+
+                when INT_DATA {
+                    cellValue = dataCell.getValue();
+                }
+
+                when DOUBLE_DATA {
+                    cellValue = dataCell.getValue();
+                }
+
+                when PERCENT_DATA {
+                    cellValue = dataCell.getValue();
+                }
+
+                when else {
+                    // otherwise, use the display label
+                    // this is important for Name field columns
+                    // so you get the record's name and not its id
+                    cellValue = dataCell.getLabel();
+                }
+
+            }
+
+            rowMap.put( columnName, cellValue );
 
         }
 
