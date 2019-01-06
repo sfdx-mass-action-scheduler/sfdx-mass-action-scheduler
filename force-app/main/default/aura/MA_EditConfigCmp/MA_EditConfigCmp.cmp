@@ -295,10 +295,10 @@ License: BSD 3-Clause License
                                             As when using Data Loader, you may need to reduce the batch size to stay within <a href="https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm" target="_blank">governor limits</a>.
                                         </p>
                                         <p>
-                                            <b>Named Credential</b> is optional and is a way to <a href="https://github.com/douglascayers/sfdx-mass-action-scheduler/wiki/Specify-the-Context-User-via-Named-Credentials" target="_blank">specify the context user</a> performing the actions.
+                                            <b>Named Credential</b> is optional and is a way to <a href="https://github.com/douglascayers/sfdx-mass-action-scheduler/wiki/Specify-the-Running-User-via-Named-Credentials" target="_blank">specify the running user</a> performing the actions.
                                             That is to say the user who has their name stamped as the "Last Modified By" on any updated records
                                             by the target action from the Choose Action step.
-                                            If not specified, then the user who last activates the configuration, or who manually runs it, is the context user.
+                                            If not specified, then the user who last activates the configuration, or who manually runs it, is the running user.
                                         </p>
                                     </aura:set>
 

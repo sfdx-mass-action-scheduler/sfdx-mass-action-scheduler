@@ -94,7 +94,7 @@ License: BSD 3-Clause License
                     .then( $A.getCallback( function( namedCredentials ) {
 
                         var emptyOption = {
-                            'label': 'None',
+                            'label': '--None--',
                             'value': null
                         };
 
