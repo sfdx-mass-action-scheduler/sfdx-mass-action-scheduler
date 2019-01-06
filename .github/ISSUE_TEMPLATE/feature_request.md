@@ -2,8 +2,8 @@
 name: Feature request
 about: Suggest an idea for this project
 title: ''
-labels: "discussion \U0001F4AC"
-assignees: douglascayers
+labels: enhancement ✨
+assignees: ''
 
 ---
 
