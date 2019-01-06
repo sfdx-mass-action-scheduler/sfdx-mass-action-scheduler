@@ -171,11 +171,18 @@ public inherited sharing class MA_MassActionUtils {
         System.debug( 'baseURL: ' + baseURL );
         System.debug( 'listViewId: ' + listViewId );
 
-        ListView listView = [ SELECT id, sobjectType FROM ListView WHERE id = :listViewId LIMIT 1 ];
+        List<ListView> listViews = new List<ListView>([ SELECT id, sobjectType FROM ListView WHERE id = :listViewId LIMIT 1 ]);
+        if ( listViews.isEmpty() ) {
+            // provide a more helpful message than the default
+            // System.QueryException: List has no rows for assignment to SObject
+            throw MA_Exceptions.buildException( NoDataFoundException.class, 'No List View found for id: ' + listViewId + '. Ensure the list view exists and is shared to the running user ' + UserInfo.getUserName() );
+        }
+
+        ListView lv = listViews[0];
 
         String endpoint = String.format(
             '{0}/sobjects/{1}/listviews/{2}/describe',
-            new String[] { baseURL, listView.sobjectType, listView.id }
+            new String[] { baseURL, lv.sobjectType, lv.id }
         );
 
         HttpRequest req = new HttpRequest();
@@ -219,11 +226,11 @@ public inherited sharing class MA_MassActionUtils {
 
             for ( Mass_Action_Mapping__c mapping : mappings ) {
 
-                if ( !sourceRowLowerCaseKeyMap.containsKey( mapping.source_field_name__c.toLowerCase() ) ) {
-                    throw new MA_Exceptions.NoSourceFieldException( sourceRow, mapping.source_field_name__c );
+                if ( !sourceRowLowerCaseKeyMap.containsKey( mapping.Source_Field_Name__c.toLowerCase() ) ) {
+                    throw new MA_Exceptions.NoSourceFieldException( sourceRow, mapping.Source_Field_Name__c );
                 }
 
-                targetRow.put( mapping.target_field_name__c, sourceRowLowerCaseKeyMap.get( mapping.source_field_name__c.toLowerCase() ) );
+                targetRow.put( mapping.target_field_name__c, sourceRowLowerCaseKeyMap.get( mapping.Source_Field_Name__c.toLowerCase() ) );
 
             }
 
