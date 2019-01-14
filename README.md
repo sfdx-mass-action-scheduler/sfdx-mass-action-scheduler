@@ -115,6 +115,7 @@ Release 2.0 (current)
 _Due to Lightning Experience web page caching, please log out and log back in after installing the package for UI changes to appear._
 
 * Install Package ([Production](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tf4000003vWNm)) ([Sandbox](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tf4000003vWNm))
+* [Announcement](https://douglascayers.com/2019/01/02/mass-action-scheduler-2-0/)
 * [Release Notes](https://github.com/douglascayers/sfdx-mass-action-scheduler/wiki/Upgrading-to-Release-2.0)
 * [Closed Issues](https://github.com/douglascayers/sfdx-mass-action-scheduler/milestone/5?closed=1)
 * [Archived Releases](https://github.com/douglascayers/sfdx-mass-action-scheduler/milestones?state=closed)
