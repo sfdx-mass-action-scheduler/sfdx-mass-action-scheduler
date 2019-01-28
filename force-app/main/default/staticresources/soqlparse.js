@@ -11,7 +11,13 @@
  * View this file at:
  * https://raw.githubusercontent.com/stomita/soql-parse/008fd25e4447c1eb941f2710155a59cabdc978fd/dist/soql-parse.js
  *
- * Note, at the very end of this file, I add one more line to share JavaScript code with Lightning components:
+ * Further edits by me:
+ * I also commented out the peg$subclass function so that customers can
+ * enable "Freeze JavaScript Prototypes" setting. I did not notice any negative
+ * effects by doing this. ¯\_(ツ)_/¯
+ * https://github.com/pegjs/pegjs/issues/599
+ *
+ * At the very end of this file, I add one more line to share JavaScript code with Lightning components:
  * window.SOQLParse = SOQLParse;
  */
 
@@ -95,9 +101,10 @@ var SOQLParse =
 
 
 function peg$subclass(child, parent) {
-  function ctor() { this.constructor = child; }
-  ctor.prototype = parent.prototype;
-  child.prototype = new ctor();
+  // Commented out so file loads if customer enables "Freeze JavaScript Prototypes" setting.
+  // function ctor() { this.constructor = child; }
+  // ctor.prototype = parent.prototype;
+  // child.prototype = new ctor();
 }
 
 function peg$SyntaxError(message, expected, found, location) {
@@ -6015,6 +6022,5 @@ module.exports = {
 /***/ })
 /******/ ]);
 
-// Note, you must disable "Freeze JavaScript Prototypes" in Session Settings for this to work.
 // https://developer.salesforce.com/docs/atlas.en-us.lightning.meta/lightning/security_share_code.htm
 window.SOQLParse = SOQLParse;

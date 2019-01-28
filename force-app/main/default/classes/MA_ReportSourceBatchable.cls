@@ -86,66 +86,97 @@ public with sharing class MA_ReportSourceBatchable implements Database.Batchable
             Reports.ReportDataCell dataCell = dataCells[i];
             Reports.DetailColumn detailColumn = detailColumnsMap.get( columnName );
 
-            Object cellValue = null;
-
-            switch on ( detailColumn.getDataType() ) {
-
-                when BOOLEAN_DATA {
-                    // important to grab the value and not the label
-                    // otherwise get the text literal "true"/false
-                    // instead of the boolean true/false
-                    // which led to https://github.com/douglascayers/sfdx-mass-action-scheduler/issues/64
-                    cellValue = dataCell.getValue();
-                }
-
-                when DATE_DATA {
-                    // important to grab the value and not the label
-                    // because label will be formatted in running user's locale
-                    // and will fail to map to date inputs on target action
-                    cellValue = dataCell.getValue();
-                }
-
-                when DATETIME_DATA {
-                    // important to grab the value and not the label
-                    // because label will be formatted in running user's locale
-                    // and will fail to map to date inputs on target action
-                    cellValue = dataCell.getValue();
-                }
-
-                when CURRENCY_DATA {
-                    // grab the numerical amount instead
-                    // instead of the label which is text formatted with currency symbol
-                    // this allows the cell value to map to currency inputs on target action
-                    Reports.ReportCurrency currencyData = (Reports.ReportCurrency) dataCell.getValue();
-                    cellValue = currencyData.getAmount();
-                }
-
-                when INT_DATA {
-                    cellValue = dataCell.getValue();
-                }
-
-                when DOUBLE_DATA {
-                    cellValue = dataCell.getValue();
-                }
-
-                when PERCENT_DATA {
-                    cellValue = dataCell.getValue();
-                }
-
-                when else {
-                    // otherwise, use the display label
-                    // this is important for Name field columns
-                    // so you get the record's name and not its id
-                    cellValue = dataCell.getLabel();
-                }
-
-            }
+            Object cellValue = extractCellValue( dataCell.getLabel(), dataCell.getValue(), detailColumn.getDataType() );
 
             rowMap.put( columnName, cellValue );
 
         }
 
         return rowMap;
+    }
+
+    /**
+     * Returns the raw value from the cell based on the column data type
+     * and not simply the localized value displayed to the user.
+     *
+     * For example, consistently return a DateTime object and not
+     * "January 3rd, 2019" or "03/01/2019" as Strings depending on the user's locale.
+     *
+     * To aid in testability, this method accepts as arguments the simple properties of Reports.ReportDataCell
+     * because that object cannot be mocked or spoofed via JSON deserialization.
+     *
+     * @param cellLabel
+     *      The localized value the user sees in the report
+     * @param cellValue
+     *      The raw value, might be a compound type like Reports.ReportCurrency
+     * @param columnDataType
+     *      Enum of the different data types the column value could represent
+     *
+     * @return The value to use when binding to invocable action inputs,
+     *         which might be the `cellLabel`, `cellValue`, or a property off
+     *         the complex-type `cellValue` like currency amount without the symbol.
+     */
+    @TestVisible
+    private static Object extractCellValue( String cellLabel, Object cellValue, Reports.ColumnDataType columnDataType ) {
+
+        Object extractedValue = null;
+
+            switch on ( columnDataType ) {
+
+                when BOOLEAN_DATA {
+                    // important to grab the value and not the label
+                    // otherwise get the text literal "true"/false
+                    // instead of the boolean true/false
+                    // which led to https://github.com/douglascayers/sfdx-mass-action-scheduler/issues/64
+                    extractedValue = cellValue;
+                }
+
+                when DATE_DATA {
+                    // important to grab the value and not the label
+                    // because label will be formatted in running user's locale
+                    // and will fail to map to date inputs on target action
+                    extractedValue = cellValue;
+                }
+
+                when DATETIME_DATA {
+                    // important to grab the value and not the label
+                    // because label will be formatted in running user's locale
+                    // and will fail to map to date inputs on target action
+                    extractedValue = cellValue;
+                }
+
+                when CURRENCY_DATA {
+                    // grab the numerical amount instead
+                    // instead of the label which is text formatted with currency symbol
+                    // this allows the cell value to map to currency inputs on target action
+                    Reports.ReportCurrency currencyData = (Reports.ReportCurrency) cellValue;
+                    if ( currencyData != null ) {
+                        extractedValue = currencyData.getAmount();
+                    }
+                }
+
+                when INT_DATA {
+                    extractedValue = cellValue;
+                }
+
+                when DOUBLE_DATA {
+                    extractedValue = cellValue;
+                }
+
+                when PERCENT_DATA {
+                    extractedValue = cellValue;
+                }
+
+                when else {
+                    // otherwise, use the display label
+                    // this is important for Name field columns
+                    // so you get the record's name and not its id
+                    extractedValue = cellLabel;
+                }
+
+            }
+
+        return extractedValue;
     }
 
 }

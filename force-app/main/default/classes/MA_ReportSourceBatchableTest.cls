@@ -124,6 +124,38 @@ private class MA_ReportSourceBatchableTest {
 
     }
 
+    @IsTest
+    static void test_extract_cell_value() {
+
+        Test.startTest();
+
+        System.assertEquals( true, MA_ReportSourceBatchable.extractCellValue( 'booleanCell', true, Reports.ColumnDataType.BOOLEAN_DATA ) );
+        System.assertEquals( false, MA_ReportSourceBatchable.extractCellValue( 'booleanCell', false, Reports.ColumnDataType.BOOLEAN_DATA ) );
+        System.assertEquals( 'booleanCell', MA_ReportSourceBatchable.extractCellValue( 'booleanCell', true, Reports.ColumnDataType.STRING_DATA ) );
+
+        System.assertEquals( Date.today(), MA_ReportSourceBatchable.extractCellValue( 'January 3rd, 2019', Date.today(), Reports.ColumnDataType.DATE_DATA ) );
+        System.assertEquals( 'January 3rd, 2019', MA_ReportSourceBatchable.extractCellValue( 'January 3rd, 2019', Date.today(), Reports.ColumnDataType.STRING_DATA ) );
+
+        System.assertEquals( DateTime.now(), MA_ReportSourceBatchable.extractCellValue( 'January 3rd, 2019 4:30 PM', DateTime.now(), Reports.ColumnDataType.DATETIME_DATA ) );
+        System.assertEquals( 'January 3rd, 2019 4:30 PM', MA_ReportSourceBatchable.extractCellValue( 'January 3rd, 2019 4:30 PM', DateTime.now(), Reports.ColumnDataType.STRING_DATA ) );
+
+        Reports.ReportCurrency currencyAmount = (Reports.ReportCurrency) JSON.deserialize( '{ "currencyCode" : "$", "amount" : 12.34 }', Reports.ReportCurrency.class );
+        System.assertEquals( (Decimal) 12.34, MA_ReportSourceBatchable.extractCellValue( '$12.34', currencyAmount, Reports.ColumnDataType.CURRENCY_DATA ) );
+        System.assertEquals( '$12.34', MA_ReportSourceBatchable.extractCellValue( '$12.34', currencyAmount, Reports.ColumnDataType.STRING_DATA ) );
+
+        System.assertEquals( (Integer) 12, MA_ReportSourceBatchable.extractCellValue( '12', 12, Reports.ColumnDataType.INT_DATA ) );
+        System.assertEquals( '12', MA_ReportSourceBatchable.extractCellValue( '12', 12, Reports.ColumnDataType.STRING_DATA ) );
+
+        System.assertEquals( (Double) 12.34, MA_ReportSourceBatchable.extractCellValue( '12.34', 12.34, Reports.ColumnDataType.DOUBLE_DATA ) );
+        System.assertEquals( '12.34', MA_ReportSourceBatchable.extractCellValue( '12.34', 12.34, Reports.ColumnDataType.STRING_DATA ) );
+
+        System.assertEquals( (Double) 0.25, MA_ReportSourceBatchable.extractCellValue( '25%', 0.25, Reports.ColumnDataType.PERCENT_DATA ) );
+        System.assertEquals( '25%', MA_ReportSourceBatchable.extractCellValue( '25%', 0.25, Reports.ColumnDataType.STRING_DATA ) );
+
+        Test.stopTest();
+
+    }
+
 }
 /*
 BSD 3-Clause License
