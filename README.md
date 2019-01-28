@@ -39,7 +39,8 @@ Identify the records you want to process with list views, tabular reports, or a 
 |-------------------|-------------|
 | **List Views**    | Simple filters. For up to 50 million records. |
 | **Reports**       | Complex filters like [Cross Filters](https://help.salesforce.com/articleView?id=reports_cross_filters_create.htm&type=5). For up to [~10 thousand records](https://github.com/douglascayers/sfdc-add-campaign-members-by-report/issues/17#issuecomment-332382142). |
-| **SOQL**          | You know exactly what you want to query and don't want to create a list view or report. For up to 50 million records. |    
+| **SOQL**          | You know exactly what you want to query and don't want to create a list view or report. For up to 50 million records. |
+| **Apex**          | Bring your own class that implements `Iterable<Map<String, Object>>` if your data is derived from multiple queries or you need to make http callouts to external web services or other custom logic. For up to 50 million records. |
 
 
 Actions
@@ -75,6 +76,7 @@ What you can do with Mass Action Scheduler
 
 I'm sure you will think of all kinds of ideas how you can use this app. Here are a few ideas:
 * Run a process monthly, maybe to create a record or callout to an external system
+* Regularly call out to an external system to obtain data to process in Salesforce
 * Run data correction actions daily, such as updating or deleting records 
 * Automatically add leads and contacts to campaigns based on report or list view criteria
 * Send emails on a periodic basis
@@ -106,7 +108,7 @@ Maintaining and developing new features takes a considerable amount of time. If 
 your support](https://douglascayers.com/thanks-for-your-support/) by contributing to my [virtual tip jar on PayPal](https://www.paypal.me/douglascayers/). Thank you! ❤️
 
 
-Release 2.0 (current)
+Release 2.1 (current)
 -----------
 
 _Due to Lightning Experience web page caching, please log out and log back in after installing the package for UI changes to appear._
