@@ -1,7 +1,7 @@
 <!--
 Author: Doug Ayers
 Website: https://douglascayers.com
-GitHub: https://github.com/douglascayers/sfdx-mass-action-scheduler
+GitHub: https://github.com/douglascayers/sfdx-lightning-api-component
 License: BSD 3-Clause License
 -->
 <aura:component controller="LC_URLController">
@@ -11,7 +11,9 @@ License: BSD 3-Clause License
         https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_methods_system_url.htm
      -->
 
-    <aura:method name="getUrlInfoAsync" action="{!c.getUrlInfoAsync}"/>
+    <c:lax context="{!this}"/>
+
+    <aura:method name="getUrlInfo" action="{!c.onGetUrlInfo}"/>
 
 </aura:component>
 <!--

@@ -1,12 +1,12 @@
 /*
 Author: Doug Ayers
 Website: https://douglascayers.com
-GitHub: https://github.com/douglascayers/sfdx-mass-action-scheduler
+GitHub: https://github.com/douglascayers/sfdx-lightning-api-component
 License: BSD 3-Clause License
  */
 ({
-    getUrlInfoAsync: function( component, event, helper ) {
-        return helper.makeApexRequest( component, 'c.getUrlInfo', {}, { storable: true } );
+    onGetUrlInfo: function( component, event, helper ) {
+        return component.lax.enqueue( 'c.getUrlInfo' );
     }
 })
 /*

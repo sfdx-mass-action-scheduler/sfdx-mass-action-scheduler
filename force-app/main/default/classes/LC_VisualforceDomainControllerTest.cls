@@ -7,6 +7,25 @@ License: BSD 3-Clause License
 @IsTest
 private class LC_VisualforceDomainControllerTest {
 
+    // Aura Component
+
+    @IsTest
+    static void test_get_visualforce_domain_url() {
+
+        Test.startTest();
+
+        String vfDomainURL = LC_VisualforceDomainController.getVisualforceDomainURL();
+
+        System.assertEquals( 'https://visualforce.com', vfDomainURL );
+
+        Test.stopTest();
+
+    }
+
+    // -----------------------------------------------------------------------------
+
+    // Visualforce Page
+
     @IsTest
     static void test_get_domain_url() {
 

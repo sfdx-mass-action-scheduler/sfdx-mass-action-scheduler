@@ -777,7 +777,7 @@ License: BSD 3-Clause License
                             .then( $A.getCallback( function( result ) {
 
                                 var parseResult = window.SOQLParse.parse( query );
-                                console.log( JSON.stringify( parseResult, null, 2 ) );
+                                // console.log( JSON.stringify( parseResult, null, 2 ) );
 
                                 for ( var i = 0; i < parseResult.fields.length; i++ ) {
                                     var field = parseResult.fields[i];
@@ -1030,7 +1030,7 @@ License: BSD 3-Clause License
                 var urlInfo = component.get( 'v.urlInfo' );
 
                 if ( helper.isEmpty( urlInfo ) ) {
-                    return component.find( 'lc_url' ).getUrlInfoAsync();
+                    return component.find( 'lc_url' ).getUrlInfo();
                 } else {
                     return urlInfo;
                 }
@@ -1042,11 +1042,9 @@ License: BSD 3-Clause License
                 var nsslash = ( urlInfo.namespace ? urlInfo.namespace + '/' : '' );
 
                 return component.find( 'lc_api' ).restRequest({
-
                     'url' : urlInfo.orgDomainURL + '/services/apexrest/' + nsslash + 'config/edit?operation=' + operation,
                     'method' : 'POST',
                     'body' : JSON.stringify( ( params || {} ) )
-
                 });
 
             })).then( $A.getCallback( function( response ) {

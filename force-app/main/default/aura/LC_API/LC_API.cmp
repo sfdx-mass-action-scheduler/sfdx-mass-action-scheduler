@@ -4,7 +4,7 @@ Website: https://douglascayers.com
 GitHub: https://github.com/douglascayers/sfdx-lightning-api-component
 License: BSD 3-Clause License
  -->
-<aura:component controller="LC_APIController">
+<aura:component controller="LC_VisualforceDomainController">
 
     <ltng:require scripts="{!$Resource.postmate}"
                   afterScriptsLoaded="{!c.onScriptsLoaded}"/>
