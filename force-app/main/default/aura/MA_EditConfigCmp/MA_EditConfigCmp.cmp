@@ -335,6 +335,11 @@ License: BSD 3-Clause License
                                             <b>SOQL</b> queries are an advanced technique to search for specific records. Simple queries can be helpful when you don't want to deal with the overhead of creating a list view or a report.
                                             Learn how to write SOQL queries with the <a href="https://trailhead.salesforce.com/en/content/learn/modules/apex_database/apex_database_soql?trail_id=force_com_dev_beginner" target="_blank">Write SOQL Queries</a> unit on Trailhead.
                                         </p>
+                                        <p>
+                                            <b>Apex</b> classes that implement <code>Iterable&lt;Map&lt;String, Object&gt;&gt;</code> are an advanced technique that give you full control over what the source data is.
+                                            For example, if you need to make multiple SOQL queries, apply complex data filtering, or retrieve data from an external web service with http callouts.
+                                            Learn how to develop custom iterators with the <a href="https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_iterable.htm" target="_blank">Apex Developer Guide</a>.
+                                        </p>
                                     </aura:set>
 
                                     <aura:set attribute="rightTitle" value="Guidance"/>
@@ -345,7 +350,7 @@ License: BSD 3-Clause License
                                                 <b>Stay within limits</b>. If your source type would return more than its record limit then either modify filters to reduce the row count or use a different source type.
                                                 For example, a report that returns 30 thousand records would need to be split into three smaller reports or switch to another source type.
                                             </p>
-                                            <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                                            <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered">
                                                 <thead>
                                                     <tr class="slds-line-height_reset">
                                                         <th class="slds-text-title_caps slds-cell-wrap">Source Type</th>
@@ -354,13 +359,13 @@ License: BSD 3-Clause License
                                                 </thead>
                                                 <tbody>
                                                     <tr>
-                                                        <td class="slds-cell-wrap">List Views</td>
-                                                        <td class="slds-cell-wrap">Up to 50 million records</td>
+                                                        <td class="slds-cell-wrap"><b>List Views</b></td>
+                                                        <td class="slds-cell-wrap">Up to 50 million records.</td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="slds-cell-wrap">Reports</td>
+                                                        <td class="slds-cell-wrap"><b>Reports</b></td>
                                                         <td class="slds-cell-wrap">
-                                                            Up to 10 thousand records
+                                                            Up to 10 thousand records.
                                                             <br/>
                                                             <a href="https://help.salesforce.com/articleView?id=reports_changing_format.htm" target="_blank">Tabular report format</a> only.
                                                             <br/>
@@ -368,8 +373,16 @@ License: BSD 3-Clause License
                                                         </td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="slds-cell-wrap">SOQL</td>
-                                                        <td class="slds-cell-wrap">Up to 50 million records</td>
+                                                        <td class="slds-cell-wrap"><b>SOQL</b></td>
+                                                        <td class="slds-cell-wrap">Up to 50 million records.</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="slds-cell-wrap"><b>Apex</b></td>
+                                                        <td class="slds-cell-wrap">
+                                                            Up to 50 million records.
+                                                            <br/>
+                                                            Class must implement <code>Iterable&lt;Map&lt;String, Object&gt;&gt;</code> and provide a no-argument constructor.
+                                                        </td>
                                                     </tr>
                                                 </tbody>
                                             </table>
