@@ -23,7 +23,7 @@ Documentation and Discussion
 --------------------------
 
 * For discussion and feedback [post in the community group](https://success.salesforce.com/_ui/core/chatter/groups/GroupProfilePage?g=0F93A000000LhvN) or raise well defined issues and ideas via the [Issues feature](https://github.com/douglascayers/sfdx-mass-action-scheduler/issues).
-* Watch my [Automation Hour webinar](https://youtu.be/XYBKrrXgBxA?list=PL-oxrNbxQl3-Wp8k-z3pa2y_VOw88TMfw) introducing the tool and demos.
+* Watch my [Automation Hour webinar](https://youtu.be/XYBKrrXgBxA?list=PL-oxrNbxQl3-Wp8k-z3pa2y_VOw88TMfw) introducing the tool and demos (UI in the video is out of date, but concepts are solid).
 * Read the [wiki page](https://github.com/douglascayers/sfdx-mass-action-scheduler/wiki) for further documentation on Mass Action Scheduler.
 * Read the [FAQ page](https://github.com/douglascayers/sfdx-mass-action-scheduler/wiki/Frequently-Asked-Questions) to help troubleshoot technical issues.
 
@@ -75,7 +75,7 @@ What you can do with Mass Action Scheduler
 
 I'm sure you will think of all kinds of ideas how you can use this app. Here are a few ideas:
 * Run a process monthly, maybe to create a record or callout to an external system
-* Run data correction actions daily
+* Run data correction actions daily, such as updating or deleting records 
 * Automatically add leads and contacts to campaigns based on report or list view criteria
 * Send emails on a periodic basis
 * Create "infinite" flows that continuously loop on a schedule
@@ -91,10 +91,6 @@ There are a few items you need to setup before installing and using this app.
 
 1. You will need to use [Lightning Experience](https://trailhead.salesforce.com/en/content/learn/modules/lex_migration_introduction) because we are using Lightning Components.
 2. You will need to enable [My Domain](https://trailhead.salesforce.com/en/content/learn/modules/identity_login/identity_login_my_domain) because we are using Lightning Components.
-3. You will need to disable [Freeze JavaScript Prototypes](https://developer.salesforce.com/docs/atlas.en-us.lightning.meta/lightning/security_freeze_prototypes.htm) because we [share JavaScript code](https://developer.salesforce.com/docs/atlas.en-us.lightning.meta/lightning/security_share_code.htm) using static resources.
-    * From Setup, enter `session` in the Quick Find box, then click **Session Settings**.
-    * Uncheck **Freeze JavaScript Prototypes** and click **Save**.
-    * For a technical explanation on why this is needed, read my [blog post](https://douglascayers.com/2018/12/30/sharing-javascript-code-in-lightning-aura-components-and-freezing-javascript-prototypes/).
 
 Please see the [instructions in the wiki](https://github.com/douglascayers/sfdx-mass-action-scheduler/wiki/Pre-Requisites-Instructions) for screen shots and step-by-steps.
 
@@ -109,14 +105,15 @@ Mass Action Scheduler is an open source project. It's an independent project wit
 Maintaining and developing new features takes a considerable amount of time. If your business has found value in my projects, please consider [showing
 your support](https://douglascayers.com/thanks-for-your-support/) by contributing to my [virtual tip jar on PayPal](https://www.paypal.me/douglascayers/). Thank you! ❤️
 
+
 Release 2.0 (current)
 -----------
 
 _Due to Lightning Experience web page caching, please log out and log back in after installing the package for UI changes to appear._
 
-* Install Package ([Production](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tf4000003vWNm)) ([Sandbox](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tf4000003vWNm))
-* [Release Notes](https://github.com/douglascayers/sfdx-mass-action-scheduler/wiki/Upgrading-to-Release-2.0)
-* [Closed Issues](https://github.com/douglascayers/sfdx-mass-action-scheduler/milestone/5?closed=1)
+* Install Package ([Production](https://login.salesforce.com/packaging/installPackage.apexp?p0=???)) ([Sandbox](https://test.salesforce.com/packaging/installPackage.apexp?p0=???))
+* [Release Notes](https://github.com/douglascayers/sfdx-mass-action-scheduler/wiki/Upgrading-to-Release-2.1)
+* [Closed Issues](https://github.com/douglascayers/sfdx-mass-action-scheduler/milestone/6?closed=1)
 * [Archived Releases](https://github.com/douglascayers/sfdx-mass-action-scheduler/milestones?state=closed)
 
 ---
@@ -158,6 +155,18 @@ Assign the permission set to your user.
 sfdx force:user:permset:assign -n Mass_Action_Admin
 ```
 
+Create a test account, only required for the report tests.
+
+```
+sfdx force:data:record:create --sobjecttype Account --values "Name='dca_mass_action: MA Test Account'"
+``` 
+
+Run unit tests.
+
+```
+sfdx force:apex:test:run --codecoverage --resultformat human --wait 10
+```
+
 Open the scratch org and enjoy!
 
 ```
@@ -170,13 +179,14 @@ Credits
 
 [Doug Ayers](https://douglascayers.com) develops and maintains the project.
 
-[Appiphony](http://www.lightningstrike.io) for developing the Strike Wizard component.
+[Appiphony](http://www.lightningstrike.io) for developing the Strike Wizard component based on Lightning Design System [Path blueprint](https://www.lightningdesignsystem.com/components/path/).
 
-[Salesforce Foundation](https://github.com/SalesforceFoundation/CampaignTools) for developing tools for querying Salesforce Reports API.
+[Salesforce Foundation](https://github.com/SalesforceFoundation/CampaignTools) for developing tools for querying Salesforce Reports API in Apex.
 
-[Shinichi Tomita](https://jsforce.github.io/) for developing jsforce library for easy use of Salesforce APIs.
+[Shinichi Tomita](https://jsforce.github.io/) for developing jsforce and soql-parse libraries for easy use of Salesforce REST APIs in JavaScript.
 
 [jQuery](https://jquery.com/) for developing jQuery library.
+
 
 License
 =======

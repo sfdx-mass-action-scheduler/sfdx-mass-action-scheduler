@@ -4,65 +4,84 @@ Website: https://douglascayers.com
 GitHub: https://github.com/douglascayers/sfdx-lightning-api-component
 License: BSD 3-Clause License
  -->
-<apex:page >
+<!--
+    For performance, turn off as much of the normal Salesforce page content.
+ -->
+<apex:page applyHtmlTag="false"
+           applyBodyTag="false"
+           showHeader="false"
+           showChat="false"
+           standardStylesheets="false"
+           sideBar="false"
+           docType="html-5.0">
 
-    <apex:includeScript value="{!$Resource.postmate}"/>
-    <apex:includeScript value="{!$Resource.jsforce}"/>
+<html>
 
-    <script>
+    <head>
+        <apex:includeScript value="{!$Resource.postmate}"/>
+        <apex:includeScript value="{!$Resource.jsforce}"/>
+    </head>
 
-        var conn = new jsforce.Connection({ accessToken: '{!$Api.Session_Id}', version: '44.0' });
+    <body>
 
-        var _restRequest;
+        <script>
 
-        // Expose your model to the Parent. Property values may be functions, promises, or regular values
-        const handshake = new Postmate.Model({
+            var conn = new jsforce.Connection({ accessToken: '{!$Api.Session_Id}', version: '44.0' });
 
-            restRequest : function( request ) {
-                _restRequest = request;
-            },
+            var _restRequest;
 
-            restResponse : function() {
-                return new Promise( function( resolve, reject ) {
-                    conn.request( _restRequest ).then( function( response ) {
-                        resolve({
-                            success: true,
-                            data: response
+            // Expose your model to the Parent. Property values may be functions, promises, or regular values
+            const handshake = new Postmate.Model({
+
+                restRequest : function( request ) {
+                    _restRequest = request;
+                },
+
+                restResponse : function() {
+                    return new Promise( function( resolve, reject ) {
+                        conn.request( _restRequest ).then( function( response ) {
+                            resolve({
+                                success: true,
+                                data: response
+                            });
+                        }).catch( function( err ) {
+                            // Have to resolve because if reject
+                            // then whole post message operation fails,
+                            // so wrapping our response with our own
+                            // success flag to denote if any errors.
+                            try {
+                                // If the server's response body was JSON but the status code
+                                // indicated an error, the response body is treated
+                                // as a string and set to Error.message property.
+                                // To propogate the original JSON payload as JSON then
+                                // we do JSON.parse here. If the parse fails then
+                                // just resolve with the Error.message string anyways.
+                                resolve({
+                                    success: false,
+                                    data: JSON.parse( err.message )
+                                });
+                            } catch ( e ) {
+                                resolve({
+                                    success: false,
+                                    data: err.message // postMessage cannot deserialize the Error object, so pick off the message
+                                });
+                            }
                         });
-                    }).catch( function( err ) {
-                        // Have to resolve because if reject
-                        // then whole post message operation fails,
-                        // so wrapping our response with our own
-                        // success flag to denote if any errors.
-                        try {
-                            // If the server's response body was JSON but the status code
-                            // indicated an error, the response body is treated
-                            // as a string and set to Error.message property.
-                            // To propogate the original JSON payload as JSON then
-                            // we do JSON.parse here. If the parse fails then
-                            // just resolve with the Error.message string anyways.
-                            resolve({
-                                success: false,
-                                data: JSON.parse( err.message )
-                            });
-                        } catch ( e ) {
-                            resolve({
-                                success: false,
-                                data: err.message // postMessage cannot deserialize the Error object, so pick off the message
-                            });
-                        }
                     });
-                });
-            }
+                }
 
-        });
+            });
 
-        // When parent <-> child handshake is complete, events may be emitted to the parent
-        handshake.then( function( parent ) {
+            // When parent <-> child handshake is complete, events may be emitted to the parent
+            handshake.then( function( parent ) {
 
-        });
+            });
 
-    </script>
+        </script>
+
+    </body>
+
+</html>
 
 </apex:page>
 <!--
