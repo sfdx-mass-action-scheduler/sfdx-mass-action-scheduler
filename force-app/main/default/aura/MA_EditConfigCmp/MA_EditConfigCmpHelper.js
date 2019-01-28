@@ -203,12 +203,16 @@ License: BSD 3-Clause License
 
                 if ( sourceType == 'Report' ) {
 
+                    component.set( 'v.sourceFieldsInputType', 'combobox' );
+
                     return helper.getReportColumnsAsync( component, sourceReportId )
                         .catch( $A.getCallback( function ( err ) {
                             throw new Error( 'Error getting report columns: ' + helper.unwrapAuraErrorMessage( err ) );
                         }));
 
                 } else if ( sourceType == 'ListView' ) {
+
+                    component.set( 'v.sourceFieldsInputType', 'combobox' );
 
                     return helper.getListViewColumnsAsync( component, sourceListViewId )
                         .catch( $A.getCallback( function ( err ) {
@@ -217,10 +221,18 @@ License: BSD 3-Clause License
 
                 } else if ( sourceType == 'SOQL' ) {
 
+                    component.set( 'v.sourceFieldsInputType', 'combobox' );
+
                     return helper.getSoqlQueryColumnsAsync( component, sourceSoqlQuery )
                         .catch( $A.getCallback( function ( err ) {
                             throw new Error( 'Error getting SOQL query columns: ' + helper.unwrapAuraErrorMessage( err ) );
                         }));
+
+                } else if ( sourceType == 'Apex' ) {
+
+                    component.set( 'v.sourceFieldsInputType', 'text' );
+
+                    return null;
 
                 }
 
@@ -301,6 +313,7 @@ License: BSD 3-Clause License
         var sourceTypeIsReport = ( sourceType === 'Report' );
         var sourceTypeIsListView = ( sourceType === 'ListView' );
         var sourceTypeIsSoqlQuery = ( sourceType === 'SOQL' );
+        var sourceTypeIsApex = ( sourceType === 'Apex' );
 
         var targetType = component.get( 'v.targetType' );
         var targetTypeIsFlows = ( targetType === 'Flow' );
@@ -407,6 +420,15 @@ License: BSD 3-Clause License
                             }
                             return inputValidity;
                         }));
+                        break;
+
+                    // Source: Apex Class
+
+                    case 'inputSourceApexClass':
+                        inputValidityAsync = Promise.resolve({
+                            'invalid': ( sourceTypeIsApex && ( inputIsEmpty || inputIsInvalid ) ),
+                            'messageWhenInvalid': messageWhenValueMissing
+                        });
                         break;
 
                     // Target

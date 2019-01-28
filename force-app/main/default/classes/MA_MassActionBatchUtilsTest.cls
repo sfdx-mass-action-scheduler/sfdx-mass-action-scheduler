@@ -143,6 +143,53 @@ private class MA_MassActionBatchUtilsTest {
     }
 
     @IsTest
+    static void test_enqueue_apex_job() {
+
+        Mass_Action_Configuration__c config = new Mass_Action_Configuration__c(
+            Name = 'Test Config',
+            DeveloperName__c = 'Test_Config',
+            Active__c = true,
+            Batch_Size__c = 200,
+            Named_Credential__c = 'Mass_Action_Test_Named_Credential',
+            Source_Type__c = 'Apex',
+            Source_Apex_Class__c = 'MA_MassActionBatchUtilsTest.TestIterable',
+            Target_Type__c = 'Workflow',
+            Target_SObject_Type__c = 'Account',
+            Schedule_Frequency__c = 'Manual'
+        );
+
+        insert config;
+
+        Mass_Action_Mapping__c configFieldMapping = new Mass_Action_Mapping__c(
+            Mass_Action_Configuration__c = config.Id,
+            Source_Field_Name__c = 'Id',
+            Target_Field_Name__c = 'ContextId'
+        );
+
+        insert configFieldMapping;
+
+        Test.setMock( HttpCalloutMock.class, new MA_HttpCalloutMock() );
+
+        Test.startTest();
+
+        ID jobId = MA_MassActionBatchUtils.enqueueAction( config.Id );
+        System.assertNotEquals( null, jobId );
+
+        Test.stopTest();
+
+        System.assertEquals( 1, [ SELECT COUNT() FROM AsyncApexJob WHERE Id = :jobId ] );
+
+    }
+
+    public class TestIterable implements Iterable<Map<String, Object>> {
+        public Iterator<Map<String, Object>> iterator() {
+            return new List<Map<String, Object>>{
+                new Map<String, Object>{ 'Id' => '001xxxxxxxxxxxx' }
+            }.iterator();
+        }
+    }
+
+    @IsTest
     static void test_log_job_exception() {
 
         Mass_Action_Configuration__c config = new Mass_Action_Configuration__c(

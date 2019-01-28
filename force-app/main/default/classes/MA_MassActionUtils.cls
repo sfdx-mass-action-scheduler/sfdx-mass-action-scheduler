@@ -68,6 +68,7 @@ public inherited sharing class MA_MassActionUtils {
                 Source_Report_Column_Name__c,
                 Source_List_View_ID__c,
                 Source_SOQL_Query__c,
+                Source_Apex_Class__c,
                 // target
                 Target_Type__c,
                 Target_SObject_Type__c,

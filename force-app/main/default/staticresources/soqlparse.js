@@ -15,7 +15,6 @@
  * I also commented out the peg$subclass function so that customers can
  * enable "Freeze JavaScript Prototypes" setting. I did not notice any negative
  * effects by doing this. ¯\_(ツ)_/¯
- * https://github.com/pegjs/pegjs/issues/599
  *
  * At the very end of this file, I add one more line to share JavaScript code with Lightning components:
  * window.SOQLParse = SOQLParse;

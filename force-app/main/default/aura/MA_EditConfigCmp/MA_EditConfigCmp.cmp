@@ -78,6 +78,11 @@ License: BSD 3-Clause License
                     type="Map[]"
                     description="During field mapping stage, these are the assignable source fields."/>
 
+    <aura:attribute name="sourceFieldsInputType"
+                    type="String"
+                    default="text"
+                    description="Input field variant for user to specify source field mappings. Options: TEXT, COMBOBOX"/>
+
     <!-- Source Type : Reports -->
 
     <aura:attribute name="sourceReportFolders"
@@ -815,6 +820,21 @@ License: BSD 3-Clause License
 
                             </aura:if>
 
+                            <aura:if isTrue="{!equals( v.sourceType, 'Apex' )}">
+
+                                <c:slds_label label="Apex Class"
+                                              helpText="{!v.objectDescribe.fields.Source_Apex_Class__c.helpText}"/>
+                                <lightning:input aura:id="inputSourceApexClass"
+                                    name="inputSourceApexClass"
+                                    variant="label-hidden"
+                                    label="{!v.objectDescribe.fields.Source_Apex_Class__c.label}"
+                                    value="{!v.record.sourceApexClass}"
+                                    required="true"
+                                    messageWhenValueMissing="Apex Class is required."
+                                    class="slds-p-top_x-small"/>
+
+                            </aura:if>
+
                             <aura:if isTrue="{!not(empty(v.sourceTypeURL))}">
 
                                 <div class="slds-form-element">
@@ -946,14 +966,30 @@ License: BSD 3-Clause License
                                 <tr>
                                     <td width="50%">
 
-                                        <lightning:combobox aura:id="inputMappingSourceFieldName"
-                                            name="inputMappingSourceFieldName"
-                                            label="{!targetFieldMapping.targetField.label}"
-                                            variant="label-hidden"
-                                            value="{!targetFieldMapping.sourceFieldName}"
-                                            options="{!v.sourceFields}"
-                                            placeholder="Select a Field"
-                                            required="{!targetFieldMapping.targetField.required}"/>
+                                        <aura:if isTrue="{!equals( v.sourceFieldsInputType, 'text' )}">
+
+                                            <lightning:input aura:id="inputMappingSourceFieldName"
+                                                name="inputMappingSourceFieldName"
+                                                label="{!targetFieldMapping.targetField.label}"
+                                                variant="label-hidden"
+                                                value="{!targetFieldMapping.sourceFieldName}"
+                                                placeholder="Enter source field name"
+                                                required="{!targetFieldMapping.targetField.required}"/>
+
+                                        </aura:if>
+
+                                        <aura:if isTrue="{!equals( v.sourceFieldsInputType, 'combobox' )}">
+
+                                            <lightning:combobox aura:id="inputMappingSourceFieldName"
+                                                name="inputMappingSourceFieldName"
+                                                label="{!targetFieldMapping.targetField.label}"
+                                                variant="label-hidden"
+                                                value="{!targetFieldMapping.sourceFieldName}"
+                                                options="{!v.sourceFields}"
+                                                placeholder="Select a Field"
+                                                required="{!targetFieldMapping.targetField.required}"/>
+
+                                        </aura:if>
 
                                     </td>
                                     <td width="50%">

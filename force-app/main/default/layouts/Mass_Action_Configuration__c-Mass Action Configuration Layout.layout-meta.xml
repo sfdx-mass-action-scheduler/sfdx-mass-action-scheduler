@@ -96,6 +96,10 @@
                 <behavior>Edit</behavior>
                 <field>Source_SOQL_Query__c</field>
             </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Source_Apex_Class__c</field>
+            </layoutItems>
         </layoutColumns>
         <style>OneColumn</style>
     </layoutSections>
