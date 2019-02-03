@@ -23,8 +23,8 @@ Documentation and Discussion
 --------------------------
 
 * For discussion and feedback [post in the community group](https://success.salesforce.com/_ui/core/chatter/groups/GroupProfilePage?g=0F93A000000LhvN) or raise well defined issues and ideas via the [issue tracker](https://github.com/douglascayers/sfdx-mass-action-scheduler/issues).
-* Read the [wiki page](https://github.com/douglascayers/sfdx-mass-action-scheduler/wiki) for further documentation on Mass Action Scheduler.
-* Read the [FAQ page](https://github.com/douglascayers/sfdx-mass-action-scheduler/wiki/Frequently-Asked-Questions) to help troubleshoot technical issues.
+* Read the [wiki page](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki) for further documentation on Mass Action Scheduler.
+* Read the [FAQ page](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Frequently-Asked-Questions) to help troubleshoot technical issues.
 
 
 Data Sources
@@ -80,7 +80,7 @@ I'm sure you will think of all kinds of ideas how you can use this app. Here are
 * Create "infinite" flows that continuously loop on a schedule
 * Perform field updates without exporting or importing data
 
-For walkthroughs please check out the [examples in the wiki](https://github.com/douglascayers/sfdx-mass-action-scheduler/wiki/Examples).
+For walkthroughs please check out the [examples in the wiki](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Examples).
 
 
 Pre-Requisites
@@ -88,11 +88,11 @@ Pre-Requisites
 
 There are a few items you need to setup before installing and using this app.
 
-1. You will need to use [Lightning Experience](https://trailhead.salesforce.com/en/content/learn/modules/lex_migration_introduction) because we are using Lightning Components.
-2. You will need to enable [My Domain](https://trailhead.salesforce.com/en/content/learn/modules/identity_login/identity_login_my_domain) because we are using Lightning Components.
-3. You will need to disable **Clickjack protection for customer Visualforce pages** in **Setup | Session Settings** because we iframe pages used by Lightning Components.
+1. You will need to [Enable Lightning Experience](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Pre-Requisites-Instructions#1-enable-lightning-experience) because we are using Lightning Components.
+2. You will need to [Enable My Domain](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Pre-Requisites-Instructions#2-enable-my-domain) because we are using Lightning Components.
+3. You will need to [Disable clickjack protection for Visualforce pages](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Pre-Requisites-Instructions#3-disable-clickjack-protection-for-visualforce-pages) because we iframe pages in Lightning Components.
 
-Please see the [instructions in the wiki](https://github.com/douglascayers/sfdx-mass-action-scheduler/wiki/Pre-Requisites-Instructions) for screen shots and step-by-steps.
+Please see the [instructions in the wiki](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Pre-Requisites-Instructions) for screen shots and step-by-steps.
 
 
 Packaged Release History
@@ -111,10 +111,10 @@ Release 2.1 (current)
 
 _Due to Lightning Experience web page caching, please log out and log back in after installing the package for UI changes to appear._
 
-* Install Package ([Production](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tf4000003vWO1)) ([Sandbox](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tf4000003vWO1))
-* [Release Notes](https://github.com/douglascayers/sfdx-mass-action-scheduler/wiki/Upgrading-to-Release-2.1)
-* [Closed Issues](https://github.com/douglascayers/sfdx-mass-action-scheduler/milestone/6?closed=1)
-* [Archived Releases](https://github.com/douglascayers/sfdx-mass-action-scheduler/milestones?state=closed)
+* Install Package ([Production](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tf4000003vWO1)) ([Sandbox](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tf4000003vWO1)) (`sfdx force:package:install --package 04tf4000003vWO1 --wait 10`)
+* [Release Notes](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Release-Notes-v2.1)
+* [Closed Issues](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/milestone/6?closed=1)
+* [Archived Releases](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/milestones?state=closed)
 
 ---
 
@@ -128,7 +128,7 @@ You are responsible for ensuring unit tests meet your org's validation rules and
 First, clone the repository.
 
 ```
-git clone https://github.com/douglascayers/sfdx-mass-action-scheduler.git
+git clone https://github.com/douglascayers-org/sfdx-mass-action-scheduler.git
 ```
 
 Change directory into the project folder.
