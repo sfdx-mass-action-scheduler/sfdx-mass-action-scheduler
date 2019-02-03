@@ -28,6 +28,11 @@
                 <default>false</default>
                 <label>SOQL</label>
             </value>
+            <value>
+                <fullName>Apex</fullName>
+                <default>false</default>
+                <label>Apex</label>
+            </value>
         </valueSetDefinition>
     </valueSet>
 </CustomField>

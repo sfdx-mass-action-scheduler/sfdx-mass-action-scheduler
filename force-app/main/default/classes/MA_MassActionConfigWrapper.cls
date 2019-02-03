@@ -59,6 +59,9 @@ public inherited sharing class MA_MassActionConfigWrapper {
     @AuraEnabled
     public String sourceSoqlQuery { get; set; }
 
+    @AuraEnabled
+    public String sourceApexClass { get; set; }
+
     // target
 
     @AuraEnabled
@@ -139,6 +142,7 @@ public inherited sharing class MA_MassActionConfigWrapper {
             this.sourceReportColumnName = config.Source_Report_Column_Name__c;
             this.sourceListViewID = config.Source_List_View_ID__c;
             this.sourceSoqlQuery = config.Source_SOQL_Query__c;
+            this.sourceApexClass = config.Source_Apex_Class__c;
             // target
             this.targetType = config.Target_Type__c;
             this.targetSobjectType = config.Target_SObject_Type__c;
@@ -181,6 +185,7 @@ public inherited sharing class MA_MassActionConfigWrapper {
             Source_Report_Column_Name__c = this.sourceReportColumnName,
             Source_List_View_ID__c = this.sourceListViewID,
             Source_SOQL_Query__c = this.sourceSoqlQuery,
+            Source_Apex_Class__c = this.sourceApexClass,
             // target
             Target_Type__c = this.targetType,
             Target_SObject_Type__c = this.targetSobjectType,

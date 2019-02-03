@@ -97,14 +97,15 @@ private class MA_ListViewSourceBatchableTest {
                 Id = :config.Id
         ];
 
-        System.assertEquals( 0, [ SELECT count() FROM Mass_Action_Log__c WHERE Mass_Action_Configuration__c = :config.Id ] );
+        System.debug( [ SELECT Id, Message__c FROM Mass_Action_Log__c WHERE Mass_Action_Configuration__c = :config.Id ] );
+        System.assertEquals( 0, [ SELECT COUNT() FROM Mass_Action_Log__c WHERE Mass_Action_Configuration__c = :config.Id ] );
         System.assertEquals( job.CompletedDate, config.Last_Run_Completed_Date__c );
         System.assertEquals( false, config.Last_Run_Completed_With_Errors__c );
 
     }
 
     @IsTest
-    static void test_batchable_fail() {
+    static void test_batchable_fail_bad_mapping() {
 
         String objectName = MA_MassActionUtils.NAMESPACE_API + 'Mass_Action_Configuration__c';
         ListView lv = [ SELECT Id, Name, DeveloperName, SobjectType FROM ListView WHERE DeveloperName = 'All' AND SobjectType = :objectName AND IsSoqlCompatible = true LIMIT 1 ];
@@ -159,9 +160,81 @@ private class MA_ListViewSourceBatchableTest {
                 Id = :config.Id
         ];
 
-        System.assertEquals( 1, [ SELECT count() FROM Mass_Action_Log__c WHERE Mass_Action_Configuration__c = :config.Id ] );
+        System.debug( [ SELECT Id, Message__c FROM Mass_Action_Log__c WHERE Mass_Action_Configuration__c = :config.Id ] );
+        System.assertEquals( 1, [ SELECT COUNT() FROM Mass_Action_Log__c WHERE Mass_Action_Configuration__c = :config.Id ] );
         System.assertEquals( job.CompletedDate, config.Last_Run_Completed_Date__c );
         System.assertEquals( true, config.Last_Run_Completed_With_Errors__c );
+
+    }
+
+    @IsTest
+    static void test_batchable_fail_no_list_view() {
+
+        Mass_Action_Configuration__c config = new Mass_Action_Configuration__c(
+            Name = 'Test Config',
+            DeveloperName__c = 'Test_Config',
+            Named_Credential__c = 'Mass_Action_Test_Named_Credential',
+            Active__c = true,
+            Batch_Size__c = 200,
+            Source_Type__c = 'ListView',
+            Source_List_View_ID__c = null,
+            Target_Type__c = 'Flow',
+            Target_Action_Name__c = 'Test_Flow',
+            Target_SObject_Type__c = null
+        );
+
+        insert config;
+
+        Mass_Action_Mapping__c configFieldMapping = new Mass_Action_Mapping__c(
+            Mass_Action_Configuration__c = config.Id,
+            Source_Field_Name__c = 'Id',
+            Target_Field_Name__c = 'ContextId'
+        );
+
+        insert configFieldMapping;
+
+        Account acct = new Account(
+            Name = 'Test Account'
+        );
+
+        insert acct;
+
+        try {
+
+            Test.setMock( HttpCalloutMock.class, new MA_HttpCalloutMock() );
+
+            Test.startTest();
+
+            ID jobId = Database.executeBatch( new MA_ListViewSourceBatchable( config.Id ), config.Batch_Size__c.intValue() );
+
+            Test.stopTest();
+
+            AsyncApexJob job = MA_MassActionBatchUtils.getJobById( jobId );
+
+            config = [
+                SELECT
+                    Id,
+                    Last_Run_Completed_Date__c,
+                    Last_Run_Completed_With_Errors__c
+                FROM
+                    Mass_Action_Configuration__c
+                WHERE
+                    Id = :config.Id
+            ];
+
+            System.debug( [ SELECT Id, Message__c FROM Mass_Action_Log__c WHERE Mass_Action_Configuration__c = :config.Id ] );
+            System.assertEquals( 1, [ SELECT COUNT() FROM Mass_Action_Log__c WHERE Mass_Action_Configuration__c = :config.Id ] );
+            System.assertEquals( job.CompletedDate, config.Last_Run_Completed_Date__c );
+            System.assertEquals( true, config.Last_Run_Completed_With_Errors__c );
+
+        } catch ( NoDataFoundException ex ) {
+
+            // because the batchable throws the error in the start method
+            // then we're getting a synchronous exception caught rather than
+            // the job's finish method logging the error asynchronously
+            System.assert( ex.getMessage().containsIgnoreCase( 'No List View Found' ), 'failed for wrong reason' );
+
+        }
 
     }
 

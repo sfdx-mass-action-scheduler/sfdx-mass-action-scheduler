@@ -53,7 +53,7 @@ private class MA_RunConfigInvocableTest {
         List<MA_RunConfigInvocable.Response> responses = MA_RunConfigInvocable.execute( new List<MA_RunConfigInvocable.Request>{ req } );
 
         System.assertEquals( 1, responses.size() );
-        System.assertEquals( 1, [ SELECT count() FROM AsyncApexJob WHERE Id = :responses[0].jobId ] );
+        System.assertEquals( 1, [ SELECT COUNT() FROM AsyncApexJob WHERE Id = :responses[0].jobId ] );
 
     }
 
@@ -70,7 +70,7 @@ private class MA_RunConfigInvocableTest {
         List<MA_RunConfigInvocable.Response> responses = MA_RunConfigInvocable.execute( new List<MA_RunConfigInvocable.Request>{ req } );
 
         System.assertEquals( 1, responses.size() );
-        System.assertEquals( 1, [ SELECT count() FROM AsyncApexJob WHERE Id = :responses[0].jobId ] );
+        System.assertEquals( 1, [ SELECT COUNT() FROM AsyncApexJob WHERE Id = :responses[0].jobId ] );
 
     }
 

@@ -50,12 +50,12 @@ private class MA_MassActionConfigTriggerHandlerTest {
         insert activeConfig;    // should publish event to schedule job
 
         System.debug( [ SELECT Id, Name FROM CronJobDetail ] ); // remove if emitting platform events for scheduling
-        System.assertEquals( 1, [ SELECT count() FROM CronJobDetail WHERE Name LIKE :('%' + activeConfig.Id) ] );
+        System.assertEquals( 1, [ SELECT COUNT() FROM CronJobDetail WHERE Name LIKE :('%' + activeConfig.Id) ] );
 
         insert inactiveConfig;  // since inactive, should NOT publish an event
 
         System.debug( [ SELECT Id, Name FROM CronJobDetail ] ); // remove if emitting platform events for scheduling
-        System.assertEquals( 0, [ SELECT count() FROM CronJobDetail WHERE Name LIKE :('%' + inactiveConfig.Id) ] );
+        System.assertEquals( 0, [ SELECT COUNT() FROM CronJobDetail WHERE Name LIKE :('%' + inactiveConfig.Id) ] );
 
         Test.stopTest();
 
@@ -113,19 +113,19 @@ private class MA_MassActionConfigTriggerHandlerTest {
         insert config; // since inactive, should NOT publish event to schedule job
 
         System.debug( [ SELECT Id, Name FROM CronJobDetail ] ); // remove if emitting platform events for scheduling
-        System.assertEquals( 0, [ SELECT count() FROM CronJobDetail WHERE Name LIKE :('%' + config.Id) ] );
+        System.assertEquals( 0, [ SELECT COUNT() FROM CronJobDetail WHERE Name LIKE :('%' + config.Id) ] );
 
         config.Active__c = true;
         update config; // since active, should publish event to unschedule old job and schedule new job
 
         System.debug( [ SELECT Id, Name FROM CronJobDetail ] ); // remove if emitting platform events for scheduling
-        System.assertEquals( 1, [ SELECT count() FROM CronJobDetail WHERE Name LIKE :('%' + config.Id) ] );
+        System.assertEquals( 1, [ SELECT COUNT() FROM CronJobDetail WHERE Name LIKE :('%' + config.Id) ] );
 
         config.Active__c = false;
         update config; // since inactive, should publish event to unschedule job
 
         System.debug( [ SELECT Id, Name FROM CronJobDetail ] ); // remove if emitting platform events for scheduling
-        System.assertEquals( 0, [ SELECT count() FROM CronJobDetail WHERE Name LIKE :('%' + config.Id) ] );
+        System.assertEquals( 0, [ SELECT COUNT() FROM CronJobDetail WHERE Name LIKE :('%' + config.Id) ] );
 
         Test.stopTest();
 

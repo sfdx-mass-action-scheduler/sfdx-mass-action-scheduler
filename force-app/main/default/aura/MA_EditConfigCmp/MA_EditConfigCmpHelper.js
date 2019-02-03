@@ -191,44 +191,74 @@ License: BSD 3-Clause License
         var sourceFields = []; // columns from source report or list view
         var targetFields = []; // inputs from target action
 
+        // provide empty option for source field mapping
+        // so user can unmap a field without navigating away
+        sourceFields.push({
+            'label': '--None--',
+            'vaue': null
+        });
+
         return Promise.resolve()
             .then( $A.getCallback( function() {
 
                 if ( sourceType == 'Report' ) {
 
+                    component.set( 'v.sourceFieldsInputType', 'combobox' );
+
                     return helper.getReportColumnsAsync( component, sourceReportId )
-                        .then( $A.getCallback( function( result ) {
-                            sourceFields = result;
-                        })).catch( $A.getCallback( function( err ) {
+                        .catch( $A.getCallback( function ( err ) {
                             throw new Error( 'Error getting report columns: ' + helper.unwrapAuraErrorMessage( err ) );
                         }));
 
                 } else if ( sourceType == 'ListView' ) {
 
+                    component.set( 'v.sourceFieldsInputType', 'combobox' );
+
                     return helper.getListViewColumnsAsync( component, sourceListViewId )
-                        .then( $A.getCallback( function( result ) {
-                            sourceFields = result;
-                        })).catch( $A.getCallback( function( err ) {
+                        .catch( $A.getCallback( function ( err ) {
                             throw new Error( 'Error getting list view columns: ' + helper.unwrapAuraErrorMessage( err ) );
                         }));
 
                 } else if ( sourceType == 'SOQL' ) {
 
+                    component.set( 'v.sourceFieldsInputType', 'combobox' );
+
                     return helper.getSoqlQueryColumnsAsync( component, sourceSoqlQuery )
-                        .then( $A.getCallback( function( result ) {
-                            sourceFields = result;
-                        })).catch( $A.getCallback( function( err ) {
+                        .catch( $A.getCallback( function ( err ) {
                             throw new Error( 'Error getting SOQL query columns: ' + helper.unwrapAuraErrorMessage( err ) );
                         }));
 
+                } else if ( sourceType == 'Apex' ) {
+
+                    component.set( 'v.sourceFieldsInputType', 'text' );
+
+                    return null;
+
+                }
+
+            })).then( $A.getCallback( function( sourceFieldsResult ) {
+
+                if ( !$A.util.isEmpty( sourceFieldsResult ) ) {
+                    // performs in-place sort of array
+                    sourceFieldsResult.sort( function( first, second ) {
+                        return first.label.localeCompare( second.label );
+                    });
+                    sourceFields.push( ...sourceFieldsResult );
                 }
 
             })).then( $A.getCallback( function() {
 
-                return helper.getInvocableActionInputsAsync( component, targetType, ( targetAction || '' ), ( targetSobjectType || '' ) )
-                    .then( $A.getCallback( function( result ) {
-                        targetFields = result;
-                    }));
+                return helper.getInvocableActionInputsAsync( component, targetType, ( targetAction || '' ), ( targetSobjectType || '' ) );
+
+            })).then( $A.getCallback( function( targetFieldsResult ) {
+
+                if ( !$A.util.isEmpty( targetFieldsResult ) ) {
+                    // performs in-place sort of array
+                    targetFieldsResult.sort( function( first, second ) {
+                        return first.name.localeCompare( second.name );
+                    });
+                    targetFields.push( ...targetFieldsResult );
+                }
 
             })).then( $A.getCallback( function() {
 
@@ -283,6 +313,7 @@ License: BSD 3-Clause License
         var sourceTypeIsReport = ( sourceType === 'Report' );
         var sourceTypeIsListView = ( sourceType === 'ListView' );
         var sourceTypeIsSoqlQuery = ( sourceType === 'SOQL' );
+        var sourceTypeIsApex = ( sourceType === 'Apex' );
 
         var targetType = component.get( 'v.targetType' );
         var targetTypeIsFlows = ( targetType === 'Flow' );
@@ -389,6 +420,15 @@ License: BSD 3-Clause License
                             }
                             return inputValidity;
                         }));
+                        break;
+
+                    // Source: Apex Class
+
+                    case 'inputSourceApexClass':
+                        inputValidityAsync = Promise.resolve({
+                            'invalid': ( sourceTypeIsApex && ( inputIsEmpty || inputIsInvalid ) ),
+                            'messageWhenInvalid': messageWhenValueMissing
+                        });
                         break;
 
                     // Target
@@ -759,7 +799,7 @@ License: BSD 3-Clause License
                             .then( $A.getCallback( function( result ) {
 
                                 var parseResult = window.SOQLParse.parse( query );
-                                console.log( JSON.stringify( parseResult, null, 2 ) );
+                                // console.log( JSON.stringify( parseResult, null, 2 ) );
 
                                 for ( var i = 0; i < parseResult.fields.length; i++ ) {
                                     var field = parseResult.fields[i];
@@ -1012,7 +1052,7 @@ License: BSD 3-Clause License
                 var urlInfo = component.get( 'v.urlInfo' );
 
                 if ( helper.isEmpty( urlInfo ) ) {
-                    return component.find( 'lc_url' ).getUrlInfoAsync();
+                    return component.find( 'lc_url' ).getUrlInfo();
                 } else {
                     return urlInfo;
                 }
@@ -1024,11 +1064,9 @@ License: BSD 3-Clause License
                 var nsslash = ( urlInfo.namespace ? urlInfo.namespace + '/' : '' );
 
                 return component.find( 'lc_api' ).restRequest({
-
                     'url' : urlInfo.orgDomainURL + '/services/apexrest/' + nsslash + 'config/edit?operation=' + operation,
                     'method' : 'POST',
                     'body' : JSON.stringify( ( params || {} ) )
-
                 });
 
             })).then( $A.getCallback( function( response ) {

@@ -94,7 +94,7 @@ License: BSD 3-Clause License
                     .then( $A.getCallback( function( namedCredentials ) {
 
                         var emptyOption = {
-                            'label': 'None',
+                            'label': '--None--',
                             'value': null
                         };
 
@@ -150,7 +150,8 @@ License: BSD 3-Clause License
                     component.find( 'inputSourceReportColumn' ),
                     component.find( 'inputSourceListViewSobjectType' ),
                     component.find( 'inputSourceListView' ),
-                    component.find( 'inputSourceSoqlQuery' )
+                    component.find( 'inputSourceSoqlQuery' ),
+                    component.find( 'inputSourceApexClass' )
                 ];
 
             } else if ( currentStageIndex === 2 ) {         // Choose Action

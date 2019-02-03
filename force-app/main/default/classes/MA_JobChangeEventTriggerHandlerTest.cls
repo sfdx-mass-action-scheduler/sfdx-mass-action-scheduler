@@ -79,8 +79,8 @@ private class MA_JobChangeEventTriggerHandlerTest {
         Test.stopTest();
 
         System.debug( [ SELECT Id, Name FROM CronJobDetail ] );
-        System.assertEquals( 1, [ SELECT count() FROM CronJobDetail WHERE Name LIKE :('%' + configA.Id) ] );
-        System.assertEquals( 1, [ SELECT count() FROM CronJobDetail WHERE Name LIKE :('%' + configB.Id) ] );
+        System.assertEquals( 1, [ SELECT COUNT() FROM CronJobDetail WHERE Name LIKE :('%' + configA.Id) ] );
+        System.assertEquals( 1, [ SELECT COUNT() FROM CronJobDetail WHERE Name LIKE :('%' + configB.Id) ] );
 
     }
 
@@ -156,8 +156,8 @@ private class MA_JobChangeEventTriggerHandlerTest {
         Test.stopTest();
 
         System.debug( [ SELECT Id, Name FROM CronJobDetail ] );
-        System.assertEquals( 0, [ SELECT count() FROM CronJobDetail WHERE Name LIKE :('%' + configA.Id) ] );
-        System.assertEquals( 0, [ SELECT count() FROM CronJobDetail WHERE Name LIKE :('%' + configB.Id) ] );
+        System.assertEquals( 0, [ SELECT COUNT() FROM CronJobDetail WHERE Name LIKE :('%' + configA.Id) ] );
+        System.assertEquals( 0, [ SELECT COUNT() FROM CronJobDetail WHERE Name LIKE :('%' + configB.Id) ] );
 
     }
 

@@ -28,6 +28,10 @@ public inherited sharing class MA_MassActionBatchUtils {
 
                 jobId = enqueueSoqlJob( config );
 
+            } else if ( config.Source_Type__c == 'Apex' ) {
+
+                jobId = enqueueApexJob( config );
+
             } else {
 
                 throw new MA_Exceptions.UnsupportedSourceTypeException( configId, config.Source_Type__c );
@@ -58,6 +62,32 @@ public inherited sharing class MA_MassActionBatchUtils {
     private static ID enqueueSoqlJob( Mass_Action_Configuration__c config ) {
 
         return Database.executeBatch( new MA_IterableSourceBatchable( config.Id, new MA_SoqlSourceIterable( config.Id ) ), config.Batch_Size__c.intValue() );
+    }
+
+    private static ID enqueueApexJob( Mass_Action_Configuration__c config ) {
+
+        String namespace = null;
+        String className = config.Source_Apex_Class__c;
+
+        Type t = null;
+
+        if ( className.contains( '.' ) ) {
+            namespace = config.Source_Apex_Class__c.substringBefore( '.' );
+            className = config.Source_Apex_Class__c.substringAfter( '.' );
+        }
+
+        t = Type.forName( namespace, className );
+
+        // If don't find type then maybe the class name pattern
+        // isn't "namespace.className" but rather "outerClass.innerClass"
+        // in the current namespace.
+        if ( t == null ) {
+            t = Type.forName( null, config.Source_Apex_Class__c );
+        }
+
+        Iterable<Map<String, Object>> iterable = (Iterable<Map<String, Object>>) t.newInstance();
+        return Database.executeBatch( new MA_IterableSourceBatchable( config.Id, iterable ), config.Batch_Size__c.intValue() );
+
     }
 
     // ----------------------------------------------------

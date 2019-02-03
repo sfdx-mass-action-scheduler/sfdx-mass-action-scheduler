@@ -6,6 +6,18 @@ License: BSD 3-Clause License
  */
 public with sharing class LC_VisualforceDomainController {
 
+    // Aura Component
+
+    @AuraEnabled
+    public static String getVisualforceDomainURL() {
+        PageReference vfPage = Page.LC_VisualforceDomainPage;
+        return ( Test.isRunningTest() ? 'https://visualforce.com' : vfPage.getContent().toString().trim() );
+    }
+
+    // -----------------------------------------------------------------------------
+
+    // Visualforce Page
+
     public String getDomainURL() {
         URL requestURL = URL.getCurrentRequestUrl();
         return requestURL.toExternalForm().substringBefore( requestURL.getPath() );

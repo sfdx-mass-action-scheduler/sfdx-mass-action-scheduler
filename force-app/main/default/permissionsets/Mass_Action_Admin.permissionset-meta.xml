@@ -85,6 +85,11 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
+        <editable>false</editable>
+        <field>Mass_Action_Configuration__c.Source_Apex_Class__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>true</editable>
         <field>Mass_Action_Configuration__c.Source_List_View_ID__c</field>
         <readable>true</readable>
