@@ -112,8 +112,8 @@ Release 2.1 (current)
 _Due to Lightning Experience web page caching, please log out and log back in after installing the package for UI changes to appear._
 
 * Install Package
-    * Browser Links ([Production](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tf4000003vWO1)) ([Sandbox](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tf4000003vWO1))
-    * Salesforce CLI (`sfdx force:package:install --package 04tf4000003vWO1 --wait 10`)
+    * Browser Links ([Production](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tf4000004IvKs)) ([Sandbox](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tf4000004IvKs))
+    * Salesforce CLI (`sfdx force:package:install --package 04tf4000004IvKs --wait 10`)
 * [Release Notes](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Release-Notes-v2.1)
 * [Closed Issues](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/milestone/6?closed=1)
 * [Archived Releases](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/milestones?state=closed)

@@ -181,6 +181,51 @@ private class MA_MassActionBatchUtilsTest {
 
     }
 
+    @IsTest
+    static void test_enqueue_apex_job_no_class_exists() {
+
+        Mass_Action_Configuration__c config = new Mass_Action_Configuration__c(
+            Name = 'Test Config',
+            DeveloperName__c = 'Test_Config',
+            Active__c = true,
+            Batch_Size__c = 200,
+            Named_Credential__c = 'Mass_Action_Test_Named_Credential',
+            Source_Type__c = 'Apex',
+            Source_Apex_Class__c = 'No_Class_Exists_By_This_Name',
+            Target_Type__c = 'Workflow',
+            Target_SObject_Type__c = 'Account',
+            Schedule_Frequency__c = 'Manual'
+        );
+
+        insert config;
+
+        Mass_Action_Mapping__c configFieldMapping = new Mass_Action_Mapping__c(
+            Mass_Action_Configuration__c = config.Id,
+            Source_Field_Name__c = 'Id',
+            Target_Field_Name__c = 'ContextId'
+        );
+
+        insert configFieldMapping;
+
+        Test.setMock( HttpCalloutMock.class, new MA_HttpCalloutMock() );
+
+        Test.startTest();
+
+        try {
+
+            ID jobId = MA_MassActionBatchUtils.enqueueAction( config.Id );
+            System.assertEquals( null, jobId );
+
+        } catch ( NoDataFoundException ex ) {
+
+            System.assert( ex.getMessage().startsWithIgnoreCase( 'No class found for name' ) );
+
+        }
+
+        Test.stopTest();
+
+    }
+
     public class TestIterable implements Iterable<Map<String, Object>> {
         public Iterator<Map<String, Object>> iterator() {
             return new List<Map<String, Object>>{

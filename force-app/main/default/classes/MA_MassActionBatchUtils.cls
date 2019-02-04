@@ -85,6 +85,15 @@ public inherited sharing class MA_MassActionBatchUtils {
             t = Type.forName( null, config.Source_Apex_Class__c );
         }
 
+        // If still don't find the type then either it
+        // doesn't exist or isn't accessible by our package.
+        if ( t == null ) {
+            throw MA_Exceptions.buildException(
+                NoDataFoundException.class,
+                'No class found for name "' + config.Source_Apex_Class__c + '". If it exists, it may need to be global to be accessible by the Mass Action Scheduler package.'
+            );
+        }
+
         Iterable<Map<String, Object>> iterable = (Iterable<Map<String, Object>>) t.newInstance();
         return Database.executeBatch( new MA_IterableSourceBatchable( config.Id, iterable ), config.Batch_Size__c.intValue() );
 
