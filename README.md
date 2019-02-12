@@ -114,7 +114,7 @@ _Due to Lightning Experience web page caching, please log out and log back in af
 * Install Package
     * Browser Links ([Production](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tf4000004IvKs)) ([Sandbox](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tf4000004IvKs))
     * Salesforce CLI (`sfdx force:package:install --package 04tf4000004IvKs --wait 10`)
-* [Release Notes](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Release-Notes-v2.1)
+* [Release Notes](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Release-Notes)
 * [Closed Issues](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/milestone/6?closed=1)
 * [Archived Releases](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/milestones?state=closed)
 
