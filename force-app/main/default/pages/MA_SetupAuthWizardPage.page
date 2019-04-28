@@ -196,7 +196,7 @@ License: BSD 3-Clause License
 
         var conn = new jsforce.Connection({
             accessToken : '{!$Api.Session_Id}',
-            version : '44.0'
+            version : '45.0'
         });
 
         const consumerKey = getRandomLetters( 85 );
@@ -294,7 +294,7 @@ License: BSD 3-Clause License
                 fullName : fullName,
                 label : label,
                 authProvider : fullName,
-                endpoint : orgDomainURL + '/services/data/v44.0',
+                endpoint : orgDomainURL + '/services/data/v45.0',
                 oauthScope : 'full refresh_token',
                 principalType : 'NamedUser',
                 protocol : 'Oauth'
