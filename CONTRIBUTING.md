@@ -5,7 +5,7 @@
 The following is a set of guidelines for contributing to Mass Action Scheduler and its packages,
 which are hosted in the [Douglas C. Ayers Open Source Organization](https://github.com/douglascayers-org) on GitHub.
 
-#### Table Of Contents
+## Table Of Contents
 
 [Code of Conduct](#code-of-conduct)
 
