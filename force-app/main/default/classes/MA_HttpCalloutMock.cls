@@ -294,7 +294,40 @@ public inherited sharing class MA_HttpCalloutMock implements HttpCalloutMock {
                 ' ] '
             );
 
-        } else {
+        }
+        // Anonymous Apex (failure)
+        else if ( matches( request.getEndpoint(), '(.*)/tooling/executeAnonymous(/)?\\?anonymousBody=(.*)TEST_FAIL(.*)' ) ) {
+
+            response.setBody(
+                ' { ' +
+                '   "line" : 1, ' +
+                '   "column" : 14, ' +
+                '   "compiled" : false, ' +
+                '   "success" : false, ' +
+                '   "compileProblem" : "Some error about why Apex did not compile", ' +
+                '   "exceptionStackTrace" : null, ' +
+                '   "exceptionMessage" : null ' +
+                ' } '
+            );
+
+        }
+        // Anonymous Apex (success)
+        else if ( matches( request.getEndpoint(), '(.*)/tooling/executeAnonymous(/)?\\?anonymousBody=(.*)' ) ) {
+
+            response.setBody(
+                ' { ' +
+                '   "line" : -1, ' +
+                '   "column" : -1, ' +
+                '   "compiled" : true, ' +
+                '   "success" : true, ' +
+                '   "compileProblem" : null, ' +
+                '   "exceptionStackTrace" : null, ' +
+                '   "exceptionMessage" : null ' +
+                ' } '
+            );
+
+        }
+        else {
 
             response.setStatus( 'ERROR' );
             response.setStatusCode( 400 );
@@ -360,7 +393,7 @@ public inherited sharing class MA_HttpCalloutMock implements HttpCalloutMock {
             );
 
         }
-        // Apex
+        // Invocable Apex
         else if ( matches( request.getEndpoint(), '(.)*/actions/custom/apex/[\\w]+(/)?' ) ) {
 
             response.setBody(

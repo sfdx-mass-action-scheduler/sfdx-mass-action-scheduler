@@ -33,9 +33,7 @@ public with sharing class MA_SoqlSourceBatchable implements Database.Batchable<S
 
             List<Map<String, Object>> sourceRowMaps = convertRecordsToMaps( records );
 
-            List<Map<String, Object>> targetRowMaps = MA_MassActionUtils.buildActionInputs( sourceRowMaps, this.config.Mass_Action_Mappings__r );
-
-            MA_MassActionUtils.invokeAction( MA_MassActionUtils.getCalloutRestEndpointURL( this.config.Named_Credential__c ), this.config, targetRowMaps );
+            MA_MassActionUtils.invokeTargetAction( this.config, sourceRowMaps );
 
         } catch ( Exception e ) {
 
@@ -60,6 +58,7 @@ public with sharing class MA_SoqlSourceBatchable implements Database.Batchable<S
     private List<Map<String, Object>> convertRecordsToMaps( List<SObject> records ) {
 
         List<Map<String, Object>> maps = new List<Map<String, Object>>();
+
         Map<String, SObjectField> fieldsMap = records.getSObjectType().getDescribe().fields.getMap();
 
         for ( SObject record : records ) {

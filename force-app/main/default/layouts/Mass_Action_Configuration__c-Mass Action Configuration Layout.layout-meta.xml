@@ -121,6 +121,10 @@
                 <behavior>Edit</behavior>
                 <field>Target_Action_Name__c</field>
             </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Target_Apex_Script__c</field>
+            </layoutItems>
         </layoutColumns>
         <style>OneColumn</style>
     </layoutSections>

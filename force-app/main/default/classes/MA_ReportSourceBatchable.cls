@@ -29,17 +29,15 @@ public with sharing class MA_ReportSourceBatchable implements Database.Batchable
         return new MA_ReportService.ReportRowIterator( this.config.Source_Report_ID__c, this.config.Source_Report_Column_Name__c );
     }
 
-    public void execute( Database.BatchableContext context, List<Reports.ReportDetailRow> sourceRows ) {
+    public void execute( Database.BatchableContext context, List<Reports.ReportDetailRow> reportRows ) {
 
         try {
 
             System.debug( 'MA_ReportSourceBatchable.execute: ' + context + ', configId=' + this.configId );
 
-            List<Map<String, Object>> sourceRowMaps = convertReportRowsToMaps( sourceRows, this.reportDescribe );
+            List<Map<String, Object>> sourceRowMaps = convertReportRowsToMaps( reportRows, this.reportDescribe );
 
-            List<Map<String, Object>> targetRowMaps = MA_MassActionUtils.buildActionInputs( sourceRowMaps, this.config.Mass_Action_Mappings__r );
-
-            MA_MassActionUtils.invokeAction( MA_MassActionUtils.getCalloutRestEndpointURL( this.config.Named_Credential__c ), this.config, targetRowMaps );
+            MA_MassActionUtils.invokeTargetAction( this.config, sourceRowMaps );
 
         } catch ( Exception e ) {
 

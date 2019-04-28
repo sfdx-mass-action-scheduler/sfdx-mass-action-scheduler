@@ -6,6 +6,10 @@ License: BSD 3-Clause License
 -->
 <aura:component implements="flexipage:availableForAllPageTypes" access="global">
 
+    <c:LC_API aura:id="lc_api"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.onInit}"/>
+
     <div class="slds-theme_shade slds-box slds-box_small slds-m-vertical_medium slds-text-align_center">
         <span><a href="https://douglascayers.github.io/sfdx-mass-action-scheduler/" target="_blank">Mass Action Scheduler</a></span>
         <span class="slds-m-horizontal_xx-small">️is developed with love by</span>

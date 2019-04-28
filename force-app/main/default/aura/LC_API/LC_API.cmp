@@ -6,11 +6,26 @@ License: BSD 3-Clause License
  -->
 <aura:component controller="LC_VisualforceDomainController">
 
-    <ltng:require scripts="{!$Resource.postmate}"
+    <ltng:require scripts="{!$Resource.penpal}"
                   afterScriptsLoaded="{!c.onScriptsLoaded}"/>
 
+    <aura:attribute name="iframeSrc"
+                    type="String"
+                    access="private"
+                    description="Which visualforce page to load for bridging API calls."/>
+
+    <aura:attribute name="penpalInitialized"
+                    type="Boolean"
+                    access="private"
+                    default="false"
+                    description="Has the Penpal connection been initialized?"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.onInit}"/>
+
+    <aura:handler name="render" value="{!this}" action="{!c.onRender}"/>
+
     <!--
-        Makes REST API request and returns a promise that resolves to the response.
+        Makes a Salesforce REST API request and returns a promise that resolves to the response.
 
         @param request
             JSON object with properties:
@@ -24,7 +39,7 @@ License: BSD 3-Clause License
 
         Example usage:
             component.find( 'lcAPI' ).restRequest({
-                'url' : '/services/data/v43.0/sobjects/Account',
+                'url' : '/services/data/v45.0/sobjects/Account',
                 'method' : 'post',
                 'body' : JSON.stringify({
                     'Name' : 'Salesforce',
@@ -48,7 +63,40 @@ License: BSD 3-Clause License
                         description="Supports these keys: url (string), method (string), body (string), headers (map)."/>
     </aura:method>
 
-    <div aura:id="postmate" class="slds-hide"></div>
+    <!--
+        Makes a JavaScript Fetch request and returns a promise that resolves to the response.
+        https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/fetch
+
+        @param request
+            JSON object with properties:
+            'url'     (String, required) The url to fetch.
+            'options' (Map, optional)    The init options for the request.
+
+        Example usage:
+            component.find( 'lcAPI' ).fetchRequest({
+                'url' : 'https://example.com',
+                'options': {
+                    'method' : 'GET',
+                    'headers' : {
+                        'Accepts' : 'application/json'
+                    }
+                }
+            }).then( $A.getCallback( function( response ) {
+                // handle response
+            })).catch( $A.getCallback( function( err ) {
+                // handle error
+            }));
+     -->
+    <aura:method name="fetchRequest" action="{!c.onFetchRequest}">
+        <aura:attribute name="request"
+                        type="Map"
+                        required="true"
+                        description="Supports these keys: url (string), options (map)."/>
+    </aura:method>
+
+    <div class="slds-hide">
+        <iframe aura:id="penpalFrame" src="{!v.iframeSrc}"></iframe>
+    </div>
 
 </aura:component>
 <!--

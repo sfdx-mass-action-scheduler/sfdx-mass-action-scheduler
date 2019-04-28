@@ -8,7 +8,7 @@ public with sharing class LC_VisualforceDomainController {
 
     // Aura Component
 
-    @AuraEnabled
+    @AuraEnabled( cacheable = true )
     public static String getVisualforceDomainURL() {
         PageReference vfPage = Page.LC_VisualforceDomainPage;
         return ( Test.isRunningTest() ? 'https://visualforce.com' : vfPage.getContent().toString().trim() );

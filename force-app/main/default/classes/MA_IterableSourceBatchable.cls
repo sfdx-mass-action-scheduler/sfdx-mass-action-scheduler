@@ -30,13 +30,11 @@ public with sharing class MA_IterableSourceBatchable implements Database.Batchab
 
     public void execute( Database.BatchableContext context, List<Map<String, Object>> sourceRowMaps ) {
 
-        System.debug( 'MA_IterableSourceBatchable.execute: ' + context + ', configId=' + this.configId );
-
         try {
 
-            List<Map<String, Object>> targetRowMaps = MA_MassActionUtils.buildActionInputs( sourceRowMaps, this.config.Mass_Action_Mappings__r );
+            System.debug( 'MA_IterableSourceBatchable.execute: ' + context + ', configId=' + this.configId );
 
-            MA_MassActionUtils.invokeAction( MA_MassActionUtils.getCalloutRestEndpointURL( this.config.Named_Credential__c ), this.config, targetRowMaps );
+            MA_MassActionUtils.invokeTargetAction( this.config, sourceRowMaps );
 
         } catch ( Exception e ) {
 

@@ -7,15 +7,15 @@ License: BSD 3-Clause License
 ({
     unrender: function( component, helper ) {
         this.superUnrender();
-        // When component unrenders then cleanup postmate
-        // resources by destroying the child and nulling out
-        // the helper's cached reference to the child.
-        // This ensures that the helper.handleRestRequest(..) method
-        // waits appropriately for the new parent-child handshake to complete
+        // When component unrenders then cleanup penpal
+        // resources by destroying the connection and nulling out
+        // the helper's cached reference to the connection and child.
+        // This ensures that the helper.handleXyzRequest(..) methods
+        // wait appropriately for the new parent-child handshake to complete
         // when this component is re-initialized and scripts are loaded.
-        if ( helper._postmate ) {
-            helper._postmate.destroy();
-            helper._postmate = null;
+        if ( helper._penpal && helper._penpal.connection ) {
+            helper._penpal.connection.destroy();
+            helper._penpal = {};
         }
     }
 })
