@@ -52,7 +52,7 @@ Almost any process automation you configure can be scheduled.
 | **Quick Actions**     | Create a Record, Update a Record, and Log a Call types |
 | **Email Alerts**      | All |
 | **Workflow Rules**    | Active rules |
-| **Apex**              | Classes annotated with @InvocableMethod |
+| **Apex**              | Classes annotated with [@InvocableMethod](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_InvocableMethod.htm) and [Anonymous Blocks](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_anonymous_block.htm) |
 
 
 Scheduling
@@ -106,16 +106,16 @@ Maintaining and developing new features takes a considerable amount of time. If 
 your support](https://douglascayers.com/thanks-for-your-support/) by contributing to my [virtual tip jar on PayPal](https://www.paypal.me/douglascayers/). Thank you! ❤️
 
 
-Release 2.1 (current)
+Release 2.2 (current)
 -----------
 
 _Due to Lightning Experience web page caching, please log out and log back in after installing the package for UI changes to appear._
 
 * Install Package
-    * Browser Links ([Production](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tf4000004IvKs)) ([Sandbox](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tf4000004IvKs))
-    * Salesforce CLI (`sfdx force:package:install --package 04tf4000004IvKs --wait 10`)
+    * Browser Links ([Production](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tf4000004MdAC)) ([Sandbox](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tf4000004MdAC))
+    * Salesforce CLI (`sfdx force:package:install --package 04tf4000004MdAC --wait 10`)
 * [Release Notes](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Release-Notes)
-* [Closed Issues](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/milestone/6?closed=1)
+* [Closed Issues](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/milestone/7?closed=1)
 * [Archived Releases](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/milestones?state=closed)
 
 ---
@@ -185,9 +185,11 @@ Credits
 
 [Salesforce Foundation](https://github.com/SalesforceFoundation/CampaignTools) for developing tools for querying Salesforce Reports API in Apex.
 
-[Shinichi Tomita](https://jsforce.github.io/) for developing jsforce and soql-parse libraries for easy use of Salesforce REST APIs in JavaScript.
+[Shinichi Tomita](https://twitter.com/stomita) for developing [jsforce](https://jsforce.github.io/) and [soql-parse](https://github.com/stomita/soql-parse) libraries for easy use of Salesforce REST APIs in JavaScript.
 
 [jQuery](https://jquery.com/) for developing jQuery library.
+
+[Aaron Hardy](https://twitter.com/aaronius) for developing [Penpal](https://github.com/Aaronius/penpal), a promise-based library for securely communicating with iframes via postMessage.
 
 
 License
