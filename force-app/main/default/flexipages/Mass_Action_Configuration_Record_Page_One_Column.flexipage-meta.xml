@@ -57,6 +57,9 @@
     </flexiPageRegions>
     <flexiPageRegions>
         <componentInstances>
+            <componentName>MA_CheckForPackageUpdatesCmp</componentName>
+        </componentInstances>
+        <componentInstances>
             <componentName>MA_EditConfigCmp</componentName>
         </componentInstances>
         <name>Facet-a94fecbe-793f-4a27-bcbc-219b6ce5051b</name>

@@ -73,6 +73,7 @@
     <types>
         <members>LC_API</members>
         <members>LC_URL</members>
+        <members>MA_CheckForPackageUpdatesCmp</members>
         <members>MA_DevelopedByCmp</members>
         <members>MA_EditConfigCmp</members>
         <members>MA_RunConfigCmp</members>
