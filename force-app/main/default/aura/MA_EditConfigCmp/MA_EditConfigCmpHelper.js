@@ -91,6 +91,108 @@ License: BSD 3-Clause License
 
     },
 
+    handleTargetTypeChange : function( component ) {
+
+        var helper = this;
+
+        var targetType = component.get( 'v.targetType' );
+        var targetApexType = component.get( 'v.targetApexType' );
+        var targetActionName = component.get( 'v.targetInvocableAction' );
+
+        var record = component.get( 'v.record' );
+
+        // if true then we need to display prompt to user
+        // to choose an object before we can show action options
+        var targetTypeRequiresSobject = false;
+        var targetTypeRequiresAction = false;
+
+        if ( helper.isEmpty( targetType ) || targetType == 'Workflow' ) {
+
+            targetTypeRequiresSobject = false;
+            targetTypeRequiresAction = false;
+
+            targetApexType = null;
+            targetActionName = null;
+
+            record.targetSobjectType = null;
+            record.targetApexScript = null;
+
+        } else if ( targetType == 'Flow' ) {
+
+            targetTypeRequiresSobject = false;
+            targetTypeRequiresAction = true;
+
+            targetApexType = null;
+            //targetActionName = null;
+
+            record.targetSobjectType = null;
+            record.targetApexScript = null;
+
+        } else if ( targetType == 'QuickAction' ) {
+
+            targetTypeRequiresSobject = true;
+            targetTypeRequiresAction = true;
+
+            targetApexType = null;
+            //targetActionName = null;
+
+            //record.targetSobjectType = null;
+            record.targetApexScript = null;
+
+        } else if ( targetType == 'EmailAlert' ) {
+
+            targetTypeRequiresSobject = true;
+            targetTypeRequiresAction = true;
+
+            targetApexType = null;
+            //targetActionName = null;
+
+            //record.targetSobjectType = null;
+            record.targetApexScript = null;
+
+        } else if ( targetType == 'Apex' ) {
+
+            targetTypeRequiresSobject = false;
+            targetTypeRequiresAction = true;
+
+            record.targetSobjectType = null;
+
+            if ( targetApexType === 'Invocable' ) {
+
+                targetTypeRequiresAction = true;
+                record.targetApexScript = null;
+
+            } else if ( targetApexType === 'Anonymous' ) {
+
+                targetTypeRequiresAction = false;
+                targetActionName = null;
+
+                // provide a template as convenience
+                if ( $A.util.isEmpty( record.targetApexScript ) ) {
+                    record.targetApexScript = (
+                        'void execute( List<Map<String, Object>> sourceRecordsBatch ) { \n' +
+                        '    // your logic here \n' +
+                        '} \n'
+                    );
+                }
+
+            }
+
+        }
+
+        component.set( 'v.targetTypeRequiresSobject', targetTypeRequiresSobject );
+        component.set( 'v.targetTypeRequiresAction', targetTypeRequiresAction );
+        component.set( 'v.targetApexType', targetApexType );
+        component.set( 'v.targetInvocableAction', targetActionName );
+
+        record.targetActionName = targetActionName;
+        component.set( 'v.record', record );
+
+        helper.renderTargetSobjectTypes( component );
+        helper.renderTargetInvocableActions( component );
+
+    },
+
     /**
      * Determines if conditions are satisfactory to fetch and render
      * sobject options that have invocable actions. Designed to be called whenever
@@ -132,6 +234,7 @@ License: BSD 3-Clause License
         var helper = this;
 
         var targetType = component.get( 'v.targetType' );
+        var targetApexType = component.get( 'v.targetApexType' );
         var targetTypeRequiresSobject = component.get( 'v.targetTypeRequiresSobject' );
         var targetTypeRequiresAction = component.get( 'v.targetTypeRequiresAction' );
         var targetSobjectType = component.get( 'v.targetSobjectType' );
@@ -141,7 +244,8 @@ License: BSD 3-Clause License
 
         if ( helper.isEmpty( targetType ) ||
              ( !targetTypeRequiresAction ) ||
-             ( targetTypeRequiresSobject && helper.isEmpty( targetSobjectType ) ) ) {
+             ( targetTypeRequiresSobject && helper.isEmpty( targetSobjectType ) ) ||
+             ( targetType === 'Apex' && targetApexType !== 'Invocable' ) ) {
 
             isValidToRenderActions = false;
 
@@ -322,6 +426,10 @@ License: BSD 3-Clause License
         var targetTypeIsEmailAlerts = ( targetType === 'EmailAlert' );
         var targetTypeIsApex = ( targetType === 'Apex' );
 
+        var targetApexType = component.get( 'v.targetApexType' );
+        var targetApexTypeIsInvocable = ( targetApexType === 'Invocable' );
+        var targetApexTypeIsAnonymous = ( targetApexType === 'Anonymous' );
+
         var targetTypeRequiresSobject = component.get( 'v.targetTypeRequiresSobject' );
         var targetTypeRequiresAction = component.get( 'v.targetTypeRequiresAction' );
 
@@ -450,6 +558,22 @@ License: BSD 3-Clause License
                     case 'inputTargetAction':
                         inputValidityAsync = Promise.resolve({
                             'invalid': ( targetTypeRequiresAction && ( inputIsEmpty || inputIsInvalid ) ),
+                            'messageWhenInvalid': messageWhenValueMissing
+                        });
+                        break;
+
+                    // Target: Apex
+
+                    case 'inputTargetApexType':
+                        inputValidityAsync = Promise.resolve({
+                            'invalid': ( targetTypeIsApex && ( inputIsEmpty || inputIsInvalid ) ),
+                            'messageWhenInvalid': messageWhenValueMissing
+                        });
+                        break;
+
+                    case 'inputTargetApexScript':
+                        inputValidityAsync = Promise.resolve({
+                            'invalid': ( targetTypeIsApex && targetApexTypeIsAnonymous && ( inputIsEmpty || inputIsInvalid ) ),
                             'messageWhenInvalid': messageWhenValueMissing
                         });
                         break;

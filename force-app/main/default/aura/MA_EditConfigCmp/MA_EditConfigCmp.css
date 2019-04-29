@@ -53,6 +53,39 @@ License: BSD 3-Clause License
     cursor: not-allowed;
 }
 
+/**
+ * Styling copied from Trailhead website.
+ */
+.THIS .keyword {
+    color: #d14;
+    background-color: #f7f7f9;
+    border: 1px solid #e1e1e8;
+    border-radius: 3px;
+    padding: 2px 4px;
+}
+
+/**
+ * Renders newlines and whitespace indentation
+ * similar to the <pre> tag but without the
+ * ridiculous leading whitespace.
+ */
+.THIS code.block {
+    color: #d14;
+    white-space: pre-line;
+    display: block;
+}
+
+/**
+ * This CSS selector places the tag name after our class name
+ * because the `class` attribute we put on <lightning:textarea>
+ * is applied to the outer DOM element and not on the actual
+ * `textarea` tag within the component. Therefore, our selector
+ * needs to cascade to the `textarea` elements in the component.
+ */
+.THIS textarea[name="inputTargetApexScript"] {
+    height: 200px;
+}
+
 /*
 BSD 3-Clause License
 

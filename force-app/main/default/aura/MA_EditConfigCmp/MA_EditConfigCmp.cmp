@@ -157,6 +157,24 @@ License: BSD 3-Clause License
                     type="String"
                     description="Selected sobject type."/>
 
+    <aura:attribute name="targetApexTypes"
+                    type="Map[]"
+                    default="[
+                        {
+                            'label': 'Invocable Method',
+                            'value': 'Invocable'
+                        },
+                        {
+                            'label': 'Anonymous Block',
+                            'value': 'Anonymous'
+                        }
+                    ]"
+                    description="Apex Type select options."/>
+
+    <aura:attribute name="targetApexType"
+                    type="String"
+                    description="Selected apex type."/>
+
     <aura:attribute name="isValidToRenderTargetInvocableActions"
                     type="Boolean"
                     description="Indicates conditions are met to fetch and show the target invocable action select options."/>
@@ -236,6 +254,8 @@ License: BSD 3-Clause License
 
     <aura:handler name="change" value="{!v.targetTypeRequiresSobject}" action="{!c.handleTargetTypeRequiresSobjectChange}"/>
     <aura:handler name="change" value="{!v.targetSobjectType}" action="{!c.handleTargetSobjectTypeChange}"/>
+
+    <aura:handler name="change" value="{!v.targetApexType}" action="{!c.handleTargetApexTypeChange}"/>
 
     <!-- Markup -->
 
@@ -336,7 +356,7 @@ License: BSD 3-Clause License
                                             Learn how to write SOQL queries with the <a href="https://trailhead.salesforce.com/en/content/learn/modules/apex_database/apex_database_soql?trail_id=force_com_dev_beginner" target="_blank">Write SOQL Queries</a> unit on Trailhead.
                                         </p>
                                         <p>
-                                            <b>Apex</b> classes that implement <code>Iterable&lt;Map&lt;String, Object&gt;&gt;</code> are an advanced technique that give you full control over what the source data is.
+                                            <b>Apex</b> classes that implement <code class="keyword">Iterable&lt;Map&lt;String, Object&gt;&gt;</code> are an advanced technique that give you full control over what the source data is.
                                             For example, if you need to make multiple SOQL queries, apply complex data filtering, or retrieve data from an external web service with http callouts.
                                             Learn how to develop custom iterators with the <a href="https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_iterable.htm" target="_blank">Apex Developer Guide</a>.
                                         </p>
@@ -353,17 +373,17 @@ License: BSD 3-Clause License
                                             <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered">
                                                 <thead>
                                                     <tr class="slds-line-height_reset">
-                                                        <th class="slds-text-title_caps slds-cell-wrap">Source Type</th>
+                                                        <th class="slds-text-title_caps slds-cell-nowrap">Source Type</th>
                                                         <th class="slds-text-title_caps slds-cell-wrap">Limits</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     <tr>
-                                                        <td class="slds-cell-wrap"><b>List Views</b></td>
+                                                        <td class="slds-cell-nowrap"><b>List Views</b></td>
                                                         <td class="slds-cell-wrap">Up to 50 million records.</td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="slds-cell-wrap"><b>Reports</b></td>
+                                                        <td class="slds-cell-nowrap"><b>Reports</b></td>
                                                         <td class="slds-cell-wrap">
                                                             Up to 10 thousand records.
                                                             <br/>
@@ -373,15 +393,15 @@ License: BSD 3-Clause License
                                                         </td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="slds-cell-wrap"><b>SOQL</b></td>
+                                                        <td class="slds-cell-nowrap"><b>SOQL</b></td>
                                                         <td class="slds-cell-wrap">Up to 50 million records.</td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="slds-cell-wrap"><b>Apex</b></td>
+                                                        <td class="slds-cell-nowrap"><b>Apex</b></td>
                                                         <td class="slds-cell-wrap">
                                                             Up to 50 million records.
                                                             <br/>
-                                                            Class must implement <code>Iterable&lt;Map&lt;String, Object&gt;&gt;</code> and provide a no-argument constructor.
+                                                            Class must implement <code class="keyword">Iterable&lt;Map&lt;String, Object&gt;&gt;</code> and provide a no-argument constructor.
                                                         </td>
                                                     </tr>
                                                 </tbody>
@@ -389,9 +409,9 @@ License: BSD 3-Clause License
                                         </p>
 
                                         <p>
-                                            <b>Alias SOQL aggregate functions</b>. Aggregate functions like <code>COUNT</code>, <code>MIN</code>, <code>MAX</code>, <code>AVG</code>, <code>SUM</code> and others
+                                            <b>Alias SOQL aggregate functions</b>. Aggregate functions like <code class="keyword">COUNT</code>, <code class="keyword">MIN</code>, <code class="keyword">MAX</code>, <code class="keyword">AVG</code>, <code class="keyword">SUM</code> and others
                                             must be <a href="https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_groupby_alias.htm" target="_blank">aliased</a> to be selectable in the Field Mappings step.
-                                            For example, consider the query <code>SELECT COUNT(Id) <b>cnt</b>, Type FROM Account GROUP BY Type</code>.
+                                            For example, consider the query <code class="keyword">SELECT COUNT(Id) <b>cnt</b>, Type FROM Account GROUP BY Type</code>.
                                             Without the <b>cnt</b> alias then only the <b>Type</b> field would be available on the Field Mappings step.
                                         </p>
 
@@ -433,34 +453,51 @@ License: BSD 3-Clause License
                                             <table class="slds-table slds-table_cell-buffer slds-table_bordered">
                                                 <thead>
                                                     <tr class="slds-line-height_reset">
-                                                        <th class="slds-text-title_caps slds-cell-wrap">Action Type</th>
+                                                        <th class="slds-text-title_caps slds-cell-nowrap">Action Type</th>
                                                         <th class="slds-text-title_caps slds-cell-wrap">Supported Types</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     <tr>
-                                                        <td class="slds-cell-wrap"><b>Process Builder</b></td>
+                                                        <td class="slds-cell-nowrap"><b>Process Builder</b></td>
                                                         <td class="slds-cell-wrap">Processes that start when <a href="https://help.salesforce.com/articleView?id=process_start.htm" target="_blank">invoked by another process</a>, not when a record is created or updated.</td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="slds-cell-wrap"><b>Flows</b></td>
+                                                        <td class="slds-cell-nowrap"><b>Flows</b></td>
                                                         <td class="slds-cell-wrap">Autolaunched flows. Flows that <a href="https://help.salesforce.com/articleView?id=vpm_admin_flow_type.htm" target="_blank">don't require user interaction</a> like screens.</td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="slds-cell-wrap"><b>Quick Actions</b></td>
+                                                        <td class="slds-cell-nowrap"><b>Quick Actions</b></td>
                                                         <td class="slds-cell-wrap">Create a Record, Update a Record, and Log a Call types.</td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="slds-cell-wrap"><b>Email Alerts</b></td>
+                                                        <td class="slds-cell-nowrap"><b>Email Alerts</b></td>
                                                         <td class="slds-cell-wrap">All</td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="slds-cell-wrap"><b>Workflow Rules</b></td>
+                                                        <td class="slds-cell-nowrap"><b>Workflow Rules</b></td>
                                                         <td class="slds-cell-wrap">Active rules.</td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="slds-cell-wrap"><b>Apex</b></td>
-                                                        <td class="slds-cell-wrap">Classes annotated with <a href="https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_InvocableMethod.htm" target="_blank">@InvocableMethod</a>.</td>
+                                                        <td class="slds-cell-nowrap"><b>Apex</b></td>
+                                                        <td class="slds-cell-wrap">
+                                                            <p>
+                                                                Classes annotated with <a href="https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_InvocableMethod.htm" target="_blank">@InvocableMethod</a> or <a href="https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_anonymous_block.htm" target="_blank">anonymous blocks</a>.
+                                                            </p>
+                                                            <p>
+                                                                For anonymous blocks, your script must include the following method definition,
+                                                                which will be passed the current batch of source records. Each execution of your script occurs in its own transaction.
+                                                                <code class="block">
+                                                                    void execute( List&lt;Map&lt;String, Object&gt;&gt; sourceRecordsBatch ) {
+                                                                    &nbsp;&nbsp;&nbsp;&nbsp;// your logic here
+                                                                    }
+                                                                </code>
+                                                            </p>
+                                                            <p>
+                                                                Apex classes and anonymous blocks are invoked once per batch of source records, just like the <code class="keyword">execute</code> method of a <a href="https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_batch_interface.htm" target="_blank">Batchable Class</a> or a <a href="https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_triggers_bulk.htm" target="_blank">Bulk Trigger</a>.
+                                                                However, unlike batchable or trigger code, no state is preserved within the script between executions. Though you may choose to manage and preserve state yourself between executions via DML to records or custom settings.
+                                                            </p>
+                                                        </td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -496,16 +533,16 @@ License: BSD 3-Clause License
                                                 <li>Ensure that your user has <a href="https://trailhead.salesforce.com/content/learn/modules/data_security?trail_id=security" target="_blank">read object and field permissions</a>.</li>
                                                 <li>If using a Named Credential, ensure that user also has appropriate object and field permissions.</li>
                                                 <li>
-                                                    If using SOQL, alias the aggregate functions. Aggregate functions like <code>COUNT</code>, <code>MIN</code>, <code>MAX</code>, <code>AVG</code>, <code>SUM</code> and others
+                                                    If using SOQL, alias the aggregate functions. Aggregate functions like <code class="keyword">COUNT</code>, <code class="keyword">MIN</code>, <code class="keyword">MAX</code>, <code class="keyword">AVG</code>, <code class="keyword">SUM</code> and others
                                                     must be <a href="https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_groupby_alias.htm" target="_blank">aliased</a> to be selectable in the Field Mappings step.
-                                                    For example, consider the query <code>SELECT COUNT(Id) <b>cnt</b>, Type FROM Account GROUP BY Type</code>.
+                                                    For example, consider the query <code class="keyword">SELECT COUNT(Id) <b>cnt</b>, Type FROM Account GROUP BY Type</code>.
                                                     Without the <b>cnt</b> alias then only the <b>Type</b> field would be available on the Field Mappings step.
                                                 </li>
                                                 <li>
                                                     If using SOQL, child relationship queries are not shown in the Field Mappings step.
-                                                    For example, consider the query <code>SELECT Id, Name, ( SELECT FirstName FROM Contacts ) FROM Account</code>.
-                                                    The child relationship query <code>SELECT FirstName FROM Contacts</code> is ignored.
-                                                    Therefore, and for performance, do not use child relationship queries in your <code>SELECT</code> statement.
+                                                    For example, consider the query <code class="keyword">SELECT Id, Name, ( SELECT FirstName FROM Contacts ) FROM Account</code>.
+                                                    The child relationship query <code class="keyword">SELECT FirstName FROM Contacts</code> is ignored.
+                                                    Therefore, and for performance, do not use child relationship queries in your <code class="keyword">SELECT</code> statement.
                                                 </li>
                                             </ul>
                                         </p>
@@ -513,8 +550,9 @@ License: BSD 3-Clause License
                                             <b>Don't see the Target Field you're looking for?</b>
                                             <ul>
                                                 <li>For Flows, ensure the variable's <a href="https://help.salesforce.com/articleView?id=vpm_designer_resources_variable.htm" target="_blank">Input/Output Type</a> is "Input Only" or "Input and Output".</li>
-                                                <li>For Apex, ensure the class variable has the <a href="https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_InvocableVariable.htm" target="_blank">@InvocableVariable</a> annotation.</li>
                                                 <li>For Quick Actions, ensure the field is on the <a href="https://help.salesforce.com/articleView?id=action_layout_editor_about.htm" target="_blank">action's layout</a>.</li>
+                                                <li>For Invocable Apex, ensure the class variable has the <a href="https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_InvocableVariable.htm" target="_blank">@InvocableVariable</a> annotation.</li>
+                                                <li>For Anonymous Apex, the field mappings step is not used. Instead, your script handles all field mapping and logic within its <code class="keyword">execute</code> method.</li>
                                             </ul>
                                         </p>
                                     </aura:set>
@@ -536,7 +574,7 @@ License: BSD 3-Clause License
                                         </p>
                                         <p>
                                             <b>On Demand</b> runs only when you click the <b>Run</b> button or if you use Process Builder, Flow, or Apex to
-                                            invoke the provided <code>MA_RunConfigInvocable</code> invocable Apex class (labeled "MAS: Run Mass Action").
+                                            invoke the provided <code class="keyword">MA_RunConfigInvocable</code> invocable Apex class (labeled "MAS: Run Mass Action").
                                         </p>
                                         <p>
                                             <b>Scheduled</b> provides simple options to choose the hour, day, month, and year to run the configuration repeatedly.
@@ -563,29 +601,29 @@ License: BSD 3-Clause License
                                                 <table class="slds-table slds-table_cell-buffer slds-table_bordered">
                                                     <thead>
                                                         <tr class="slds-line-height_reset">
-                                                            <th class="slds-text-title_caps slds-cell-wrap">Expression</th>
+                                                            <th class="slds-text-title_caps slds-cell-nowrap">Expression</th>
                                                             <th class="slds-text-title_caps slds-cell-wrap">Description</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
                                                         <tr>
-                                                            <td class="slds-cell-wrap"><code>0 0 13 * * ?</code></td>
+                                                            <td class="slds-cell-nowrap"><code>0 0 13 * * ?</code></td>
                                                             <td class="slds-cell-wrap">Runs every day at 1 PM.</td>
                                                         </tr>
                                                         <tr>
-                                                            <td class="slds-cell-wrap"><code>0 0 22 ? * 6L</code></td>
+                                                            <td class="slds-cell-nowrap"><code>0 0 22 ? * 6L</code></td>
                                                             <td class="slds-cell-wrap">Runs the last Friday of every month at 10 PM.</td>
                                                         </tr>
                                                         <tr>
-                                                            <td class="slds-cell-wrap"><code>0 0 10 ? * MON-FRI	</code></td>
+                                                            <td class="slds-cell-nowrap"><code>0 0 10 ? * MON-FRI	</code></td>
                                                             <td class="slds-cell-wrap">Runs Monday through Friday at 10 AM.</td>
                                                         </tr>
                                                         <tr>
-                                                            <td class="slds-cell-wrap"><code>0 0 20 * * ? 2010</code></td>
+                                                            <td class="slds-cell-nowrap"><code>0 0 20 * * ? 2010</code></td>
                                                             <td class="slds-cell-wrap">Runs every day at 8 PM during the year 2010.</td>
                                                         </tr>
                                                         <tr>
-                                                            <td class="slds-cell-wrap"><code>0 0 8 13 2 ?</code></td>
+                                                            <td class="slds-cell-nowrap"><code>0 0 8 13 2 ?</code></td>
                                                             <td class="slds-cell-wrap">Runs every 13th of February at 8 AM.</td>
                                                         </tr>
                                                     </tbody>
@@ -823,7 +861,7 @@ License: BSD 3-Clause License
                                     maxlength="{!v.objectDescribe.fields.Source_SOQL_Query__c.length}"
                                     messageWhenValueMissing="SOQL Query is required."
                                     messageWhenTooLong="SOQL Query is too long."
-                                    class="slds-p-top_x-small"/>
+                                    class="slds-p-top_x-small slds-text-font_monospace"/>
 
                                 <lightning:button aura:id="validateSourceSoqlQueryButton"
                                     label="Validate Query"
@@ -916,6 +954,39 @@ License: BSD 3-Clause License
 
                             </aura:if>
 
+                            <aura:if isTrue="{!equals( v.targetType, 'Apex' )}">
+
+                                <c:slds_label label="Apex Type"
+                                              helpText="Choose how to invoke the Apex code. Supported types include invocable Apex methods annotated with @InvocableMethod, or anonymous blocks."/>
+                                <lightning:combobox aura:id="inputTargetApexType"
+                                    name="inputTargetApexType"
+                                    variant="label-hidden"
+                                    label="Apex Type"
+                                    value="{!v.targetApexType}"
+                                    options="{!v.targetApexTypes}"
+                                    placeholder="Select an Apex Type"
+                                    required="true"
+                                    messageWhenValueMissing="Apex Type is required."
+                                    class="slds-p-top_x-small"/>
+
+                                <aura:if isTrue="{!equals( v.targetApexType, 'Anonymous' )}">
+                                    <c:slds_label label="Apex Code"
+                                                  helpText="{!v.objectDescribe.fields.Target_Apex_Script__c.helpText}"/>
+                                    <lightning:textarea aura:id="inputTargetApexScript"
+                                        name="inputTargetApexScript"
+                                        variant="label-hidden"
+                                        label="{!v.objectDescribe.fields.Target_Apex_Script__c.label}"
+                                        value="{!v.record.targetApexScript}"
+                                        required="true"
+                                        onblur="{!c.handleOnBlurInputTargetApexScript}"
+                                        maxlength="{!v.objectDescribe.fields.Target_Apex_Script__c.length}"
+                                        messageWhenValueMissing="Apex code is required."
+                                        messageWhenTooLong="Apex code is too long."
+                                        class="slds-p-top_x-small slds-text-font_monospace"/>
+                                </aura:if>
+
+                            </aura:if>
+
                             <aura:if isTrue="{!v.targetTypeRequiresSobject}">
                                 <c:slds_label label="Object"
                                               helpText="Choose an object that has the custom actions to run on the source records."/>
@@ -967,69 +1038,83 @@ License: BSD 3-Clause License
 
                 <div class="slds-p-horizontal_medium">
 
-                    <table class="slds-table slds-table_bordered">
-                        <thead>
-                            <tr class="slds-text-title_caps">
-                                <th scope="col">Source Field</th>
-                                <th scope="col">Target Field</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <aura:iteration var="targetFieldMapping" items="{!v.targetFieldMappings}" indexVar="index">
-                                <tr>
-                                    <td width="50%">
+                    <aura:if isTrue="{!empty(v.targetFieldMappings)}">
 
-                                        <aura:if isTrue="{!equals( v.sourceFieldsInputType, 'text' )}">
+                        <p>
+                            The selected action type has no fields to map.
+                            <br/>
+                            You may proceed to schedule this configuration.
+                        </p>
 
-                                            <lightning:input aura:id="inputMappingSourceFieldName"
-                                                name="inputMappingSourceFieldName"
-                                                label="{!targetFieldMapping.targetField.label}"
-                                                variant="label-hidden"
-                                                value="{!targetFieldMapping.sourceFieldName}"
-                                                placeholder="Enter source field name"
-                                                required="{!targetFieldMapping.targetField.required}"/>
+                    </aura:if>
 
-                                        </aura:if>
+                    <aura:if isTrue="{!not(empty(v.targetFieldMappings))}">
 
-                                        <aura:if isTrue="{!equals( v.sourceFieldsInputType, 'combobox' )}">
-
-                                            <lightning:combobox aura:id="inputMappingSourceFieldName"
-                                                name="inputMappingSourceFieldName"
-                                                label="{!targetFieldMapping.targetField.label}"
-                                                variant="label-hidden"
-                                                value="{!targetFieldMapping.sourceFieldName}"
-                                                options="{!v.sourceFields}"
-                                                placeholder="Select a Field"
-                                                required="{!targetFieldMapping.targetField.required}"/>
-
-                                        </aura:if>
-
-                                    </td>
-                                    <td width="50%">
-
-                                        <aura:if isTrue="{!targetFieldMapping.targetField.required}">
-
-                                            <abbr class="slds-required" title="required">*</abbr>
-
-                                            <aura:set attribute="else">
-
-                                                <span class="slds-m-right_xxx-small" style="opacity:0">*</span>
-
-                                            </aura:set>
-
-                                        </aura:if>
-
-                                        <span class="slds-m-right_xx-small">{!targetFieldMapping.targetField.label}</span>
-
-                                        <aura:if isTrue="{!not(empty(targetFieldMapping.targetField.description))}">
-                                            <lightning:helptext content="{!targetFieldMapping.targetField.description}"/>
-                                        </aura:if>
-
-                                    </td>
+                        <table class="slds-table slds-table_bordered">
+                            <thead>
+                                <tr class="slds-text-title_caps">
+                                    <th scope="col">Source Field</th>
+                                    <th scope="col">Target Field</th>
                                 </tr>
-                            </aura:iteration>
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                <aura:iteration var="targetFieldMapping" items="{!v.targetFieldMappings}" indexVar="index">
+                                    <tr>
+                                        <td width="50%">
+
+                                            <aura:if isTrue="{!equals( v.sourceFieldsInputType, 'text' )}">
+
+                                                <lightning:input aura:id="inputMappingSourceFieldName"
+                                                    name="inputMappingSourceFieldName"
+                                                    label="{!targetFieldMapping.targetField.label}"
+                                                    variant="label-hidden"
+                                                    value="{!targetFieldMapping.sourceFieldName}"
+                                                    placeholder="Enter source field name"
+                                                    required="{!targetFieldMapping.targetField.required}"/>
+
+                                            </aura:if>
+
+                                            <aura:if isTrue="{!equals( v.sourceFieldsInputType, 'combobox' )}">
+
+                                                <lightning:combobox aura:id="inputMappingSourceFieldName"
+                                                    name="inputMappingSourceFieldName"
+                                                    label="{!targetFieldMapping.targetField.label}"
+                                                    variant="label-hidden"
+                                                    value="{!targetFieldMapping.sourceFieldName}"
+                                                    options="{!v.sourceFields}"
+                                                    placeholder="Select a Field"
+                                                    required="{!targetFieldMapping.targetField.required}"/>
+
+                                            </aura:if>
+
+                                        </td>
+                                        <td width="50%">
+
+                                            <aura:if isTrue="{!targetFieldMapping.targetField.required}">
+
+                                                <abbr class="slds-required" title="required">*</abbr>
+
+                                                <aura:set attribute="else">
+
+                                                    <span class="slds-m-right_xxx-small" style="opacity:0">*</span>
+
+                                                </aura:set>
+
+                                            </aura:if>
+
+                                            <span class="slds-m-right_xx-small">{!targetFieldMapping.targetField.label}</span>
+
+                                            <aura:if isTrue="{!not(empty(targetFieldMapping.targetField.description))}">
+                                                <lightning:helptext content="{!targetFieldMapping.targetField.description}"/>
+                                            </aura:if>
+
+                                        </td>
+                                    </tr>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+
+                    </aura:if>
 
                 </div>
 

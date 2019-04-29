@@ -5,21 +5,76 @@ GitHub: https://github.com/douglascayers/sfdx-lightning-api-component
 License: BSD 3-Clause License
  */
 ({
-    onScriptsLoaded: function( component, event, helper ) {
-        helper.makeApexRequest( component, 'c.getVisualforceDomainURL', {}, { storable: true } ).then( function( vfDomainURL ) {
-            helper.handleOnPostmateScriptsLoaded(
-                component,
-                component.find( 'postmate' ).getElement(),
-                `${vfDomainURL}/apex/LC_APIPage`
-            );
-        }).catch( $A.getCallback( function( err ) {
-            console.error( 'LC_API: Error in script initialization', err );
+    /**
+     * Called once during component initialization phase.
+     */
+    onInit: function( component, event, helper ) {
+        helper._penpal = {};
+        helper.makeApexRequest( component, 'c.getVisualforceDomainURL' ).then( $A.getCallback( function( vfDomainURL ) {
+            component.set( 'v.iframeSrc', `${vfDomainURL}/apex/LC_APIPage` );
+        })).catch( $A.getCallback( function( err ) {
+            console.error( 'LC_API: Error determining visualforce domain', err );
         }));
+    },
+
+    /**
+     * Called once after ltng:require has loaded scripts.
+     */
+    onScriptsLoaded: function( component, event, helper ) {
+
+    },
+
+    /**
+     * Called each time the component renders itself.
+     */
+    onRender: function( component, event, helper ) {
+
+        let initialized = component.get( 'v.penpalInitialized' );
+
+        // Since the iframe source is calculated asynchronously,
+        // we listen to the component's render events and each time
+        // check if the iframe is ready, and if so, then we initialize
+        // penpal to connect this component to the iframe.
+        // Since we only want to do this once, we also set the initialized flag.
+        if ( !initialized ) {
+
+            let iframeElmt = component.find( 'penpalFrame' ).getElement();
+
+            if ( !$A.util.isEmpty( iframeElmt.src ) ) {
+
+                component.set( 'v.penpalInitialized', true );
+
+                const connection = Penpal.connectToChild({
+                    // The iframe to which a connection should be made
+                    iframe: iframeElmt
+                });
+
+                helper._penpal.connection = connection;
+
+                connection.promise.then( $A.getCallback( function( child ) {
+                    // Cache a reference to the child so that we can
+                    // use it in the restRequest/fetchRequest methods,
+                    // as well as be able to destroy it when this component unrenders.
+                    helper._penpal.child = child;
+                })).catch( $A.getCallback( function( err ) {
+                    console.error( 'LC_API: Error establishing connection to iframe', err );
+                    component.set( 'v.penpalInitialized', false );
+                }));
+
+            } // else, iframe source is empty, keep waiting
+
+        }
+
     },
 
     onRestRequest: function( component, event, helper ) {
         var params = event.getParam( 'arguments' );
         return helper.handleRestRequest( component, params.request );
+    },
+
+    onFetchRequest: function( component, event, helper ) {
+        var params = event.getParam( 'arguments' );
+        return helper.handleFetchRequest( component, params.request );
     }
 })
 /*

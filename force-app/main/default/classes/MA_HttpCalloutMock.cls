@@ -72,7 +72,7 @@ public inherited sharing class MA_HttpCalloutMock implements HttpCalloutMock {
                 '     "label" : "Test Flow", ' +
                 '     "name" : "Test_Flow", ' +
                 '     "type" : "FLOW", ' +
-                '     "url" : "/services/data/v42.0/actions/custom/flow/Test_Flow" ' +
+                '     "url" : "/services/data/v45.0/actions/custom/flow/Test_Flow" ' +
                 '   } ] ' +
                 ' } '
             );
@@ -83,7 +83,7 @@ public inherited sharing class MA_HttpCalloutMock implements HttpCalloutMock {
 
             response.setBody(
                 ' { ' +
-                '   "Account" : "/services/data/v44.0/actions/custom/quickAction/Account" ' +
+                '   "Account" : "/services/data/v45.0/actions/custom/quickAction/Account" ' +
                 ' } '
             );
 
@@ -97,7 +97,7 @@ public inherited sharing class MA_HttpCalloutMock implements HttpCalloutMock {
                 '     "label" : "Test Quick Action", ' +
                 '     "name" : "Test_Quick_Action", ' +
                 '     "type" : "QUICKACTION", ' +
-                '     "url" : "/services/data/v44.0/actions/custom/quickAction/Account/Test_Quick_Action" ' +
+                '     "url" : "/services/data/v45.0/actions/custom/quickAction/Account/Test_Quick_Action" ' +
                 '   } ] ' +
                 ' } '
             );
@@ -108,7 +108,7 @@ public inherited sharing class MA_HttpCalloutMock implements HttpCalloutMock {
 
             response.setBody(
                 ' { ' +
-                '   "Account" : "/services/data/v44.0/actions/custom/emailAlert/Account" ' +
+                '   "Account" : "/services/data/v45.0/actions/custom/emailAlert/Account" ' +
                 ' } '
             );
 
@@ -122,7 +122,7 @@ public inherited sharing class MA_HttpCalloutMock implements HttpCalloutMock {
                 '     "label" : "Test Email Alert", ' +
                 '     "name" : "Test_Email_Alert", ' +
                 '     "type" : "EMAILALERT", ' +
-                '     "url" : "/services/data/v44.0/actions/custom/emailalert/Account/Test_Email_Alert" ' +
+                '     "url" : "/services/data/v45.0/actions/custom/emailalert/Account/Test_Email_Alert" ' +
                 '   } ] ' +
                 ' } '
             );
@@ -137,7 +137,7 @@ public inherited sharing class MA_HttpCalloutMock implements HttpCalloutMock {
                 '     "label" : "Test Apex", ' +
                 '     "name" : "Test_Apex", ' +
                 '     "type" : "APEX", ' +
-                '     "url" : "/services/data/v44.0/actions/custom/apex/Test_Apex" ' +
+                '     "url" : "/services/data/v45.0/actions/custom/apex/Test_Apex" ' +
                 '   } ] ' +
                 ' } '
             );
@@ -244,7 +244,7 @@ public inherited sharing class MA_HttpCalloutMock implements HttpCalloutMock {
                 '   "records" : [ { ' +
                 '     "attributes" : { ' +
                 '       "type" : "Account", ' +
-                '       "url" : "/services/data/v44.0/sobjects/Account/001f400000CukanAAB" ' +
+                '       "url" : "/services/data/v45.0/sobjects/Account/001f400000CukanAAB" ' +
                 '     }, ' +
                 '     "Id" : "001f400000CukanAAB", ' +
                 '     "Name" : "Test Account 1" ' +
@@ -271,7 +271,7 @@ public inherited sharing class MA_HttpCalloutMock implements HttpCalloutMock {
                 '   "records" : [ { ' +
                 '     "attributes" : { ' +
                 '       "type" : "Account", ' +
-                '       "url" : "/services/data/v44.0/sobjects/Account/001f400000lxT2JAAU" ' +
+                '       "url" : "/services/data/v45.0/sobjects/Account/001f400000lxT2JAAU" ' +
                 '     }, ' +
                 '     "Id" : "001f400000lxT2JAAU", ' +
                 '     "Name" : "Test Account 2" ' +
@@ -294,7 +294,40 @@ public inherited sharing class MA_HttpCalloutMock implements HttpCalloutMock {
                 ' ] '
             );
 
-        } else {
+        }
+        // Anonymous Apex (failure)
+        else if ( matches( request.getEndpoint(), '(.*)/tooling/executeAnonymous(/)?\\?anonymousBody=(.*)TEST_FAIL(.*)' ) ) {
+
+            response.setBody(
+                ' { ' +
+                '   "line" : 1, ' +
+                '   "column" : 14, ' +
+                '   "compiled" : false, ' +
+                '   "success" : false, ' +
+                '   "compileProblem" : "Some error about why Apex did not compile", ' +
+                '   "exceptionStackTrace" : null, ' +
+                '   "exceptionMessage" : null ' +
+                ' } '
+            );
+
+        }
+        // Anonymous Apex (success)
+        else if ( matches( request.getEndpoint(), '(.*)/tooling/executeAnonymous(/)?\\?anonymousBody=(.*)' ) ) {
+
+            response.setBody(
+                ' { ' +
+                '   "line" : -1, ' +
+                '   "column" : -1, ' +
+                '   "compiled" : true, ' +
+                '   "success" : true, ' +
+                '   "compileProblem" : null, ' +
+                '   "exceptionStackTrace" : null, ' +
+                '   "exceptionMessage" : null ' +
+                ' } '
+            );
+
+        }
+        else {
 
             response.setStatus( 'ERROR' );
             response.setStatusCode( 400 );
@@ -360,7 +393,7 @@ public inherited sharing class MA_HttpCalloutMock implements HttpCalloutMock {
             );
 
         }
-        // Apex
+        // Invocable Apex
         else if ( matches( request.getEndpoint(), '(.)*/actions/custom/apex/[\\w]+(/)?' ) ) {
 
             response.setBody(
@@ -372,7 +405,9 @@ public inherited sharing class MA_HttpCalloutMock implements HttpCalloutMock {
                 ' } ] '
             );
 
-        } else {
+
+        }
+        else {
 
             response.setStatus( 'ERROR' );
             response.setStatusCode( 400 );

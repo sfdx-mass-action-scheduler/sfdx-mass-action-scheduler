@@ -5,32 +5,6 @@ GitHub: https://github.com/douglascayers/sfdx-lightning-api-component
 License: BSD 3-Clause License
  */
 ({
-    /**
-     * Configures Postmate.
-     * https://github.com/dollarshaveclub/postmate
-     *
-     * @param iframeContainerElmt
-     *      Element to inject iframe into
-     * @param iframeURL
-     *      Page to load, must have postmate.js. This will also be the origin used for communication.
-     */
-    handleOnPostmateScriptsLoaded: function( component, iframeContainerElmt, iframeURL ) {
-
-        var helper = this;
-
-        // Kick off the handshake with the iframe
-        const handshake = new Postmate({
-            container: iframeContainerElmt,
-            url: iframeURL
-        });
-
-        // When parent <-> child handshake is complete, data may be requested from the child
-        handshake.then( $A.getCallback( function( child ) {
-            helper._postmate = child;
-        }));
-
-    },
-
     handleRestRequest: function( component, request ) {
 
         var helper = this;
@@ -46,8 +20,18 @@ License: BSD 3-Clause License
         request = Object.assign( {}, defaultRequest, request );
         request.headers = Object.assign( {}, defaultHeaders, request.headers );
 
-        return helper.getPostmateChild().then( $A.getCallback( function( child ) {
-            return helper.makePostmateRequest( child, request );
+        return helper.getPenpalChild().then( $A.getCallback( function( child ) {
+            return helper.makePenpalRequest( 'rest', child, request );
+        }));
+
+    },
+
+    handleFetchRequest: function( component, request ) {
+
+        var helper = this;
+
+        return helper.getPenpalChild().then( $A.getCallback( function( child ) {
+            return helper.makePenpalRequest( 'fetch', child, request );
         }));
 
     },
@@ -59,13 +43,13 @@ License: BSD 3-Clause License
      * Returns a promise waiting for the parent-child postmate handshake to complete
      * then resolves with reference to the postmate child for making requests.
      */
-    getPostmateChild: function() {
+    getPenpalChild: function() {
 
         var helper = this;
 
         return new Promise( function( resolve, reject ) {
 
-            var child = helper._postmate;
+            var child = helper._penpal.child;
 
             if ( child ) {
 
@@ -81,7 +65,7 @@ License: BSD 3-Clause License
 
                 var timerId = setInterval( $A.getCallback( function() {
 
-                    child = helper._postmate;
+                    child = helper._penpal.child;
 
                     if ( child ) {
 
@@ -95,7 +79,7 @@ License: BSD 3-Clause License
                         var currentTime = new Date().getTime();
                         if ( currentTime > endTime ) {
                             clearInterval( timerId );
-                            reject( 'Timeout Error: Could not establish Postmate handshake' );
+                            reject( 'LC_API: Timeout trying to establish connection to iframe' );
                         }
                         // else, keep polling
 
@@ -114,27 +98,28 @@ License: BSD 3-Clause License
      * Returns a promise waiting for the parent-child postmate request to complete
      * then resolves with response from the child iframe.
      */
-    makePostmateRequest: function( child, request ) {
+    makePenpalRequest: function( requestType, child, request ) {
 
-        return new Promise( function( resolve, reject ) {
+        let p;
 
-            // how postmate passes context/arguments to the child iframe
-            // namely, the details of the REST API request to make
-            child.call( 'restRequest', request );
+        if ( requestType === 'rest' ) {
+            p = child.restRequest( request );
+        } else if ( requestType === 'fetch' ) {
+            p = child.fetchRequest( request );
+        } else {
+            p = Promise.resolve({
+                success: false,
+                data: 'LC_API: Invalid request type: ' + requestType
+            });
+        }
 
-            // how postmate solicits child iframe to send message back
-            // namely, the response from the REST API request we asked for
-            child.get( 'restResponse' ).then( $A.getCallback( function( response ) {
-                if ( response.success ) {
-                    resolve( response.data );
-                } else {
-                    reject( response.data );
-                }
-            })).catch( $A.getCallback( function( err ) {
-                reject( err );
-            }));
-
-        });
+        return p.then( $A.getCallback( function( response ) {
+            if ( response.success ) {
+                return response.data;
+            } else {
+                throw new Error( response.data );
+            }
+        }));
 
     },
 
@@ -198,7 +183,7 @@ License: BSD 3-Clause License
      * Logs to console errors object.
      * Errors may be a String or Array.
      */
-    logActionErrors : function( errors ) {
+    logActionErrors: function( errors ) {
         if ( errors ) {
             if ( errors.length > 0 ) {
                 for ( var i = 0; i < errors.length; i++ ) {

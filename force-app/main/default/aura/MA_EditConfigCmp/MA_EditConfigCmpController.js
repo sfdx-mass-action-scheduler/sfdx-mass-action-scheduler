@@ -37,6 +37,17 @@ License: BSD 3-Clause License
                         component.set( 'v.targetSobjectType', record.targetSobjectType );
                         component.set( 'v.targetInvocableAction', record.targetActionName );
 
+                        if ( record.targetType === 'Apex' ) {
+
+                            if ( !$A.util.isEmpty( record.targetActionName ) ) {
+                                component.set( 'v.targetApexType', 'Invocable' );
+                            }
+                            else if ( !$A.util.isEmpty( record.targetApexScript ) ) {
+                                component.set( 'v.targetApexType', 'Anonymous' );
+                            }
+
+                        }
+
                         if ( !$A.util.isUndefinedOrNull( record.sourceReportID ) ) {
 
                             helper.getReportAsync( component, record.sourceReportID )
@@ -159,7 +170,9 @@ License: BSD 3-Clause License
                 inputCmps = [
                     component.find( 'inputTargetType' ),
                     component.find( 'inputTargetSobjectType' ),
-                    component.find( 'inputTargetAction' )
+                    component.find( 'inputTargetAction' ),
+                    component.find( 'inputTargetApexType' ),
+                    component.find( 'inputTargetApexScript' )
                 ];
 
             } else if ( currentStageIndex === 3 ) {         // Field Mappings
@@ -304,7 +317,21 @@ License: BSD 3-Clause License
 
         var inputCmp = event.getSource();
         var inputValue = inputCmp.get( 'v.value' );
-        inputCmp.set( 'v.value', inputValue.trim() );
+
+        if ( !$A.util.isUndefinedOrNull( inputValue ) ) {
+            inputCmp.set( 'v.value', inputValue.trim() );
+        }
+
+    },
+
+    handleOnBlurInputTargetApexScript : function( component, event, helper ) {
+
+        var inputCmp = event.getSource();
+        var inputValue = inputCmp.get( 'v.value' );
+
+        if ( !$A.util.isUndefinedOrNull( inputValue ) ) {
+            inputCmp.set( 'v.value', inputValue.trim() );
+        }
 
     },
 
@@ -602,62 +629,13 @@ License: BSD 3-Clause License
 
     handleTargetTypeChange : function( component, event, helper ) {
 
-        var targetType = component.get( 'v.targetType' );
-        var record = component.get( 'v.record' );
+        helper.handleTargetTypeChange( component );
 
-        // if true then we need to display prompt to user
-        // to choose an object before we can show action options
-        var targetTypeRequiresSobject = false;
-        var targetTypeRequiresAction = false;
+    },
 
-        if ( helper.isEmpty( targetType ) || targetType == 'Workflow' ) {
+    handleTargetApexTypeChange : function( component, event, helper ) {
 
-            targetTypeRequiresSobject = false;
-            targetTypeRequiresAction = false;
-
-            record.targetActionName = null;
-            record.targetSobjectType = null;
-
-        } else if ( targetType == 'Flow' ) {
-
-            targetTypeRequiresSobject = false;
-            targetTypeRequiresAction = true;
-
-            //record.targetActionName = null;
-            record.targetSobjectType = null;
-
-        } else if ( targetType == 'QuickAction' ) {
-
-            targetTypeRequiresSobject = true;
-            targetTypeRequiresAction = true;
-
-            //record.targetActionName = null;
-            //record.targetSobjectType = null;
-
-        } else if ( targetType == 'EmailAlert' ) {
-
-            targetTypeRequiresSobject = true;
-            targetTypeRequiresAction = true;
-
-            //record.targetActionName = null;
-            //record.targetSobjectType = null;
-
-        } else if ( targetType == 'Apex' ) {
-
-            targetTypeRequiresSobject = false;
-            targetTypeRequiresAction = true;
-
-            //record.targetActionName = null;
-            record.targetSobjectType = null;
-
-        }
-
-        component.set( 'v.targetTypeRequiresSobject', targetTypeRequiresSobject );
-        component.set( 'v.targetTypeRequiresAction', targetTypeRequiresAction );
-        component.set( 'v.record', record );
-
-        helper.renderTargetSobjectTypes( component );
-        helper.renderTargetInvocableActions( component );
+        helper.handleTargetTypeChange( component );
 
     },
 

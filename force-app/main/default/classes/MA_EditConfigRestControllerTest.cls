@@ -718,6 +718,7 @@ private class MA_EditConfigRestControllerTest {
         System.assertEquals( config.Target_Type__c, wrapper.targetType );
         System.assertEquals( config.Target_SObject_Type__c, wrapper.targetSobjectType );
         System.assertEquals( config.Target_Action_Name__c, wrapper.targetActionName );
+        System.assertEquals( config.Target_Apex_Script__c, wrapper.targetApexScript );
         System.assertEquals( config.Schedule_Frequency__c, wrapper.scheduleFrequency );
         System.assertEquals( config.Schedule_Cron__c, wrapper.scheduleCron );
         System.assertEquals( config.Schedule_SecondOfMinute__c, wrapper.scheduleSecondOfMinute );
@@ -747,6 +748,7 @@ private class MA_EditConfigRestControllerTest {
         System.assertEquals( config.Target_Type__c, config2.Target_Type__c );
         System.assertEquals( config.Target_SObject_Type__c, config2.Target_SObject_Type__c );
         System.assertEquals( config.Target_Action_Name__c, config2.Target_Action_Name__c );
+        System.assertEquals( config.Target_Apex_Script__c, config2.Target_Apex_Script__c );
         System.assertEquals( config.Schedule_Frequency__c, config2.Schedule_Frequency__c );
         System.assertEquals( config.Schedule_Cron__c, config2.Schedule_Cron__c );
         System.assertEquals( config.Schedule_SecondOfMinute__c, config2.Schedule_SecondOfMinute__c );

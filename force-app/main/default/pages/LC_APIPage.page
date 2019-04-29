@@ -18,7 +18,7 @@ License: BSD 3-Clause License
 <html>
 
     <head>
-        <apex:includeScript value="{!$Resource.postmate}"/>
+        <apex:includeScript value="{!$Resource.penpal}"/>
         <apex:includeScript value="{!$Resource.jsforce}"/>
     </head>
 
@@ -26,56 +26,105 @@ License: BSD 3-Clause License
 
         <script>
 
-            var conn = new jsforce.Connection({ accessToken: '{!$Api.Session_Id}', version: '44.0' });
+            const jsforceConn = new jsforce.Connection({
+                accessToken: '{!$Api.Session_Id}',
+                version: '45.0'
+            });
 
-            var _restRequest;
-
-            // Expose your model to the Parent. Property values may be functions, promises, or regular values
-            const handshake = new Postmate.Model({
-
-                restRequest : function( request ) {
-                    _restRequest = request;
-                },
-
-                restResponse : function() {
-                    return new Promise( function( resolve, reject ) {
-                        conn.request( _restRequest ).then( function( response ) {
-                            resolve({
-                                success: true,
-                                data: response
-                            });
-                        }).catch( function( err ) {
-                            // Have to resolve because if reject
-                            // then whole post message operation fails,
-                            // so wrapping our response with our own
-                            // success flag to denote if any errors.
-                            try {
-                                // If the server's response body was JSON but the status code
-                                // indicated an error, the response body is treated
-                                // as a string and set to Error.message property.
-                                // To propogate the original JSON payload as JSON then
-                                // we do JSON.parse here. If the parse fails then
-                                // just resolve with the Error.message string anyways.
-                                resolve({
-                                    success: false,
-                                    data: JSON.parse( err.message )
-                                });
-                            } catch ( e ) {
-                                resolve({
-                                    success: false,
-                                    data: err.message // postMessage cannot deserialize the Error object, so pick off the message
-                                });
-                            }
-                        });
-                    });
+            const penpalConn = Penpal.connectToParent({
+                methods: {
+                    restRequest,
+                    fetchRequest
                 }
-
             });
 
-            // When parent <-> child handshake is complete, events may be emitted to the parent
-            handshake.then( function( parent ) {
+            /**
+             * Makes a Salesforce REST API request and returns a promise that resolves to the response.
+             * See the LC_API.cmp for documentation on usage.
+             */
+            function restRequest( request ) {
+                return new Promise( function( resolve, reject ) {
+                    jsforceConn.request( request ).then( function( response ) {
+                        resolve({
+                            success: true,
+                            data: response
+                        });
+                    }).catch( function( err ) {
+                        // Have to resolve because if reject
+                        // then whole post message operation fails,
+                        // so wrapping our response with our own
+                        // success flag to denote if any errors.
+                        resolve( formatError( err ) );
+                    });
+                });
+            };
 
-            });
+            /**
+             * Makes a JavaScript Fetch request and returns a promise that resolves to the response.
+             * See the LC_API.cmp for documentation on usage.
+             */
+            function fetchRequest( request ) {
+                return new Promise( function( resolve, reject ) {
+                    fetch( request.url, request.options ).then( function( response ) {
+                        if ( response.ok ) {
+                            // Although the Fetch's Response has a .json() method,
+                            // the response body might not conform to JSON and would error.
+                            // Instead, we read the response as text and then use our
+                            // utility `getAsJsonOrText` to convert it to JSON if appropriate.
+                            response.text().then( function( responseText ) {
+                                resolve({
+                                    success: true,
+                                    data: getAsJsonOrText( responseText )
+                                });
+                            });
+                        } else {
+                            resolve({
+                                success: false,
+                                data: response.statusText
+                            });
+                        }
+                    }).catch( function( err ) {
+                        // Have to resolve because if reject
+                        // then whole post message operation fails,
+                        // so wrapping our response with our own
+                        // success flag to denote if any errors.
+                        resolve( formatError( err ) );
+                    });
+                });
+            };
+
+            /**
+             * Formats the error object into our common data structure
+             * for communicating to the Penpal parent.
+             *
+             * @param error
+             *      JavaScript error object obtained from a promise catch method.
+             * @returns { { data: any, success: boolean } }
+             */
+            function formatError( error ) {
+                // If the server's response body was JSON but the status code
+                // indicated an error, the response body is treated
+                // as a string and set to Error.message property.
+                // To propogate the original JSON payload as JSON then
+                // we try to parse it as JSON. If the parse fails then
+                // we just resolve with the Error.message string anyways.
+                return ({
+                    success: false,
+                    data: getAsJsonOrText( error.message ) // postMessage cannot deserialize the Error object, so pick off the message
+                });
+            }
+
+            /**
+             * If content can be parsed by `JSON.parse` then the json is returned,
+             * otherwise, the content as-is is returned instead.
+             */
+            function getAsJsonOrText( content ) {
+                try {
+                    return JSON.parse( content );
+                } catch ( e ) {
+                    return content;
+                }
+            }
 
         </script>
 

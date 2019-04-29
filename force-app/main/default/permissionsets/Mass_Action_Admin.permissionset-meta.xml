@@ -85,9 +85,9 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Mass_Action_Configuration__c.Source_Apex_Class__c</field>
-        <readable>false</readable>
+        <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
@@ -117,6 +117,11 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>Mass_Action_Configuration__c.Target_Action_Name__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Mass_Action_Configuration__c.Target_Apex_Script__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>

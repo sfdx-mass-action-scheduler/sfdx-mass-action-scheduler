@@ -73,6 +73,9 @@ public inherited sharing class MA_MassActionConfigWrapper {
     @AuraEnabled
     public String targetActionName { get; set; }
 
+    @AuraEnabled
+    public String targetApexScript { get; set; }
+
     // schedule
 
     @AuraEnabled
@@ -147,6 +150,7 @@ public inherited sharing class MA_MassActionConfigWrapper {
             this.targetType = config.Target_Type__c;
             this.targetSobjectType = config.Target_SObject_Type__c;
             this.targetActionName = config.Target_Action_Name__c;
+            this.targetApexScript = config.Target_Apex_Script__c;
             // schedule
             this.scheduleFrequency = config.Schedule_Frequency__c;
             this.scheduleCron = config.Schedule_Cron__c;
@@ -190,6 +194,7 @@ public inherited sharing class MA_MassActionConfigWrapper {
             Target_Type__c = this.targetType,
             Target_SObject_Type__c = this.targetSobjectType,
             Target_Action_Name__c = this.targetActionName,
+            Target_Apex_Script__c = this.targetApexScript,
             // schedule
             Schedule_Frequency__c = this.scheduleFrequency,
             Schedule_Cron__c = this.scheduleCron,

@@ -7,57 +7,99 @@
 @IsTest
 private class MA_SoqlSourceBatchableTest {
 
-    @IsTest
-    static void test_batchable_Workflow() {
+    /**
+     * Stubs out a simple configuration record with
+     * source properties defined. Test methods should set
+     * the target properties before calling `test_batchable` method.
+     */
+    private static Mass_Action_Configuration__c buildTestConfiguration() {
 
-        test_batchable( 'Workflow', null, 'Account' );
-
-    }
-
-    @IsTest
-    static void test_batchable_Flow() {
-
-        test_batchable( 'Flow', 'Test_Flow', null );
-
-    }
-
-    @IsTest
-    static void test_batchable_QuickAction() {
-
-        test_batchable( 'QuickAction', 'Test_Quick_Action', 'Account' );
-
-    }
-
-    @IsTest
-    static void test_batchable_EmailAlert() {
-
-        test_batchable( 'EmailAlert', 'Test_Email_Alert', 'Account' );
-
-    }
-
-    @IsTest
-    static void test_batchable_Apex() {
-
-        test_batchable( 'Apex', 'Test_Apex', null );
-
-    }
-
-    static void test_batchable( String targetType, String targetActionName, String targetSobjectType ) {
-
-        String objectName = MA_MassActionUtils.NAMESPACE_API + 'Mass_Action_Configuration__c';
-
-        Mass_Action_Configuration__c config = new Mass_Action_Configuration__c(
+        return new Mass_Action_Configuration__c(
             Name = 'Test Config',
             DeveloperName__c = 'Test_Config',
             Named_Credential__c = 'Mass_Action_Test_Named_Credential',
             Active__c = true,
             Batch_Size__c = 200,
             Source_Type__c = 'SOQL',
-            Source_SOQL_Query__c = 'SELECT Id, Name FROM Account LIMIT 10',
-            Target_Type__c = targetType,
-            Target_Action_Name__c = targetActionName,
-            Target_SObject_Type__c = targetSobjectType
+            Source_SOQL_Query__c = 'SELECT Id, Name FROM Account LIMIT 10'
         );
+
+    }
+
+    @IsTest
+    static void test_batchable_Workflow() {
+
+        Mass_Action_Configuration__c config = buildTestConfiguration();
+        config.Target_Type__c = 'Workflow';
+        config.Target_Action_Name__c = null;
+        config.Target_SObject_Type__c = 'Account';
+
+        test_batchable( config );
+
+    }
+
+    @IsTest
+    static void test_batchable_Flow() {
+
+        Mass_Action_Configuration__c config = buildTestConfiguration();
+        config.Target_Type__c = 'Flow';
+        config.Target_Action_Name__c = 'Test_Flow';
+        config.Target_SObject_Type__c = null;
+
+        test_batchable( config );
+
+    }
+
+    @IsTest
+    static void test_batchable_QuickAction() {
+
+        Mass_Action_Configuration__c config = buildTestConfiguration();
+        config.Target_Type__c = 'QuickAction';
+        config.Target_Action_Name__c = 'Test_Quick_Action';
+        config.Target_SObject_Type__c = 'Account';
+
+        test_batchable( config );
+
+    }
+
+    @IsTest
+    static void test_batchable_EmailAlert() {
+
+        Mass_Action_Configuration__c config = buildTestConfiguration();
+        config.Target_Type__c = 'EmailAlert';
+        config.Target_Action_Name__c = 'Test_Email_Alert';
+        config.Target_SObject_Type__c = 'Account';
+
+        test_batchable( config );
+
+    }
+
+    @IsTest
+    static void test_batchable_InvocableApex() {
+
+        Mass_Action_Configuration__c config = buildTestConfiguration();
+        config.Target_Type__c = 'Apex';
+        config.Target_Action_Name__c = 'Test_Apex';
+        config.Target_SObject_Type__c = null;
+
+        test_batchable( config );
+
+    }
+
+    @IsTest
+    static void test_batchable_AnonymousApex() {
+
+        Mass_Action_Configuration__c config = buildTestConfiguration();
+        config.Target_Type__c = 'Apex';
+        config.Target_Action_Name__c = null;
+        config.Target_SObject_Type__c = null;
+        config.Target_Apex_Script__c = 'void execute( List<Map<String, Object>> sourceRecordsBatch ) { System.debug( sourceRecordsBatch ); }';
+
+        test_batchable( config );
+
+    }
+
+    static void test_batchable( Mass_Action_Configuration__c config ) {
 
         insert config;
 
@@ -96,6 +138,7 @@ private class MA_SoqlSourceBatchableTest {
                 Id = :config.Id
         ];
 
+        System.debug( [ SELECT Id, Message__c FROM Mass_Action_Log__c WHERE Mass_Action_Configuration__c = :config.Id ] );
         System.assertEquals( 0, [ SELECT COUNT() FROM Mass_Action_Log__c WHERE Mass_Action_Configuration__c = :config.Id ] );
         System.assertEquals( job.CompletedDate, config.Last_Run_Completed_Date__c );
         System.assertEquals( false, config.Last_Run_Completed_With_Errors__c );
@@ -103,22 +146,11 @@ private class MA_SoqlSourceBatchableTest {
     }
 
     @IsTest
-    static void test_batchable_fail() {
+    static void test_batchable_fail_bad_field_mapping() {
 
-        String objectName = MA_MassActionUtils.NAMESPACE_API + 'Mass_Action_Configuration__c';
-
-        Mass_Action_Configuration__c config = new Mass_Action_Configuration__c(
-            Name = 'Test Config',
-            DeveloperName__c = 'Test_Config',
-            Named_Credential__c = 'Mass_Action_Test_Named_Credential',
-            Active__c = true,
-            Batch_Size__c = 200,
-            Source_Type__c = 'SOQL',
-            Source_SOQL_Query__c = 'SELECT Id, Name FROM Account LIMIT 10',
-            Target_Type__c = 'Flow',
-            Target_Action_Name__c = 'Test_Flow',
-            Target_SObject_Type__c = null
-        );
+        Mass_Action_Configuration__c config = buildTestConfiguration();
+        config.Target_Type__c = 'Workflow';
+        config.Target_SObject_Type__c = 'Account';
 
         insert config;
 
@@ -157,7 +189,51 @@ private class MA_SoqlSourceBatchableTest {
                 Id = :config.Id
         ];
 
+        System.debug( [ SELECT Id, Message__c FROM Mass_Action_Log__c WHERE Mass_Action_Configuration__c = :config.Id ] );
         System.assertEquals( 1, [ SELECT COUNT() FROM Mass_Action_Log__c WHERE Mass_Action_Configuration__c = :config.Id ] );
+        System.assertEquals( job.CompletedDate, config.Last_Run_Completed_Date__c );
+        System.assertEquals( true, config.Last_Run_Completed_With_Errors__c );
+
+    }
+
+    @IsTest
+    static void test_batchable_fail_bad_apex_script() {
+
+        Mass_Action_Configuration__c config = buildTestConfiguration();
+        config.Target_Type__c = 'Apex';
+        config.Target_Apex_Script__c = 'TEST_FAIL'; // callout mock looks for this keyword
+
+        insert config;
+
+        Account acct = new Account(
+            Name = 'Test Account'
+        );
+
+        insert acct;
+
+        Test.setMock( HttpCalloutMock.class, new MA_HttpCalloutMock() );
+
+        Test.startTest();
+
+        ID jobId = Database.executeBatch( new MA_SoqlSourceBatchable( config.Id ), config.Batch_Size__c.intValue() );
+
+        Test.stopTest();
+
+        AsyncApexJob job = MA_MassActionBatchUtils.getJobById( jobId );
+
+        config = [
+            SELECT
+                Id,
+                Last_Run_Completed_Date__c,
+                Last_Run_Completed_With_Errors__c
+            FROM
+                Mass_Action_Configuration__c
+            WHERE
+                Id = :config.Id
+        ];
+
+        System.debug( [ SELECT Id, Message__c FROM Mass_Action_Log__c WHERE Mass_Action_Configuration__c = :config.Id ] );
+        System.assertEquals( 1, [ SELECT COUNT() FROM Mass_Action_Log__c WHERE Mass_Action_Configuration__c = :config.Id AND Message__c LIKE '%Apex did not compile%' ] );
         System.assertEquals( job.CompletedDate, config.Last_Run_Completed_Date__c );
         System.assertEquals( true, config.Last_Run_Completed_With_Errors__c );
 
