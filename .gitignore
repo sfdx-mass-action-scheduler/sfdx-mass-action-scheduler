@@ -1,4 +1,5 @@
 .idea/
 .sfdx/
+.vscode/
 IlluminatedCloud/
 *.iml
