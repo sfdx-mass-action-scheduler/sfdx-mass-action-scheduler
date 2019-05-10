@@ -90,7 +90,7 @@ There are a few items you need to setup before installing and using this app.
 
 1. You will need to [Enable Lightning Experience](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Pre-Requisites-Instructions#1-enable-lightning-experience) because we are using Lightning Components.
 2. You will need to [Enable My Domain](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Pre-Requisites-Instructions#2-enable-my-domain) because we are using Lightning Components.
-3. You will need to [Disable clickjack protection for Visualforce pages](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Pre-Requisites-Instructions#3-disable-clickjack-protection-for-visualforce-pages) because we iframe pages in Lightning Components.
+3. You will need to [Allow IFraming of Visualforce Pages with Clickjack Protection](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Pre-Requisites-Instructions#3-allow-iframing-of-visualforce-pages-with-clickjack-protection) because we iframe pages in Lightning Components.
 
 Please see the [instructions in the wiki](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Pre-Requisites-Instructions) for screen shots and step-by-steps.
 
