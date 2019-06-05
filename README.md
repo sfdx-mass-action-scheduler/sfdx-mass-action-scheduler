@@ -1,12 +1,12 @@
 Mass Action Scheduler
 =======================
 
-![screen shot](images/wizard-details.png)
+> Put the power of [Batch Apex](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_batch.htm) within reach of [declarative configuration](https://help.salesforce.com/articleView?id=extend_click_intro.htm&type=5). Declaratively schedule Process Builder, Flows, Quick Actions, Email Alerts, Workflow Rules, or Apex to process records from Reports, List Views, SOQL, or Apex.
+
+![Mass Action Scheduler Logo](images/mas-logo.png)
 
 Overview
 --------
-
-Declaratively schedule Process Builder, Flows, Quick Actions, Email Alerts, Workflow Rules, and Apex to process records from Reports, List Views, and SOQL queries.
 
 * **Declarative** - no code necessary, never write Batch Apex again for queries that can be expressed in a report or list view and actions that can be expressed in a declarative alternative
 * **On Platform** - everything happens in Salesforce so no exporting or uploading data
