@@ -46,7 +46,9 @@ No more waiting for records to be updated or creating clever workarounds to caus
 * Read the [wiki page](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki) for further documentation on Mass Action Scheduler.
 * Read the [FAQ page](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Frequently-Asked-Questions) to help troubleshoot technical issues.
 
-## Pre-Requisites
+## Getting Started
+
+### Prerequisites
 
 There are a few items you need to setup before installing and using this app.
 
@@ -56,19 +58,7 @@ There are a few items you need to setup before installing and using this app.
 
 Please see the [instructions in the wiki](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Pre-Requisites-Instructions) for screen shots and step-by-steps.
 
-## Packaged Release History
-
-### Support
-
-Mass Action Scheduler is a free and independently developed passion project of mine.
-
-If your business has found value in my open source projects, please consider showing your support:
-  * :star: Star this project on GitHub
-  * Contribute a :coffee: or :hamburger: via my [virtual tip jar on PayPal](https://www.paypal.me/douglascayers/)
-
-[Thank you](https://douglascayers.com/thanks-for-your-support/)! :heart:
-
-### Release 2.2 (current)
+### Install Package
 
 _Due to Lightning Experience web page caching, please log out and log back in after installing the package for UI changes to appear._
 
@@ -81,7 +71,7 @@ _Due to Lightning Experience web page caching, please log out and log back in af
 
 ---
 
-### Installing the Source Code (Developers)
+### Install Source Code (Developers)
 
 This repository is organized using [Salesforce DX](https://trailhead.salesforce.com/en/trails/sfdx_get_started).
 You may install the source code from GitHub and make any desired adjustments.
@@ -135,25 +125,42 @@ Open the scratch org and enjoy!
 sfdx force:org:open --path //lightning/o/Mass_Action_Configuration__c/list
 ```
 
+## Sponsoring
 
-## Credits
+Mass Action Scheduler is a free and independently developed passion project of mine.
 
-[Doug Ayers](https://douglascayers.com) develops and maintains the project.
+If your business has found value in my open source projects, please consider showing your support:
+  * ⭐️ Star this project on GitHub
+  * Contribute a ☕️ or 🌮 via my [virtual tip jar on PayPal](https://www.paypal.me/douglascayers/)
 
-[Appiphony](http://www.lightningstrike.io) for developing the Strike Wizard component based on Lightning Design System [Path blueprint](https://www.lightningdesignsystem.com/components/path/).
+[Thank you](https://douglascayers.com/thanks-for-your-support/)! ❤️
 
-[Salesforce Foundation](https://github.com/SalesforceFoundation/CampaignTools) for developing tools for querying Salesforce Reports API in Apex.
+## Contributing
 
-[Shinichi Tomita](https://twitter.com/stomita) for developing [jsforce](https://jsforce.github.io/) and [soql-parse](https://github.com/stomita/soql-parse) libraries for easy use of Salesforce REST APIs in JavaScript.
+Contributions are what make the open source community such an amazing place to be learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 
-[jQuery](https://jquery.com/) for developing jQuery library.
+For documentation contributions (the [wiki](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki)), please [open an issue](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/issues) with your suggested changes.
 
-[Aaron Hardy](https://twitter.com/aaronius) for developing [Penpal](https://github.com/Aaronius/penpal), a promise-based library for securely communicating with iframes via postMessage.
+For code contributions, please follow the [GitHub flow](https://help.github.com/en/articles/github-flow):
+1. Fork this project.
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`).
+3. Commit your changes (`git commit -m 'Add some AmazingFeature`).
+4. Push to your feature branch (`git push origin feature/AmazingFeature`).
+5. Open a pull request.
+
+## Acknowledgements
+
+* [Doug Ayers](https://douglascayers.com) develops and maintains the project.
+* [Appiphony](http://www.lightningstrike.io) for developing the Strike Wizard component based on Lightning Design System [Path blueprint](https://www.lightningdesignsystem.com/components/path/).
+* [Salesforce Foundation](https://github.com/SalesforceFoundation/CampaignTools) for developing tools for querying Salesforce Reports API in Apex.
+* [Shinichi Tomita](https://twitter.com/stomita) for developing [jsforce](https://jsforce.github.io/) and [soql-parse](https://github.com/stomita/soql-parse) libraries for easy use of Salesforce REST APIs in JavaScript.
+* [jQuery](https://jquery.com/) for developing jQuery library.
+* [Aaron Hardy](https://twitter.com/aaronius) for developing [Penpal](https://github.com/Aaronius/penpal), a promise-based library for securely communicating with iframes via postMessage.
 
 
 ## License
 
-The source code is licensed under the [BSD 3-Clause License](LICENSE)
+The source code is licensed under the [BSD 3-Clause License](LICENSE).
 
 <!-- MARKDOWN LINKS & IMAGES -->
 
