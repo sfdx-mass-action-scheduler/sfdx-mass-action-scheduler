@@ -5,8 +5,6 @@
 [![Sponsor][sponsor-shield]][sponsor-url]
 
 <!-- PROJECT LOGO -->
-<br />
-
 <p align="center">
     <a href="https://github.com/douglascayers-org/sfdx-mass-action-scheduler/">
         <img src="images/mas-logo.png" alt="Mass Action Scheduler Logo" />
