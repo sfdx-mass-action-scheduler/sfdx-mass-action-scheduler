@@ -8,11 +8,7 @@
     <a href="https://github.com/douglascayers-org/sfdx-mass-action-scheduler/">
         <img src="images/mas-logo.png" alt="Mass Action Scheduler Logo" />
     </a>
-</p>
-
-
-
-<p align="center">
+    <br />
     Declaratively schedule process automation from reports and list views!
     <br />
     <a href="https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki"><strong>Explore the docs »</strong></a>
