@@ -33,9 +33,11 @@ No more waiting for records to be updated or creating clever workarounds to caus
 
 ## Features
 
-* **Declarative** - no code necessary, never write Batch Apex again for queries that can be expressed in a report or list view and actions that can be expressed with a declarative alternative.
-* **On Platform** - everything happens in Salesforce so no exporting or uploading data necessary.
-* **Timely** - run actions manually or schedule hourly, daily, weekly, or any time in between.
+**Declarative** - no code necessary, never write Batch Apex again for queries that can be expressed in a report or list view and actions that can be expressed with a declarative alternative.
+
+**On Platform** - everything happens in Salesforce so no exporting or uploading data necessary.
+
+**Timely** - run actions manually or schedule hourly, daily, weekly, or any time in between.
 
 ## Documentation and Discussion
 
