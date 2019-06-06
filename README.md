@@ -22,6 +22,22 @@
     <a href="https://github.com/douglascayers-org/sfdx-mass-action-scheduler/issues">Request Feature</a>
 </p>
 
+## Table of Contents
+
+* [About the Project](#-about-the-project)
+* [Features](#-features)
+* [Documentation and Discussion](#-documentation-and--discussion)
+* [Getting Started](#-getting-started)
+  - [Prerequisites](#-prerequisites)
+  - [Install Package](#-install-package)
+  - [Install Source Code](#-install-source-code)
+* [Sponsoring](#-sponsoring)
+* [Contributing](#-contributing)
+* [Acknowledgements](#-acknowledgements)
+* [License](#-license)
+
+<br />
+
 ## 📜 About the Project
 
 Put the power of [Batch Apex](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_batch.htm) within reach of [declarative configuration](https://help.salesforce.com/articleView?id=extend_click_intro.htm&type=5). Declaratively schedule Process Builder, Flows, Quick Actions, Email Alerts, Workflow Rules, or Apex to process records from Reports, List Views, SOQL, or Apex.
