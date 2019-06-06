@@ -32,6 +32,8 @@ Inspired by Narender Singh's idea [Ability to schedule flows, workflows and proc
 
 No more waiting for records to be updated or creating clever workarounds to cause records to be updated to cause these actions to fire.
 
+<br />
+
 ## 🦄 Features
 
 🙌 **Declarative** - no code necessary, never write Batch Apex again for queries that can be expressed in a report or list view and actions that can be expressed with a declarative alternative.
@@ -40,11 +42,15 @@ No more waiting for records to be updated or creating clever workarounds to caus
 
 ⏰ **Timely** - run actions manually or schedule hourly, daily, weekly, or any time in between.
 
+<br />
+
 ## 📘 Documentation and 💬 Discussion
 
 * For discussion and feedback [post in the community group](https://success.salesforce.com/_ui/core/chatter/groups/GroupProfilePage?g=0F93A000000LhvN) or raise well defined issues and ideas via the [issue tracker](https://github.com/douglascayers/sfdx-mass-action-scheduler/issues).
 * Read the [wiki page](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki) for further documentation on Mass Action Scheduler.
 * Read the [FAQ page](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Frequently-Asked-Questions) to help troubleshoot technical issues.
+
+<br />
 
 ## 👋 Getting Started
 
@@ -71,7 +77,11 @@ _Due to Lightning Experience web page caching, please log out and log back in af
 
 ---
 
-### 🛠 Install Source Code (Developers)
+### 🛠 Install Source Code
+
+⚠️ For general use of Mass Action Scheduler you don't need to deploy the source code. I recommend that you install the managed package instead as it's easy, simple, and you don't have to worry about Apex test coverage on deployment.
+
+For developers wanting to 🔍 explore or 💻 make changes to the code, keep reading.
 
 This repository is organized using [Salesforce DX](https://trailhead.salesforce.com/en/trails/sfdx_get_started).
 You may install the source code from GitHub and make any desired adjustments.
@@ -125,6 +135,8 @@ Open the scratch org and enjoy!
 sfdx force:org:open --path //lightning/o/Mass_Action_Configuration__c/list
 ```
 
+<br />
+
 ## 💎 Sponsoring
 
 Mass Action Scheduler is a free and independently developed passion project of mine.
@@ -134,6 +146,8 @@ If your business has found value in my open source projects, please consider sho
   * Contribute a ☕️ or 🌮 via my [virtual tip jar on PayPal](https://www.paypal.me/douglascayers/)
 
 [Thank you](https://douglascayers.com/thanks-for-your-support/)! ❤️
+
+<br />
 
 ## 🙏 Contributing
 
@@ -148,6 +162,8 @@ For code contributions, please follow the [GitHub flow](https://help.github.com/
 4. Push to your feature branch (`git push origin feature/AmazingFeature`).
 5. Open a pull request.
 
+<br />
+
 ## 📣 Acknowledgements
 
 * [Doug Ayers](https://douglascayers.com) develops and maintains the project.
@@ -157,6 +173,7 @@ For code contributions, please follow the [GitHub flow](https://help.github.com/
 * [jQuery](https://jquery.com/) for developing jQuery library.
 * [Aaron Hardy](https://twitter.com/aaronius) for developing [Penpal](https://github.com/Aaronius/penpal), a promise-based library for securely communicating with iframes via postMessage.
 
+<br />
 
 ## 👀 License
 
