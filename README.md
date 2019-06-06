@@ -1,5 +1,8 @@
 <!-- SHIELDS -->
-
+[![Latest Version][version-shield]][version-url]
+[![License][license-shield]][license-url]
+[![Salesforce Community Support][community-shield]][community-url]
+[![Sponsor][sponsor-shield]][sponsor-url]
 
 <!-- PROJECT LOGO -->
 <br />
@@ -153,3 +156,17 @@ sfdx force:org:open --path //lightning/o/Mass_Action_Configuration__c/list
 ## License
 
 The source code is licensed under the [BSD 3-Clause License](LICENSE)
+
+<!-- MARKDOWN LINKS & IMAGES -->
+
+[version-shield]: https://img.shields.io/github/tag/douglascayers-org/sfdx-mass-action-scheduler.svg?label=release&color=green
+[version-url]: https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Release-Notes
+
+[license-shield]: https://img.shields.io/github/license/douglascayers-org/sfdx-mass-action-scheduler.svg?label=license&color=green
+[license-url]: LICENSE
+
+[community-shield]: https://img.shields.io/badge/-Community-blue.svg?logo=salesforce&logoColor=white
+[community-url]: https://success.salesforce.com/_ui/core/chatter/groups/GroupProfilePage?g=0F93A000000LhvN
+
+[sponsor-shield]: https://img.shields.io/badge/-❤️Sponsor-ff69b4.svg
+[sponsor-url]: https://www.paypal.me/douglascayers/
