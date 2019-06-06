@@ -22,7 +22,7 @@
     <a href="https://github.com/douglascayers-org/sfdx-mass-action-scheduler/issues">Request Feature</a>
 </p>
 
-## About the Project
+## 📜 About the Project
 
 Put the power of [Batch Apex](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_batch.htm) within reach of [declarative configuration](https://help.salesforce.com/articleView?id=extend_click_intro.htm&type=5). Declaratively schedule Process Builder, Flows, Quick Actions, Email Alerts, Workflow Rules, or Apex to process records from Reports, List Views, SOQL, or Apex.
 
@@ -32,23 +32,23 @@ Inspired by Narender Singh's idea [Ability to schedule flows, workflows and proc
 
 No more waiting for records to be updated or creating clever workarounds to cause records to be updated to cause these actions to fire.
 
-## Features
+## 🦄 Features
 
-**Declarative** - no code necessary, never write Batch Apex again for queries that can be expressed in a report or list view and actions that can be expressed with a declarative alternative.
+🙌 **Declarative** - no code necessary, never write Batch Apex again for queries that can be expressed in a report or list view and actions that can be expressed with a declarative alternative.
 
-**On Platform** - everything happens in Salesforce so no exporting or uploading data necessary.
+☁️ **On Platform** - everything happens in Salesforce so no exporting or uploading data necessary.
 
-**Timely** - run actions manually or schedule hourly, daily, weekly, or any time in between.
+⏰ **Timely** - run actions manually or schedule hourly, daily, weekly, or any time in between.
 
-## Documentation and Discussion
+## 📘 Documentation and 💬 Discussion
 
 * For discussion and feedback [post in the community group](https://success.salesforce.com/_ui/core/chatter/groups/GroupProfilePage?g=0F93A000000LhvN) or raise well defined issues and ideas via the [issue tracker](https://github.com/douglascayers/sfdx-mass-action-scheduler/issues).
 * Read the [wiki page](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki) for further documentation on Mass Action Scheduler.
 * Read the [FAQ page](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Frequently-Asked-Questions) to help troubleshoot technical issues.
 
-## Getting Started
+## 👋 Getting Started
 
-### Prerequisites
+### 🚨 Prerequisites
 
 There are a few items you need to setup before installing and using this app.
 
@@ -58,7 +58,7 @@ There are a few items you need to setup before installing and using this app.
 
 Please see the [instructions in the wiki](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Pre-Requisites-Instructions) for screen shots and step-by-steps.
 
-### Install Package
+### 📦 Install Package
 
 _Due to Lightning Experience web page caching, please log out and log back in after installing the package for UI changes to appear._
 
@@ -71,7 +71,7 @@ _Due to Lightning Experience web page caching, please log out and log back in af
 
 ---
 
-### Install Source Code (Developers)
+### 🛠 Install Source Code (Developers)
 
 This repository is organized using [Salesforce DX](https://trailhead.salesforce.com/en/trails/sfdx_get_started).
 You may install the source code from GitHub and make any desired adjustments.
@@ -125,7 +125,7 @@ Open the scratch org and enjoy!
 sfdx force:org:open --path //lightning/o/Mass_Action_Configuration__c/list
 ```
 
-## Sponsoring
+## 💎 Sponsoring
 
 Mass Action Scheduler is a free and independently developed passion project of mine.
 
@@ -135,7 +135,7 @@ If your business has found value in my open source projects, please consider sho
 
 [Thank you](https://douglascayers.com/thanks-for-your-support/)! ❤️
 
-## Contributing
+## 🙏 Contributing
 
 Contributions are what make the open source community such an amazing place to be learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 
@@ -148,7 +148,7 @@ For code contributions, please follow the [GitHub flow](https://help.github.com/
 4. Push to your feature branch (`git push origin feature/AmazingFeature`).
 5. Open a pull request.
 
-## Acknowledgements
+## 📣 Acknowledgements
 
 * [Doug Ayers](https://douglascayers.com) develops and maintains the project.
 * [Appiphony](http://www.lightningstrike.io) for developing the Strike Wizard component based on Lightning Design System [Path blueprint](https://www.lightningdesignsystem.com/components/path/).
@@ -158,7 +158,7 @@ For code contributions, please follow the [GitHub flow](https://help.github.com/
 * [Aaron Hardy](https://twitter.com/aaronius) for developing [Penpal](https://github.com/Aaronius/penpal), a promise-based library for securely communicating with iframes via postMessage.
 
 
-## License
+## 👀 License
 
 The source code is licensed under the [BSD 3-Clause License](LICENSE).
 
