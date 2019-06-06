@@ -206,7 +206,8 @@ The source code is licensed under the [BSD 3-Clause License](LICENSE).
 [license-url]: LICENSE
 
 [community-shield]: https://img.shields.io/badge/-Community-blue.svg?logo=salesforce&logoColor=white
-[community-url]: https://success.salesforce.com/_ui/core/chatter/groups/GroupProfilePage?g=0F93A000000LhvN
+[community-url]: https://success.salesforce.com/_ui/core/chatter/groups/GroupProfilePage?g=
 
+<!-- https://stackoverflow.com/questions/42679712/why-does-the-red-heart-emoji-require-two-code-points-but-the-other-colored-hear -->
 [sponsor-shield]: https://img.shields.io/badge/-💜_Sponsor-ff69b4.svg
 [sponsor-url]: https://www.paypal.me/douglascayers/
