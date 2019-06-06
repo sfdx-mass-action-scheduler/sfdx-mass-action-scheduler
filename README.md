@@ -169,6 +169,8 @@ If your business has found value in my open source projects, please consider sho
 
 Contributions are what make the open source community such an amazing place to be learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 
+Please see the [guidelines for contributing](CONTRIBUTING.md) for more details.
+
 For documentation contributions (the [wiki](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki)), please [open an issue](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/issues) with your suggested changes.
 
 For code contributions, please follow the [GitHub flow](https://help.github.com/en/articles/github-flow):
