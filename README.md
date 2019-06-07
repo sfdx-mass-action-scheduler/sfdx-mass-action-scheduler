@@ -26,6 +26,7 @@
 
 * [About the Project](#-about-the-project)
 * [Features](#-features)
+* [Roadmap](#-roadmap)
 * [Documentation and Discussion](#-documentation-and--discussion)
 * [Getting Started](#-getting-started)
   - [Prerequisites](#-prerequisites)
@@ -57,6 +58,12 @@ No more waiting for records to be updated or creating clever workarounds to caus
 ☁️ **On Platform** - everything happens in Salesforce so no exporting or uploading data necessary.
 
 ⏰ **Timely** - run actions manually or schedule hourly, daily, weekly, or any time in between.
+
+<br />
+
+## 🗺 Roadmap
+
+See the [open issues](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/issues) for a list of proposed features (and known issues).
 
 <br />
 
