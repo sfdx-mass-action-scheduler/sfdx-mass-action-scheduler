@@ -1,16 +1,47 @@
-Mass Action Scheduler
-=======================
+<!-- SHIELDS -->
+[![Latest Version][version-shield]][version-url]
+[![License][license-shield]][license-url]
+[![Salesforce Community Support][community-shield]][community-url]
+[![Sponsor][sponsor-shield]][sponsor-url]
 
-![screen shot](images/wizard-details.png)
+<!-- PROJECT LOGO -->
+<p align="center">
+    <a href="https://github.com/douglascayers-org/sfdx-mass-action-scheduler/">
+        <img src="images/mas-logo.png" alt="Mass Action Scheduler Logo" />
+    </a>
+    <br />
+    Declaratively schedule process automation from reports and list views!
+    <br />
+    <a href="https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki"><strong>Explore the docs »</strong></a>
+    <br />
+    <br />
+    <a href="https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Examples">View Demo</a>
+    ·
+    <a href="https://github.com/douglascayers-org/sfdx-mass-action-scheduler/issues">Report Bug</a>
+    ·
+    <a href="https://github.com/douglascayers-org/sfdx-mass-action-scheduler/issues">Request Feature</a>
+</p>
 
-Overview
---------
+## Table of Contents
 
-Declaratively schedule Process Builder, Flows, Quick Actions, Email Alerts, Workflow Rules, and Apex to process records from Reports, List Views, and SOQL queries.
+* [About the Project](#-about-the-project)
+* [Features](#-features)
+* [Roadmap](#-roadmap)
+* [Documentation and Discussion](#-documentation-and--discussion)
+* [Getting Started](#-getting-started)
+  - [Prerequisites](#-prerequisites)
+  - [Install Package](#-install-package)
+  - [Install Source Code](#-install-source-code)
+* [Sponsoring](#-sponsoring)
+* [Contributing](#-contributing)
+* [Acknowledgements](#-acknowledgements)
+* [License](#-license)
 
-* **Declarative** - no code necessary, never write Batch Apex again for queries that can be expressed in a report or list view and actions that can be expressed in a declarative alternative
-* **On Platform** - everything happens in Salesforce so no exporting or uploading data
-* **Timely** - run actions manually or schedule hourly, daily, weekly, or any time in between
+<br />
+
+## 📜 About the Project
+
+Put the power of [Batch Apex](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_batch.htm) within reach of [declarative configuration](https://help.salesforce.com/articleView?id=extend_click_intro.htm&type=5). Declaratively schedule Process Builder, Flows, Quick Actions, Email Alerts, Workflow Rules, or Apex to process records from Reports, List Views, SOQL, or Apex.
 
 Inspired by Marie Chandra's idea [Ability to Schedule when Process Builder Triggers](https://success.salesforce.com/ideaView?id=08730000000DjEmAAK).
 
@@ -18,73 +49,35 @@ Inspired by Narender Singh's idea [Ability to schedule flows, workflows and proc
 
 No more waiting for records to be updated or creating clever workarounds to cause records to be updated to cause these actions to fire.
 
+<br />
 
-Documentation and Discussion
---------------------------
+## 🦄 Features
+
+🙌 **Declarative** - no code necessary, never write Batch Apex again for queries that can be expressed in a report or list view and actions that can be expressed with a declarative alternative.
+
+☁️ **On Platform** - everything happens in Salesforce so no exporting or uploading data necessary.
+
+⏰ **Timely** - run actions manually or schedule hourly, daily, weekly, or any time in between.
+
+<br />
+
+## 🗺 Roadmap
+
+See the [open issues](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/issues) for a list of proposed features (and known issues).
+
+<br />
+
+## 📘 Documentation and 💬 Discussion
 
 * For discussion and feedback [post in the community group](https://success.salesforce.com/_ui/core/chatter/groups/GroupProfilePage?g=0F93A000000LhvN) or raise well defined issues and ideas via the [issue tracker](https://github.com/douglascayers/sfdx-mass-action-scheduler/issues).
 * Read the [wiki page](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki) for further documentation on Mass Action Scheduler.
 * Read the [FAQ page](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Frequently-Asked-Questions) to help troubleshoot technical issues.
 
+<br />
 
-Data Sources
-------------
+## 👋 Getting Started
 
-Identify the records you want to process with list views, tabular reports, SOQL queries, or Apex iterables.
-
-| Data Sources      | When to Use |
-|-------------------|-------------|
-| **List Views**    | Simple filters. For up to 50 million records. |
-| **Reports**       | Complex filters like [Cross Filters](https://help.salesforce.com/articleView?id=reports_cross_filters_create.htm&type=5). For up to [~10 thousand records](https://github.com/douglascayers/sfdc-add-campaign-members-by-report/issues/17#issuecomment-332382142). |
-| **SOQL**          | You know exactly what you want to query and don't want to create a list view or report. For up to 50 million records. |
-| **Apex**          | Bring your own class that implements `Iterable<Map<String, Object>>` if your data is derived from multiple queries or you need to make http callouts to external web services or other custom logic. For up to 50 million records. |
-
-
-Actions
--------
-
-Almost any process automation you configure can be scheduled.
-
-| Actions               | Supported Types |
-|-----------------------|-----------------|
-| **Process Builder**   | Processes that start when invoked by another process |
-| **Flows**             | Auto-launched flows (no screens). Any that can be called from Process Builder |
-| **Quick Actions**     | Create a Record, Update a Record, and Log a Call types |
-| **Email Alerts**      | All |
-| **Workflow Rules**    | Active rules |
-| **Apex**              | Classes annotated with [@InvocableMethod](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_InvocableMethod.htm) and [Anonymous Blocks](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_anonymous_block.htm) |
-
-
-Scheduling
-----------
-
-Flexible options for scheduling when a configuration runs.
-
-| Scheduling Options        | When to Use |
-|---------------------------|-------------|
-| **Manual**                | Run on-demand from UI via button |
-| **Automated**             | Run a configuration from Process Builder, Flow, or Apex |
-| **Simple Schedule**       | Easily pick the hours, days, and months to run repeatedly |
-| **Advanced Schedule**     | Custom scheduling needs that require a cron expression |
-
-
-What you can do with Mass Action Scheduler
-------------------------------------------
-
-I'm sure you will think of all kinds of ideas how you can use this app. Here are a few ideas:
-* Run a process monthly, maybe to create a record or callout to an external system
-* Regularly call out to an external system to obtain data to process in Salesforce
-* Run data correction actions daily, such as updating or deleting records 
-* Automatically add leads and contacts to campaigns based on report or list view criteria
-* Send emails on a periodic basis
-* Create "infinite" flows that continuously loop on a schedule
-* Perform field updates without exporting or importing data
-
-For walkthroughs please check out the [examples in the wiki](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Examples).
-
-
-Pre-Requisites
---------------
+### 🚨 Prerequisites
 
 There are a few items you need to setup before installing and using this app.
 
@@ -94,20 +87,7 @@ There are a few items you need to setup before installing and using this app.
 
 Please see the [instructions in the wiki](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Pre-Requisites-Instructions) for screen shots and step-by-steps.
 
-
-Packaged Release History
-========================
-
-Support
--------
-
-Mass Action Scheduler is an open source project. It's an independent project with its ongoing development happening in the evenings and weekends.
-Maintaining and developing new features takes a considerable amount of time. If your business has found value in my projects, please consider [showing
-your support](https://douglascayers.com/thanks-for-your-support/) by contributing to my [virtual tip jar on PayPal](https://www.paypal.me/douglascayers/). Thank you! ❤️
-
-
-Release 2.2 (current)
------------
+### 📦 Install Package
 
 _Due to Lightning Experience web page caching, please log out and log back in after installing the package for UI changes to appear._
 
@@ -120,8 +100,11 @@ _Due to Lightning Experience web page caching, please log out and log back in af
 
 ---
 
-Installing the Source Code (Developers)
----------------------------------------
+### 🛠 Install Source Code
+
+⚠️ For general use of Mass Action Scheduler you don't need to deploy the source code. I recommend that you install the managed package instead as it's easy, simple, and you don't have to worry about Apex test coverage on deployment.
+
+For developers wanting to 🔍 explore or 💻 make changes to the code, keep reading.
 
 This repository is organized using [Salesforce DX](https://trailhead.salesforce.com/en/trails/sfdx_get_started).
 You may install the source code from GitHub and make any desired adjustments.
@@ -175,24 +158,63 @@ Open the scratch org and enjoy!
 sfdx force:org:open --path //lightning/o/Mass_Action_Configuration__c/list
 ```
 
+<br />
 
-Credits
-=======
+## 💎 Sponsoring
 
-[Doug Ayers](https://douglascayers.com) develops and maintains the project.
+Mass Action Scheduler is a free and independently developed passion project of mine.
 
-[Appiphony](http://www.lightningstrike.io) for developing the Strike Wizard component based on Lightning Design System [Path blueprint](https://www.lightningdesignsystem.com/components/path/).
+If your business has found value in my open source projects, please consider showing your support:
+  * ⭐️ Star this project on GitHub
+  * Contribute a ☕️ or 🌮 via my [virtual tip jar on PayPal](https://www.paypal.me/douglascayers/)
 
-[Salesforce Foundation](https://github.com/SalesforceFoundation/CampaignTools) for developing tools for querying Salesforce Reports API in Apex.
+[Thank you](https://douglascayers.com/thanks-for-your-support/)! ❤️
 
-[Shinichi Tomita](https://twitter.com/stomita) for developing [jsforce](https://jsforce.github.io/) and [soql-parse](https://github.com/stomita/soql-parse) libraries for easy use of Salesforce REST APIs in JavaScript.
+<br />
 
-[jQuery](https://jquery.com/) for developing jQuery library.
+## 🙏 Contributing
 
-[Aaron Hardy](https://twitter.com/aaronius) for developing [Penpal](https://github.com/Aaronius/penpal), a promise-based library for securely communicating with iframes via postMessage.
+Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 
+Please see the [guidelines for contributing](CONTRIBUTING.md) for more details.
 
-License
-=======
+For documentation contributions (the [wiki](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki)), please [open an issue](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/issues) with your suggested changes.
 
-The source code is licensed under the [BSD 3-Clause License](LICENSE)
+For code contributions, please follow the [GitHub flow](https://help.github.com/en/articles/github-flow):
+1. Fork this project.
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`).
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`).
+4. Push to your feature branch (`git push origin feature/AmazingFeature`).
+5. Open a pull request.
+
+<br />
+
+## 📣 Acknowledgements
+
+* [Doug Ayers](https://douglascayers.com) develops and maintains the project.
+* [Appiphony](http://www.lightningstrike.io) for developing the Strike Wizard component based on Lightning Design System [Path blueprint](https://www.lightningdesignsystem.com/components/path/).
+* [Salesforce Foundation](https://github.com/SalesforceFoundation/CampaignTools) for developing tools for querying Salesforce Reports API in Apex.
+* [Shinichi Tomita](https://twitter.com/stomita) for developing [jsforce](https://jsforce.github.io/) and [soql-parse](https://github.com/stomita/soql-parse) libraries for easy use of Salesforce REST APIs in JavaScript.
+* [jQuery](https://jquery.com/) for developing jQuery library.
+* [Aaron Hardy](https://twitter.com/aaronius) for developing [Penpal](https://github.com/Aaronius/penpal), a promise-based library for securely communicating with iframes via postMessage.
+
+<br />
+
+## 👀 License
+
+The source code is licensed under the [BSD 3-Clause License](LICENSE).
+
+<!-- MARKDOWN LINKS & IMAGES -->
+
+[version-shield]: https://img.shields.io/github/tag/douglascayers-org/sfdx-mass-action-scheduler.svg?label=release&color=green
+[version-url]: https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Release-Notes
+
+[license-shield]: https://img.shields.io/github/license/douglascayers-org/sfdx-mass-action-scheduler.svg?label=license&color=green
+[license-url]: LICENSE
+
+[community-shield]: https://img.shields.io/badge/-Community-blue.svg?logo=salesforce&logoColor=white
+[community-url]: https://success.salesforce.com/_ui/core/chatter/groups/GroupProfilePage?g=0F93A000000LhvN
+
+<!-- https://stackoverflow.com/questions/42679712/why-does-the-red-heart-emoji-require-two-code-points-but-the-other-colored-hear -->
+[sponsor-shield]: https://img.shields.io/badge/-💜_Sponsor-ff69b4.svg
+[sponsor-url]: https://www.paypal.me/douglascayers/

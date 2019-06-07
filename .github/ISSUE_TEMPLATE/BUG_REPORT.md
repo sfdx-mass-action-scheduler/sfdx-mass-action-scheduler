@@ -17,6 +17,10 @@ NOTICE: Your issue may already be reported. Before opening a new issue, please s
 <!-- Short summary of what is going on or to provide context. -->
 
 
+## Version of Mass Action Scheduler
+<!-- See https://github.com/douglascayers-org/sfdx-mass-action-scheduler#packaged-release-history for latest version of the app. -->
+
+
 ## Steps To Reproduce
 <!-- Help me, help you by telling me exactly how to reproduce the issue. -->
 
@@ -57,4 +61,3 @@ NOTICE: Since [Release 2.0](https://github.com/douglascayers/sfdx-mass-action-sc
 
 When using Named Credentials, make sure that you've enabled [My Domain](https://trailhead.salesforce.com/en/content/learn/modules/identity_login/identity_login_my_domain) and have followed [these setup instructions](https://github.com/douglascayers/sfdx-mass-action-scheduler/wiki/Specify-the-Context-User-via-Named-Credentials).
 -->
-
