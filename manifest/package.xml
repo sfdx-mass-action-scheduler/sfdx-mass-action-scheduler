@@ -87,6 +87,10 @@
         <name>AuraDefinitionBundle</name>
     </types>
     <types>
+        <members>maslogominimal</members>
+        <name>ContentAsset</name>
+    </types>
+    <types>
         <members>Mass_Action_Configuration__c.Default_Compact_Layout</members>
         <members>Mass_Action_Log__c.Default_Compact_Layout</members>
         <members>Mass_Action_Mapping__c.Default_Compact_Layout</members>
@@ -189,6 +193,10 @@
         <members>postmate</members>
         <members>soqlparse</members>
         <name>StaticResource</name>
+    </types>
+    <types>
+        <members>DOCUMENTATION_REQUEST</members>
+        <name>CustomMetadata</name>
     </types>
     <version>45.0</version>
 </Package>

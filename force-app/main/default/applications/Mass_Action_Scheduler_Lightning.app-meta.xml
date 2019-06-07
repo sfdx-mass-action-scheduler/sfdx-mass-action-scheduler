@@ -10,10 +10,12 @@
         <pageOrSobjectType>Mass_Action_Configuration__c</pageOrSobjectType>
     </actionOverrides>
     <brand>
-        <headerColor>#0070D2</headerColor>
-        <shouldOverrideOrgTheme>false</shouldOverrideOrgTheme>
+        <headerColor>#2C94BA</headerColor>
+        <logo>maslogominimal</logo>
+        <logoVersion>1</logoVersion>
+        <shouldOverrideOrgTheme>true</shouldOverrideOrgTheme>
     </brand>
-    <description>Declaratively schedule records from Reports or List Views to be processed by Workflow Rules, Process Builder, Flows, and Apex. https://douglascayers.com</description>
+    <description>Declaratively schedule process automation from reports and list views</description>
     <formFactors>Large</formFactors>
     <isNavAutoTempTabsDisabled>false</isNavAutoTempTabsDisabled>
     <isNavPersonalizationDisabled>false</isNavPersonalizationDisabled>
