@@ -194,9 +194,5 @@
         <members>soqlparse</members>
         <name>StaticResource</name>
     </types>
-    <types>
-        <members>DOCUMENTATION_REQUEST</members>
-        <name>CustomMetadata</name>
-    </types>
     <version>45.0</version>
 </Package>
