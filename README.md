@@ -1,12 +1,8 @@
 <!-- SHIELDS -->
-<div align="center">
-    
-  [![Latest Version][version-shield]][version-url]
-  [![Salesforce Community Support][community-shield]][community-url]
-  [![Sponsor][sponsor-shield]][sponsor-url]
-  [![License][license-shield]][license-url]
-  
-</div>
+[![Latest Version][version-shield]][version-url]
+[![Salesforce Community Support][community-shield]][community-url]
+[![Sponsor][sponsor-shield]][sponsor-url]
+[![License][license-shield]][license-url]
 
 <!-- PROJECT LOGO -->
 <p align="center">
