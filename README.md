@@ -8,9 +8,6 @@
 <div align="center">
     
   [![Latest Version][version-shield]][version-url]
-  [![Status](https://img.shields.io/badge/status-active-success.svg)]() 
-  [![GitHub Issues](https://img.shields.io/github/issues/douglascayers-org/sfdx-mass-action-scheduler.svg)](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/issues)
-  [![GitHub Pull Requests](https://img.shields.io/github/issues-pr/douglascayers-org/sfdx-mass-action-scheduler.svg)](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/pulls)
   [![Salesforce Community Support][community-shield]][community-url]
   [![Sponsor][sponsor-shield]][sponsor-url]
   [![License][license-shield]][license-url]
