@@ -168,7 +168,7 @@ sfdx force:org:open --path //lightning/o/Mass_Action_Configuration__c/list
 
 ## 💎 Sponsoring
 
-Mass Action Scheduler is a free and independently developed passion project of mine ([Doug Ayers](https://douglascayers.com)).
+Mass Action Scheduler is a free and independently developed passion project of [mine](https://douglascayers.com).
 
 If your business has found value in my open source projects, please consider showing your support:
   * ⭐️ Star this project on GitHub
