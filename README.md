@@ -38,7 +38,7 @@
   - [Install Source Code](#-install-source-code)
 * [Sponsoring](#-sponsoring)
 * [Contributing](#-contributing)
-* [Authors](#-authors)
+* [Authors](#️-authors)
 * [Acknowledgements](#-acknowledgements)
 * [License](#-license)
 
