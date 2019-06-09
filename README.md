@@ -169,7 +169,9 @@ If your business has found value in my open source projects, please consider sho
   * ⭐️ Star this project on GitHub
   * Contribute a ☕️ or 🌮 via my [virtual tip jar on PayPal](https://www.paypal.me/douglascayers/)
 
-[Thank you](https://douglascayers.com/thanks-for-your-support/)! ❤️
+Thank you! ❤️
+
+https://douglascayers.com/thanks-for-your-support/
 
 <br />
 
