@@ -87,10 +87,19 @@ Enhancements are tracked as [GitHub issues](https://guides.github.com/features/i
 
 ### Pull Requests
 
-Please follow these steps to have your contribution considered by the maintainers:
+Please follow these steps to have your contribution considered by the maintainers. We follow the [GitHub Flow](https://guides.github.com/introduction/flow/) to submit pull requests from feature branches from forks of this project.
 
-1. Follow all instructions in the [template](.github/PULL_REQUEST_TEMPLATE.md).
-2. Follow the [styleguides](#styleguides).
+1. Fork the repo
+  * https://github.com/douglascayers-org/sfdx-mass-action-scheduler
+2. Check out a new branch and name it to what you intend to do
+  * Use one branch per fix / feature
+3. Commit your changes
+  * Follow the [styleguides](#styleguides)
+  * Provide a git message that explains what you've done
+  * Commit to your forked repository
+4. Push to the branch of your forked repository
+5. Make a pull request to the main repository
+  * Follow all instructions in the [template](.github/PULL_REQUEST_TEMPLATE.md)
 
 While the prerequisites above must be satisfied prior to having your pull request reviewed,
 the reviewer(s) may ask you to complete additional design work, tests, or other changes before your pull request can be ultimately accepted.
@@ -98,14 +107,7 @@ the reviewer(s) may ask you to complete additional design work, tests, or other 
 
 ## Styleguides
 
-Follow the coding convention and standards of the project.
-
-* Spaces over Tabs.
-* Indents are 4 spaces.
-* Braces on same-line.
-* Good use of newlines/whitespace to help with readability.
-* Single space around method arguments.
-* I value meaningful variable and method names over saving keystrokes. Autocomplete is your friend.
+Follow the coding convention and standards of the code in the project.
 
 
 ## Additional Notes
