@@ -202,6 +202,8 @@ For code contributions, please follow the [GitHub flow](https://help.github.com/
 
 See also the list of [contributors](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/contributors) who participated in this project.
 
+<br />
+
 ## 🎉 Acknowledgements
 
 * [Appiphony](http://www.lightningstrike.io) for developing the Strike Wizard component based on Lightning Design System [Path blueprint](https://www.lightningdesignsystem.com/components/path/).
