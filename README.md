@@ -1,26 +1,36 @@
-<!-- SHIELDS -->
-[![Latest Version][version-shield]][version-url]
-[![License][license-shield]][license-url]
-[![Salesforce Community Support][community-shield]][community-url]
-[![Sponsor][sponsor-shield]][sponsor-url]
-
 <!-- PROJECT LOGO -->
 <p align="center">
     <a href="https://github.com/douglascayers-org/sfdx-mass-action-scheduler/">
         <img src="images/mas-logo.png" alt="Mass Action Scheduler Logo" />
     </a>
-    <br />
-    Declaratively schedule process automation from reports and list views!
-    <br />
-    <a href="https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki"><strong>Explore the docs »</strong></a>
-    <br />
-    <br />
-    <a href="https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Examples">View Examples</a>
-    ·
-    <a href="https://github.com/douglascayers-org/sfdx-mass-action-scheduler/issues">Report Bug</a>
-    ·
-    <a href="https://github.com/douglascayers-org/sfdx-mass-action-scheduler/issues">Request Feature</a>
 </p>
+    
+<div align="center">
+    
+  [![Latest Version][version-shield]][version-url]
+  [![Status](https://img.shields.io/badge/status-active-success.svg)]() 
+  [![GitHub Issues](https://img.shields.io/github/issues/douglascayers-org/sfdx-mass-action-scheduler.svg)](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/issues)
+  [![GitHub Pull Requests](https://img.shields.io/github/issues-pr/douglascayers-org/sfdx-mass-action-scheduler.svg)](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/pulls)
+  [![Salesforce Community Support][community-shield]][community-url]
+  [![Sponsor][sponsor-shield]][sponsor-url]
+  [![License][license-shield]][license-url]
+  
+</div>
+
+<p align="center">
+  Declaratively schedule process automation from reports and list views!
+  <br />
+  <a href="https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki"><strong>Explore the docs »</strong></a>
+  <br />
+  <br />
+  <a href="https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Examples">View Examples</a>
+  ·
+  <a href="https://github.com/douglascayers-org/sfdx-mass-action-scheduler/issues">Report Bug</a>
+  ·
+  <a href="https://github.com/douglascayers-org/sfdx-mass-action-scheduler/issues">Request Feature</a>
+</p>
+
+---
 
 ## Table of Contents
 
