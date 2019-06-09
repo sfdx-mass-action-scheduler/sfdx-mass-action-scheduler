@@ -11,7 +11,7 @@
 <!-- PROJECT LOGO -->
 <p align="center">
   <a href="https://github.com/douglascayers-org/sfdx-mass-action-scheduler/">
-    <img src="images/mas-logo.png" alt="Mass Action Scheduler Logo" />
+    <img src="images/mas-logo.png" alt="Mass Action Scheduler Logo" border="0" />
   </a>
   <br />
   Declaratively schedule process automation from reports and list views!
