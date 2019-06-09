@@ -28,8 +28,6 @@
   <a href="https://github.com/douglascayers-org/sfdx-mass-action-scheduler/issues">Request Feature</a>
 </p>
 
----
-
 ## Table of Contents
 
 * [About the Project](#-about-the-project)
