@@ -94,6 +94,7 @@ _Due to Lightning Experience web page caching, please log out and log back in af
 * Install Managed Package
     * Browser Links ([Production](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tf4000004MdAC)) ([Sandbox](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tf4000004MdAC))
     * Salesforce CLI (`sfdx force:package:install --package 04tf4000004MdAC --wait 10`)
+* Assign the **Mass Action Admin** permission set to users who will configure mass actions.
 * [Release Notes](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Release-Notes)
 * [Closed Issues](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/milestone/7?closed=1)
 * [Archived Releases](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/milestones?state=closed)
