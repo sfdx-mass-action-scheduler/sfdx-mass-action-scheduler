@@ -28,7 +28,7 @@
   <a href="https://github.com/douglascayers-org/sfdx-mass-action-scheduler/issues">Request Feature</a>
 </p>
 
-## Table of Contents
+## 📝 Table of Contents
 
 * [About the Project](#-about-the-project)
 * [Features](#-features)
@@ -45,7 +45,7 @@
 
 <br />
 
-## 📜 About the Project
+## 🧐 About the Project
 
 Put the power of [Batch Apex](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_batch.htm) within reach of [declarative configuration](https://help.salesforce.com/articleView?id=extend_click_intro.htm&type=5). Declaratively schedule Process Builder, Flows, Quick Actions, Email Alerts, Workflow Rules, or Apex to process records from Reports, List Views, SOQL, or Apex.
 
@@ -198,9 +198,14 @@ For code contributions, please follow the [GitHub flow](https://help.github.com/
 
 <br />
 
-## 📣 Acknowledgements
+## ✍️ Authors
 
 * [Doug Ayers](https://douglascayers.com) develops and maintains the project.
+
+See also the list of [contributors](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/contributors) who participated in this project.
+
+## 🎉 Acknowledgements
+
 * [Appiphony](http://www.lightningstrike.io) for developing the Strike Wizard component based on Lightning Design System [Path blueprint](https://www.lightningdesignsystem.com/components/path/).
 * [Salesforce Foundation](https://github.com/SalesforceFoundation/CampaignTools) for developing tools for querying Salesforce Reports API in Apex.
 * [Shinichi Tomita](https://twitter.com/stomita) for developing [jsforce](https://jsforce.github.io/) and [soql-parse](https://github.com/stomita/soql-parse) libraries for easy use of Salesforce REST APIs in JavaScript.
