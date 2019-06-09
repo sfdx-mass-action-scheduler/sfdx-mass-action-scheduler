@@ -1,10 +1,4 @@
-<!-- PROJECT LOGO -->
-<p align="center">
-    <a href="https://github.com/douglascayers-org/sfdx-mass-action-scheduler/">
-        <img src="images/mas-logo.png" alt="Mass Action Scheduler Logo" />
-    </a>
-</p>
-    
+<!-- SHIELDS -->
 <div align="center">
     
   [![Latest Version][version-shield]][version-url]
@@ -13,6 +7,13 @@
   [![License][license-shield]][license-url]
   
 </div>
+
+<!-- PROJECT LOGO -->
+<p align="center">
+    <a href="https://github.com/douglascayers-org/sfdx-mass-action-scheduler/">
+        <img src="images/mas-logo.png" alt="Mass Action Scheduler Logo" />
+    </a>
+</p>
 
 <p align="center">
   Declaratively schedule process automation from reports and list views!
