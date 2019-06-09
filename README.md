@@ -91,7 +91,7 @@ Please see the [instructions in the wiki](https://github.com/douglascayers-org/s
 
 _Due to Lightning Experience web page caching, please log out and log back in after installing the package for UI changes to appear._
 
-* Install Package
+* Install Managed Package
     * Browser Links ([Production](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tf4000004MdAC)) ([Sandbox](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tf4000004MdAC))
     * Salesforce CLI (`sfdx force:package:install --package 04tf4000004MdAC --wait 10`)
 * [Release Notes](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Release-Notes)
