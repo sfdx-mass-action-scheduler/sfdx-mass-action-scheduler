@@ -48,7 +48,7 @@ This project's mission is to put the power of [Batch Apex](https://developer.sal
 
 🚀 Declaratively schedule Process Builder, Flows, Quick Actions, Email Alerts, Workflow Rules, or Apex to process records from Reports, List Views, SOQL, or Apex.
 
-No more waiting for records to be updated or creating clever workarounds to cause records to be updated to cause these actions to fire.
+⏳ No more waiting for records to be updated or creating clever workarounds to cause records to be updated to cause these actions to fire.
 
 ### IdeaExchange
 
