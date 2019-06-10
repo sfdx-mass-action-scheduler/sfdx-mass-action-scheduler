@@ -101,7 +101,7 @@ Please see the [instructions in the wiki](https://github.com/douglascayers-org/s
 
 > _Due to Lightning Experience web page caching, please log out and log back in after installing the package for UI changes to appear. Also, don't worry about the [warning about installing a "Non-Salesforce Application"](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Frequently-Asked-Questions#why-do-i-see-a-warning-about-installing-a-non-salesforce-application) shown on the package install page._
 
-* Install Managed Package
+* Install Managed Package (release v2.2)
     * Browser Links ([Production](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tf4000004MdAC)) ([Sandbox](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tf4000004MdAC))
     * Salesforce CLI (`sfdx force:package:install --package 04tf4000004MdAC --wait 10`)
 * Assign the **Mass Action Admin** permission set to users who will configure mass actions.
