@@ -106,8 +106,6 @@ Please see the [instructions in the wiki](https://github.com/douglascayers-org/s
     * Salesforce CLI (`sfdx force:package:install --package 04tf4000004MdAC --wait 10`)
 * Assign the **Mass Action Admin** permission set to users who will configure mass actions.
 * [Release Notes](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Release-Notes) « includes important upgrade instructions, too
-* [Closed Issues](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/milestone/7?closed=1)
-* [Archived Releases](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/milestones?state=closed)
 
 <br />
 
