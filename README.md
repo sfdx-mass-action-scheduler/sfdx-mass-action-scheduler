@@ -164,10 +164,11 @@ sfdx force:org:open --path //lightning/o/Mass_Action_Configuration__c/list
 
 ## 💎 Sponsoring
 
-Mass Action Scheduler is a free and independently developed passion project of [mine](https://douglascayers.com).
+Mass Action Scheduler is a [free-as-in-speech](https://www.howtogeek.com/howto/31717/what-do-the-phrases-free-speech-vs.-free-beer-really-mean/) and [open source](https://opensource.com/resources/what-open-source) developed passion project of [Doug Ayers](https://douglascayers.com).
 
-If your business has found value in my open source projects, please consider showing your support:
-  * ⭐️ Star this project on GitHub
+If you've found value in my open source projects, please consider showing your support:
+  * ⭐️ [Star](https://github.com/douglascayers-org/sfdx-mass-action-scheduler) this project on GitHub
+  * 📣 [Tweet](https://twitter.com/intent/tweet/?url=https%3A%2F%2Fgithub.com%2Fdouglascayers-org%2Fsfdx-mass-action-scheduler&text=%F0%9F%9A%80%20Declaratively%20schedule%20Process%20Builder%2C%20Flows%2C%20Quick%20Actions%2C%20Email%20Alerts%2C%20Workflow%20Rules%2C%20or%20Apex%20to%20process%20records%20from%20Reports%2C%20List%20Views%2C%20SOQL%2C%20or%20Apex%20with%20%23MassActionScheduler%20by%20%40DouglasCAyers&related=douglascayers%2Csalesforcedevs&hashtags=salesforce) this project to your followers
   * Contribute a ☕️ or 🌮 via my [virtual tip jar on PayPal](https://www.paypal.me/douglascayers/)
 
 Thank you! ❤️
