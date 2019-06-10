@@ -133,7 +133,7 @@ Please see the [guidelines for contributing](CONTRIBUTING.md) for more details.
 For documentation contributions (the [wiki](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki)), please [open an issue](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/issues) with your suggested changes.
 
 For code contributions, please follow the [GitHub flow](https://help.github.com/en/articles/github-flow):
-1. Fork this project.
+1. Fork this project and [install the source code](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Install-Source-Code).
 2. Create your feature branch (`git checkout -b feature/AmazingFeature`).
 3. Commit your changes (`git commit -m 'Add some AmazingFeature'`).
 4. Push to your feature branch (`git push origin feature/AmazingFeature`).
