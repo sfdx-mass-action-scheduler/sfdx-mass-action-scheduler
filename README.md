@@ -229,4 +229,4 @@ The source code is licensed under the [BSD 3-Clause License](LICENSE).
 
 <!-- https://stackoverflow.com/questions/42679712/why-does-the-red-heart-emoji-require-two-code-points-but-the-other-colored-hear -->
 [sponsor-shield]: https://img.shields.io/badge/-💜_Sponsor_this_project-ff69b4.svg
-[sponsor-url]: https://www.paypal.me/douglascayers/
+[sponsor-url]: https://github.com/douglascayers-org/sfdx-mass-action-scheduler/blob/master/README.md#-sponsoring
