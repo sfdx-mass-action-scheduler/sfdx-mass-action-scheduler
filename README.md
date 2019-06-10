@@ -31,7 +31,6 @@
 * [Getting Started](#-getting-started)
   - [Prerequisites](#-prerequisites)
   - [Install Package](#-install-package)
-  - [Install Source Code](#-install-source-code)
 * [Sponsoring](#-sponsoring)
 * [Contributing](#-contributing)
 * [Authors](#️-authors)
@@ -109,66 +108,6 @@ _Due to Lightning Experience web page caching, please log out and log back in af
 * [Release Notes](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Release-Notes) « includes important upgrade instructions, too
 * [Closed Issues](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/milestone/7?closed=1)
 * [Archived Releases](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/milestones?state=closed)
-
----
-
-### 🛠 Install Source Code
-
-⚠️ For general use of Mass Action Scheduler you don't need to deploy the source code. I recommend that you install the managed package instead as it's easy, simple, and you don't have to worry about Apex test coverage on deployment.
-
-For developers wanting to 🔍 explore or 💻 make changes to the code, keep reading.
-
-This repository is organized using [Salesforce DX](https://trailhead.salesforce.com/en/trails/sfdx_get_started).
-You may install the source code from GitHub and make any desired adjustments.
-You are responsible for ensuring unit tests meet your org's validation rules and other requirements.
-
-First, clone the repository.
-
-```
-git clone https://github.com/douglascayers-org/sfdx-mass-action-scheduler.git
-```
-
-Change directory into the project folder.
-
-```
-cd sfdx-mass-action-scheduler
-```
-
-Create a new scratch org.
-
-```
-sfdx force:org:create -a mas -s -f config/project-scratch-def.json
-```
-
-Push the source metadata into your scratch org.
-
-```
-sfdx force:source:push
-```
-
-Assign the permission set to your user. 
-
-```
-sfdx force:user:permset:assign -n Mass_Action_Admin
-```
-
-Create a test account, only required for the report tests.
-
-```
-sfdx force:data:record:create --sobjecttype Account --values "Name='dca_mass_action: MA Test Account'"
-``` 
-
-Run unit tests.
-
-```
-sfdx force:apex:test:run --codecoverage --resultformat human --wait 10
-```
-
-Open the scratch org and enjoy!
-
-```
-sfdx force:org:open --path //lightning/o/Mass_Action_Configuration__c/list
-```
 
 <br />
 
