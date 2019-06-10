@@ -52,13 +52,15 @@ No more waiting for records to be updated or creating clever workarounds to caus
 
 <br />
 
-## 🦄 Features
+## 🎈 Features
 
 🙌 **Declarative** - no code necessary, never write Batch Apex again for queries that can be expressed in a report or list view and actions that can be expressed with a declarative alternative.
 
 ☁️ **On Platform** - everything happens in Salesforce so no exporting or uploading data necessary.
 
 ⏰ **Timely** - run actions manually or schedule hourly, daily, weekly, or any time in between.
+
+🦄 **Versatile** - explore the many [data sources](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Sources) and [actions](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Actions) that can be [scheduled](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Scheduling) with Mass Action Scheduler.
 
 <br />
 
