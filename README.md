@@ -99,13 +99,17 @@ Please see the [instructions in the wiki](https://github.com/douglascayers-org/s
 
 ### 📦 Install Package
 
-> _Due to Lightning Experience web page caching, please log out and log back in after installing the package for UI changes to appear. Also, don't worry about the [warning about installing a "Non-Salesforce Application"](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Frequently-Asked-Questions#why-do-i-see-a-warning-about-installing-a-non-salesforce-application) shown on the package install page._
-
 * Install Managed Package
     * Browser Links ([Production](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tf4000004MdAC)) ([Sandbox](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tf4000004MdAC))
     * Salesforce CLI (`sfdx force:package:install --package 04tf4000004MdAC --wait 10`)
 * Assign the **Mass Action Admin** permission set to users who will configure mass actions.
 * [Release Notes](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Release-Notes) « includes important upgrade instructions, too
+
+#### Notes
+
+> Due to Lightning Experience web page caching, please log out and log back in after installing the package for UI changes to appear.
+
+> On the package install page you may see a [warning about installing a "Non-Salesforce Application"](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Frequently-Asked-Questions#why-do-i-see-a-warning-about-installing-a-non-salesforce-application). That is because I'm not a registered partner on the AppExchange. I'm simply offering a managed package as a convenient way for you to install my app in your org. You also have the option to deploy the [unpackaged source code](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Install-Source-Code), but then you're responsible for ensuring the unit tests pass in your org.
 
 <br />
 
