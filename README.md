@@ -49,9 +49,9 @@ This project's mission is to put the power of [Batch Apex](https://developer.sal
 
 ⏳ No more waiting for records to be updated or creating clever workarounds to cause records to be updated to cause these actions to fire.
 
-### IdeaExchange
+### 💡 IdeaExchange
 
-💡 This project is inspired by the following IdeaExchange ideas. Please vote them up to increase chances this functionality becomes standard on the Salesforce platform. Thank you!
+This project is inspired by the following IdeaExchange ideas. Please vote them up to increase chances this functionality becomes standard on the Salesforce platform. Thank you!
 
   * Inspired by Marie Chandra's idea [Ability to Schedule when Process Builder Triggers](https://success.salesforce.com/ideaView?id=08730000000DjEmAAK).
 
