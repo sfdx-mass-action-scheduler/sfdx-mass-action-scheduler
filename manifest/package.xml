@@ -190,8 +190,8 @@
         <members>MA_SalesforceSecurityLogo</members>
         <members>jquery</members>
         <members>jsforce</members>
-        <members>postmate</members>
         <members>soqlparse</members>
+        <members>penpal</members>
         <name>StaticResource</name>
     </types>
     <version>45.0</version>
