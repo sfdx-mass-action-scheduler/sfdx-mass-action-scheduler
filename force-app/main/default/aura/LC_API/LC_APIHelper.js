@@ -40,8 +40,8 @@ License: BSD 3-Clause License
 
     /**
      * For internal use.
-     * Returns a promise waiting for the parent-child postmate handshake to complete
-     * then resolves with reference to the postmate child for making requests.
+     * Returns a promise waiting for the parent-child penpal handshake to complete
+     * then resolves with reference to the penpal child for making requests.
      */
     getPenpalChild: function() {
 
@@ -69,7 +69,7 @@ License: BSD 3-Clause License
 
                     if ( child ) {
 
-                        // parent-child postmate handshake now complete
+                        // parent-child penpal handshake now complete
                         clearInterval( timerId );
                         resolve( child );
 
@@ -95,7 +95,7 @@ License: BSD 3-Clause License
 
     /**
      * For internal use.
-     * Returns a promise waiting for the parent-child postmate request to complete
+     * Returns a promise waiting for the parent-child penpal request to complete
      * then resolves with response from the child iframe.
      */
     makePenpalRequest: function( requestType, child, request ) {
