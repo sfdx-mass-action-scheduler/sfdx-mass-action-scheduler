@@ -18,7 +18,7 @@ public inherited sharing class MA_MassActionUtils {
     public static final String NAMESPACE = String.isBlank( MY_NAMESPACE ) ? '' : MY_NAMESPACE;
     public static final String NAMESPACE_API = String.isBlank( MY_NAMESPACE ) ? '' : MY_NAMESPACE + '__';
 
-    public static final String REST_API_SERVICES_DATA_URL = Url.getOrgDomainUrl().toExternalForm() + '/services/data/v45.0';
+    public static final String REST_API_SERVICES_DATA_URL = Url.getOrgDomainUrl().toExternalForm() + '/services/data/v46.0';
 
     // ------------------------------------------------------------------------
 
@@ -29,7 +29,7 @@ public inherited sharing class MA_MassActionUtils {
      *      (optional) Name of a Named Credential to use, without the 'callout:' prefix.
      *      If blank then the org's domain URL is used instead.
      *
-     * @return URL for use with Salesforce REST API (e.g. https://yourinstance.my.salesforce.com/services/data/v45.0 or callout:YourNamedCredential)
+     * @return URL for use with Salesforce REST API (e.g. https://yourinstance.my.salesforce.com/services/data/v46.0 or callout:YourNamedCredential)
      */
     public static String getCalloutRestEndpointURL( String namedCredential ) {
         if ( String.isBlank( namedCredential ) ) {
@@ -165,7 +165,7 @@ public inherited sharing class MA_MassActionUtils {
 
     /**
      * The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     * or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v45.0').
+     * or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v46.0').
      */
     public static MA_ListViewDescribeResult describeListView( String baseURL, ID listViewId ) {
 
@@ -347,7 +347,7 @@ public inherited sharing class MA_MassActionUtils {
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v45.0').
+     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v46.0').
      * @param actionType
      *      Value from picklist Mass_Action_Configuration__c.Target_Type__c (e.g. 'QuickAction', 'EmailAlert')
      */
@@ -371,7 +371,7 @@ public inherited sharing class MA_MassActionUtils {
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v45.0').
+     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v46.0').
      * @param actionType
      *      Value from picklist Mass_Action_Configuration__c.Target_Type__c (e.g. 'QuickAction', 'EmailAlert')
      * @param objectName
@@ -398,7 +398,7 @@ public inherited sharing class MA_MassActionUtils {
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v45.0').
+     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v46.0').
      * @param actionType
      *      Value from picklist Mass_Action_Configuration__c.Target_Type__c (e.g. 'QuickAction', 'EmailAlert')
      * @param actionName
@@ -430,7 +430,7 @@ public inherited sharing class MA_MassActionUtils {
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v45.0').
+     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v46.0').
      * @param apexScript
      *      The anonymous apex script to execute. This method URL encodes the string.
      */
@@ -463,7 +463,7 @@ public inherited sharing class MA_MassActionUtils {
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v45.0').
+     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v46.0').
      * @param config
      *      Mass Action Configuration record.
      * @param targetRowMaps
@@ -490,7 +490,7 @@ public inherited sharing class MA_MassActionUtils {
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v45.0').
+     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v46.0').
      * @param config
      *      Mass Action Configuration record.
      */
@@ -620,7 +620,7 @@ public inherited sharing class MA_MassActionUtils {
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v45.0').
+     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v46.0').
      * @param actionType
      *      Value from picklist Mass_Action_Configuration__c.Target_Type__c (e.g. 'QuickAction', 'EmailAlert')
      * @param objectName
@@ -646,7 +646,7 @@ public inherited sharing class MA_MassActionUtils {
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v45.0').
+     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v46.0').
      * @param actionType
      *      Value from picklist Mass_Action_Configuration__c.Target_Type__c (e.g. 'QuickAction', 'EmailAlert')
      * @param objectName
@@ -697,7 +697,7 @@ public inherited sharing class MA_MassActionUtils {
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v45.0').
+     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v46.0').
      * @param actionType
      *      Value from picklist Mass_Action_Configuration__c.Target_Type__c (e.g. 'QuickAction', 'EmailAlert')
      * @param actionName
@@ -725,7 +725,7 @@ public inherited sharing class MA_MassActionUtils {
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v45.0').
+     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v46.0').
      * @param actionType
      *      Value from picklist Mass_Action_Configuration__c.Target_Type__c (e.g. 'QuickAction', 'EmailAlert')
      * @param actionName
@@ -778,7 +778,7 @@ public inherited sharing class MA_MassActionUtils {
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v45.0').
+     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v46.0').
      * @param query
      *      SOQL query to execute.
      * @param batchSize
@@ -827,7 +827,7 @@ public inherited sharing class MA_MassActionUtils {
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v45.0').
+     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v46.0').
      * @param query
      *      SOQL query to execute.
      * @param batchSize
@@ -860,7 +860,7 @@ public inherited sharing class MA_MassActionUtils {
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v45.0').
+     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v46.0').
      * @param query
      *      SOQL query to execute.
      */
@@ -882,7 +882,7 @@ public inherited sharing class MA_MassActionUtils {
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v45.0').
+     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v46.0').
      * @param nextRecordsId
      *      The last path part in the 'nextRecordsUrl' property from a query response
      *      that identifies the next page of records to return.
@@ -932,7 +932,7 @@ public inherited sharing class MA_MassActionUtils {
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v45.0').
+     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v46.0').
      * @param nextRecordsId
      *      The last path part in the 'nextRecordsUrl' property from a query response
      *      that identifies the next page of records to return.
@@ -966,7 +966,7 @@ public inherited sharing class MA_MassActionUtils {
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v45.0').
+     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v46.0').
      * @param nextRecordsId
      *      The last path part in the 'nextRecordsUrl' property from a query response
      *      that identifies the next page of records to return.

@@ -243,7 +243,7 @@ global with sharing class MA_EditConfigRestController {
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v45.0').
+     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v46.0').
      * @param actionType
      *      Value from picklist Mass_Action_Configuration__c.Target_Type__c (e.g. 'QuickAction', 'EmailAlert')
      */
@@ -280,7 +280,7 @@ global with sharing class MA_EditConfigRestController {
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v45.0').
+     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v46.0').
      * @param actionType
      *      Specific kind of actions to retrieve like Flows or Email Alerts.
      *      Value should match API value of Mass_Action_Configuration__c.Target_Type__c picklist entry.
@@ -308,7 +308,7 @@ global with sharing class MA_EditConfigRestController {
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v45.0').
+     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v46.0').
      * @param actionType
      *      Specific kind of action like Flows or Email Alerts.
      *      Value should match API value of Mass_Action_Configuration__c.Target_Type__c picklist entry.
@@ -465,7 +465,7 @@ global with sharing class MA_EditConfigRestController {
 
     /**
      * The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     * or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v45.0').
+     * or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v46.0').
      */
     private static List<Map<String, Object>> getListViewColumns( String baseURL, ID listViewId ) {
 
@@ -492,7 +492,7 @@ global with sharing class MA_EditConfigRestController {
 
     /**
      * The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     * or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v45.0').
+     * or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v46.0').
      */
     private static MA_SoqlQueryExecuteResult getSoqlQueryResults( String baseURL, String query, Integer batchSize ) {
 
@@ -502,7 +502,7 @@ global with sharing class MA_EditConfigRestController {
 
     /**
      * The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     * or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v45.0').
+     * or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v46.0').
      */
     private static MA_SoqlQueryExecuteResult getSoqlQueryNextRecordsResults( String baseURL, String nextRecordsId, Integer batchSize ) {
 

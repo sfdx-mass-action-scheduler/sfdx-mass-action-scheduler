@@ -16,7 +16,7 @@
         // get the currently installed package version
         promises.push(
             lcApi.restRequest({
-                'url' : '/services/data/v45.0/tooling/query?q=SELECT+Id,+SubscriberPackageId,+SubscriberPackage.Name,+SubscriberPackage.NamespacePrefix,+SubscriberPackageVersion.MajorVersion,+SubscriberPackageVersion.MinorVersion+FROM+InstalledSubscriberPackage'
+                'url' : '/services/data/v46.0/tooling/query?q=SELECT+Id,+SubscriberPackageId,+SubscriberPackage.Name,+SubscriberPackage.NamespacePrefix,+SubscriberPackageVersion.MajorVersion,+SubscriberPackageVersion.MinorVersion+FROM+InstalledSubscriberPackage'
             }).then( function ( response ) {
                 // The InstalledSubscriberPackage object doesn't support WHERE clause filtering on the package's namespace
                 // so we have to filter the results ourselves

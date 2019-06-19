@@ -194,5 +194,5 @@
     <members>MA_JobChangeEventTrigger</members>
     <members>MA_MassActionConfigTrigger</members>
   </types>
-  <version>45.0</version>
+  <version>46.0</version>
 </Package>
