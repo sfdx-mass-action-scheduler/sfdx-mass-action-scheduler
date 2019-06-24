@@ -117,7 +117,7 @@ global with sharing class MA_RunConfigInvocable {
 /*
 BSD 3-Clause License
 
-Copyright (c) 2018, Doug Ayers, douglascayers.com
+Copyright (c) 2017-2019, Doug Ayers, douglascayers.com
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
