@@ -464,7 +464,7 @@ License: BSD 3-Clause License
                                                     </tr>
                                                     <tr>
                                                         <td class="slds-cell-nowrap"><b>Flows</b></td>
-                                                        <td class="slds-cell-wrap">Autolaunched flows. Flows that <a href="https://help.salesforce.com/articleView?id=vpm_admin_flow_type.htm" target="_blank">don't require user interaction</a> like screens.</td>
+                                                        <td class="slds-cell-wrap">Autolaunched flows. Flows that <a href="https://help.salesforce.com/articleView?id=flow_concepts_type.htm" target="_blank">don't require user interaction</a> like screens.</td>
                                                     </tr>
                                                     <tr>
                                                         <td class="slds-cell-nowrap"><b>Quick Actions</b></td>
@@ -549,7 +549,7 @@ License: BSD 3-Clause License
                                         <p>
                                             <b>Don't see the Target Field you're looking for?</b>
                                             <ul>
-                                                <li>For Flows, ensure the variable's <a href="https://help.salesforce.com/articleView?id=vpm_designer_resources_variable.htm" target="_blank">Input/Output Type</a> is "Input Only" or "Input and Output".</li>
+                                                <li>For Flows, ensure the variable's <a href="https://help.salesforce.com/articleView?id=flow_ref_resources_variable.htm" target="_blank">Availability Outside the Flow</a> has <b>Available for input</b> selected.</li>
                                                 <li>For Quick Actions, ensure the field is on the <a href="https://help.salesforce.com/articleView?id=action_layout_editor_about.htm" target="_blank">action's layout</a>.</li>
                                                 <li>For Invocable Apex, ensure the class variable has the <a href="https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_InvocableVariable.htm" target="_blank">@InvocableVariable</a> annotation.</li>
                                                 <li>For Anonymous Apex, the field mappings step is not used. Instead, your script handles all field mapping and logic within its <code class="keyword">execute</code> method.</li>
@@ -1336,7 +1336,7 @@ License: BSD 3-Clause License
 <!--
 BSD 3-Clause License
 
-Copyright (c) 2018, Doug Ayers, douglascayers.com
+Copyright (c) 2017-2019, Doug Ayers, douglascayers.com
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
