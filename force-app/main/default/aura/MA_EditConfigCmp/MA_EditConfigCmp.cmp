@@ -411,8 +411,8 @@ License: BSD 3-Clause License
                                         <p>
                                             <b>Alias SOQL aggregate functions</b>. Aggregate functions like <code class="keyword">COUNT</code>, <code class="keyword">MIN</code>, <code class="keyword">MAX</code>, <code class="keyword">AVG</code>, <code class="keyword">SUM</code> and others
                                             must be <a href="https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_groupby_alias.htm" target="_blank">aliased</a> to be selectable in the Field Mappings step.
-                                            For example, consider the query <code class="keyword">SELECT COUNT(Id) <b>cnt</b>, Type FROM Account GROUP BY Type</code>.
-                                            Without the <b>cnt</b> alias then only the <b>Type</b> field would be available on the Field Mappings step.
+                                            For example, consider the query <code class="keyword">SELECT COUNT(Id) <b>RecordCount</b>, Type FROM Account GROUP BY Type</code>.
+                                            Without the <b>RecordCount</b> alias then only the <b>Type</b> field would be available on the Field Mappings step.
                                         </p>
 
                                         <p>
@@ -535,8 +535,8 @@ License: BSD 3-Clause License
                                                 <li>
                                                     If using SOQL, alias the aggregate functions. Aggregate functions like <code class="keyword">COUNT</code>, <code class="keyword">MIN</code>, <code class="keyword">MAX</code>, <code class="keyword">AVG</code>, <code class="keyword">SUM</code> and others
                                                     must be <a href="https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_groupby_alias.htm" target="_blank">aliased</a> to be selectable in the Field Mappings step.
-                                                    For example, consider the query <code class="keyword">SELECT COUNT(Id) <b>cnt</b>, Type FROM Account GROUP BY Type</code>.
-                                                    Without the <b>cnt</b> alias then only the <b>Type</b> field would be available on the Field Mappings step.
+                                                    For example, consider the query <code class="keyword">SELECT COUNT(Id) <b>RecordCount</b>, Type FROM Account GROUP BY Type</code>.
+                                                    Without the <b>RecordCount</b> alias then only the <b>Type</b> field would be available on the Field Mappings step.
                                                 </li>
                                                 <li>
                                                     If using SOQL, child relationship queries are not shown in the Field Mappings step.
