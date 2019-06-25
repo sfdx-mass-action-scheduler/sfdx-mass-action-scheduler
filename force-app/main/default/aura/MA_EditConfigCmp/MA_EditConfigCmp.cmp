@@ -8,6 +8,11 @@ License: BSD 3-Clause License
 
     <ltng:require scripts="{!$Resource.soqlparse}"/>
 
+    <aura:attribute name="didInit"
+                    type="Boolean"
+                    description="Track if onInit has run at least once."
+                    default="false"/>
+
     <aura:attribute name="objectDescribe"
                     type="Object"
                     description="SObject and Field describe info"/>

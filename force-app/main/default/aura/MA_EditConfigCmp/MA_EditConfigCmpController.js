@@ -87,13 +87,19 @@ License: BSD 3-Clause License
 
                         }
 
-                        if ( !$A.util.isUndefinedOrNull( record.targetActionName ) ) {
-
-                            helper.renderTargetInvocableActions( component );
-
-                        }
-
                         helper.initScheduleOptions( component );
+
+                    })).then( $A.getCallback( function() {
+
+                        // avoid race condition where as the page loads,
+                        // several change handlers call controller methods
+                        // and those methods end up reading/writing attribtues
+                        // before the above async operations have completed.
+                        // https://github.com/douglascayers-org/sfdx-mass-action-scheduler/issues/94
+
+                        component.set( 'v.didInit', true );
+
+                        helper.handleTargetTypeChange( component );
 
                     })).catch( $A.getCallback( function( err ) {
 
@@ -126,6 +132,10 @@ License: BSD 3-Clause License
     },
 
     handleNavigationButtonClick : function( component, event, helper ) {
+
+        if ( component.get( 'v.didInit' ) !== true ) {
+            return;
+        }
 
         var wizard = component.find( 'wizard' );
         var currentStageIndex = wizard.get( 'v.activeChevron' );
@@ -235,6 +245,10 @@ License: BSD 3-Clause License
 
     handleSaveButtonClick : function( component, event, helper ) {
 
+        if ( component.get( 'v.didInit' ) !== true ) {
+            return;
+        }
+
         var inputCmps = [
             component.find( 'inputScheduleFrequency' ),
             component.find( 'inputScheduleHourOfDay' ),
@@ -303,6 +317,10 @@ License: BSD 3-Clause License
 
     handleInputNameFieldBlur : function( component, event, helper ) {
 
+        if ( component.get( 'v.didInit' ) !== true ) {
+            return;
+        }
+
         var inputCmp = event.getSource();
         var inputValue = inputCmp.get( 'v.value' );
 
@@ -315,6 +333,10 @@ License: BSD 3-Clause License
 
     handleOnBlurInputSourceSoqlQuery : function( component, event, helper ) {
 
+        if ( component.get( 'v.didInit' ) !== true ) {
+            return;
+        }
+
         var inputCmp = event.getSource();
         var inputValue = inputCmp.get( 'v.value' );
 
@@ -325,6 +347,10 @@ License: BSD 3-Clause License
     },
 
     handleOnBlurInputTargetApexScript : function( component, event, helper ) {
+
+        if ( component.get( 'v.didInit' ) !== true ) {
+            return;
+        }
 
         var inputCmp = event.getSource();
         var inputValue = inputCmp.get( 'v.value' );
@@ -337,6 +363,10 @@ License: BSD 3-Clause License
 
     handleInputListBoxChanged : function( component, event, helper ) {
 
+        if ( component.get( 'v.didInit' ) !== true ) {
+            return;
+        }
+
         var selectedOptions = event.getParam( 'value' );
 
         if ( !helper.isEmpty( selectedOptions ) ) {
@@ -348,6 +378,10 @@ License: BSD 3-Clause License
     // ----------------------------------------------------------------------------------
 
     handleSourceTypeChange : function( component, event, helper ) {
+
+        if ( component.get( 'v.didInit' ) !== true ) {
+            return;
+        }
 
         var sourceType = component.get( 'v.sourceType' );
         var record = component.get( 'v.record' );
@@ -424,6 +458,10 @@ License: BSD 3-Clause License
 
     handleSourceReportFolderChange : function( component, event, helper ) {
 
+        if ( component.get( 'v.didInit' ) !== true ) {
+            return;
+        }
+
         var sourceType = component.get( 'v.sourceType' );
         var report = component.get( 'v.sourceReport' );
         var folderId = component.get( 'v.sourceReportFolderId' );
@@ -459,6 +497,10 @@ License: BSD 3-Clause License
     },
 
     handleSourceReportChange : function( component, event, helper ) {
+
+        if ( component.get( 'v.didInit' ) !== true ) {
+            return;
+        }
 
         var sourceType = component.get( 'v.sourceType' );
         var reportId = component.get( 'v.sourceReportId' );
@@ -528,6 +570,10 @@ License: BSD 3-Clause License
 
     handleSourceListViewSobjectTypeChange : function( component, event, helper ) {
 
+        if ( component.get( 'v.didInit' ) !== true ) {
+            return;
+        }
+
         var sourceType = component.get( 'v.sourceType' );
         var listView = component.get( 'v.sourceListView' );
         var sobjectType = component.get( 'v.sourceListViewSobjectType' );
@@ -557,6 +603,10 @@ License: BSD 3-Clause License
     },
 
     handleSourceListViewChange : function( component, event, helper ) {
+
+        if ( component.get( 'v.didInit' ) !== true ) {
+            return;
+        }
 
         var sourceType = component.get( 'v.sourceType' );
         var listViewId = component.get( 'v.sourceListViewId' );
@@ -594,6 +644,10 @@ License: BSD 3-Clause License
 
     handleValidateSourceSoqlQuery : function( component, event, helper ) {
 
+        if ( component.get( 'v.didInit' ) !== true ) {
+            return;
+        }
+
         var query = component.get( 'v.record.sourceSoqlQuery' );
 
         helper.validateSoqlQueryAsync( component, query )
@@ -629,11 +683,19 @@ License: BSD 3-Clause License
 
     handleTargetTypeChange : function( component, event, helper ) {
 
+        if ( component.get( 'v.didInit' ) !== true ) {
+            return;
+        }
+
         helper.handleTargetTypeChange( component );
 
     },
 
     handleTargetApexTypeChange : function( component, event, helper ) {
+
+        if ( component.get( 'v.didInit' ) !== true ) {
+            return;
+        }
 
         helper.handleTargetTypeChange( component );
 
@@ -641,11 +703,19 @@ License: BSD 3-Clause License
 
     handleTargetSobjectTypeChange : function( component, event, helper ) {
 
+        if ( component.get( 'v.didInit' ) !== true ) {
+            return;
+        }
+
         helper.renderTargetInvocableActions( component );
 
     },
 
     handleTargetTypeRequiresSobjectChange : function( component, event, helper ) {
+
+        if ( component.get( 'v.didInit' ) !== true ) {
+            return;
+        }
 
         helper.renderTargetSobjectTypes( component );
 
