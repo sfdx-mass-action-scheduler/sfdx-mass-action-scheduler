@@ -249,9 +249,15 @@ private class MA_ReportSourceBatchableTest {
             // then we're getting a synchronous exception caught rather than
             // the job's finish method logging the error asynchronously
             noDataFoundExceptionThrown = true;
+
+        } catch (Exception e) {
+
+            // catch other types of exceptions
+            System.assert( false, 'failed for the wrong reason' );
+
         }
 
-        System.assert(noDataFoundExceptionThrown);
+        System.assert( noDataFoundExceptionThrown, 'should have failed with a \'NoDataFoundException\'.' );
 
     }
 
