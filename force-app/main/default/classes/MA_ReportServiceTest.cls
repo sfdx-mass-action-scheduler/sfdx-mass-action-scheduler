@@ -63,8 +63,8 @@ private class MA_ReportServiceTest {
         setup();
 
         Map<String, String> expectedColumns = new Map<String, String>{
-            'ACCOUNT_ID' => 'Account ID',
-            'PARENT_ID'  => 'Parent Account ID'
+            'ACCOUNT_ID' => Schema.Account.Id.getDescribe().getLabel(),
+            'PARENT_ID'  => Schema.Account.ParentId.getDescribe().getLabel()
         };
 
         Report testReport = [

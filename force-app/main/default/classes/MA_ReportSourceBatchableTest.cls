@@ -198,6 +198,8 @@ private class MA_ReportSourceBatchableTest {
     @IsTest( SeeAllData = true )
     static void test_batchable_fail_no_report() {
 
+        Boolean noDataFoundExceptionThrown = false;
+
         Mass_Action_Configuration__c config = buildTestConfiguration();
         config.Source_Report_ID__c = null;
         config.Target_Type__c = 'Workflow';
@@ -246,9 +248,10 @@ private class MA_ReportSourceBatchableTest {
             // because the batchable throws the error in the start method
             // then we're getting a synchronous exception caught rather than
             // the job's finish method logging the error asynchronously
-            System.assert( ex.getMessage().containsIgnoreCase( 'The data you’re trying to access is unavailable' ), 'failed for wrong reason' );
-
+            noDataFoundExceptionThrown = true;
         }
+
+        System.assert(noDataFoundExceptionThrown);
 
     }
 
