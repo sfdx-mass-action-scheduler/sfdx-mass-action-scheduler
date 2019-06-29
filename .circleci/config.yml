@@ -1,4 +1,4 @@
-version: 2.1
+version: 2
 
 # Defining default values for all jobs
 defaults: &defaults
