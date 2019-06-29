@@ -247,7 +247,7 @@ License: BSD 3-Clause License
                         })
                         .then( function( result ) {
                             console.log( result );
-                            showMessage( 'Wait <b>10 minutes</b> then complete authentication flow by <a href="/one/one.app#/setup/NamedCredential/page?address=%2F' + result.records[0].Id + '%2Fe" target="_blank">re-saving the Named Credential</a>', 'WARNING' );
+                            showMessage( 'Wait <b>10 minutes</b> then complete authentication flow by <a href="/lightning/setup/NamedCredential/page?address=%2F' + result.records[0].Id + '%2Fe" target="_blank">re-saving the Named Credential</a>', 'WARNING' );
                         });
 
                 })
