@@ -1,0 +1,39 @@
+version: 2.1
+
+# Defining default values for all jobs
+defaults: &defaults
+  docker:
+    image: circleci/node:12.5.0
+
+jobs:
+  setup_tooling:
+    <<: *defaults
+    environment:
+      # https://developer.salesforce.com/tools/sfdxcli
+      - DX_CLI_URL: https://developer.salesforce.com/media/salesforce-cli/sfdx-linux-amd64.tar.xz
+      - JQ_CLI_URL: https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
+    steps:
+      - attach_workspace:
+          at: ~/
+      - checkout
+      - run:
+          name: Install Salesforce CLI
+          command: |
+            mkdir sfdx
+            curl --silent --url $DX_CLI_URL | tar xJ -C sfdx --strip-components 1
+            ./sfdx/install
+            sfdx update
+            sfdx --version
+            sfdx plugins
+      - run:
+          name: Install JQ
+          command: |
+            curl --silent --url $JQ_CLI_URL > jq
+            chmod ugo+x jq
+            jq --version
+      - persist_to_workspace:
+          # This is an important step. If we don't store the project data (cloned GitHub source and node_modules)
+          # we'd have to re-run installation for every workflow step.
+          root: ~/
+          paths:
+            - project/*
