@@ -263,6 +263,9 @@ public inherited sharing class MA_MassActionUtils {
      */
     public static void invokeTargetAction( Mass_Action_Configuration__c config, List<Map<String, Object>> sourceRowMaps ) {
 
+        // TODO switch to using SOAP API endpoint
+        // TODO won't want to use named credential as-is in URL because will be wrong endpoint,
+        // TODO will want to use the named credential merge sytnax to include the session id header only
         String baseUrl = MA_MassActionUtils.getCalloutRestEndpointURL( config.Named_Credential__c );
 
         if ( config.Target_Type__c == 'Apex' && String.isNotBlank( config.Target_Apex_Script__c ) ) {
@@ -280,6 +283,10 @@ public inherited sharing class MA_MassActionUtils {
     }
 
     /**
+     * TODO switch to using SOAP API to support much larger apex code blocks
+     * TODO by passing the content in the POST body of the http request.
+     * TODO The REST API takes the code block as a URL parameter; much lower length limits.
+     *
      * Invokes Tooling REST API via http callout.
      * https://developer.salesforce.com/docs/atlas.en-us.api_tooling.meta/api_tooling/intro_rest_resources.htm
      */
@@ -425,6 +432,10 @@ public inherited sharing class MA_MassActionUtils {
     // ------------------------------------------------------------------------
 
     /**
+     * TODO switch to using SOAP API to support much larger apex code blocks
+     * TODO by passing the content in the POST body of the http request.
+     * TODO The REST API takes the code block as a URL parameter; much lower length limits.
+     *
      * Creates an HttpRequest with a configured enpoint to invoke the Tooling API
      * to execute anonymous Apex. Also sets common headers for an authorized JSON request.
      *
@@ -453,6 +464,65 @@ public inherited sharing class MA_MassActionUtils {
         req.setHeader( 'Authorization', 'Bearer ' + UserInfo.getSessionId() );
 
         return req;
+
+/*
+
+String executeAnonymous( String code ) {
+
+    String envelopeHeader =
+        ' <soapenv:Envelope ' +
+            ' xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" ' +
+            ' xmlns:meta="http://soap.sforce.com/2006/04/metadata" ' +
+            ' xmlns:apex="http://soap.sforce.com/2006/08/apex" ' +
+            ' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"> ';
+
+    String soapHeader =
+        ' <soapenv:Header> ' +
+            ' <apex:SessionHeader> ' +
+                ' <apex:sessionId>' + UserInfo.getSessionId() + '</apex:sessionId> ' +
+            ' </apex:SessionHeader> ' +
+        ' </soapenv:Header> ';
+
+    String soapBody =
+        ' <soapenv:Body> ' +
+            ' <apex:executeAnonymous> ' +
+        		' <apex:String> ' + code + ' </apex:String> ' +
+            ' </apex:executeAnonymous> ' +
+        ' </soapenv:Body> ';
+
+    String envelopeFooter =
+        ' </soapenv:Envelope> ';
+
+    String soapMessage = (
+        envelopeHeader +
+        soapHeader +
+        soapBody +
+        envelopeFooter
+    );
+
+    HttpRequest req = new HttpRequest();
+    req.setMethod( 'POST' );
+    req.setHeader( 'Content-Type', 'text/xml; charset=utf-8' );
+    req.setHeader( 'SOAPAction', 'executeAnonymous' );
+    req.setEndpoint( URL.getOrgDomainUrl().toExternalForm() + '/services/Soap/s/46.0' );
+    req.setBody( soapMessage );
+
+    System.debug( req );
+    System.debug( req.getBody() );
+
+    HttpResponse res = new Http().send( req );
+
+    System.debug( res );
+    System.debug( res.getBody() );
+
+    return res.getBody();
+}
+
+String code = 'System.debug(\'Hello World\');';
+String responseBody = executeAnonymous( code );
+
+*/
+
     }
 
     // ------------------------------------------------------------------------
