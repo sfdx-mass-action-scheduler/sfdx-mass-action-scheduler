@@ -250,7 +250,7 @@ private class MA_ReportSourceBatchableTest {
             // the job's finish method logging the error asynchronously
             noDataFoundExceptionThrown = true;
 
-        } catch (Exception e) {
+        } catch ( Exception e ) {
 
             // catch other types of exceptions
             System.assert( false, 'failed for the wrong reason' );
