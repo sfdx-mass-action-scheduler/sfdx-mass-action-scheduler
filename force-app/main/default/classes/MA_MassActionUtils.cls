@@ -18,22 +18,23 @@ public inherited sharing class MA_MassActionUtils {
     public static final String NAMESPACE = String.isBlank( MY_NAMESPACE ) ? '' : MY_NAMESPACE;
     public static final String NAMESPACE_API = String.isBlank( MY_NAMESPACE ) ? '' : MY_NAMESPACE + '__';
 
-    public static final String REST_API_SERVICES_DATA_URL = Url.getOrgDomainUrl().toExternalForm() + '/services/data/v46.0';
+    public static final String REST_API_SERVICES_URL = Url.getOrgDomainUrl().toExternalForm() + '/services/data/v46.0';
+    public static final String SOAP_API_SERVICES_URL = URL.getOrgDomainUrl().toExternalForm() + '/services/Soap/s/46.0';
 
     // ------------------------------------------------------------------------
 
     /**
-     * Returns the URL for use with invoking the Salesforce REST APIs.
+     * Returns the base URL for use with invoking the Salesforce APIs.
      *
      * @param namedCredential
      *      (optional) Name of a Named Credential to use, without the 'callout:' prefix.
      *      If blank then the org's domain URL is used instead.
      *
-     * @return URL for use with Salesforce REST API (e.g. https://yourinstance.my.salesforce.com/services/data/v46.0 or callout:YourNamedCredential)
+     * @return URL for use with Salesforce REST API (e.g. https://yourinstance.my.salesforce.com or callout:YourNamedCredential)
      */
     public static String getCalloutRestEndpointURL( String namedCredential ) {
         if ( String.isBlank( namedCredential ) ) {
-            return REST_API_SERVICES_DATA_URL;
+            return REST_API_SERVICES_URL;
         } else {
             return 'callout:' + namedCredential;
         }
@@ -165,7 +166,7 @@ public inherited sharing class MA_MassActionUtils {
 
     /**
      * The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     * or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v46.0').
+     * or the org's My Domain URL without any path (e.g. 'https://yourdomain.my.salesforce.com').
      */
     public static MA_ListViewDescribeResult describeListView( String baseURL, ID listViewId ) {
 
@@ -354,7 +355,7 @@ public inherited sharing class MA_MassActionUtils {
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v46.0').
+     *      or the org's My Domain URL without any path (e.g. 'https://yourdomain.my.salesforce.com').
      * @param actionType
      *      Value from picklist Mass_Action_Configuration__c.Target_Type__c (e.g. 'QuickAction', 'EmailAlert')
      */
@@ -378,7 +379,7 @@ public inherited sharing class MA_MassActionUtils {
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v46.0').
+     *      or the org's My Domain URL without any path (e.g. 'https://yourdomain.my.salesforce.com').
      * @param actionType
      *      Value from picklist Mass_Action_Configuration__c.Target_Type__c (e.g. 'QuickAction', 'EmailAlert')
      * @param objectName
@@ -405,7 +406,7 @@ public inherited sharing class MA_MassActionUtils {
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v46.0').
+     *      or the org's My Domain URL without any path (e.g. 'https://yourdomain.my.salesforce.com').
      * @param actionType
      *      Value from picklist Mass_Action_Configuration__c.Target_Type__c (e.g. 'QuickAction', 'EmailAlert')
      * @param actionName
@@ -441,7 +442,7 @@ public inherited sharing class MA_MassActionUtils {
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v46.0').
+     *      or the org's My Domain URL without any path (e.g. 'https://yourdomain.my.salesforce.com').
      * @param apexScript
      *      The anonymous apex script to execute. This method URL encodes the string.
      */
@@ -533,7 +534,7 @@ String responseBody = executeAnonymous( code );
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v46.0').
+     *      or the org's My Domain URL without any path (e.g. 'https://yourdomain.my.salesforce.com').
      * @param config
      *      Mass Action Configuration record.
      * @param targetRowMaps
@@ -560,7 +561,7 @@ String responseBody = executeAnonymous( code );
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v46.0').
+     *      or the org's My Domain URL without any path (e.g. 'https://yourdomain.my.salesforce.com').
      * @param config
      *      Mass Action Configuration record.
      */
@@ -690,7 +691,7 @@ String responseBody = executeAnonymous( code );
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v46.0').
+     *      or the org's My Domain URL without any path (e.g. 'https://yourdomain.my.salesforce.com').
      * @param actionType
      *      Value from picklist Mass_Action_Configuration__c.Target_Type__c (e.g. 'QuickAction', 'EmailAlert')
      * @param objectName
@@ -716,7 +717,7 @@ String responseBody = executeAnonymous( code );
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v46.0').
+     *      or the org's My Domain URL without any path (e.g. 'https://yourdomain.my.salesforce.com').
      * @param actionType
      *      Value from picklist Mass_Action_Configuration__c.Target_Type__c (e.g. 'QuickAction', 'EmailAlert')
      * @param objectName
@@ -767,7 +768,7 @@ String responseBody = executeAnonymous( code );
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v46.0').
+     *      or the org's My Domain URL without any path (e.g. 'https://yourdomain.my.salesforce.com').
      * @param actionType
      *      Value from picklist Mass_Action_Configuration__c.Target_Type__c (e.g. 'QuickAction', 'EmailAlert')
      * @param actionName
@@ -795,7 +796,7 @@ String responseBody = executeAnonymous( code );
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v46.0').
+     *      or the org's My Domain URL without any path (e.g. 'https://yourdomain.my.salesforce.com').
      * @param actionType
      *      Value from picklist Mass_Action_Configuration__c.Target_Type__c (e.g. 'QuickAction', 'EmailAlert')
      * @param actionName
@@ -848,7 +849,7 @@ String responseBody = executeAnonymous( code );
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v46.0').
+     *      or the org's My Domain URL without any path (e.g. 'https://yourdomain.my.salesforce.com').
      * @param query
      *      SOQL query to execute.
      * @param batchSize
@@ -897,7 +898,7 @@ String responseBody = executeAnonymous( code );
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v46.0').
+     *      or the org's My Domain URL without any path (e.g. 'https://yourdomain.my.salesforce.com').
      * @param query
      *      SOQL query to execute.
      * @param batchSize
@@ -930,7 +931,7 @@ String responseBody = executeAnonymous( code );
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v46.0').
+     *      or the org's My Domain URL without any path (e.g. 'https://yourdomain.my.salesforce.com').
      * @param query
      *      SOQL query to execute.
      */
@@ -952,7 +953,7 @@ String responseBody = executeAnonymous( code );
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v46.0').
+     *      or the org's My Domain URL without any path (e.g. 'https://yourdomain.my.salesforce.com').
      * @param nextRecordsId
      *      The last path part in the 'nextRecordsUrl' property from a query response
      *      that identifies the next page of records to return.
@@ -1002,7 +1003,7 @@ String responseBody = executeAnonymous( code );
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v46.0').
+     *      or the org's My Domain URL without any path (e.g. 'https://yourdomain.my.salesforce.com').
      * @param nextRecordsId
      *      The last path part in the 'nextRecordsUrl' property from a query response
      *      that identifies the next page of records to return.
@@ -1036,7 +1037,7 @@ String responseBody = executeAnonymous( code );
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v46.0').
+     *      or the org's My Domain URL without any path (e.g. 'https://yourdomain.my.salesforce.com').
      * @param nextRecordsId
      *      The last path part in the 'nextRecordsUrl' property from a query response
      *      that identifies the next page of records to return.

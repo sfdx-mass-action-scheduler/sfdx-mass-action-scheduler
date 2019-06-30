@@ -294,7 +294,7 @@ License: BSD 3-Clause License
                 fullName : fullName,
                 label : label,
                 authProvider : fullName,
-                endpoint : orgDomainURL + '/services/data/v46.0',
+                endpoint : orgDomainURL,
                 oauthScope : 'full refresh_token',
                 principalType : 'NamedUser',
                 protocol : 'Oauth'

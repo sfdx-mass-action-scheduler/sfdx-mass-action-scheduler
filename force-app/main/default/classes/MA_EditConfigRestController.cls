@@ -106,14 +106,14 @@ global with sharing class MA_EditConfigRestController {
 
             when 'getObjectsWithInvocableActions' {
                 responseBody.put( 'result', getObjectsWithInvocableActions(
-                    MA_MassActionUtils.REST_API_SERVICES_DATA_URL,
+                    MA_MassActionUtils.REST_API_SERVICES_URL,
                     (String) requestBody.get( 'actionType' )
                 ));
             }
 
             when 'getInvocableActions' {
                 responseBody.put( 'result', getInvocableActions(
-                    MA_MassActionUtils.REST_API_SERVICES_DATA_URL,
+                    MA_MassActionUtils.REST_API_SERVICES_URL,
                     (String) requestBody.get( 'actionType' ),
                     (String) requestBody.get( 'objectName' )
                 ));
@@ -121,7 +121,7 @@ global with sharing class MA_EditConfigRestController {
 
             when 'getInvocableActionInputs' {
                 responseBody.put( 'result', getInvocableActionInputs(
-                    MA_MassActionUtils.REST_API_SERVICES_DATA_URL,
+                    MA_MassActionUtils.REST_API_SERVICES_URL,
                     (String) requestBody.get( 'actionType' ),
                     (String) requestBody.get( 'actionName' ),
                     (String) requestBody.get( 'objectName' )
@@ -172,7 +172,7 @@ global with sharing class MA_EditConfigRestController {
 
             when 'getListViewColumns' {
                 responseBody.put( 'result', getListViewColumns(
-                    MA_MassActionUtils.REST_API_SERVICES_DATA_URL,
+                    MA_MassActionUtils.REST_API_SERVICES_URL,
                     (ID) requestBody.get( 'listViewId' )
                 ));
             }
@@ -181,7 +181,7 @@ global with sharing class MA_EditConfigRestController {
 
             when 'getSoqlQueryResults' {
                 responseBody.put( 'result', getSoqlQueryResults(
-                    MA_MassActionUtils.REST_API_SERVICES_DATA_URL,
+                    MA_MassActionUtils.REST_API_SERVICES_URL,
                     (String) requestBody.get( 'query' ),
                     (Integer) requestBody.get( 'batchSize' )
                 ));
@@ -189,7 +189,7 @@ global with sharing class MA_EditConfigRestController {
 
             when 'getSoqlQueryNextRecordsResults' {
                 responseBody.put( 'result', getSoqlQueryNextRecordsResults(
-                    MA_MassActionUtils.REST_API_SERVICES_DATA_URL,
+                    MA_MassActionUtils.REST_API_SERVICES_URL,
                     (String) requestBody.get( 'nextRecordsId' ),
                     (Integer) requestBody.get( 'batchSize' )
                 ));
@@ -243,7 +243,7 @@ global with sharing class MA_EditConfigRestController {
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v46.0').
+     *      or the org's My Domain URL without any path (e.g. 'https://yourdomain.my.salesforce.com').
      * @param actionType
      *      Value from picklist Mass_Action_Configuration__c.Target_Type__c (e.g. 'QuickAction', 'EmailAlert')
      */
@@ -280,7 +280,7 @@ global with sharing class MA_EditConfigRestController {
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v46.0').
+     *      or the org's My Domain URL without any path (e.g. 'https://yourdomain.my.salesforce.com').
      * @param actionType
      *      Specific kind of actions to retrieve like Flows or Email Alerts.
      *      Value should match API value of Mass_Action_Configuration__c.Target_Type__c picklist entry.
@@ -308,7 +308,7 @@ global with sharing class MA_EditConfigRestController {
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v46.0').
+     *      or the org's My Domain URL without any path (e.g. 'https://yourdomain.my.salesforce.com').
      * @param actionType
      *      Specific kind of action like Flows or Email Alerts.
      *      Value should match API value of Mass_Action_Configuration__c.Target_Type__c picklist entry.
@@ -465,7 +465,7 @@ global with sharing class MA_EditConfigRestController {
 
     /**
      * The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     * or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v46.0').
+     * or the org's My Domain URL without any path (e.g. 'https://yourdomain.my.salesforce.com').
      */
     private static List<Map<String, Object>> getListViewColumns( String baseURL, ID listViewId ) {
 
@@ -492,7 +492,7 @@ global with sharing class MA_EditConfigRestController {
 
     /**
      * The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     * or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v46.0').
+     * or the org's My Domain URL without any path (e.g. 'https://yourdomain.my.salesforce.com').
      */
     private static MA_SoqlQueryExecuteResult getSoqlQueryResults( String baseURL, String query, Integer batchSize ) {
 
@@ -502,7 +502,7 @@ global with sharing class MA_EditConfigRestController {
 
     /**
      * The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     * or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v46.0').
+     * or the org's My Domain URL without any path (e.g. 'https://yourdomain.my.salesforce.com').
      */
     private static MA_SoqlQueryExecuteResult getSoqlQueryNextRecordsResults( String baseURL, String nextRecordsId, Integer batchSize ) {
 

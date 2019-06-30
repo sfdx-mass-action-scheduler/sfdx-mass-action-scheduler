@@ -875,9 +875,9 @@ private class MA_EditConfigRestControllerTest {
         Test.startTest();
 
         System.assertEquals( 'callout:TestNamedCredential', MA_MassActionUtils.getCalloutRestEndpointURL( 'TestNamedCredential' ) );
-        System.assertEquals( MA_MassActionUtils.REST_API_SERVICES_DATA_URL, MA_MassActionUtils.getCalloutRestEndpointURL( null ) );
-        System.assertEquals( MA_MassActionUtils.REST_API_SERVICES_DATA_URL, MA_MassActionUtils.getCalloutRestEndpointURL( '' ) );
-        System.assertEquals( MA_MassActionUtils.REST_API_SERVICES_DATA_URL, MA_MassActionUtils.getCalloutRestEndpointURL( ' ' ) );
+        System.assertEquals( MA_MassActionUtils.REST_API_SERVICES_URL, MA_MassActionUtils.getCalloutRestEndpointURL( null ) );
+        System.assertEquals( MA_MassActionUtils.REST_API_SERVICES_URL, MA_MassActionUtils.getCalloutRestEndpointURL( '' ) );
+        System.assertEquals( MA_MassActionUtils.REST_API_SERVICES_URL, MA_MassActionUtils.getCalloutRestEndpointURL( ' ' ) );
 
         Test.stopTest();
 
