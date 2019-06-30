@@ -104,7 +104,7 @@ private class MA_ReportServiceTest {
     }
 
     /**
-     * De to bug introduced after https://success.salesforce.com/issues_view?Id=a1p3A000000ATHC was fixed,
+     * Due to bug introduced after https://success.salesforce.com/issues_view?Id=a1p3A000000ATHC was fixed,
      * the Reports.ReportManager.runReport method only sees records that exist in the org before the test runs.
      * Therefore, we cannot assert that the report sees any data we insert/update/delete in the test itself.
      */
@@ -143,7 +143,7 @@ private class MA_ReportServiceTest {
     }
 
     /**
-     * De to bug introduced after https://success.salesforce.com/issues_view?Id=a1p3A000000ATHC was fixed,
+     * Due to bug introduced after https://success.salesforce.com/issues_view?Id=a1p3A000000ATHC was fixed,
      * the Reports.ReportManager.runReport method only sees records that exist in the org before the test runs.
      * Therefore, we cannot assert that the report sees any data we insert/update/delete in the test itself.
      */
@@ -189,7 +189,7 @@ private class MA_ReportServiceTest {
     */
 
     /**
-     * De to bug introduced after https://success.salesforce.com/issues_view?Id=a1p3A000000ATHC was fixed,
+     * Due to bug introduced after https://success.salesforce.com/issues_view?Id=a1p3A000000ATHC was fixed,
      * the Reports.ReportManager.runReport method only sees records that exist in the org before the test runs.
      * Therefore, we cannot assert that the report sees any data we insert/update/delete in the test itself.
      */
@@ -232,7 +232,7 @@ private class MA_ReportServiceTest {
     }
 
     /**
-     * De to bug introduced after https://success.salesforce.com/issues_view?Id=a1p3A000000ATHC was fixed,
+     * Due to bug introduced after https://success.salesforce.com/issues_view?Id=a1p3A000000ATHC was fixed,
      * the Reports.ReportManager.runReport method only sees records that exist in the org before the test runs.
      * Therefore, we cannot assert that the report sees any data we insert/update/delete in the test itself.
      */
