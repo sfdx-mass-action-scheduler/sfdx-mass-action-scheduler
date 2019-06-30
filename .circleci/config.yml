@@ -1,6 +1,6 @@
 # Inspired by https://github.com/trailheadapps/lwc-recipes
 
-version: 2
+version: 2.1
 
 # Defining default values for all jobs
 defaults: &defaults
@@ -131,25 +131,25 @@ jobs:
                     - project/*
 
 workflows:
-    version: 2
+    version: 2.1
     build_and_test:
         jobs:
             - setup_tooling
-            - setup_dx_orgs
+            - setup_dx_orgs:
                 context: douglascayers-org
                 requires:
                     - setup_tooling
-            - deploy_source
+            - deploy_source:
                 requires:
                     - setup_dx_orgs
-            - run_apex_tests
+            - run_apex_tests:
                 requires:
                     - deploy_source
-            - upload_code_coverage
+            - upload_code_coverage:
                 context: douglascayers-org
                 requires:
                     - run_apex_tests
-            - cleanup_dx_orgs
+            - cleanup_dx_orgs:
                 requires:
                     - setup_dx_orgs
                     - deploy_source
