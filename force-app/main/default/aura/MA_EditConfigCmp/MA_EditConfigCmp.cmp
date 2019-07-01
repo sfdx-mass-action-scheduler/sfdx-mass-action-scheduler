@@ -8,9 +8,9 @@ License: BSD 3-Clause License
 
     <ltng:require scripts="{!$Resource.soqlparse}"/>
 
-    <aura:attribute name="didInit"
+    <aura:attribute name="didInitConfig"
                     type="Boolean"
-                    description="Track if onInit has run at least once."
+                    description="Track if onInit has loaded the configuration record yet."
                     default="false"/>
 
     <aura:attribute name="objectDescribe"
@@ -24,6 +24,10 @@ License: BSD 3-Clause License
     <aura:attribute name="record"
                     type="Object"
                     description="The record object to be displayed. This is a wrapper object and not the sobject."/>
+
+    <aura:attribute name="spinnerTimerIds"
+                    type="String[]"
+                    description="To minimize flickering of the spinner, delay hiding spinner when another async action starts."/>
 
     <c:LC_API aura:id="lc_api"/>
     <c:LC_URL aura:id="lc_url"/>

@@ -91,9 +91,295 @@ License: BSD 3-Clause License
 
     },
 
+    // ----------------------------------------------------------------------------------
+
+    handleSourceTypeChange : function( component ) {
+
+        var helper = this;
+
+        var promises = [];
+
+        var sourceType = component.get( 'v.sourceType' );
+        var record = component.get( 'v.record' );
+
+        if ( sourceType != 'Report' ) {
+
+            record.sourceReportID = null;
+            record.sourceReportColumnName = null;
+
+            component.set( 'v.sourceReport', null );
+            component.set( 'v.sourceReportId', null );
+            component.set( 'v.sourceReportFolderId', null );
+            component.set( 'v.sourceReportColumns', null );
+            component.set( 'v.sourceReportColumnName', null );
+
+        } else {
+
+            if ( helper.isEmpty( component.get( 'v.sourceReportFolders' ) ) ) {
+
+                promises.push( helper.getReportFoldersAsync( component )
+                    .then( $A.getCallback( function( reportFolders ) {
+
+                        component.set( 'v.sourceReportFolders', reportFolders );
+                        helper.handleSourceReportFolderChange( component );
+
+                    })).catch( $A.getCallback( function( err ) {
+
+                        helper.toastMessage( 'Error Getting Report Folders', err, 'error' );
+
+                    }))
+                );
+
+            }
+
+        }
+
+        if ( sourceType != 'ListView' ) {
+
+            record.sourceListViewID = null;
+
+            component.set( 'v.sourceListView', null );
+            component.set( 'v.sourceListViewId', null );
+            component.set( 'v.sourceListViewSobjectType', null );
+
+        } else {
+
+            if ( helper.isEmpty( component.get( 'v.sourceListViewSobjectTypes' ) ) ) {
+
+                promises.push( helper.getObjectNamesWithListViewsAsync( component )
+                    .then( $A.getCallback( function( objectNames ) {
+
+                        component.set( 'v.sourceListViewSobjectTypes', objectNames );
+                        helper.handleSourceListViewSobjectTypeChange( component );
+
+                    })).catch( $A.getCallback( function( err ) {
+
+                        helper.toastMessage( 'Error Getting Object Names', err, 'error' );
+
+                    }))
+                );
+
+            }
+
+        }
+
+        if ( sourceType != 'SOQL' ) {
+
+            record.sourceSoqlQuery = null;
+
+        }
+
+        component.set( 'v.record', record );
+        component.set( 'v.sourceTypeURL', null );
+
+        return Promise.all( promises );
+
+    },
+
+    handleSourceReportFolderChange : function( component ) {
+
+        var helper = this;
+
+        var promises = [];
+
+        var sourceType = component.get( 'v.sourceType' );
+        var report = component.get( 'v.sourceReport' );
+        var folderId = component.get( 'v.sourceReportFolderId' );
+
+        if ( sourceType == 'Report' ) {
+
+            var reportFolderId = report && report.OwnerId && report.OwnerId.substring( 0, 15 );
+            folderId = folderId && folderId.substring( 0, 15 );
+
+            if ( folderId != reportFolderId ) {
+
+                component.set( 'v.sourceReport', null );
+                component.set( 'v.sourceReportId', null );
+                component.set( 'v.sourceReportColumnName', null );
+                component.set( 'v.record.sourceReportID', null );
+                component.set( 'v.record.sourceReportColumnName', null );
+
+            }
+
+            promises.push( helper.getReportsByFolderAsync( component, folderId )
+                .then( $A.getCallback( function( reports ) {
+
+                    component.set( 'v.sourceReports', reports );
+                    return helper.handleSourceReportChange( component );
+
+                })).catch( $A.getCallback( function( err ) {
+
+                    helper.toastMessage( 'Error Getting Reports By Folder', err, 'error' );
+
+                }))
+            );
+
+        }
+
+        return Promise.all( promises );
+
+    },
+
+    handleSourceReportChange : function( component ) {
+
+        var helper = this;
+
+        var promises = [];
+
+        var sourceType = component.get( 'v.sourceType' );
+        var reportId = component.get( 'v.sourceReportId' );
+
+        if ( sourceType == 'Report' ) {
+
+            if ( helper.isEmpty( reportId ) ) {
+
+                component.set( 'v.sourceTypeURL', null );
+                component.set( 'v.sourceReport', null );
+                component.set( 'v.sourceReportColumns', null );
+                component.set( 'v.sourceReportColumnName', null );
+                component.set( 'v.record.sourceReportID', null );
+                component.set( 'v.record.sourceReportColumnName', null );
+
+            } else {
+
+                promises.push( helper.getReportAsync( component, reportId )
+                    .then( $A.getCallback( function( report ) {
+
+                        component.set( 'v.sourceTypeURL', '/lightning/r/Report/' + report.Id + '/view' );
+                        component.set( 'v.sourceReport', report );
+                        component.set( 'v.record.sourceReportID', ( report.Id && report.Id.substring( 0, 15 ) ) );
+
+                    })).catch( $A.getCallback( function( err ) {
+
+                        helper.toastMessage( 'Error Getting Report', err, 'error' );
+
+                    }))
+                );
+
+                promises.push( helper.getReportColumnsAsync( component, reportId )
+                    .then( $A.getCallback( function( reportColumns ) {
+
+                        component.set( 'v.sourceReportColumns', reportColumns );
+
+                        var columnName = component.get( 'v.sourceReportColumnName' );
+                        var columnFound = false;
+
+                        for ( var i = 0; i < reportColumns.length; i++ ) {
+
+                            if ( reportColumns[i].value == columnName ) {
+                                columnFound = true;
+                                break;
+                            }
+                        }
+
+                        if ( !columnFound ) {
+                            component.set( 'v.sourceReportColumnName', null );
+                            component.set( 'v.record.sourceReportColumnName', null );
+                        } else {
+                            component.set( 'v.record.sourceReportColumnName', columnName );
+                        }
+
+                    })).catch( $A.getCallback( function( err ) {
+
+                        helper.toastMessage( 'Error Getting Report Columns', err, 'error' );
+
+                    }))
+                );
+
+            }
+
+        }
+
+        return Promise.all( promises );
+
+    },
+
+    handleSourceListViewSobjectTypeChange : function( component ) {
+
+        var helper = this;
+
+        var promises = [];
+
+        var sourceType = component.get( 'v.sourceType' );
+        var listView = component.get( 'v.sourceListView' );
+        var sobjectType = component.get( 'v.sourceListViewSobjectType' );
+
+        if ( sourceType == 'ListView' ) {
+
+            if ( !$A.util.isUndefinedOrNull( listView ) && listView.SobjectType != sobjectType ) {
+
+                component.set( 'v.sourceListViewId', null );
+                component.set( 'v.record.sourceListViewID', null );
+
+            }
+
+            promises.push( helper.getListViewsByObjectAsync( component, sobjectType )
+                .then( $A.getCallback( function( listViews ) {
+
+                    component.set( 'v.sourceListViews', listViews );
+                    return helper.handleSourceListViewChange( component );
+
+                })).catch( $A.getCallback( function( err ) {
+
+                    helper.toastMessage( 'Error Getting List Views By Object', err, 'error' );
+
+                }))
+            );
+
+        }
+
+        return Promise.all( promises );
+
+    },
+
+    handleSourceListViewChange : function( component ) {
+
+        var helper = this;
+
+        var promises = [];
+
+        var sourceType = component.get( 'v.sourceType' );
+        var listViewId = component.get( 'v.sourceListViewId' );
+
+        if ( sourceType == 'ListView' ) {
+
+            if ( helper.isEmpty( listViewId ) ) {
+
+                component.set( 'v.sourceTypeURL', null );
+                component.set( 'v.sourceListView', null );
+                component.set( 'v.record.sourceListViewID', null );
+
+            } else {
+
+                promises.push( helper.getListViewAsync( component, listViewId )
+                    .then( $A.getCallback( function( listView ) {
+
+                        component.set( 'v.sourceTypeURL', '/lightning/o/' + listView.SobjectType + '/list?filterName=' + listView.Id );
+                        component.set( 'v.sourceListView', listView );
+                        component.set( 'v.record.sourceListViewID', ( listView.Id && listView.Id.substring( 0, 15 ) ) );
+
+                    })).catch( $A.getCallback( function( err ) {
+
+                        helper.toastMessage( 'Error Getting List View', err, 'error' );
+
+                    }))
+                );
+
+            }
+
+        }
+
+        return Promise.all( promises );
+
+    },
+
+    // ----------------------------------------------------------------------------------
+
     handleTargetTypeChange : function( component ) {
 
         var helper = this;
+
+        var promises = [];
 
         var targetType = component.get( 'v.targetType' );
         var targetApexType = component.get( 'v.targetApexType' );
@@ -188,8 +474,10 @@ License: BSD 3-Clause License
         record.targetActionName = targetActionName;
         component.set( 'v.record', record );
 
-        helper.renderTargetSobjectTypes( component );
-        helper.renderTargetInvocableActions( component );
+        promises.push( helper.renderTargetSobjectTypes( component ) );
+        promises.push( helper.renderTargetInvocableActions( component ) );
+
+        return Promise.all( promises );
 
     },
 
@@ -202,18 +490,21 @@ License: BSD 3-Clause License
 
         var helper = this;
 
+        var promises = [];
+
         var targetTypeRequiresSobject = component.get( 'v.targetTypeRequiresSobject' );
 
         if ( targetTypeRequiresSobject === true ) {
 
             var targetType = component.get( 'v.targetType' );
 
-            helper.getObjectsWithInvocableActionsAsync( component, targetType )
+            promises.push( helper.getObjectsWithInvocableActionsAsync( component, targetType )
                 .then( $A.getCallback( function( results ) {
 
                     component.set( 'v.targetSobjectTypes', results );
 
-                }));
+                }))
+            );
 
         } else {
 
@@ -221,6 +512,8 @@ License: BSD 3-Clause License
             component.set( 'v.targetSobjectTypes', null );
 
         }
+
+        return Promise.all( promises );
 
     },
 
@@ -232,6 +525,8 @@ License: BSD 3-Clause License
     renderTargetInvocableActions : function( component ) {
 
         var helper = this;
+
+        var promises = [];
 
         var targetType = component.get( 'v.targetType' );
         var targetApexType = component.get( 'v.targetApexType' );
@@ -253,7 +548,7 @@ License: BSD 3-Clause License
 
         if ( isValidToRenderActions ) {
 
-            helper.getInvocableActionsAsync( component, targetType, ( targetSobjectType || '' ) )
+            promises.push( helper.getInvocableActionsAsync( component, targetType, ( targetSobjectType || '' ) )
                 .then( $A.getCallback( function( actions ) {
 
                     component.set( 'v.targetInvocableActions', actions );
@@ -262,7 +557,8 @@ License: BSD 3-Clause License
                     var targetActionFound = actions.find( function( elmt ) { return elmt.value === targetAction; } );
                     component.set( 'v.targetInvocableAction', ( targetActionFound && targetActionFound.value ) );
 
-                }));
+                }))
+            );
 
         } else {
 
@@ -276,6 +572,8 @@ License: BSD 3-Clause License
         }
 
         component.set( 'v.isValidToRenderTargetInvocableActions', isValidToRenderActions );
+
+        return Promise.all( promises );
 
     },
 
@@ -404,6 +702,8 @@ License: BSD 3-Clause License
             }));
 
     },
+
+    // ----------------------------------------------------------------------------------
 
     /**
      * Given an array of aura components representing inputs (have a v.value attribute)
@@ -677,7 +977,7 @@ License: BSD 3-Clause License
 
     },
 
-    // -----------------------------------------------------------------
+    // ----------------------------------------------------------------------------------
 
     saveRecordAsync : function( component ) {
 
@@ -790,7 +1090,7 @@ License: BSD 3-Clause License
 
     },
 
-    // -----------------------------------------------------------------
+    // ----------------------------------------------------------------------------------
 
     getObjectDescribeAsync : function( component ) {
 
@@ -811,13 +1111,22 @@ License: BSD 3-Clause License
 
     },
 
-    // -----------------------------------------------------------------
+    // ----------------------------------------------------------------------------------
 
     getObjectNamesAsync : function( component ) {
 
         var helper = this;
 
         return helper.enqueueRestRequest( component, 'getObjectNames', {
+        });
+
+    },
+
+    getObjectNamesWithListViewsAsync : function( component ) {
+
+        var helper = this;
+
+        return helper.enqueueRestRequest( component, 'getObjectNamesWithListViews', {
         });
 
     },
@@ -852,7 +1161,7 @@ License: BSD 3-Clause License
 
     },
 
-    // -----------------------------------------------------------------
+    // ----------------------------------------------------------------------------------
 
     getReportFoldersAsync : function( component ) {
 
@@ -893,7 +1202,7 @@ License: BSD 3-Clause License
 
     },
 
-    // -----------------------------------------------------------------
+    // ----------------------------------------------------------------------------------
 
     validateSoqlQueryAsync : function( component, query ) {
 
@@ -1015,7 +1324,7 @@ License: BSD 3-Clause License
 
     },
 
-    // -----------------------------------------------------------------
+    // ----------------------------------------------------------------------------------
 
     getNamedCredentialsAsync : function( component ) {
 
@@ -1059,7 +1368,7 @@ License: BSD 3-Clause License
 
     },
 
-    // -----------------------------------------------------------------
+    // ----------------------------------------------------------------------------------
 
     /**
      * The $A.util.isEmpty() function does not check for blank strings (only whitespace).
@@ -1077,11 +1386,32 @@ License: BSD 3-Clause License
 
         $A.util.removeClass( component.find( 'spinner' ), 'slds-hide' );
 
+        // Minimize flickering of the spinner hiding/showing
+        // quickly in succession of multiple async events.
+        // As you'd do with a type-ahead widget, when an async event
+        // starts and the spinner is shown then clear the timeout
+        // that would hide the spinner. This avoids the flickering.
+        // When the async event ends, it'll call hide spinner again
+        // which will start a new timer.
+        let spinnerTimerIds = component.get( 'v.spinnerTimerIds' );
+        spinnerTimerIds.forEach( ( spinnerTimerId ) => clearTimeout( spinnerTimerId ) );
+        component.set( 'v.spinnerTimerIds', [] );
+
     },
 
     hideSpinner : function( component ) {
 
-        $A.util.addClass( component.find( 'spinner' ), 'slds-hide' );
+        // see comments in `showSpinner` about minimizing flickering
+        let spinnerTimerId = setTimeout(
+            $A.getCallback( function() {
+                $A.util.addClass( component.find( 'spinner' ), 'slds-hide' );
+            }),
+            250
+        );
+
+        let spinnerTimerIds = component.get( 'v.spinnerTimerIds' );
+        spinnerTimerIds.push( spinnerTimerId );
+        component.set( 'v.spinnerTimerIds', spinnerTimerIds );
 
     },
 
