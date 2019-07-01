@@ -27,6 +27,7 @@
     <members>LC_URLControllerTest</members>
     <members>LC_VisualforceDomainController</members>
     <members>LC_VisualforceDomainControllerTest</members>
+    <members>MA_AnonymousApexExecuteResult</members>
     <members>MA_AsyncApexJobMock</members>
     <members>MA_EditConfigCmpController</members>
     <members>MA_EditConfigCmpControllerTest</members>
@@ -79,6 +80,8 @@
     <members>MA_SoqlSourceIterableTest</members>
     <members>MA_StringUtils</members>
     <members>MA_StringUtilsTest</members>
+    <members>MA_XMLUtils</members>
+    <members>MA_XMLUtilsTest</members>
   </types>
   <types>
     <name>ContentAsset</name>
