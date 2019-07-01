@@ -8,18 +8,52 @@ public inherited sharing class MA_Exceptions {
 
     /**
      * Thrown by MA_MassActionUtils when encounter error
+     * executing anonymous apex via SOAP API.
+     */
+    public inherited sharing class AnonymousApexException extends Exception {
+
+        public String compileProblem { get; set; }
+
+        public String exceptionMessage { get; set; }
+
+        public String exceptionStackTrace { get; set; }
+
+        public AnonymousApexException( String compileProblem, String exceptionMessage, String exceptionStackTrace ) {
+            this.compileProblem = compileProblem;
+            this.exceptionMessage = exceptionMessage;
+            this.exceptionStackTrace = exceptionStackTrace;
+            this.setMessage( String.format(
+                'Anonymous Apex Error:\ncompileProblem: {0}\nexceptionMessage: {1}\nexceptionStackTrace: {2}',
+                new String[] { compileProblem, exceptionMessage, exceptionStackTrace }
+            ));
+        }
+
+        public AnonymousApexException( String compileProblem, String exceptionMessage, String exceptionStackTrace, Exception cause ) {
+            this( compileProblem, exceptionMessage, exceptionStackTrace );
+            this.initCause( cause );
+        }
+
+    }
+
+    /**
+     * Thrown by MA_MassActionUtils when encounter error
      * executing a SOQL query via REST API.
      */
-    public inherited sharing class SOQLQueryRestApiException extends Exception {
+    public inherited sharing class SOQLQueryException extends Exception {
 
         public String query { get; set; }
 
         public String errorType { get; set; }
 
-        public SOQLQueryRestApiException( String query, String errorType, String message ) {
+        public SOQLQueryException( String query, String errorType, String message ) {
             this.query = query;
             this.errorType = errorType;
             this.setMessage( message );
+        }
+
+        public SOQLQueryException( String query, String errorType, String message, Exception cause ) {
+            this( query, errorType, message );
+            this.initCause( cause );
         }
 
     }
@@ -43,6 +77,11 @@ public inherited sharing class MA_Exceptions {
             ));
         }
 
+        public UnsupportedSourceTypeException( ID configId, String sourceType, Exception cause ) {
+            this( configId, sourceType );
+            this.initCause( cause );
+        }
+
     }
 
     /**
@@ -64,6 +103,11 @@ public inherited sharing class MA_Exceptions {
             ));
         }
 
+        public NoSourceFieldException( Map<String, Object> sourceData, String sourceFieldName, Exception cause ) {
+            this( sourceData, sourceFieldName );
+            this.initCause( cause );
+        }
+
     }
 
     /**
@@ -82,9 +126,14 @@ public inherited sharing class MA_Exceptions {
             this.request = request;
             this.response = response;
             this.setMessage( String.format(
-                'Error: {0}\n{1}\n{2}\n{3}',
+                'Error: {0}\n{1}\n\n{2}\n{3}',
                 new String[] { response.toString(), response.getBody(), request.toString(), request.getBody() }
             ));
+        }
+
+        public InvokeActionException( HttpRequest request, HttpResponse response, Exception cause ) {
+            this( request, response );
+            this.initCause( cause );
         }
 
     }
@@ -94,6 +143,12 @@ public inherited sharing class MA_Exceptions {
     public static Exception buildException( Type t, String message ) {
         Exception ex = (Exception) t.newInstance();
         ex.setMessage( message );
+        return ex;
+    }
+
+    public static Exception buildException( Type t, String message, Exception cause ) {
+        Exception ex = buildException( t, message );
+        ex.initCause( cause );
         return ex;
     }
 

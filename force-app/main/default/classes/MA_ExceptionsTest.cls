@@ -8,22 +8,79 @@
 private class MA_ExceptionsTest {
 
     @IsTest
+    static void test_AnonymousApexException() {
+
+        Test.startTest();
+
+        String compileProblem = 'compileProblem';
+        String exceptionMessage = 'exceptionMessage';
+        String exceptionStackTrace = 'exceptionStackTrace';
+        Exception cause = new System.NoAccessException();
+
+        try {
+
+            throw new MA_Exceptions.AnonymousApexException( compileProblem, exceptionMessage, exceptionStackTrace, cause );
+
+        } catch ( MA_Exceptions.AnonymousApexException e ) {
+
+            System.assertEquals( compileProblem, e.compileProblem );
+            System.assertEquals( exceptionMessage, e.exceptionMessage );
+            System.assertEquals( exceptionStackTrace, e.exceptionStackTrace );
+            System.assert( e.getMessage().startsWithIgnoreCase( 'Anonymous Apex Error:' ) );
+            System.assertEquals( cause, e.getCause() );
+
+        }
+
+        Test.stopTest();
+
+    }
+
+    @IsTest
+    static void test_SOQLQueryException() {
+
+        Test.startTest();
+
+        String query = 'SELECT Id, Name FROM Foo__c';
+        String errorType = 'errorType';
+        String message = 'the error message';
+        Exception cause = new System.NoAccessException();
+
+        try {
+
+            throw new MA_Exceptions.SOQLQueryException( query, errorType, message, cause );
+
+        } catch ( MA_Exceptions.SOQLQueryException e ) {
+
+            System.assertEquals( query, e.query );
+            System.assertEquals( errorType, e.errorType );
+            System.assert( e.getMessage().startsWithIgnoreCase( message ) );
+            System.assertEquals( cause, e.getCause() );
+
+        }
+
+        Test.stopTest();
+
+    }
+
+    @IsTest
     static void test_UnsupportedSourceTypeException() {
 
         Test.startTest();
 
         ID configId = null;
         String sourceType = '';
+        Exception cause = new System.NoAccessException();
 
         try {
 
-            throw new MA_Exceptions.UnsupportedSourceTypeException( configId, sourceType );
+            throw new MA_Exceptions.UnsupportedSourceTypeException( configId, sourceType, cause );
 
         } catch ( MA_Exceptions.UnsupportedSourceTypeException e ) {
 
             System.assertEquals( configId, e.configId );
             System.assertEquals( sourceType, e.sourceType );
             System.assert( e.getMessage().startsWithIgnoreCase( 'Error: Unsupported Source Type' ) );
+            System.assertEquals( cause, e.getCause() );
 
         }
 
@@ -38,16 +95,18 @@ private class MA_ExceptionsTest {
 
         Map<String, Object> sourceData = new Map<String, Object>{ 'A' => 1 };
         String sourceFieldName = 'fieldName';
+        Exception cause = new System.NoAccessException();
 
         try {
 
-            throw new MA_Exceptions.NoSourceFieldException( sourceData, sourceFieldName );
+            throw new MA_Exceptions.NoSourceFieldException( sourceData, sourceFieldName, cause );
 
         } catch ( MA_Exceptions.NoSourceFieldException e ) {
 
             System.assertEquals( sourceData, e.sourceData );
             System.assertEquals( sourceFieldName, e.sourceFieldName );
             System.assert( e.getMessage().startsWithIgnoreCase( 'Error: Field path' ) );
+            System.assertEquals( cause, e.getCause() );
 
         }
 
@@ -67,9 +126,11 @@ private class MA_ExceptionsTest {
         HttpResponse response = new HttpResponse();
         response.setBody( 'test' );
 
+        Exception cause = new System.NoAccessException();
+
         try {
 
-            throw new MA_Exceptions.InvokeActionException( request, response );
+            throw new MA_Exceptions.InvokeActionException( request, response, cause );
 
         } catch ( MA_Exceptions.InvokeActionException e ) {
 
@@ -78,6 +139,35 @@ private class MA_ExceptionsTest {
 
             System.assert( e.getMessage().containsIgnoreCase( response.getBody() ) );
             System.assert( e.getMessage().containsIgnoreCase( request.getEndpoint() ) );
+            System.assertEquals( cause, e.getCause() );
+
+        }
+
+        Test.stopTest();
+
+    }
+
+    @IsTest
+    static void test_buildException() {
+
+        Test.startTest();
+
+        Type t = System.NullPointerException.class;
+        String message = 'the error message';
+        Exception cause = new System.NoAccessException();
+
+        try {
+
+            throw MA_Exceptions.buildException( t, message, cause );
+
+        } catch ( System.NullPointerException e ) {
+
+            System.assert( e.getMessage().startsWithIgnoreCase( message ) );
+            System.assertEquals( cause, e.getCause() );
+
+        } catch ( Exception e ) {
+
+            System.assert( false, 'threw wrong exception' );
 
         }
 
