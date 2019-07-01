@@ -419,6 +419,38 @@ private class MA_EditConfigRestControllerTest {
     }
 
     @IsTest
+    static void test_getObjectNamesWithListViews() {
+
+        Set<String> sobjectsWithListViews = new Set<String>();
+        for ( AggregateResult result : [
+            SELECT SObjectType
+            FROM ListView
+            WHERE IsSoqlCompatible = true
+            GROUP BY SObjectType
+            ORDER BY SObjectType ASC
+            LIMIT 2000
+        ]) {
+            // lowercase the object names to match keys in the global describe map
+            // because the Set method `contains` is case-sensitive
+            sobjectsWithListViews.add( ( (String) result.get( 'SObjectType' ) ).toLowerCase() );
+        }
+
+        Test.startTest();
+
+        Map<String, Object> responseBodyMap = test_handlePost( 'getObjectNamesWithListViews', new Map<String, Object>() );
+
+        Test.stopTest();
+
+        List<Object> objectNames = (List<Object>) responseBodyMap.get( 'result' );
+
+        for ( Object item : objectNames ) {
+            Map<String, Object> objectName = (Map<String, Object>) item;
+            System.assert( sobjectsWithListViews.contains( String.valueOf( objectName.get( 'value' ) ).toLowerCase() ) );
+        }
+
+    }
+
+    @IsTest
     static void test_getListViewsByObject() {
 
         String objectName = MA_MassActionUtils.NAMESPACE_API + 'Mass_Action_Configuration__c';

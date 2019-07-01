@@ -158,6 +158,10 @@ global with sharing class MA_EditConfigRestController {
                 responseBody.put( 'result', getObjectNames() );
             }
 
+            when 'getObjectNamesWithListViews' {
+                responseBody.put( 'result', getObjectNamesWithListViews() );
+            }
+
             when 'getListViewsByObject' {
                 responseBody.put( 'result', getListViewsByObject(
                     (String) requestBody.get( 'objectName' )
@@ -422,6 +426,47 @@ global with sharing class MA_EditConfigRestController {
         for ( String key : globalDescribeMap.keySet() ) {
             DescribeSObjectResult objDescribe = globalDescribeMap.get( key ).getDescribe();
             wrappers.add( new ObjectNameWrapper( objDescribe.getLabel(), objDescribe.getName() ) );
+        }
+
+        wrappers.sort();
+
+        List<Map<String, Object>> options = new List<Map<String, Object>>();
+
+        for ( ObjectNameWrapper wrapper : wrappers ) {
+            options.add( new Map<String, Object>{
+                'label' => String.format( '{0} ({1})', new String[] { wrapper.objectLabel, wrapper.objectName } ),
+                'value' => wrapper.objectName
+            });
+        }
+
+        return options;
+    }
+
+    private static List<Map<String, Object>> getObjectNamesWithListViews() {
+
+        Set<String> sobjectsWithListViews = new Set<String>();
+        for ( AggregateResult result : [
+            SELECT SObjectType
+            FROM ListView
+            WHERE IsSoqlCompatible = true
+            GROUP BY SObjectType
+            ORDER BY SObjectType ASC
+            LIMIT 2000
+        ]) {
+            // lowercase the object names to match keys in the global describe map
+            // because the Set method `contains` is case-sensitive
+            sobjectsWithListViews.add( ( (String) result.get( 'SObjectType' ) ).toLowerCase() );
+        }
+
+        Map<String, SObjectType> globalDescribeMap = Schema.getGlobalDescribe();
+
+        List<ObjectNameWrapper> wrappers = new List<ObjectNameWrapper>();
+
+        for ( String key : globalDescribeMap.keySet() ) {
+            if ( sobjectsWithListViews.contains( key ) ) {
+                DescribeSObjectResult objDescribe = globalDescribeMap.get( key ).getDescribe();
+                wrappers.add( new ObjectNameWrapper( objDescribe.getLabel(), objDescribe.getName() ) );
+            }
         }
 
         wrappers.sort();
