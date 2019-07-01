@@ -1200,7 +1200,8 @@ public inherited sharing class MA_MassActionUtils {
 
     /**
      * XML deserializes the response.
-     * Throws exception if a soap fault is found.
+     * Assumes this is a succcessful response.
+     * A SOAP fault should have been checked prior to calling this method.
      */
     private static MA_AnonymousApexExecuteResult parseAnonymousApexHttpResponse( HttpResponse res ) {
 

@@ -292,7 +292,44 @@ private class MA_ReportSourceBatchableTest {
         ];
 
         System.debug( [ SELECT Id, Message__c FROM Mass_Action_Log__c WHERE Mass_Action_Configuration__c = :config.Id ] );
-        System.assertEquals( 1, [ SELECT COUNT() FROM Mass_Action_Log__c WHERE Mass_Action_Configuration__c = :config.Id AND Message__c LIKE '%Apex did not compile%' ] );
+        System.assertEquals( 1, [ SELECT COUNT() FROM Mass_Action_Log__c WHERE Mass_Action_Configuration__c = :config.Id AND Message__c LIKE '%COMPILE_FAIL%' ] );
+        System.assertEquals( job.CompletedDate, config.Last_Run_Completed_Date__c );
+        System.assertEquals( true, config.Last_Run_Completed_With_Errors__c );
+
+    }
+
+    @IsTest( SeeAllData = true )
+    static void test_batchable_fail_soap_fault_apex_script() {
+
+        Mass_Action_Configuration__c config = buildTestConfiguration();
+        config.Target_Type__c = 'Apex';
+        config.Target_Apex_Script__c = 'TEST_SOAP_FAULT'; // callout mock looks for this keyword
+
+        insert config;
+
+        Test.setMock( HttpCalloutMock.class, new MA_HttpCalloutMock() );
+
+        Test.startTest();
+
+        ID jobId = Database.executeBatch( new MA_ReportSourceBatchable( config.Id ), config.Batch_Size__c.intValue() );
+
+        Test.stopTest();
+
+        AsyncApexJob job = MA_MassActionBatchUtils.getJobById( jobId );
+
+        config = [
+            SELECT
+                Id,
+                Last_Run_Completed_Date__c,
+                Last_Run_Completed_With_Errors__c
+            FROM
+                Mass_Action_Configuration__c
+            WHERE
+                Id = :config.Id
+        ];
+
+        System.debug( [ SELECT Id, Message__c FROM Mass_Action_Log__c WHERE Mass_Action_Configuration__c = :config.Id ] );
+        System.assertEquals( 1, [ SELECT COUNT() FROM Mass_Action_Log__c WHERE Mass_Action_Configuration__c = :config.Id AND Message__c LIKE '%Anonymous Apex Error%TEST_SOAP_FAULT%' ] );
         System.assertEquals( job.CompletedDate, config.Last_Run_Completed_Date__c );
         System.assertEquals( true, config.Last_Run_Completed_With_Errors__c );
 

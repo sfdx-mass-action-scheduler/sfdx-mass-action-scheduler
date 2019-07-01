@@ -295,43 +295,14 @@ public inherited sharing class MA_HttpCalloutMock implements HttpCalloutMock {
             );
 
         }
-        // Anonymous Apex (failure)
-        else if ( matches( request.getEndpoint(), '(.*)/tooling/executeAnonymous(/)?\\?anonymousBody=(.*)TEST_FAIL(.*)' ) ) {
-
-            response.setBody(
-                ' { ' +
-                '   "line" : 1, ' +
-                '   "column" : 14, ' +
-                '   "compiled" : false, ' +
-                '   "success" : false, ' +
-                '   "compileProblem" : "Some error about why Apex did not compile", ' +
-                '   "exceptionStackTrace" : null, ' +
-                '   "exceptionMessage" : null ' +
-                ' } '
-            );
-
-        }
-        // Anonymous Apex (success)
-        else if ( matches( request.getEndpoint(), '(.*)/tooling/executeAnonymous(/)?\\?anonymousBody=(.*)' ) ) {
-
-            response.setBody(
-                ' { ' +
-                '   "line" : -1, ' +
-                '   "column" : -1, ' +
-                '   "compiled" : true, ' +
-                '   "success" : true, ' +
-                '   "compileProblem" : null, ' +
-                '   "exceptionStackTrace" : null, ' +
-                '   "exceptionMessage" : null ' +
-                ' } '
-            );
-
-        }
         else {
 
             response.setStatus( 'ERROR' );
             response.setStatusCode( 400 );
-            response.setBody( 'Unsupported endpoint: ' + request.getEndpoint() );
+            response.setBody(
+                'Unsupported endpoint: ' + request.getEndpoint() + '\n' +
+                'If you expected this to not return an error, add support for this endpoint in the callout mock class.'
+            );
 
         }
 
@@ -407,11 +378,78 @@ public inherited sharing class MA_HttpCalloutMock implements HttpCalloutMock {
 
 
         }
+        // Anonymous Apex (failure)
+        else if ( matches( request.getBody(), '(.*)\\<apex:executeAnonymous\\>(.*)TEST_FAIL(.*)' ) ) {
+
+            response.setBody(
+                ' <?xml version="1.0" encoding="UTF-8"?> ' +
+                ' <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns="http://soap.sforce.com/2006/08/apex" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"> ' +
+                    ' <soapenv:Body> ' +
+                        ' <executeAnonymousResponse> ' +
+                            ' <result> ' +
+                                ' <column>5</column> ' +
+                                ' <line>12</line> ' +
+                                ' <compiled>false</compiled> ' +
+                                ' <compileProblem xsi:nil="true">COMPILE_FAIL</compileProblem> ' +
+                                ' <exceptionMessage xsi:nil="true">EXCEPTION_FAIL</exceptionMessage> ' +
+                                ' <exceptionStackTrace xsi:nil="true">STACKTRACE_FAIL</exceptionStackTrace> ' +
+                                ' <success>false</success> ' +
+                            ' </result> ' +
+                        ' </executeAnonymousResponse> ' +
+                    ' </soapenv:Body> ' +
+                ' </soapenv:Envelope> '
+            );
+
+        }
+        // Anonymous Apex (soap fault)
+        else if ( matches( request.getBody(), '(.*)\\<apex:executeAnonymous\\>(.*)TEST_SOAP_FAULT(.*)' ) ) {
+
+            response.setStatus( 'ERROR' );
+            response.setStatusCode( 500 );
+            response.setBody(
+                '<?xml version="1.0" encoding="UTF-8"?>' +
+                '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">' +
+                    '<soapenv:Body>' +
+                        '<soapenv:Fault>' +
+                            '<faultcode>soapenv:Client</faultcode>' +
+                            '<faultstring>TEST_SOAP_FAULT</faultstring>' +
+                        '</soapenv:Fault>' +
+                    '</soapenv:Body>' +
+                '</soapenv:Envelope>'
+            );
+
+        }
+        // Anonymous Apex (success)
+        else if ( matches( request.getBody(), '(.*)\\<apex:executeAnonymous\\>(.*)' ) ) {
+
+            response.setBody(
+                ' <?xml version="1.0" encoding="UTF-8"?> ' +
+                ' <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns="http://soap.sforce.com/2006/08/apex" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"> ' +
+                    ' <soapenv:Body> ' +
+                        ' <executeAnonymousResponse> ' +
+                            ' <result> ' +
+                                ' <column>-1</column> ' +
+                                ' <line>-1</line> ' +
+                                ' <compiled>true</compiled> ' +
+                                ' <compileProblem xsi:nil="true"/> ' +
+                                ' <exceptionMessage xsi:nil="true"/> ' +
+                                ' <exceptionStackTrace xsi:nil="true"/> ' +
+                                ' <success>true</success> ' +
+                            ' </result> ' +
+                        ' </executeAnonymousResponse> ' +
+                    ' </soapenv:Body> ' +
+                ' </soapenv:Envelope> '
+            );
+
+        }
         else {
 
             response.setStatus( 'ERROR' );
             response.setStatusCode( 400 );
-            response.setBody( 'Unsupported endpoint: ' + request.getEndpoint() );
+            response.setBody(
+                'Unsupported endpoint: ' + request.getEndpoint() + '\n' +
+                'If you expected this to not return an error, add support for this endpoint in the callout mock class.'
+            );
 
         }
 

@@ -874,10 +874,24 @@ private class MA_EditConfigRestControllerTest {
 
         Test.startTest();
 
-        System.assertEquals( 'callout:TestNamedCredential', MA_MassActionUtils.getCalloutRestEndpointURL( 'TestNamedCredential' ) );
+        System.assertEquals( 'callout:TestNamedCredential' + MA_MassActionUtils.REST_API_PATH, MA_MassActionUtils.getCalloutRestEndpointURL( 'TestNamedCredential' ) );
         System.assertEquals( MA_MassActionUtils.REST_API_SERVICES_URL, MA_MassActionUtils.getCalloutRestEndpointURL( null ) );
         System.assertEquals( MA_MassActionUtils.REST_API_SERVICES_URL, MA_MassActionUtils.getCalloutRestEndpointURL( '' ) );
         System.assertEquals( MA_MassActionUtils.REST_API_SERVICES_URL, MA_MassActionUtils.getCalloutRestEndpointURL( ' ' ) );
+
+        Test.stopTest();
+
+    }
+
+    @IsTest
+    static void test_getCalloutSoapEndpointURL() {
+
+        Test.startTest();
+
+        System.assertEquals( 'callout:TestNamedCredential' + MA_MassActionUtils.SOAP_API_PATH, MA_MassActionUtils.getCalloutSoapEndpointURL( 'TestNamedCredential' ) );
+        System.assertEquals( MA_MassActionUtils.SOAP_API_SERVICES_URL, MA_MassActionUtils.getCalloutSoapEndpointURL( null ) );
+        System.assertEquals( MA_MassActionUtils.SOAP_API_SERVICES_URL, MA_MassActionUtils.getCalloutSoapEndpointURL( '' ) );
+        System.assertEquals( MA_MassActionUtils.SOAP_API_SERVICES_URL, MA_MassActionUtils.getCalloutSoapEndpointURL( ' ' ) );
 
         Test.stopTest();
 
