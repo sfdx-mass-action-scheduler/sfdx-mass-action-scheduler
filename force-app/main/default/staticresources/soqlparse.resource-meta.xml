@@ -2,6 +2,6 @@
 <StaticResource xmlns="http://soap.sforce.com/2006/04/metadata">
     <cacheControl>Public</cacheControl>
     <contentType>application/javascript</contentType>
-    <description>v1.0.0
+    <description>v1.1.1
 https://github.com/stomita/soql-parse</description>
 </StaticResource>
