@@ -89,7 +89,7 @@ License: BSD 3-Clause License
                             The manual setup of the Connected App, Auth. Provider, and Named Credential is several clicks and copying and pasting very long and specific values between forms.
                             This is the primary complaint and barrier to adoption of the Mass Action Scheduler app.
                             Therefore, the automated setup option is recommended and provided as a convenience.
-                            However, if desired, you can create these items manually by following the instructions on the <a href="https://github.com/douglascayers/sfdx-mass-action-scheduler/wiki/Pre-Requisites-Instructions">project wiki page</a>.
+                            However, if desired, you can create these items manually by following the instructions on the <a href="https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Specify-the-Running-User-via-Named-Credentials">project wiki page</a>.
                         </p>
 
                         <div class="slds-text-heading_medium">3b. Automated Setup</div>
@@ -134,7 +134,7 @@ License: BSD 3-Clause License
                                     <b>Wait 10 minutes</b> for the Connected App to become available to the Salesforce login servers, otherwise you will get error <span class="slds-text-color_error">invalid_client_id</span> in step 4b.
                                 </li>
                                 <li class="slds-m-vertical_small">
-                                    In Setup, go to the <a href="/one/one.app#/setup/NamedCredential/home" target="_blank">Named Credential</a> record,
+                                    In Setup, go to the <a href="/lightning/setup/NamedCredential/home" target="_blank">Named Credential</a> record,
                                     click <b>Edit</b>, ensure the <b>Start Authentication Flow on Save</b> checkbox is selected, then click <b>Save</b>.
                                 </li>
                                 <li class="slds-m-vertical_small">
@@ -297,7 +297,9 @@ License: BSD 3-Clause License
                 endpoint : orgDomainURL,
                 oauthScope : 'full refresh_token',
                 principalType : 'NamedUser',
-                protocol : 'Oauth'
+                protocol : 'Oauth',
+                allowMergeFieldsInHeader : true,
+                allowMergeFieldsInBody : true
             };
         }
 
