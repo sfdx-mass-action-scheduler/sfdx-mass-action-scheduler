@@ -611,7 +611,7 @@ private class MA_EditConfigRestControllerTest {
             });
 
             System.assertEquals( false, responseBodyMap.get( 'success' ), 'should fail' );
-            System.assertEquals( 'Test Fail', responseBodyMap.get( 'error' ), 'failed for wrong reason' );
+            System.assert( ( (String) responseBodyMap.get( 'error' ) ).startsWithIgnoreCase( 'SOQL Query Error:' ), 'failed for wrong reason' );
 
         } catch ( Exception e ) {
 
@@ -661,7 +661,7 @@ private class MA_EditConfigRestControllerTest {
             });
 
             System.assertEquals( false, responseBodyMap.get( 'success' ), 'should fail' );
-            System.assertEquals( 'Test Fail', responseBodyMap.get( 'error' ), 'failed for wrong reason' );
+            System.assert( ( (String) responseBodyMap.get( 'error' ) ).startsWithIgnoreCase( 'SOQL Query Error:' ), 'failed for wrong reason' );
 
         } catch ( Exception e ) {
 

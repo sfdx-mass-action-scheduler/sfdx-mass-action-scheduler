@@ -342,9 +342,7 @@ public inherited sharing class MA_MassActionUtils {
             // so we need to actually inspect the response body to see if something is wrong
             if ( result.success == false ) {
                 throw new MA_Exceptions.AnonymousApexException(
-                    result.compileProblem,
-                    result.exceptionMessage,
-                    result.exceptionStackTrace
+                    req, res, result.compileProblem, result.exceptionMessage, result.exceptionStackTrace
                 );
             }
 
@@ -363,7 +361,9 @@ public inherited sharing class MA_MassActionUtils {
                     String faultCode = MA_XMLUtils.getChildNodeTextByPath( root, '/Body/Fault/faultcode' );
                     String faultString = MA_XMLUtils.getChildNodeTextByPath( root, '/Body/Fault/faultstring' );
 
-                    throwable = new MA_Exceptions.AnonymousApexException( null, faultString, faultCode, e );
+                    throwable = new MA_Exceptions.AnonymousApexException(
+                        e.request, e.response, null, faultString, faultCode, e
+                    );
 
                 }
 
@@ -899,9 +899,7 @@ public inherited sharing class MA_MassActionUtils {
             for ( Object item : errors ) {
                 Map<String, Object> err = (Map<String, Object>) item;
                 throwable = new MA_Exceptions.SOQLQueryException(
-                    query,
-                    (String) err.get( 'errorType' ),
-                    (String) err.get( 'message' )
+                    e.request, e.response, query, (String) err.get( 'errorType' ), (String) err.get( 'message' ), e
                 );
             }
 
@@ -1004,9 +1002,7 @@ public inherited sharing class MA_MassActionUtils {
             for ( Object item : errors ) {
                 Map<String, Object> err = (Map<String, Object>) item;
                 throwable = new MA_Exceptions.SOQLQueryException(
-                    nextRecordsId,
-                    (String) err.get( 'errorType' ),
-                    (String) err.get( 'message' )
+                    e.request, e.response, nextRecordsId, (String) err.get( 'errorType' ), (String) err.get( 'message' ), e
                 );
             }
 

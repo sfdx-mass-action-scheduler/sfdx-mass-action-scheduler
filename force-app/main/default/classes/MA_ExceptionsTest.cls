@@ -12,6 +12,13 @@ private class MA_ExceptionsTest {
 
         Test.startTest();
 
+        HttpRequest request = new HttpRequest();
+        request.setMethod( 'GET' );
+        request.setEndpoint( 'https://www.salesforce.com' );
+
+        HttpResponse response = new HttpResponse();
+        response.setBody( 'test' );
+
         String compileProblem = 'compileProblem';
         String exceptionMessage = 'exceptionMessage';
         String exceptionStackTrace = 'exceptionStackTrace';
@@ -19,10 +26,12 @@ private class MA_ExceptionsTest {
 
         try {
 
-            throw new MA_Exceptions.AnonymousApexException( compileProblem, exceptionMessage, exceptionStackTrace, cause );
+            throw new MA_Exceptions.AnonymousApexException( request, response, compileProblem, exceptionMessage, exceptionStackTrace, cause );
 
         } catch ( MA_Exceptions.AnonymousApexException e ) {
 
+            System.assertEquals( request, e.request );
+            System.assertEquals( response, e.response );
             System.assertEquals( compileProblem, e.compileProblem );
             System.assertEquals( exceptionMessage, e.exceptionMessage );
             System.assertEquals( exceptionStackTrace, e.exceptionStackTrace );
@@ -40,20 +49,30 @@ private class MA_ExceptionsTest {
 
         Test.startTest();
 
+        HttpRequest request = new HttpRequest();
+        request.setMethod( 'GET' );
+        request.setEndpoint( 'https://www.salesforce.com' );
+
+        HttpResponse response = new HttpResponse();
+        response.setBody( 'test' );
+
         String query = 'SELECT Id, Name FROM Foo__c';
         String errorType = 'errorType';
-        String message = 'the error message';
+        String errorMessage = 'the error message';
         Exception cause = new System.NoAccessException();
 
         try {
 
-            throw new MA_Exceptions.SOQLQueryException( query, errorType, message, cause );
+            throw new MA_Exceptions.SOQLQueryException( request, response, query, errorType, errorMessage, cause );
 
         } catch ( MA_Exceptions.SOQLQueryException e ) {
 
+            System.assertEquals( request, e.request );
+            System.assertEquals( response, e.response );
             System.assertEquals( query, e.query );
             System.assertEquals( errorType, e.errorType );
-            System.assert( e.getMessage().startsWithIgnoreCase( message ) );
+            System.assertEquals( errorMessage, e.errorMessage );
+            System.assert( e.getMessage().startsWithIgnoreCase( 'SOQL Query Error:' ) );
             System.assertEquals( cause, e.getCause() );
 
         }
