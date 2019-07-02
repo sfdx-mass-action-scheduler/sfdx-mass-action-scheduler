@@ -4,6 +4,9 @@ Website: https://douglascayers.com
 GitHub: https://github.com/douglascayers/sfdx-lightning-api-component
 License: BSD 3-Clause License
  -->
+<!--
+    For performance, turn off as much of the normal Salesforce page content.
+ -->
 <apex:page controller="LC_VisualforceDomainController"
            contentType="text/plain"
            showHeader="false"
