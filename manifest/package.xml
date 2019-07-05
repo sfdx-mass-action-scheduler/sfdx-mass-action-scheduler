@@ -185,7 +185,6 @@
     <members>jquery</members>
     <members>jsforce</members>
     <members>penpal</members>
-    <members>soqlparse</members>
   </types>
   <types>
     <name>CustomTab</name>

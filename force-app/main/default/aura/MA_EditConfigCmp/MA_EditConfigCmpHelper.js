@@ -623,7 +623,12 @@ License: BSD 3-Clause License
 
                 } else if ( sourceType == 'SOQL' ) {
 
-                    component.set( 'v.sourceFieldsInputType', 'text' );
+                    component.set( 'v.sourceFieldsInputType', 'combobox' );
+
+                    return helper.getSoqlQueryColumnsAsync( component, sourceSoqlQuery )
+                        .catch( $A.getCallback( function ( err ) {
+                            throw new Error( 'Error getting SOQL query columns: ' + helper.unwrapAuraErrorMessage( err ) );
+                        }));
 
                 } else if ( sourceType == 'Apex' ) {
 
@@ -809,7 +814,20 @@ License: BSD 3-Clause License
                         inputValidityAsync = Promise.resolve({
                             'invalid': ( sourceTypeIsSoqlQuery && ( inputIsEmpty || inputIsInvalid ) ),
                             'messageWhenInvalid': messageWhenValueMissing
-                        });
+                        }).then( $A.getCallback( function( inputValidity ) {
+                            // if we haven't already determined the field to be invalid
+                            // then perform more rigorous soql query validation
+                            if ( sourceTypeIsSoqlQuery && !inputValidity.invalid ) {
+                                return helper.validateSoqlQueryAsync( component, inputValue )
+                                    .then( $A.getCallback( function( validationResult ) {
+                                        return {
+                                            'invalid': !validationResult.valid,
+                                            'messageWhenInvalid': validationResult.message
+                                        };
+                                    }));
+                            }
+                            return inputValidity;
+                        }));
                         break;
 
                     // Source: Apex Class
@@ -1181,6 +1199,165 @@ License: BSD 3-Clause License
         return helper.enqueueRestRequest( component, 'getReportColumns', {
             'reportId' : reportId
         });
+
+    },
+
+    // ----------------------------------------------------------------------------------
+
+    validateSoqlQueryAsync : function( component, query ) {
+
+        // This used to make async calls, but it doesn't anymore.
+        // I've kept the method name, signature and response
+        // the same so as to minimize impact to other parts of the
+        // codebase and because this might become async in the future...
+
+        var helper = this;
+
+        return Promise.resolve()
+            .then( $A.getCallback( function() {
+
+                if ( helper.isEmpty( query ) ) {
+
+                    return {
+                        'valid': false,
+                        'message': 'SOQL Query is required.'
+                    };
+
+                } else {
+
+                    // Originally, I used third-party soql-parse library
+                    // to parse the query to know things like what the
+                    // SELECT clause was, and aliases of functions, etc.
+                    // However, the parser was not complete and the effort
+                    // to make a fully compliant SOQL parser is out of scope
+                    // for Mass Action Scheduler. Therefore, my approach now
+                    // is to brute force inspect the query for simple patterns
+                    // so that I can deduce what fields are being selected.
+                    // Whether the query is valid is another story; we'll find
+                    // out soon enough once the configuration runs :)
+
+                    // ================================================================= //
+                    // Caution with Regular Expressions with asterisks followed by /     //
+                    // https://twitter.com/DouglasCAyers/status/1147002313158090752      //
+                    // ================================================================= //
+
+                    // normalize the spaces in the query string (e.g. no new lines or tabs)
+                    // and uppercase the string so that we can be case-insensitive in our checks
+                    let trimmedQuery = (
+                        query                                   // original query
+                        .replace( /(\s*(\W+)\s*)/g, ' $2 ' )    // include one whitespace around non-words e.g. "(SELECT" => " ( SELECT"
+                        .replace( /\s+/g, ' ' )                 // remove new lines, redundant whitespace
+                        .trim()                                 // trim whitespace from start/end of query
+                        .toUpperCase()                          // uppercase everything so we're case-insensitive
+                    );
+
+                    // SOQL queries must start with SELECT, quick check this isn't a SOSL query
+                    if ( !trimmedQuery.startsWith( 'SELECT ' ) ) {
+                        return {
+                            'valid': false,
+                            'message': 'SOQL Query must start with a SELECT clause.'
+                        };
+                    }
+
+                    let indexOfFromClause = trimmedQuery.indexOf( ' FROM ' );
+
+                    // Make sure there's a FROM clause because
+                    // the real validation is going to be inspecting
+                    // the text between the SELECT and FROM statements
+                    if ( indexOfFromClause < 0 ) {
+                        return {
+                            'valid': false,
+                            'message': 'SOQL Query must include a FROM clause.'
+                        };
+                    }
+
+                    // At this point we know we have both keywords "SELECT" and "FROM" in our query string
+                    // so now let's grab what's between them to determine what fields were selected
+                    let selectClause = trimmedQuery.substring( 'SELECT '.length, indexOfFromClause );
+
+                    // SOQL allows child relationship sub-queries in the SELECT clause.
+                    // Mass Action Scheduler doesn't support this, and it makes this brute
+                    // force parsing of the query to determine the actual selected fields.
+                    // Therefore, we don't support sub-queries in the SELECT clause.
+                    if ( selectClause.includes( ' SELECT ' ) ) {
+                        return {
+                            'valid': false,
+                            'message': 'Parent-to-child relationship subqueries are not supported.'
+                        };
+                    }
+
+                    // Given we have what we need, let's determine the selected fields.
+                    let selectedFields = (
+                        selectClause
+                        .split( ',' )
+                        .filter( field => {
+                            // exclude non-aliased functions
+                            return !( /\)\s*$/.test( field ) )
+                        })
+                        .map( field => {
+                            return (
+                                field.includes( ')' ) ?                             // is function alias?
+                                field.substring( field.lastIndexOf( ')' ) + 1 ) :   // grab the alias
+                                field                                               // it's just a field
+                            ).replace( /\s+/g, '' )                                 // remove all whitespace
+                        })
+
+                    );
+
+                    return {
+                        'valid': true,
+                        'selectedFields': selectedFields
+                    };
+
+                }
+
+            }));
+
+    },
+
+    getSoqlQueryResultsAsync : function( component, query, batchSize ) {
+
+        var helper = this;
+
+        return helper.enqueueRestRequest( component, 'getSoqlQueryResults', {
+            'query' : query,
+            'batchSize' : batchSize
+        });
+
+    },
+
+    getSoqlQueryColumnsAsync : function( component, soqlQuery ) {
+
+        var helper = this;
+
+        return Promise.resolve()
+            .then( $A.getCallback( function() {
+
+                return helper.validateSoqlQueryAsync( component, soqlQuery )
+                    .then( $A.getCallback( function( validationResult ) {
+
+                        if ( validationResult.valid ) {
+
+                            return validationResult.selectedFields.map( fieldName => {
+                                return {
+                                    'label': fieldName,
+                                    'value': fieldName
+                                }
+                            });
+
+                        } else {
+
+                            throw new Error( validationResult.message );
+
+                        }
+
+                    })).catch( $A.getCallback( function( err ) {
+
+                        throw new Error( 'Error validating SOQL query: ' + helper.unwrapAuraErrorMessage( err ) );
+
+                    }));
+
+            }));
 
     },
 
