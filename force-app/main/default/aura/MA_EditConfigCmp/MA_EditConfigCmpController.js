@@ -447,45 +447,6 @@ License: BSD 3-Clause License
 
     // ----------------------------------------------------------------------------------
 
-    handleValidateSourceSoqlQuery : function( component, event, helper ) {
-
-        if ( component.get( 'v.didInitConfig' ) !== true ) {
-            return;
-        }
-
-        var query = component.get( 'v.record.sourceSoqlQuery' );
-
-        helper.validateSoqlQueryAsync( component, query )
-            .then( $A.getCallback( function( validationResult ) {
-
-                if ( validationResult.valid ) {
-
-                    if ( validationResult.result.totalSize == 0 ) {
-
-                        helper.toastMessage( 'No Records Found', 'The query found no records. Please review the query and your sharing settings to confirm this is expected.', 'info' );
-
-                    } else {
-
-                        helper.toastMessage( 'Success', `The query runs and would return ${$A.localizationService.formatNumber(validationResult.result.totalSize)} records.`, 'success' );
-
-                    }
-
-                } else {
-
-                    helper.toastMessage( 'Invalid SOQL Query', validationResult.message, 'error' );
-
-                }
-
-            })).catch( $A.getCallback( function( err ) {
-
-                helper.toastMessage( 'Error Validating SOQL Query', err, 'error' );
-
-            }));
-
-    },
-
-    // ----------------------------------------------------------------------------------
-
     handleTargetTypeChange : function( component, event, helper ) {
 
         if ( component.get( 'v.didInitConfig' ) !== true ) {

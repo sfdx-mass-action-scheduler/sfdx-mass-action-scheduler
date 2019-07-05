@@ -872,12 +872,6 @@ License: BSD 3-Clause License
                                     messageWhenTooLong="SOQL Query is too long."
                                     class="slds-p-top_x-small slds-text-font_monospace"/>
 
-                                <lightning:button aura:id="validateSourceSoqlQueryButton"
-                                    label="Validate Query"
-                                    iconName="utility:table"
-                                    disabled="{!empty(v.record.sourceSoqlQuery)}"
-                                    onclick="{!c.handleValidateSourceSoqlQuery}"/>
-
                             </aura:if>
 
                             <aura:if isTrue="{!equals( v.sourceType, 'Apex' )}">

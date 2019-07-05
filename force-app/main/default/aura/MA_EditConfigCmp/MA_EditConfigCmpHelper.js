@@ -623,12 +623,7 @@ License: BSD 3-Clause License
 
                 } else if ( sourceType == 'SOQL' ) {
 
-                    component.set( 'v.sourceFieldsInputType', 'combobox' );
-
-                    return helper.getSoqlQueryColumnsAsync( component, sourceSoqlQuery )
-                        .catch( $A.getCallback( function ( err ) {
-                            throw new Error( 'Error getting SOQL query columns: ' + helper.unwrapAuraErrorMessage( err ) );
-                        }));
+                    component.set( 'v.sourceFieldsInputType', 'text' );
 
                 } else if ( sourceType == 'Apex' ) {
 
@@ -814,20 +809,7 @@ License: BSD 3-Clause License
                         inputValidityAsync = Promise.resolve({
                             'invalid': ( sourceTypeIsSoqlQuery && ( inputIsEmpty || inputIsInvalid ) ),
                             'messageWhenInvalid': messageWhenValueMissing
-                        }).then( $A.getCallback( function( inputValidity ) {
-                            // if we haven't already determined the field to be invalid
-                            // then perform more rigorous soql query validation
-                            if ( sourceTypeIsSoqlQuery && !inputValidity.invalid ) {
-                                return helper.validateSoqlQueryAsync( component, inputValue )
-                                    .then( $A.getCallback( function( validationResult ) {
-                                        return {
-                                            'invalid': !validationResult.valid,
-                                            'messageWhenInvalid': validationResult.message
-                                        };
-                                    }));
-                            }
-                            return inputValidity;
-                        }));
+                        });
                         break;
 
                     // Source: Apex Class
@@ -1199,128 +1181,6 @@ License: BSD 3-Clause License
         return helper.enqueueRestRequest( component, 'getReportColumns', {
             'reportId' : reportId
         });
-
-    },
-
-    // ----------------------------------------------------------------------------------
-
-    validateSoqlQueryAsync : function( component, query ) {
-
-        var helper = this;
-
-        return Promise.resolve()
-            .then( $A.getCallback( function() {
-
-                if ( helper.isEmpty( query ) ) {
-
-                    return {
-                        'valid': false,
-                        'message': 'SOQL Query is required.'
-                    };
-
-                } else {
-
-                    if ( $A.util.isUndefinedOrNull( window.SOQLParse ) ) {
-
-                        throw new Error( 'No `window.SOQLParse` function defined. To use SOQL source type, ensure the static resource exists and "Freeze JavaScript Prototypes" is disabled in Session Settings, then reload the page.' );
-
-                    } else {
-
-                        var batchSize = 200; // we want smallest payload returned just to validate query works
-
-                        return helper.getSoqlQueryResultsAsync( component, query, batchSize )
-                            .then( $A.getCallback( function( result ) {
-
-                                var parseResult = window.SOQLParse.parse( query );
-                                // console.log( JSON.stringify( parseResult, null, 2 ) );
-
-                                for ( var i = 0; i < parseResult.fields.length; i++ ) {
-                                    var field = parseResult.fields[i];
-                                    if ( [ 'Query' ].includes( field.type ) ) {
-                                        return {
-                                            'valid': false,
-                                            'message': `Child relationship queries are not supported in the SELECT statement. Please remove query on "${field.object.name}" relationship.`,
-                                            'result': result,
-                                            'parseResult': parseResult
-                                        };
-                                    }
-                                }
-
-                                return {
-                                    'valid': true,
-                                    'result': result,
-                                    'parseResult': parseResult
-                                };
-
-                            })).catch( $A.getCallback( function( err ) {
-
-                                return {
-                                    'valid': false,
-                                    'message': helper.unwrapAuraErrorMessage( err ),
-                                };
-
-                            }));
-
-                    }
-
-                }
-
-            }));
-
-    },
-
-    getSoqlQueryResultsAsync : function( component, query, batchSize ) {
-
-        var helper = this;
-
-        return helper.enqueueRestRequest( component, 'getSoqlQueryResults', {
-            'query' : query,
-            'batchSize' : batchSize
-        });
-
-    },
-
-    getSoqlQueryColumnsAsync : function( component, soqlQuery ) {
-
-        var helper = this;
-
-        return Promise.resolve()
-            .then( $A.getCallback( function() {
-
-                return helper.validateSoqlQueryAsync( component, soqlQuery )
-                    .then( $A.getCallback( function( validationResult ) {
-
-                        if ( validationResult.valid ) {
-
-                            var sourceFields = [];
-
-                            validationResult.parseResult.fields.forEach( function( field, idx ) {
-                                if ( [ 'FieldReference', 'FunctionCall' ].includes( field.type ) ) {
-                                    var fieldName = ( field.alias || ( field.path && field.path.join( '.' ) ) );
-                                    if ( !helper.isEmpty( fieldName ) ) {
-                                        sourceFields.push({
-                                            'label': fieldName,
-                                            'value': fieldName
-                                        });
-                                    }
-                                }
-                            });
-
-                            return sourceFields;
-
-                        } else {
-
-                            throw new Error( validationResult.message );
-
-                        }
-
-                    })).catch( $A.getCallback( function( err ) {
-
-                        throw new Error( 'Error validating SOQL query: ' + helper.unwrapAuraErrorMessage( err ) );
-
-                    }));
-
-            }));
 
     },
 
