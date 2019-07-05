@@ -6,8 +6,6 @@ License: BSD 3-Clause License
 -->
 <aura:component controller="MA_EditConfigCmpController" implements="flexipage:availableForRecordHome,force:hasRecordId,lightning:actionOverride" access="global">
 
-    <ltng:require scripts="{!$Resource.soqlparse}"/>
-
     <aura:attribute name="didInitConfig"
                     type="Boolean"
                     description="Track if onInit has loaded the configuration record yet."
