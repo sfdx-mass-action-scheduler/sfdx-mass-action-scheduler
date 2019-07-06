@@ -13,7 +13,10 @@
  * and it is documented that the use of 'with sharing' by apex classes called by the handler may prevent installation.
  * https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_install_handler.htm
  */
-public without sharing class MA_SetConfigUniqueNameBatchable implements Database.Batchable<SObject>, Database.RaisesPlatformEvents {
+public without sharing class MA_SetConfigUniqueNameBatchable implements Database.Batchable<SObject>,
+                                                                        Database.Stateful,
+                                                                        Database.AllowsCallouts,
+                                                                        Database.RaisesPlatformEvents {
 
     public Database.QueryLocator start( Database.BatchableContext context ) {
 

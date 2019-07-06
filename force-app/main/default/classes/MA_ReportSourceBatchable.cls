@@ -4,7 +4,10 @@
  * GitHub: https://github.com/douglascayers/sfdx-mass-action-scheduler
  * License: BSD 3-Clause License
  */
-public with sharing class MA_ReportSourceBatchable implements Database.Batchable<Reports.ReportDetailRow>, Database.Stateful, Database.AllowsCallouts, Database.RaisesPlatformEvents {
+public with sharing class MA_ReportSourceBatchable implements Database.Batchable<Reports.ReportDetailRow>,
+                                                              Database.Stateful,
+                                                              Database.AllowsCallouts,
+                                                              Database.RaisesPlatformEvents {
 
     private ID configId { get; set; }
 
