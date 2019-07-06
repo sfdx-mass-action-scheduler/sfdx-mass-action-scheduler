@@ -28,11 +28,13 @@ public with sharing class MA_IterableSourceBatchable implements Database.Batchab
         return this.iterable;
     }
 
-    public void execute( Database.BatchableContext context, List<Map<String, Object>> sourceRowMaps ) {
+    public void execute( Database.BatchableContext context, List<Map<String, Object>> records ) {
 
         try {
 
             System.debug( 'MA_IterableSourceBatchable.execute: ' + context + ', configId=' + this.configId );
+
+            List<Map<String, Object>> sourceRowMaps = convertRecordsToMaps( records );
 
             MA_MassActionUtils.invokeTargetAction( this.config, sourceRowMaps );
 
@@ -55,6 +57,22 @@ public with sharing class MA_IterableSourceBatchable implements Database.Batchab
     }
 
     // ------------------------------------------------------------------------
+
+    private List<Map<String, Object>> convertRecordsToMaps( List<Map<String, Object>> records ) {
+
+        List<Map<String, Object>> maps = new List<Map<String, Object>>();
+
+        for ( Map<String, Object> record : records ) {
+            maps.add( convertRecordToMap( record ) );
+        }
+
+        return maps;
+    }
+
+    private Map<String, Object> convertRecordToMap( Map<String, Object> record ) {
+
+        return MA_MapUtils.visitFieldPaths( record );
+    }
 
 }
 /*

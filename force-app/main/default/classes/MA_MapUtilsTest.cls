@@ -36,6 +36,126 @@ private class MA_MapUtilsTest {
 
     }
 
+    @IsTest
+    static void test_visitFieldPaths_sobject() {
+
+        Account parentAcct = new Account(
+            Name = 'Test Parent Account'
+        );
+
+        insert parentAcct;
+
+        Account childAcct = new Account(
+            ParentId = parentAcct.Id,
+            Name = 'Test Child Account'
+        );
+
+        insert childAcct;
+
+        Contact cont = new Contact(
+            AccountId = childAcct.Id,
+            FirstName = 'Doug',
+            LastName = 'Ayers'
+        );
+
+        insert cont;
+
+        Contact record = [
+            SELECT
+                Id, AccountId, FirstName, LastName,
+                Account.Id, Account.Name,
+                Account.ParentId, Account.Parent.Id, Account.Parent.Name
+            FROM
+                Contact
+            WHERE
+                Id = :cont.Id
+        ];
+
+        Test.startTest();
+
+        System.debug( JSON.serializePretty( record ) );
+
+        Map<String, Object> recordMap = MA_MapUtils.visitFieldPaths( record );
+
+        System.debug( JSON.serializePretty( recordMap ) );
+
+        Test.stopTest();
+
+        System.assertEquals( record.Id, recordMap.get( 'Id' ) );
+        System.assertEquals( record.FirstName, recordMap.get( 'FirstName' ) );
+        System.assertEquals( record.LastName, recordMap.get( 'LastName' ) );
+        System.assertEquals( record.AccountId, recordMap.get( 'AccountId' ) );
+
+        System.assertEquals( record.Account.Id, recordMap.get( 'Account.Id' ) );
+        System.assertEquals( record.Account.Name, recordMap.get( 'Account.Name' ) );
+        System.assertEquals( record.Account.ParentId, recordMap.get( 'Account.ParentId' ) );
+
+        System.assertEquals( record.Account.Parent.Id, recordMap.get( 'Account.Parent.Id' ) );
+        System.assertEquals( record.Account.Parent.Name, recordMap.get( 'Account.Parent.Name' ) );
+
+    }
+
+    @IsTest
+    static void test_visitFieldPaths_map() {
+
+        Account parentAcct = new Account(
+            Name = 'Test Parent Account'
+        );
+
+        insert parentAcct;
+
+        Account childAcct = new Account(
+            ParentId = parentAcct.Id,
+            Name = 'Test Child Account'
+        );
+
+        insert childAcct;
+
+        Contact cont = new Contact(
+            AccountId = childAcct.Id,
+            FirstName = 'Doug',
+            LastName = 'Ayers'
+        );
+
+        insert cont;
+
+        Contact record = [
+            SELECT
+                Id, AccountId, FirstName, LastName,
+                Account.Id, Account.Name,
+                Account.ParentId, Account.Parent.Id, Account.Parent.Name
+            FROM
+                Contact
+            WHERE
+                Id = :cont.Id
+        ];
+
+        Test.startTest();
+
+        System.debug( JSON.serializePretty( record ) );
+
+        Map<String, Object> recordMap = MA_MapUtils.visitFieldPaths(
+            (Map<String, Object>) JSON.deserializeUntyped( JSON.serialize( record ) )
+        );
+
+        System.debug( JSON.serializePretty( recordMap ) );
+
+        Test.stopTest();
+
+        System.assertEquals( record.Id, recordMap.get( 'Id' ) );
+        System.assertEquals( record.FirstName, recordMap.get( 'FirstName' ) );
+        System.assertEquals( record.LastName, recordMap.get( 'LastName' ) );
+        System.assertEquals( record.AccountId, recordMap.get( 'AccountId' ) );
+
+        System.assertEquals( record.Account.Id, recordMap.get( 'Account.Id' ) );
+        System.assertEquals( record.Account.Name, recordMap.get( 'Account.Name' ) );
+        System.assertEquals( record.Account.ParentId, recordMap.get( 'Account.ParentId' ) );
+
+        System.assertEquals( record.Account.Parent.Id, recordMap.get( 'Account.Parent.Id' ) );
+        System.assertEquals( record.Account.Parent.Name, recordMap.get( 'Account.Parent.Name' ) );
+
+    }
+
 }
 /*
 BSD 3-Clause License

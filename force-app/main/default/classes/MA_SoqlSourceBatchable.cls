@@ -16,7 +16,7 @@ public with sharing class MA_SoqlSourceBatchable implements Database.Batchable<S
 
     // ------------------------------------------------------------------------
 
-    public Iterable<SObject> start( Database.BatchableContext context ) {
+    public Database.QueryLocator start( Database.BatchableContext context ) {
 
         System.debug( 'MA_SoqlSourceBatchable.start: ' + context + ', configId=' + this.configId );
 
@@ -77,15 +77,16 @@ public with sharing class MA_SoqlSourceBatchable implements Database.Batchable<S
             // inspect a SOQL query to know which fields were queried.
             // We can get a map of populated field values, but that map only
             // has entries for fields from the query that were non-null.
-            // I want a map of all fields that were queried.
-            // As a workaround, we iterate all the fields from the sobject describe
-            // and attempt to grab the value from the queried record.
+            // If the configuration record's field mappings reference a field
+            // whose value is null in the query result, the map we return
+            // would be lacking that map key and our validation would throw an
+            // exception. Therefore, as a workaround, we iterate all the fields
+            // from the sobject describe and attempt to grab the value from the queried record.
             DescribeFieldResult fieldDesc = fieldsMap.get( fieldName ).getDescribe();
             recordMap.put( fieldDesc.getName(), null );
         }
 
-        // overlay onto map the values returned by soql query
-        recordMap.putAll( record.getPopulatedFieldsAsMap() );
+        recordMap.putAll( MA_MapUtils.visitFieldPaths( record ) );
 
         return recordMap;
     }

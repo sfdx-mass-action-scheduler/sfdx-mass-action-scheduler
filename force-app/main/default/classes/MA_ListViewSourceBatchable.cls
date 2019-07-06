@@ -35,7 +35,7 @@ public with sharing class MA_ListViewSourceBatchable implements Database.Batchab
 
             System.debug( 'MA_ListViewSourceBatchable.execute: ' + context + ', configId=' + this.configId );
 
-            List<Map<String, Object>> sourceRowMaps = convertRecordsToMaps( records, this.listViewDescribe );
+            List<Map<String, Object>> sourceRowMaps = convertRecordsToMaps( records );
 
             MA_MassActionUtils.invokeTargetAction( this.config, sourceRowMaps );
 
@@ -59,43 +59,38 @@ public with sharing class MA_ListViewSourceBatchable implements Database.Batchab
 
     // ------------------------------------------------------------------------
 
-    private List<Map<String, Object>> convertRecordsToMaps( List<SObject> records, MA_ListViewDescribeResult listViewDescribe ) {
+    private List<Map<String, Object>> convertRecordsToMaps( List<SObject> records ) {
 
         List<Map<String, Object>> maps = new List<Map<String, Object>>();
 
-        List<String> columnNames = listViewDescribe.getColumnProperty( 'fieldNameOrPath' );
+        Map<String, SObjectField> fieldsMap = records.getSObjectType().getDescribe().fields.getMap();
 
         for ( SObject record : records ) {
-            maps.add( convertRecordToMap( record, columnNames ) );
+            maps.add( convertRecordToMap( record, fieldsMap ) );
         }
 
         return maps;
     }
 
-    private Map<String, Object> convertRecordToMap( SObject record, List<String> columnNames ) {
+    private Map<String, Object> convertRecordToMap( SObject record, Map<String, SObjectField> fieldsMap ) {
 
         Map<String, Object> recordMap = new Map<String, Object>();
 
-        for ( String columnName : columnNames ) {
-
-            // column name might be field name like 'Status'
-            // or might be field path like 'Owner.Alias'
-            String[] fieldPaths = columnName.split( '\\.' );
-
-            SObject value = record;
-
-            // walk object path (e.g. record.Owner)
-            for ( Integer i = 0; i < fieldPaths.size() - 1; i++ ) {
-                if ( value == null ) break;
-                value = value.getSObject( fieldPaths[i] );
-            }
-
-            if ( value != null ) {
-                // finally, retrieve property value (e.g. 'Alias' field of 'Owner.Alias' path)
-                recordMap.put( columnName, value.get( fieldPaths[fieldPaths.size() - 1] ) );
-            }
-
+        for ( String fieldName : fieldsMap.keySet() ) {
+            // As of Winter '19, Apex does not provide a way to
+            // inspect a SOQL query to know which fields were queried.
+            // We can get a map of populated field values, but that map only
+            // has entries for fields from the query that were non-null.
+            // If the configuration record's field mappings reference a field
+            // whose value is null in the query result, the map we return
+            // would be lacking that map key and our validation would throw an
+            // exception. Therefore, as a workaround, we iterate all the fields
+            // from the sobject describe and attempt to grab the value from the queried record.
+            DescribeFieldResult fieldDesc = fieldsMap.get( fieldName ).getDescribe();
+            recordMap.put( fieldDesc.getName(), null );
         }
+
+        recordMap.putAll( MA_MapUtils.visitFieldPaths( record ) );
 
         return recordMap;
     }
