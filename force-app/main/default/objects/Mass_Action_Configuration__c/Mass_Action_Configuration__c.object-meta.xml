@@ -157,7 +157,6 @@
     <allowInChatterGroups>false</allowInChatterGroups>
     <compactLayoutAssignment>Default_Compact_Layout</compactLayoutAssignment>
     <deploymentStatus>Deployed</deploymentStatus>
-    <deprecated>false</deprecated>
     <description>A configuration of inputs (reports, list views, queries) and actions (process builder, flows, apex) that can be scheduled.</description>
     <enableActivities>false</enableActivities>
     <enableBulkApi>true</enableBulkApi>
@@ -180,8 +179,8 @@
         <customTabListAdditionalFields>Source_Type__c</customTabListAdditionalFields>
         <customTabListAdditionalFields>Target_Type__c</customTabListAdditionalFields>
         <customTabListAdditionalFields>Target_Action_Name__c</customTabListAdditionalFields>
-        <excludedStandardButtons>ChangeOwner</excludedStandardButtons>
         <excludedStandardButtons>Accept</excludedStandardButtons>
+        <excludedStandardButtons>ChangeOwner</excludedStandardButtons>
         <lookupDialogsAdditionalFields>Active__c</lookupDialogsAdditionalFields>
         <lookupDialogsAdditionalFields>Schedule_Frequency__c</lookupDialogsAdditionalFields>
         <lookupDialogsAdditionalFields>Source_Type__c</lookupDialogsAdditionalFields>

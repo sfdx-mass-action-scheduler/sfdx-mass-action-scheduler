@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Target_SObject_Type__c</fullName>
-    <deprecated>false</deprecated>
     <externalId>false</externalId>
     <label>Target SObject Type</label>
     <length>255</length>

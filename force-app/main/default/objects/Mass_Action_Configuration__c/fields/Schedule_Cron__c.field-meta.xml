@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Schedule_Cron__c</fullName>
-    <deprecated>false</deprecated>
     <description>Schedule Cron Expression https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_scheduler.htm</description>
     <externalId>false</externalId>
     <inlineHelpText>Specify your own cron expression to schedule this action. See &quot;Apex Scheduler&quot; in the Salesforce Apex Developer Guide for full details on supported format.</inlineHelpText>

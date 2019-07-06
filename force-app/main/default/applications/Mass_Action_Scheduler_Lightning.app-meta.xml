@@ -4,6 +4,15 @@
         <actionName>View</actionName>
         <comment>Action override created by Lightning App Builder during activation.</comment>
         <content>Mass_Action_Configuration_Record_Page_One_Column</content>
+        <formFactor>Small</formFactor>
+        <skipRecordTypeSelect>false</skipRecordTypeSelect>
+        <type>Flexipage</type>
+        <pageOrSobjectType>Mass_Action_Configuration__c</pageOrSobjectType>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <comment>Action override created by Lightning App Builder during activation.</comment>
+        <content>Mass_Action_Configuration_Record_Page_One_Column</content>
         <formFactor>Large</formFactor>
         <skipRecordTypeSelect>false</skipRecordTypeSelect>
         <type>Flexipage</type>
@@ -16,11 +25,13 @@
         <shouldOverrideOrgTheme>true</shouldOverrideOrgTheme>
     </brand>
     <description>Declaratively schedule process automation from reports and list views</description>
+    <formFactors>Small</formFactors>
     <formFactors>Large</formFactors>
     <isNavAutoTempTabsDisabled>false</isNavAutoTempTabsDisabled>
     <isNavPersonalizationDisabled>false</isNavPersonalizationDisabled>
     <label>Mass Action Scheduler</label>
     <navType>Standard</navType>
+    <setupExperience>all</setupExperience>
     <tabs>Mass_Action_Configuration__c</tabs>
     <tabs>MA_SetupAuthWizardPageTab</tabs>
     <tabs>standard-report</tabs>

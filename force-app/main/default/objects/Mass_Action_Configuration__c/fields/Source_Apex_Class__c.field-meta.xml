@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Source_Apex_Class__c</fullName>
-    <deprecated>false</deprecated>
     <description>Name (including namespace if applicable) of an Apex class that implements Iterable&lt;Map&lt;String, Object&gt;&gt;. The returned iterator produces the source records to process. This also is a way, other than External Objects, to process data retrieved from HTTP callouts to external web services. You could query an external system to learn the Salesforce record IDs to apply updates to.</description>
     <externalId>false</externalId>
     <inlineHelpText>Name (including namespace if applicable) of an Apex class that implements Iterable&lt;Map&lt;String, Object&gt;&gt;. The returned iterator produces the source records to process. The source data, for example, could come from HTTP callouts to external web services.</inlineHelpText>

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Source_SOQL_Query__c</fullName>
-    <deprecated>false</deprecated>
     <description>SOQL query that provides the source records. Applicable when Source Type is SOQL. Max SOQL query length limit: https://developer.salesforce.com/docs/atlas.en-us.salesforce_app_limits_cheatsheet.meta/salesforce_app_limits_cheatsheet/salesforce_app_limits_platform_soslsoql.htm</description>
     <externalId>false</externalId>
     <inlineHelpText>Enter SOQL query that identifies the records to process. Use aliases with Aggregate functions (COUNT, SUM, MIN, MAX, AVG, etc.) to make them available in the Field Mappings step.</inlineHelpText>

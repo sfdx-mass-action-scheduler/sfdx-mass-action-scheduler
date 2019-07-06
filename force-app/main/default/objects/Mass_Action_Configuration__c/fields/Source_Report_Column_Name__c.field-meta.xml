@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Source_Report_Column_Name__c</fullName>
-    <deprecated>false</deprecated>
     <description>Report column name that holds unique record values for sorting and paginating. Needed for workaround with Reports API to process more than 2,000 rows. Applicable when Source Type is Report.</description>
     <externalId>false</externalId>
     <inlineHelpText>Choose a column that uniquely identifies each record in the report. For example, &quot;Account ID&quot;. Uniqueness ensures predictable sorting and pagination to avoid processing a record multiple times.</inlineHelpText>

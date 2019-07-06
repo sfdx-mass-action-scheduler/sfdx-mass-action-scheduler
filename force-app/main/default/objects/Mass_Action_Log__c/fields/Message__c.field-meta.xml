@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Message__c</fullName>
-    <deprecated>false</deprecated>
     <description>Apex Job extended status with details about any errors.</description>
     <externalId>false</externalId>
     <inlineHelpText>Apex Job extended status with details about any errors.</inlineHelpText>

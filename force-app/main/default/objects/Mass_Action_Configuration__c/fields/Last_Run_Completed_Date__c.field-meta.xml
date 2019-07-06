@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Last_Run_Completed_Date__c</fullName>
-    <deprecated>false</deprecated>
     <description>When the last run of this configuration completed. It is updated when the batch job finishes. Use this field to control when you chain other configurations together. For example, Process Builder may monitor when this field value changes and if the unique name is &quot;Config1&quot; then can decide to automatically run &quot;Config2&quot; to ensure &quot;Config2&quot; only runs after &quot;Config1&quot; completes.</description>
     <externalId>false</externalId>
     <inlineHelpText>When the last run of this configuration completed. It is updated when the batch job finishes. Use this field to control when you chain other configurations together. For example, to ensure &quot;Config2&quot; only runs after &quot;Config1&quot; completes.</inlineHelpText>

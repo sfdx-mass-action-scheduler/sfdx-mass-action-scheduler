@@ -2,7 +2,6 @@
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Active__c</fullName>
     <defaultValue>true</defaultValue>
-    <deprecated>false</deprecated>
     <description>If active then action can be ran and scheduled. Inactive actions will not run and have their scheduled job aborted.</description>
     <externalId>false</externalId>
     <inlineHelpText>If active then action can be ran and scheduled. Inactive actions will not run and have their scheduled job aborted.</inlineHelpText>

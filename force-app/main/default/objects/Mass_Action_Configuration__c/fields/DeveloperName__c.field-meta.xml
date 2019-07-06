@@ -2,7 +2,6 @@
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>DeveloperName__c</fullName>
     <caseSensitive>false</caseSensitive>
-    <deprecated>false</deprecated>
     <description>A unique name to reference this record by without knowing its ID. This is particularly useful when invoking a configuration on-demand from Process Builder or Flow.</description>
     <externalId>true</externalId>
     <inlineHelpText>A unique name to reference this record by without knowing its ID.</inlineHelpText>

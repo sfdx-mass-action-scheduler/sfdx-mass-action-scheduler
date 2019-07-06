@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Schedule_Frequency__c</fullName>
-    <deprecated>false</deprecated>
     <description>On Demand = not scheduled
 Scheduled = user scheduled via simple options
 Custom = user provided own cron expression</description>

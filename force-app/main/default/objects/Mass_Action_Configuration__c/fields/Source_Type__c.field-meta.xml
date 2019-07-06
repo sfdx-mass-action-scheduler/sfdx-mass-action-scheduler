@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Source_Type__c</fullName>
-    <deprecated>false</deprecated>
     <description>Where source records come from to perform actions on, like reports or list views.</description>
     <externalId>false</externalId>
     <inlineHelpText>Where source records come from to perform actions on, like reports or list views.</inlineHelpText>

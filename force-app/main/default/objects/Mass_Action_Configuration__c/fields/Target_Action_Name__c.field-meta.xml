@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Target_Action_Name__c</fullName>
-    <deprecated>false</deprecated>
     <description>Name of the action to process the source records (e.g. Process Builder, Flow, Invocable Apex class, Quick Action, Email Alert, etc). Should be blank for when Target Type is Workflow Rules.</description>
     <externalId>false</externalId>
     <inlineHelpText>Name of the action to process the source records (e.g. Process Builder, Flow, Invocable Apex class, Quick Action, Email Alert, etc). Should be blank for when Target Type is Workflow Rules.</inlineHelpText>

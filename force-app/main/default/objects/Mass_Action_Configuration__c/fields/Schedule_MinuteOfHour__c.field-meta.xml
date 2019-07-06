@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Schedule_MinuteOfHour__c</fullName>
-    <deprecated>false</deprecated>
     <description>Minute component of cron schedule expression. https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_scheduler.htm</description>
     <externalId>false</externalId>
     <inlineHelpText>Choose which minutes of the hour this action will run.</inlineHelpText>

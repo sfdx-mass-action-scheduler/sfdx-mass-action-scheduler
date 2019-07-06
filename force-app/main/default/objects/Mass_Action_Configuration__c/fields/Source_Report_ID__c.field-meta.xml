@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Source_Report_ID__c</fullName>
-    <deprecated>false</deprecated>
     <description>Report that provides the source records. Applicable when Source Type is Report.</description>
     <externalId>false</externalId>
     <inlineHelpText>Due to an API limitation, reports with more than 10,000 records may fail to process. For larger data sets, use list views instead which support millions of records.</inlineHelpText>

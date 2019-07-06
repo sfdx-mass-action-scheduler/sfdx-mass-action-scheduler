@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Source_List_View_ID__c</fullName>
-    <deprecated>false</deprecated>
     <description>List View that provides the source records. Applicable when Source Type is List View.</description>
     <externalId>false</externalId>
     <inlineHelpText>Choose a list view that identifies the records to process.</inlineHelpText>

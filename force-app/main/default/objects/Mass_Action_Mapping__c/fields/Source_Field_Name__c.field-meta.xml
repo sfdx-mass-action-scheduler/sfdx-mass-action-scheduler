@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Source_Field_Name__c</fullName>
-    <deprecated>false</deprecated>
     <description>API name of the source record to map to the target field. For example, the unique column name in a report or list view.</description>
     <externalId>false</externalId>
     <inlineHelpText>API name of the source record to map to the target field. For example, the unique column name in a report or list view.</inlineHelpText>
