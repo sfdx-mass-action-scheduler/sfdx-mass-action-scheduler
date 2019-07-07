@@ -2,8 +2,9 @@
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Parent_Log__c</fullName>
     <deleteConstraint>SetNull</deleteConstraint>
-    <description>Child logs capture details for child apex jobs that represent the executions of a batch job. A parent log captures details for the main apex job that represents the batch job as a whole.</description>
+    <description>Child logs capture details for discrete events during the lifecycle of a batch job. When the job started, success or failure of its executions, and when the job finished. Parent logs groups these child logs together for a given batch job id, and reflect the overall job status.</description>
     <externalId>false</externalId>
+    <inlineHelpText>Child logs capture details for discrete events during the lifecycle of a batch job. Parent logs groups these child logs together for a given batch job id.</inlineHelpText>
     <label>Parent Log</label>
     <referenceTo>Mass_Action_Log__c</referenceTo>
     <relationshipLabel>Related Logs</relationshipLabel>

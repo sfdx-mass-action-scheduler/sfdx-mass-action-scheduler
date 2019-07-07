@@ -25,7 +25,19 @@
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
+        <apexClass>MA_AnonymousApexExecuteResult</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>MA_AsyncApexJobMock</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>MA_BatchApexErrorEventTriggerHandler</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>MA_BatchApexErrorEventTriggerHandlerTest</apexClass>
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
@@ -232,6 +244,14 @@
         <apexClass>MA_StringUtilsTest</apexClass>
         <enabled>true</enabled>
     </classAccesses>
+    <classAccesses>
+        <apexClass>MA_XMLUtils</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>MA_XMLUtilsTest</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
     <description>Grants user access to Mass Action Configurations.</description>
     <fieldPermissions>
         <editable>true</editable>
@@ -410,6 +430,15 @@
     </fieldPermissions>
     <hasActivationRequired>false</hasActivationRequired>
     <label>Mass Action Admin</label>
+    <objectPermissions>
+        <allowCreate>true</allowCreate>
+        <allowDelete>false</allowDelete>
+        <allowEdit>false</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <object>MA_BatchApexStatusEvent__e</object>
+        <viewAllRecords>false</viewAllRecords>
+    </objectPermissions>
     <objectPermissions>
         <allowCreate>true</allowCreate>
         <allowDelete>true</allowDelete>
