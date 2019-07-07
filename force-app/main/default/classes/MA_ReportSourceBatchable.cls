@@ -29,26 +29,20 @@ public with sharing class MA_ReportSourceBatchable implements Database.Batchable
 
         this.reportDescribe = Reports.ReportManager.describeReport( config.Source_Report_ID__c );
 
+        MA_MassActionBatchUtils.handleBatchJobStarted( this.configId, context.getJobId() );
+
         return new MA_ReportService.ReportRowIterator( this.config.Source_Report_ID__c, this.config.Source_Report_Column_Name__c );
     }
 
     public void execute( Database.BatchableContext context, List<Reports.ReportDetailRow> reportRows ) {
 
-        try {
+        System.debug( 'MA_ReportSourceBatchable.execute: ' + context + ', configId=' + this.configId );
 
-            System.debug( 'MA_ReportSourceBatchable.execute: ' + context + ', configId=' + this.configId );
+        List<Map<String, Object>> sourceRowMaps = convertReportRowsToMaps( reportRows, this.reportDescribe );
 
-            List<Map<String, Object>> sourceRowMaps = convertReportRowsToMaps( reportRows, this.reportDescribe );
+        MA_MassActionUtils.invokeTargetAction( this.config, sourceRowMaps );
 
-            MA_MassActionUtils.invokeTargetAction( this.config, sourceRowMaps );
-
-        } catch ( Exception e ) {
-
-            System.debug( LoggingLevel.ERROR, 'MA_ReportSourceBatchable.execute: ' + e.getMessage() + ' : ' + e.getStackTraceString() );
-
-            MA_MassActionBatchUtils.logJobException( this.configId, context.getJobId(), e );
-
-        }
+        MA_MassActionBatchUtils.handleBatchJobExecution( this.configId, context.getJobId(), reportRows.size(), JSON.serializePretty( sourceRowMaps ) );
 
     }
 
@@ -56,7 +50,7 @@ public with sharing class MA_ReportSourceBatchable implements Database.Batchable
 
         System.debug( 'MA_ReportSourceBatchable.finish: ' + context + ', configId=' + this.configId );
 
-        MA_MassActionBatchUtils.handleBatchJobFinished( this.config.Id, context.getJobId() );
+        MA_MassActionBatchUtils.handleBatchJobFinished( this.configId, context.getJobId() );
 
     }
 

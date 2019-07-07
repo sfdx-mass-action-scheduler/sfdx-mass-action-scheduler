@@ -29,7 +29,7 @@ public with sharing class MA_ListViewSourceBatchable implements Database.Batchab
 
         this.listViewDescribe = MA_MassActionUtils.describeListView( MA_MassActionUtils.getCalloutRestEndpointURL( this.config.Named_Credential__c ), this.config.Source_List_View_ID__c );
 
-        MA_MassActionBatchUtils.updateJobLogStatus( this.configId, context.getJobId() );
+        MA_MassActionBatchUtils.handleBatchJobStarted( this.configId, context.getJobId() );
 
         return Database.getQueryLocator( this.listViewDescribe.query );
     }
@@ -42,43 +42,13 @@ public with sharing class MA_ListViewSourceBatchable implements Database.Batchab
 
         MA_MassActionUtils.invokeTargetAction( this.config, sourceRowMaps );
 
-        // --
-        Map<String,RecordTypeInfo> logRecordTypeInfosMap = Mass_Action_Log__c.SObjectType.getDescribe().getRecordTypeInfosByDeveloperName();
-
-        Mass_Action_Log__c parentLog = [
-            SELECT
-                Id, Mass_Action_Configuration__c, Job_ID__c
-            FROM
-                Mass_Action_Log__c
-            WHERE
-                Mass_Action_Configuration__c = :configId
-                AND
-                Job_ID__c = :String.valueOf( context.getJobId() ).left( 15 )
-                AND
-                RecordType.DeveloperName = 'Parent_Log'
-        ];
-
-        insert new Mass_Action_Log__c(
-            RecordTypeId = logRecordTypeInfosMap.get( 'Child_Log' ).getRecordTypeId(),
-            Mass_Action_Configuration__c = parentLog.Mass_Action_Configuration__c,
-            Parent_Log__c = parentLog.Id,
-            Job_ID__c = parentLog.Job_ID__c,
-            Message_Type__c = 'Success',
-            Message__c = 'Processed ' + records.size() + ' records',
-            Long_Message__c = 'Phase: EXECUTION' + '\nMessage: Processed ' + records.size() + ' records',
-            Job_Scope__c = String.join( new List<ID>( new Map<ID, SObject>( records ).keySet() ), ',' )
-        );
-        // --
-
-        MA_MassActionBatchUtils.updateJobLogStatus( this.configId, context.getJobId() );
+        MA_MassActionBatchUtils.handleBatchJobExecution( this.configId, context.getJobId(), records.size(), JSON.serializePretty( records ) );
 
     }
 
     public void finish( Database.BatchableContext context ) {
 
         System.debug( 'MA_ListViewSourceBatchable.finish: ' + context + ', configId=' + this.configId );
-            Integer i = 1 / 0; // TODO remove
-        MA_MassActionBatchUtils.updateJobLogStatus( this.configId, context.getJobId() );
 
         MA_MassActionBatchUtils.handleBatchJobFinished( this.configId, context.getJobId() );
 

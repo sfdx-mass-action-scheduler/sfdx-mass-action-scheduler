@@ -28,26 +28,20 @@ public with sharing class MA_IterableSourceBatchable implements Database.Batchab
 
         this.config = MA_MassActionUtils.getConfiguration( this.configId );
 
+        MA_MassActionBatchUtils.handleBatchJobStarted( this.configId, context.getJobId() );
+
         return this.iterable;
     }
 
     public void execute( Database.BatchableContext context, List<Map<String, Object>> records ) {
 
-        try {
+        System.debug( 'MA_IterableSourceBatchable.execute: ' + context + ', configId=' + this.configId );
 
-            System.debug( 'MA_IterableSourceBatchable.execute: ' + context + ', configId=' + this.configId );
+        List<Map<String, Object>> sourceRowMaps = convertRecordsToMaps( records );
 
-            List<Map<String, Object>> sourceRowMaps = convertRecordsToMaps( records );
+        MA_MassActionUtils.invokeTargetAction( this.config, sourceRowMaps );
 
-            MA_MassActionUtils.invokeTargetAction( this.config, sourceRowMaps );
-
-        } catch ( Exception e ) {
-
-            System.debug( LoggingLevel.ERROR, e.getMessage() + ' : ' + e.getStackTraceString() );
-
-            MA_MassActionBatchUtils.logJobException( this.configId, context.getJobId(), e );
-
-        }
+        MA_MassActionBatchUtils.handleBatchJobExecution( this.configId, context.getJobId(), records.size(), JSON.serializePretty( records ) );
 
     }
 

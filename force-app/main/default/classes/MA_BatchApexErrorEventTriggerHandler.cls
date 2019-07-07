@@ -40,13 +40,18 @@ public without sharing class MA_BatchApexErrorEventTriggerHandler {
                 Id IN :jobIds
         ]);
 
+        // It's possible that the batch error event's job id is
+        // a child job of the main batch job that represents the
+        // mass action configuration's execution.
+        // The parent log record's job id will be a parent job id.
+        // So to be able to cross-ref correctly, we need the parent job ids.
         Set<String> parentJobIds = new Set<String>();
         for ( AsyncApexJob job : jobsMap.values() ) {
             parentJobIds.add( String.valueOf( String.isNotBlank( job.ParentJobId ) ? job.ParentJobId : job.Id ).left( 15 ) );
         }
 
-        Map<String, Mass_Action_Log__c> jobIdToLogMap = new Map<String, Mass_Action_Log__c>();
-        for ( Mass_Action_Log__c log : [
+        Map<String, Mass_Action_Log__c> jobIdToParentLogMap = new Map<String, Mass_Action_Log__c>();
+        for ( Mass_Action_Log__c parentLog : [
             SELECT
                 Id, Job_ID__c, Mass_Action_Configuration__c
             FROM
@@ -54,9 +59,9 @@ public without sharing class MA_BatchApexErrorEventTriggerHandler {
             WHERE
                 Job_ID__c IN :parentJobIds
                 AND
-                Parent_Log__c = null
+                RecordType.DeveloperName = 'Parent_Log'
         ]) {
-            jobIdToLogMap.put( log.Job_ID__c.left( 15 ), log );
+            jobIdToParentLogMap.put( parentLog.Job_ID__c.left( 15 ), parentLog );
         }
 
         Map<String,RecordTypeInfo> logRecordTypeInfosMap = Mass_Action_Log__c.SObjectType.getDescribe().getRecordTypeInfosByDeveloperName();
@@ -67,8 +72,10 @@ public without sharing class MA_BatchApexErrorEventTriggerHandler {
         for ( BatchApexErrorEvent evt : newList ) {
 
             AsyncApexJob job = jobsMap.get( ID.valueOf( evt.AsyncApexJobId ) );
-            Mass_Action_Log__c parentLog = jobIdToLogMap.get( evt.AsyncApexJobId.left( 15 ) );
+            Mass_Action_Log__c parentLog = jobIdToParentLogMap.get( evt.AsyncApexJobId.left( 15 ) );
 
+            // if either the job or parent log are null then
+            // this batch error event is not for mass action scheduler, skip it
             if ( job != null && parentLog != null ) {
 
                 switch on ( evt.Phase ) {
@@ -93,6 +100,7 @@ public without sharing class MA_BatchApexErrorEventTriggerHandler {
 
                         parentLogsToUpdate.add( new Mass_Action_Log__c(
                             Id = parentLog.Id,
+                            Message_Type__c = 'Informational',
                             Message__c = 'Batch job processing',
                             Submitted_Date__c = job.CreatedDate,
                             Total_Batches__c = job.TotalJobItems,
