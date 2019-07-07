@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Job_Scope__c</fullName>
+    <description>Job Scope from BatchApexErrorEvent. The Record IDs that are in scope if the event was fired from the execute() method of a batch job. If the batch job uses custom iterators instead of sObjects, JobScope is the toString() representation of the iterable objects.</description>
+    <externalId>false</externalId>
+    <inlineHelpText>The Record IDs that are in scope if the event was fired from the execute() method of a batch job. If the batch job uses custom iterators instead of sObjects, JobScope is the toString() representation of the iterable objects.</inlineHelpText>
+    <label>Job Scope</label>
+    <length>50000</length>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>5</visibleLines>
+</CustomField>

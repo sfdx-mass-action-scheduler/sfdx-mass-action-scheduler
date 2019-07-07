@@ -16,4 +16,4 @@ package.xml
 
 # Demo metadata not core to the project but may be deployed
 # in an org as I test the application in a browser.
-**/DEMO_*
+**/*DEMO_*

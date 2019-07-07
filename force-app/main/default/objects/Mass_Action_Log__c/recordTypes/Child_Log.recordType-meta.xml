@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RecordType xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Child_Log</fullName>
+    <active>true</active>
+    <compactLayoutAssignment>Child_Log_Compact_Layout</compactLayoutAssignment>
+    <description>Represents informational, success, and error messages of a batch job run for a configuration.</description>
+    <label>Child Log</label>
+    <picklistValues>
+        <picklist>Message_Type__c</picklist>
+        <values>
+            <fullName>Error</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Informational</fullName>
+            <default>true</default>
+        </values>
+        <values>
+            <fullName>Success</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+</RecordType>

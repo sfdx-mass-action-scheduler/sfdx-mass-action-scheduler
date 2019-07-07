@@ -6,6 +6,7 @@
     <inlineHelpText>Anonymous Apex script to execute. Your script must include a method definition for `void execute( List&lt;Map&lt;String, Object&gt;&gt; sourceRecordsBatch )`, which will be passed the current batch of source records. No script state is preserved between executions.</inlineHelpText>
     <label>Target Apex Script</label>
     <length>131000</length>
+    <trackHistory>false</trackHistory>
     <trackTrending>false</trackTrending>
     <type>LongTextArea</type>
     <visibleLines>5</visibleLines>

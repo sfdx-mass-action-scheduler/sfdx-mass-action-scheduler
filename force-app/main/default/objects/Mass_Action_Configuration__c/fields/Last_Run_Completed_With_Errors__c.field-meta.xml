@@ -6,6 +6,7 @@
     <externalId>false</externalId>
     <inlineHelpText>Indicates if the last run of this configuration completed with errors. It is updated when the batch job finishes. This field is checked if the last run of this configuration created log records reporting any errors, otherwise it is unchecked.</inlineHelpText>
     <label>Last Run Completed With Errors</label>
+    <trackHistory>false</trackHistory>
     <trackTrending>false</trackTrending>
     <type>Checkbox</type>
 </CustomField>

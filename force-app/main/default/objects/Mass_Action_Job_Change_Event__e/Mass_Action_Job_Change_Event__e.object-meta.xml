@@ -5,5 +5,5 @@
     <eventType>HighVolume</eventType>
     <label>Mass Action Job Change Event</label>
     <pluralLabel>Mass Action Job Change Events</pluralLabel>
-    <publishBehavior>PublishImmediately</publishBehavior>
+    <publishBehavior>PublishAfterCommit</publishBehavior>
 </CustomObject>

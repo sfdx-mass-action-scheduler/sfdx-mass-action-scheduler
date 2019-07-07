@@ -1,7 +1,7 @@
 /**
  * Author: Doug Ayers
  * Website: https://douglascayers.com
- * GitHub: https://github.com/douglascayers/sfdx-mass-action-scheduler
+ * GitHub: https://github.com/douglascayers-org/sfdx-mass-action-scheduler
  * License: BSD 3-Clause License
  */
 public with sharing class MA_ReportSourceBatchable implements Database.Batchable<Reports.ReportDetailRow>,
@@ -44,7 +44,7 @@ public with sharing class MA_ReportSourceBatchable implements Database.Batchable
 
         } catch ( Exception e ) {
 
-            System.debug( LoggingLevel.ERROR, e.getMessage() + ' : ' + e.getStackTraceString() );
+            System.debug( LoggingLevel.ERROR, 'MA_ReportSourceBatchable.execute: ' + e.getMessage() + ' : ' + e.getStackTraceString() );
 
             MA_MassActionBatchUtils.logJobException( this.configId, context.getJobId(), e );
 
@@ -128,7 +128,7 @@ public with sharing class MA_ReportSourceBatchable implements Database.Batchable
                     // important to grab the value and not the label
                     // otherwise get the text literal "true"/false
                     // instead of the boolean true/false
-                    // which led to https://github.com/douglascayers/sfdx-mass-action-scheduler/issues/64
+                    // which led to https://github.com/douglascayers-org/sfdx-mass-action-scheduler/issues/64
                     extractedValue = cellValue;
                 }
 

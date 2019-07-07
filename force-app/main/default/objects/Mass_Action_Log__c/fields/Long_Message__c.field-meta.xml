@@ -6,6 +6,7 @@
     <inlineHelpText>The full error message, particularly if more than 255 characters.</inlineHelpText>
     <label>Long Message</label>
     <length>32768</length>
+    <trackHistory>false</trackHistory>
     <trackTrending>false</trackTrending>
     <type>LongTextArea</type>
     <visibleLines>5</visibleLines>

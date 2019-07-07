@@ -1,7 +1,7 @@
 /**
  * Author: Doug Ayers
  * Website: https://douglascayers.com
- * GitHub: https://github.com/douglascayers/sfdx-mass-action-scheduler
+ * GitHub: https://github.com/douglascayers-org/sfdx-mass-action-scheduler
  * License: BSD 3-Clause License
  */
 public inherited sharing class MA_MassActionBatchUtils {
@@ -38,13 +38,28 @@ public inherited sharing class MA_MassActionBatchUtils {
 
             }
 
+            // Log that the job has been enqueued.
+            // All other success/error logs for this job
+            // will be saved as child logs to this one.
+            Map<String,RecordTypeInfo> logRecordTypeInfosMap = Mass_Action_Log__c.SObjectType.getDescribe().getRecordTypeInfosByDeveloperName();
+            Mass_Action_Log__c log = new Mass_Action_Log__c(
+                RecordTypeId = logRecordTypeInfosMap.get( 'Parent_Log' ).getRecordTypeId(),
+                Mass_Action_Configuration__c = configId,
+                Job_ID__c = String.valueOf( jobId ).left( 15 ),
+                Submitted_Date__c = DateTime.now(),
+                Message__c = 'Batch job enqueued',
+                Message_Type__c = 'Informational'
+            );
+
+            insert log;
+
         } else {
 
-            System.debug( LoggingLevel.WARN, 'Not enqueueing inactive configuration' );
+            System.debug( LoggingLevel.WARN, 'MA_MassActionBatchUtils.enqueueAction: Not enqueueing inactive configuration' );
 
         }
 
-        System.debug( 'jobId: ' + jobId );
+        System.debug( 'MA_MassActionBatchUtils.enqueueAction: jobId: ' + jobId );
 
         return jobId;
     }
@@ -108,21 +123,17 @@ public inherited sharing class MA_MassActionBatchUtils {
 
         System.debug( 'MA_MassActionBatchUtils.handleBatchJobFinished: configId=' + configId + ', jobId=' + jobId );
 
-        // we don't have lookup fields to AsyncApexJob records
-        // so standardizing on the 15 character id, least common denominator
-        // also, must use string variable type because ID variable type
-        // always coerces the assigned value back to 18 characters
+        // We don't have lookup fields to AsyncApexJob records,
+        // so standardizing on the 15 character id, least common denominator.
+        // Also, must use string variable type because ID variable type
+        // always coerces the assigned value back to 18 characters.
         String jobId15 = String.valueOf( jobId ).left( 15 );
 
         AsyncApexJob job = getJobById( jobId );
 
-        // this may or may not insert a job error log record,
-        // so run first before querying for count of error logs
-        logJobErrors( configId, job, null );
-
-        // if actual batch job didn't fail with an error,
+        // If actual batch job didn't fail with an error,
         // check if any of the batch executions logged errors
-        Integer jobErrorCount = [
+        Integer jobErrorLogCount = [
             SELECT
                 COUNT()
             FROM
@@ -131,15 +142,68 @@ public inherited sharing class MA_MassActionBatchUtils {
                 Mass_Action_Configuration__c = :configId
                 AND
                 Job_ID__c = :jobId15
+                AND
+                Message_Type__c = 'Error'
         ];
 
         Mass_Action_Configuration__c config = new Mass_Action_Configuration__c(
             Id = configId,
             Last_Run_Completed_Date__c = job.CompletedDate,
-            Last_Run_Completed_With_Errors__c = ( jobErrorCount > 0 )
+            Last_Run_Completed_With_Errors__c = ( jobErrorLogCount > 0 || job.NumberOfErrors > 0 )
         );
 
         update config;
+
+    }
+
+    // ----------------------------------------------------
+
+    public static void updateJobLogStatus( ID configId, ID jobId ) {
+
+        System.debug( 'MA_MassActionBatchUtils.updateJobLogStatus: configId=' + configId + ', jobId=' + jobId );
+
+        // We don't have lookup fields to AsyncApexJob records,
+        // so standardizing on the 15 character id, least common denominator.
+        // Also, must use string variable type because ID variable type
+        // always coerces the assigned value back to 18 characters.
+        String jobId15 = String.valueOf( jobId ).left( 15 );
+
+        AsyncApexJob job = getJobById( jobId );
+
+        // Technically, there should be exactly 0 or 1
+        // parent logs for this apex job, but just in case
+        // there are multiples, and just in case there are none,
+        // a SOQL-FOR loop is simplest approach to handle all use cases.
+        for ( List<Mass_Action_Log__c> parentLogs : [
+            SELECT
+                Id, Mass_Action_Configuration__c, Job_ID__c, Parent_Log__c,
+                Job_Scope__c, Message_Type__c, Message__c, Long_Message__c,
+                Submitted_Date__c, Total_Batches__c, Processed_Batches__c, Failed_Batches__c
+            FROM
+                Mass_Action_Log__c
+            WHERE
+                Mass_Action_Configuration__c = :configId
+                AND
+                Job_ID__c = :jobId15
+                AND
+                RecordType.DeveloperName = 'Parent_Log'
+            FOR UPDATE
+        ]) {
+
+            Database.DMLOptions dmo = new Database.DMLOptions();
+            dmo.allowFieldTruncation = true;
+
+            for ( Mass_Action_Log__c parentLog : parentLogs ) {
+                parentLog.Message__c = 'Batch job ' + ( String.isBlank( job.Status ) ? 'completed' : job.Status ).toLowerCase();
+                parentLog.Submitted_Date__c = job.CreatedDate;
+                parentLog.Total_Batches__c = job.TotalJobItems;
+                parentLog.Processed_Batches__c = job.JobItemsProcessed;
+                parentLog.Failed_Batches__c = job.NumberOfErrors;
+            }
+
+            Database.update( parentLogs, dmo );
+
+        }
 
     }
 
@@ -200,7 +264,7 @@ public inherited sharing class MA_MassActionBatchUtils {
 
             Database.insert( log, dmo );
 
-            System.debug( log );
+            System.debug( 'MA_MassActionBatchUtils.logJobErrors: log=' + log );
 
         }
 
@@ -224,6 +288,7 @@ public inherited sharing class MA_MassActionBatchUtils {
                     Id,
                     CreatedDate,
                     CompletedDate,
+                    Status,
                     ExtendedStatus,
                     TotalJobItems,
                     JobItemsProcessed,
