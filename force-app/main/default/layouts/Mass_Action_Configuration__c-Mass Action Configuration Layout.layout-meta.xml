@@ -262,10 +262,11 @@
         <fields>NAME</fields>
         <fields>Job_ID__c</fields>
         <fields>Message__c</fields>
-        <fields>Submitted_Date__c</fields>
+        <fields>Message_Type__c</fields>
         <fields>Total_Batches__c</fields>
         <fields>Processed_Batches__c</fields>
         <fields>Failed_Batches__c</fields>
+        <fields>LAST_UPDATE</fields>
         <relatedList>Mass_Action_Log__c.Mass_Action_Configuration__c</relatedList>
         <sortField>NAME</sortField>
         <sortOrder>Desc</sortOrder>
@@ -276,7 +277,7 @@
     <showRunAssignmentRulesCheckbox>false</showRunAssignmentRulesCheckbox>
     <showSubmitAndAttachButton>false</showSubmitAndAttachButton>
     <summaryLayout>
-        <masterLabel>00hf4000000jcti</masterLabel>
+        <masterLabel>00hS0000001I3rH</masterLabel>
         <sizeX>4</sizeX>
         <sizeY>0</sizeY>
         <summaryLayoutStyle>Default</summaryLayoutStyle>

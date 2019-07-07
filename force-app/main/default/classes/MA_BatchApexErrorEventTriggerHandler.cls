@@ -100,8 +100,6 @@ public without sharing class MA_BatchApexErrorEventTriggerHandler {
 
                         parentLogsToUpdate.add( new Mass_Action_Log__c(
                             Id = parentLog.Id,
-                            Message_Type__c = 'Informational',
-                            Message__c = 'Batch job processing',
                             Submitted_Date__c = job.CreatedDate,
                             Total_Batches__c = job.TotalJobItems,
                             Processed_Batches__c = job.JobItemsProcessed,

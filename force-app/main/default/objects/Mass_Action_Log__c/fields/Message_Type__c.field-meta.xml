@@ -13,17 +13,17 @@
             <value>
                 <fullName>Informational</fullName>
                 <default>true</default>
-                <label>Informational</label>
+                <label>ℹ️ Informational</label>
             </value>
             <value>
                 <fullName>Success</fullName>
                 <default>false</default>
-                <label>Success</label>
+                <label>✅ Success</label>
             </value>
             <value>
                 <fullName>Error</fullName>
                 <default>false</default>
-                <label>Error</label>
+                <label>🚫 Error</label>
             </value>
         </valueSetDefinition>
     </valueSet>

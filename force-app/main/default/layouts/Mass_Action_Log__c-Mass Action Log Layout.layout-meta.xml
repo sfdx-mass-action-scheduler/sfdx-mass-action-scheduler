@@ -139,7 +139,6 @@
         <fields>Message_Type__c</fields>
         <fields>Message__c</fields>
         <fields>Long_Message__c</fields>
-        <fields>Job_Scope__c</fields>
         <relatedList>Mass_Action_Log__c.Parent_Log__c</relatedList>
         <sortField>NAME</sortField>
         <sortOrder>Desc</sortOrder>

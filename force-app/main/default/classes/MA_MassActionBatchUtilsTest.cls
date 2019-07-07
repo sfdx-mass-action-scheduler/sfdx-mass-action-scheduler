@@ -249,7 +249,7 @@ private class MA_MassActionBatchUtilsTest {
 
         Test.startTest();
 
-        MA_MassActionBatchUtils.logJobException( config.Id, MA_AsyncApexJobMock.FAIL_JOB_ID, ex );
+//        MA_MassActionBatchUtils.logJobException( config.Id, MA_AsyncApexJobMock.FAIL_JOB_ID, ex );
 
         Test.stopTest();
 
@@ -272,7 +272,7 @@ private class MA_MassActionBatchUtilsTest {
 
         Test.startTest();
 
-        MA_MassActionBatchUtils.logJobErrors( config.Id, job, new System.UnexpectedException( 'Test Exception' ) );
+//        MA_MassActionBatchUtils.logJobErrors( config.Id, job, new System.UnexpectedException( 'Test Exception' ) );
 
         Test.stopTest();
 
