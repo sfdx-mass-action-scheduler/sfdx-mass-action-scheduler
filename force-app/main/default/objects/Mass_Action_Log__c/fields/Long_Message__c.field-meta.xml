@@ -5,7 +5,7 @@
     <externalId>false</externalId>
     <inlineHelpText>The full error message, particularly if more than 255 characters.</inlineHelpText>
     <label>Long Message</label>
-    <length>32768</length>
+    <length>131000</length>
     <trackHistory>false</trackHistory>
     <trackTrending>false</trackTrending>
     <type>LongTextArea</type>
