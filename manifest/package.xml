@@ -29,6 +29,8 @@
     <members>LC_VisualforceDomainControllerTest</members>
     <members>MA_AnonymousApexExecuteResult</members>
     <members>MA_AsyncApexJobMock</members>
+    <members>MA_BatchApexErrorEventTriggerHandler</members>
+    <members>MA_BatchApexErrorEventTriggerHandlerTest</members>
     <members>MA_EditConfigCmpController</members>
     <members>MA_EditConfigCmpControllerTest</members>
     <members>MA_EditConfigRestController</members>
@@ -91,10 +93,12 @@
     <name>FlexiPage</name>
     <members>Mass_Action_Configuration_Record_Page</members>
     <members>Mass_Action_Configuration_Record_Page_One_Column</members>
+    <members>Mass_Action_Log_Record_Page</members>
   </types>
   <types>
     <name>Layout</name>
     <members>Mass_Action_Configuration__c-Mass Action Configuration Layout</members>
+    <members>Mass_Action_Log__c-Mass Action Child Log Layout</members>
     <members>Mass_Action_Log__c-Mass Action Log Layout</members>
     <members>Mass_Action_Mapping__c-Mass Action Mapping Layout</members>
   </types>
@@ -112,6 +116,7 @@
   <types>
     <name>CompactLayout</name>
     <members>Mass_Action_Configuration__c.Default_Compact_Layout</members>
+    <members>Mass_Action_Log__c.Child_Log_Compact_Layout</members>
     <members>Mass_Action_Log__c.Default_Compact_Layout</members>
     <members>Mass_Action_Mapping__c.Default_Compact_Layout</members>
   </types>
@@ -145,9 +150,12 @@
     <members>Mass_Action_Job_Change_Event__e.Payload__c</members>
     <members>Mass_Action_Log__c.Failed_Batches__c</members>
     <members>Mass_Action_Log__c.Job_ID__c</members>
+    <members>Mass_Action_Log__c.Job_Scope__c</members>
     <members>Mass_Action_Log__c.Long_Message__c</members>
     <members>Mass_Action_Log__c.Mass_Action_Configuration__c</members>
+    <members>Mass_Action_Log__c.Message_Type__c</members>
     <members>Mass_Action_Log__c.Message__c</members>
+    <members>Mass_Action_Log__c.Parent_Log__c</members>
     <members>Mass_Action_Log__c.Processed_Batches__c</members>
     <members>Mass_Action_Log__c.Submitted_Date__c</members>
     <members>Mass_Action_Log__c.Total_Batches__c</members>
@@ -158,6 +166,12 @@
   <types>
     <name>ListView</name>
     <members>Mass_Action_Configuration__c.All</members>
+    <members>Mass_Action_Log__c.All</members>
+  </types>
+  <types>
+    <name>RecordType</name>
+    <members>Mass_Action_Log__c.Child_Log</members>
+    <members>Mass_Action_Log__c.Parent_Log</members>
   </types>
   <types>
     <name>ApexPage</name>
@@ -190,9 +204,11 @@
     <name>CustomTab</name>
     <members>MA_SetupAuthWizardPageTab</members>
     <members>Mass_Action_Configuration__c</members>
+    <members>Mass_Action_Log__c</members>
   </types>
   <types>
     <name>ApexTrigger</name>
+    <members>MA_BatchApexErrorEventTrigger</members>
     <members>MA_JobChangeEventTrigger</members>
     <members>MA_MassActionConfigTrigger</members>
   </types>
