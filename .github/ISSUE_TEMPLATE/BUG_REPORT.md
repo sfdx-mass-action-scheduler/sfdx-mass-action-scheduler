@@ -10,7 +10,7 @@ assignees: douglascayers
 <!--
 NOTICE: While GitHub is the preferred channel for reporting issues/feedback, please use the [Trailblazer community group](https://success.salesforce.com/_ui/core/chatter/groups/GroupProfilePage?g=0F93A000000LhvN) to ask questions about how to use Mass Action Scheduler or to share how you're using the app at your company.
 
-NOTICE: Your issue may already be reported. Before opening a new issue, please see our [Frequently Asked Questions](https://github.com/douglascayers/sfdx-mass-action-scheduler/wiki/Frequently-Asked-Questions) and search the [issue tracker](https://github.com/douglascayers/sfdx-mass-action-scheduler/issues).
+NOTICE: Your issue may already be reported. Before opening a new issue, please see our [Frequently Asked Questions](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Frequently-Asked-Questions) and search the [issue tracker](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/issues).
 -->
 
 ## Summary
@@ -57,7 +57,7 @@ NOTICE: Your issue may already be reported. Before opening a new issue, please s
 ## Does your configuration use Named Credentials?
 
 <!--
-NOTICE: Since [Release 2.0](https://github.com/douglascayers/sfdx-mass-action-scheduler/wiki/Upgrading-to-Release-2.0#get-started-faster-with-optional-named-credentials), Named Credentials are optional. Please try your configuration without assigning a Named Credential and see if your issue still occurs.
+NOTICE: Since [Release 2.0](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Upgrading-to-Release-2.0#get-started-faster-with-optional-named-credentials), Named Credentials are optional. Please try your configuration without assigning a Named Credential and see if your issue still occurs.
 
-When using Named Credentials, make sure that you've enabled [My Domain](https://trailhead.salesforce.com/en/content/learn/modules/identity_login/identity_login_my_domain) and have followed [these setup instructions](https://github.com/douglascayers/sfdx-mass-action-scheduler/wiki/Specify-the-Context-User-via-Named-Credentials).
+When using Named Credentials, make sure that you've enabled [My Domain](https://trailhead.salesforce.com/en/content/learn/modules/identity_login/identity_login_my_domain) and have followed [these setup instructions](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Specify-the-Context-User-via-Named-Credentials).
 -->

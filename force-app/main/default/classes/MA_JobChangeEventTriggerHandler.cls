@@ -1,7 +1,7 @@
 /**
  * Author: Doug Ayers
  * Website: https://douglascayers.com
- * GitHub: https://github.com/douglascayers/sfdx-mass-action-scheduler
+ * GitHub: https://github.com/douglascayers-org/sfdx-mass-action-scheduler
  * License: BSD 3-Clause License
  */
 /**
@@ -27,12 +27,12 @@ public with sharing class MA_JobChangeEventTriggerHandler {
 
     public void handleAfterInsert( List<Mass_Action_Job_Change_Event__e> newList, Map<ID, Mass_Action_Job_Change_Event__e> newMap ) {
 
-        System.debug( 'MA_JobChangeEventTriggerHandler.afterInsert' );
+        System.debug( 'MA_JobChangeEventTriggerHandler.handleAfterInsert' );
 
         for ( Mass_Action_Job_Change_Event__e changeEvent : newList ) {
 
             MA_JobChangeEvent eventPayload = (MA_JobChangeEvent) JSON.deserialize( changeEvent.Payload__c, MA_JobChangeEvent.class );
-            System.debug( eventPayload );
+            System.debug( 'MA_JobChangeEventTriggerHandler.handleAfterInsert: event=' + eventPayload );
 
             switch on ( eventPayload.scheduleChangeOperation ) {
                 when SCHEDULE {
@@ -42,7 +42,7 @@ public with sharing class MA_JobChangeEventTriggerHandler {
                     MA_MassActionScheduleUtils.unscheduleMassActions( eventPayload.configIds );
                 }
                 when else {
-                    System.debug( LoggingLevel.WARN, 'Unexpected operation: ' + eventPayload.scheduleChangeOperation );
+                    System.debug( LoggingLevel.WARN, 'MA_JobChangeEventTriggerHandler.handleAfterInsert: Unexpected operation: ' + eventPayload.scheduleChangeOperation );
                 }
             }
 

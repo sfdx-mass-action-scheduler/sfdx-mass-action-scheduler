@@ -1,7 +1,7 @@
 /**
  * Author: Doug Ayers
  * Website: https://douglascayers.com
- * GitHub: https://github.com/douglascayers/sfdx-mass-action-scheduler
+ * GitHub: https://github.com/douglascayers-org/sfdx-mass-action-scheduler
  * License: BSD 3-Clause License
  */
 /*
@@ -65,8 +65,7 @@ public inherited sharing class MA_MassActionUtils {
      */
     public static Mass_Action_Configuration__c getConfiguration( ID recordId ) {
 
-        System.debug( 'MA_MassActionUtils.getConfiguration' );
-        System.debug( 'recordId: ' + recordId );
+        System.debug( 'MA_MassActionUtils.getConfiguration: recordId=' + recordId );
 
         Mass_Action_Configuration__c config = null;
 
@@ -137,17 +136,16 @@ public inherited sharing class MA_MassActionUtils {
      */
     public static Map<String, Object> saveConfiguration( String wrapperJson, String fieldMappingsJson ) {
 
-        System.debug( 'MA_MassActionUtils.saveConfiguration' );
-        System.debug( wrapperJson );
-        System.debug( fieldMappingsJson );
+        System.debug( 'MA_MassActionUtils.saveConfiguration: wrapperJson=\n' + wrapperJson );
+        System.debug( 'MA_MassActionUtils.saveConfiguration: fieldMappingsJson=\n' + fieldMappingsJson );
 
         Map<String, Object> result = new Map<String, Object>();
 
         MA_MassActionConfigWrapper wrapper = (MA_MassActionConfigWrapper) JSON.deserializeStrict( wrapperJson, MA_MassActionConfigWrapper.class );
         Map<String, String> fieldMappings = (Map<String, String>) JSON.deserializeStrict( fieldMappingsJson, Map<String, String>.class );
 
-        System.debug( wrapper );
-        System.debug( fieldMappings );
+        System.debug( 'MA_MassActionUtils.saveConfiguration: wrapper=\n' + wrapper );
+        System.debug( 'MA_MassActionUtils.saveConfiguration: fieldMappings=\n' + fieldMappings );
 
         Mass_Action_Configuration__c config = wrapper.toConfiguration();
         upsert config;

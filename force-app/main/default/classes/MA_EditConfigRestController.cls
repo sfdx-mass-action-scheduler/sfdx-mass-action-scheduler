@@ -1,7 +1,7 @@
 /**
  * Author: Doug Ayers
  * Website: https://douglascayers.com
- * GitHub: https://github.com/douglascayers/sfdx-mass-action-scheduler
+ * GitHub: https://github.com/douglascayers-org/sfdx-mass-action-scheduler
  * License: BSD 3-Clause License
  */
 @RestResource( urlMapping = '/config/edit/*' )
@@ -36,7 +36,7 @@ global with sharing class MA_EditConfigRestController {
 
         try {
 
-            System.debug( req );
+            System.debug( 'MA_EditConfigRestController.handlePost: request: ' + req );
 
             requestUrlParams = req.params;
             requestBodyParams = (Map<String, Object>) JSON.deserializeUntyped( ( req.requestBody == null ) ? '{}' : req.requestBody.toString() );
@@ -44,8 +44,8 @@ global with sharing class MA_EditConfigRestController {
 
             String operation = requestUrlParams.get( 'operation' );
 
-            System.debug( 'RequestUrlParams: ' + JSON.serializePretty( requestUrlParams ) );
-            System.debug( 'RequestBody: ' + JSON.serializePretty( requestBodyParams ) );
+            System.debug( 'MA_EditConfigRestController.handlePost: requestUrlParams: ' + JSON.serializePretty( requestUrlParams ) );
+            System.debug( 'MA_EditConfigRestController.handlePost: requestBody: ' + JSON.serializePretty( requestBodyParams ) );
 
             handleRequestOperation( operation, requestBodyParams, responseBodyParams );
 
@@ -69,8 +69,8 @@ global with sharing class MA_EditConfigRestController {
         res.addHeader( 'Access-Control-Allow-Origin', req.headers.get( 'Origin' ) );
         res.addHeader( 'Content-Type', 'application/json; charset=utf-8' );
 
-        System.debug( res );
-        System.debug( 'ResponseBody: ' + res.responseBody.toString() );
+        System.debug( 'MA_EditConfigRestController.handlePost: response: ' + res );
+        System.debug( 'MA_EditConfigRestController.handlePost: responseBody: ' + res.responseBody.toString() );
 
     }
 
@@ -634,7 +634,7 @@ global with sharing class MA_EditConfigRestController {
 
             Database.rollback( sp );
 
-            System.debug( LoggingLevel.ERROR, e.getMessage() + ' : ' + e.getStackTraceString() );
+            System.debug( LoggingLevel.ERROR, 'MA_EditConfigRestController.saveConfiguration: ' + e.getMessage() + ' : ' + e.getStackTraceString() );
 
             throw e;
 

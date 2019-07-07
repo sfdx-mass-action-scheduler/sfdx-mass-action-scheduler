@@ -1,7 +1,7 @@
 /**
  * Author: Doug Ayers
  * Website: https://douglascayers.com
- * GitHub: https://github.com/douglascayers/sfdx-mass-action-scheduler
+ * GitHub: https://github.com/douglascayers-org/sfdx-mass-action-scheduler
  * License: BSD 3-Clause License
  */
 public with sharing class MA_MassActionConfigTriggerHandler {
@@ -57,8 +57,8 @@ public with sharing class MA_MassActionConfigTriggerHandler {
 
             Mass_Action_Configuration__c oldConfig = oldMap.get( newConfig.Id );
 
-            System.debug( 'newConfig: ' + newConfig );
-            System.debug( 'oldConfig: ' + oldConfig );
+            System.debug( 'MA_MassActionConfigTriggerHandler.handleAfterUpdate: newConfig: ' + newConfig );
+            System.debug( 'MA_MassActionConfigTriggerHandler.handleAfterUpdate: oldConfig: ' + oldConfig );
 
             if ( newConfig.Active__c && newConfig.Schedule_Frequency__c != 'Manual' ) {
 

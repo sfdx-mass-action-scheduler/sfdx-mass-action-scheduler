@@ -90,7 +90,7 @@ See the [open issues](https://github.com/douglascayers-org/sfdx-mass-action-sche
 * Read the [wiki](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki) for documentation on Mass Action Scheduler.
 * Read the [FAQ](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Frequently-Asked-Questions) to troubleshoot common technical issues.
 * Join our [community group](https://success.salesforce.com/_ui/core/chatter/groups/GroupProfilePage?g=0F93A000000LhvN) to discuss and solution with other Mass Action Scheduler users.
-* Raise well defined issues and ideas via the [issue tracker](https://github.com/douglascayers/sfdx-mass-action-scheduler/issues).
+* Raise well defined issues and ideas via the [issue tracker](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/issues).
 
 <br />
 
