@@ -334,6 +334,7 @@ public inherited sharing class MA_MassActionBatchUtils {
             for ( AsyncApexJob item : [
                 SELECT
                     Id,
+                    ParentJobId,
                     CreatedDate,
                     CompletedDate,
                     Status,
