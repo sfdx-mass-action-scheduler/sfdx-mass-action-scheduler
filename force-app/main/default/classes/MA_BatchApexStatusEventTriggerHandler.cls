@@ -53,16 +53,34 @@ public with sharing class MA_BatchApexStatusEventTriggerHandler {
             if ( job != null && parentLog != null ) {
 
                 Mass_Action_Log__c parentLogToUpdate = parentLogsToUpdateMap.get( parentLog.Id );
+
                 if ( parentLogToUpdate == null ) {
+
+                    Boolean jobFailed = ( job.Status == 'Failed' );
+                    Boolean jobHasErrors = ( String.isNotBlank( job.ExtendedStatus ) || job.NumberOfErrors > 0 );
+
+                    String messageType = (
+                        ( job.Status == 'Aborted' || job.Status == 'Failed' || jobHasErrors ) ? 'Error' :
+                        ( job.CompletedDate != null && job.TotalJobItems == job.JobItemsProcessed ) ? 'Success' :
+                        'Informational'
+                    );
+
+                    String message = 'Batch job ' + (
+                        ( job.Status == 'Completed' && jobHasErrors ) ? 'completed with errors' :
+                        String.isBlank( job.Status ) ? 'information' :
+                        job.Status.toLowerCase()
+                    );
+
                     parentLogsToUpdateMap.put( parentLog.Id, new Mass_Action_Log__c(
                         Id = parentLog.Id,
-                        Message_Type__c = 'Informational',
-                        Message__c = 'Batch job ' + ( String.isBlank( job.Status ) ? 'details' : job.Status ).toLowerCase(),
+                        Message_Type__c = messageType,
+                        Message__c = message,
                         Submitted_Date__c = job.CreatedDate,
                         Total_Batches__c = job.TotalJobItems,
                         Processed_Batches__c = job.JobItemsProcessed,
                         Failed_Batches__c = job.NumberOfErrors
                     ));
+
                 }
 
                 childLogsToInsertList.add( new Mass_Action_Log__c(

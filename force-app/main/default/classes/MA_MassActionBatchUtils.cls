@@ -184,11 +184,23 @@ public inherited sharing class MA_MassActionBatchUtils {
                 Message_Type__c = 'Informational',
                 Message__c = 'Finished',
                 Long_Message__c = 'Finished',
-                Timestamp__c = String.valueOf( getDateTimeWithoutMillis( DateTime.now() ).getTime() )
+                // For the final finish event, I don't want the timestamp milliseconds
+                // stripped away, I want them to help ensure it's the last event in the sorted list
+                Timestamp__c = String.valueOf( DateTime.now().getTime() )
             )
         };
 
         publish( events );
+
+        AsyncApexJob job = getJobById( jobId );
+
+        Mass_Action_Configuration__c config = new Mass_Action_Configuration__c(
+            Id = configId,
+            Last_Run_Completed_Date__c = job.CompletedDate,
+            Last_Run_Completed_With_Errors__c = ( String.isNotBlank( job.ExtendedStatus ) || job.NumberOfErrors > 0 )
+        );
+
+        update config;
 
     }
 
