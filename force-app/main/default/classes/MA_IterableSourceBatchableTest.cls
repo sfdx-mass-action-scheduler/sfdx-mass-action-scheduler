@@ -199,7 +199,7 @@ private class MA_IterableSourceBatchableTest {
 
         } catch ( MA_Exceptions.NoSourceFieldException e ) {
 
-            System.assert( true );
+            System.assertEquals( configFieldMapping.Source_Field_Name__c, e.sourceFieldName );
 
         } catch ( Exception e ) {
 
