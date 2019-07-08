@@ -8,8 +8,167 @@
 private class MA_BatchApexStatusEventTriggerTest {
 
     @IsTest
-    static void todo() {
-        System.assert( false, 'not yet implemented' );
+    static void test_publish() {
+
+        AsyncApexJob job = MA_AsyncApexJobMock.getJobById( MA_AsyncApexJobMock.COMPLETED_JOB_ID );
+
+        Mass_Action_Configuration__c config = new Mass_Action_Configuration__c(
+            Name = 'Test Config',
+            DeveloperName__c = 'Test_Config',
+            Active__c = true
+        );
+
+        insert config;
+
+        Map<String,RecordTypeInfo> logRecordTypeInfosMap = Mass_Action_Log__c.SObjectType.getDescribe().getRecordTypeInfosByDeveloperName();
+
+        Mass_Action_Log__c parentLog = new Mass_Action_Log__c(
+            RecordTypeId = logRecordTypeInfosMap.get( 'Parent_Log' ).getRecordTypeId(),
+            Mass_Action_Configuration__c = config.Id,
+            Job_ID__c = job.Id,
+            Submitted_Date__c = DateTime.now(),
+            Timestamp__c = String.valueOf( DateTime.now().getTime() ),
+            Message__c = 'Batch job enqueued',
+            Message_Type__c = 'Informational'
+        );
+
+        insert parentLog;
+
+        Test.startTest();
+
+        MA_BatchApexStatusEvent__e evt = new MA_BatchApexStatusEvent__e(
+            Job_ID__c = job.Id,
+            Phase__c = 'FINISH',
+            Message_Type__c = 'Success',
+            Message__c = 'TEST MESSAGE',
+            Long_Message__c = 'TEST LONG MESSAGE',
+            Job_Scope__c = 'TEST JOB SCOPE',
+            Timestamp__c = 'TEST TIMESTAMP'
+        );
+
+        EventBus.publish( evt );
+
+        Test.stopTest();
+
+        Test.getEventBus().deliver();
+
+        parentLog = [
+            SELECT
+                Id, Message__c, Message_Type__c,
+                ( SELECT Message_Type__c, Message__c, Job_Scope__c FROM Mass_Action_Logs__r )
+            FROM
+                Mass_Action_Log__c
+            WHERE
+                Id = :parentLog.Id
+        ];
+
+        System.assertEquals( 'Batch job ' + job.Status.toLowerCase(), parentLog.Message__c );
+        System.assertEquals( 'Success', parentLog.Message_Type__c );
+
+        System.assertEquals( 1, parentLog.Mass_Action_Logs__r.size() );
+        System.assertEquals( evt.Message__c, parentLog.Mass_Action_Logs__r[0].Message__c );
+        System.assertEquals( 'Success', parentLog.Mass_Action_Logs__r[0].Message_Type__c );
+        System.assertEquals( evt.Job_Scope__c, parentLog.Mass_Action_Logs__r[0].Job_Scope__c );
+
+    }
+
+    @IsTest
+    static void test_publish_bulk() {
+
+        AsyncApexJob job = MA_AsyncApexJobMock.getJobById( MA_AsyncApexJobMock.COMPLETED_JOB_ID );
+
+        Mass_Action_Configuration__c config = new Mass_Action_Configuration__c(
+            Name = 'Test Config',
+            DeveloperName__c = 'Test_Config',
+            Active__c = true
+        );
+
+        insert config;
+
+        Map<String,RecordTypeInfo> logRecordTypeInfosMap = Mass_Action_Log__c.SObjectType.getDescribe().getRecordTypeInfosByDeveloperName();
+
+        Mass_Action_Log__c parentLog = new Mass_Action_Log__c(
+            RecordTypeId = logRecordTypeInfosMap.get( 'Parent_Log' ).getRecordTypeId(),
+            Mass_Action_Configuration__c = config.Id,
+            Job_ID__c = job.Id,
+            Submitted_Date__c = DateTime.now(),
+            Timestamp__c = String.valueOf( DateTime.now().getTime() ),
+            Message__c = 'Batch job enqueued',
+            Message_Type__c = 'Informational'
+        );
+
+        insert parentLog;
+
+        Test.startTest();
+
+        List<MA_BatchApexStatusEvent__e> events = new List<MA_BatchApexStatusEvent__e>();
+        for ( Integer i = 0; i < 201; i++ ) {
+            events.add( new MA_BatchApexStatusEvent__e(
+                Job_ID__c = job.Id,
+                Phase__c = 'FINISH',
+                Message_Type__c = 'Success',
+                Message__c = 'TEST MESSAGE ' + i,
+                Long_Message__c = 'TEST LONG MESSAGE ' + i,
+                Job_Scope__c = 'TEST JOB SCOPE ' + i,
+                Timestamp__c = 'TEST TIMESTAMP ' + i
+            ));
+        }
+
+        // Our event trigger handler chunks the published events
+        // into batches of 200 to keep the scope low because the
+        // handler performs DML operations. By default, the event bus
+        // could deliver up to 2,000 events at a time. We could run
+        // into SOQL and DML governor limits in this trigger handler.
+        // The test, then, is to ensure that multiple waves will occur
+        // and that the expected number of mass action logs are created.
+
+        // Publish 201 events
+        EventBus.publish( events );
+
+        // Delivers 201 events, but the handler will set a resume checkpoint
+        // after processing the first 200 events.
+        Test.getEventBus().deliver();
+
+        parentLog = [
+            SELECT
+                Id, Message__c, Message_Type__c,
+                ( SELECT Message_Type__c, Message__c, Job_Scope__c FROM Mass_Action_Logs__r )
+            FROM
+                Mass_Action_Log__c
+            WHERE
+                Id = :parentLog.Id
+        ];
+
+        Integer firstWaveCountOfLogs = parentLog.Mass_Action_Logs__r.size();
+
+        System.debug( 'FIRST WAVE' );
+        System.debug( JSON.serializePretty( parentLog ) );
+
+        // Publish all events after the resume checkpoint.
+        // In this test, that would be the 201st event.
+        Test.getEventBus().deliver();
+
+        parentLog = [
+            SELECT
+                Id, Message__c, Message_Type__c,
+                ( SELECT Message_Type__c, Message__c, Job_Scope__c FROM Mass_Action_Logs__r )
+            FROM
+                Mass_Action_Log__c
+            WHERE
+                Id = :parentLog.Id
+        ];
+
+        Integer secondWaveCountOfLogs = parentLog.Mass_Action_Logs__r.size();
+
+        System.debug( 'SECOND WAVE' );
+        System.debug( JSON.serializePretty( parentLog ) );
+
+        Test.stopTest();
+
+        // assert total events published in each wave and overall
+        System.assertEquals( firstWaveCountOfLogs + 1, secondWaveCountOfLogs );
+        System.assertEquals( events.size(), secondWaveCountOfLogs );
+
     }
 
 }
