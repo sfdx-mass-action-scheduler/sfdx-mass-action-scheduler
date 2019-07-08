@@ -266,9 +266,9 @@
         <fields>Total_Batches__c</fields>
         <fields>Processed_Batches__c</fields>
         <fields>Failed_Batches__c</fields>
-        <fields>LAST_UPDATE</fields>
-        <relatedList>Mass_Action_Log__c.Mass_Action_Configuration__c</relatedList>
-        <sortField>NAME</sortField>
+        <fields>Timestamp__c</fields>
+        <relatedList>Mass_Action_Log__c.Parent_Log_Configuration__c</relatedList>
+        <sortField>Timestamp__c</sortField>
         <sortOrder>Desc</sortOrder>
     </relatedLists>
     <showEmailCheckbox>false</showEmailCheckbox>

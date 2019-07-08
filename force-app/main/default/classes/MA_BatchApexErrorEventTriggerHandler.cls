@@ -4,7 +4,7 @@
  * GitHub: https://github.com/douglascayers-org/sfdx-mass-action-scheduler
  * License: BSD 3-Clause License
  */
-public without sharing class MA_BatchApexErrorEventTriggerHandler {
+public with sharing class MA_BatchApexErrorEventTriggerHandler {
 
     public MA_BatchApexErrorEventTriggerHandler() {}
 

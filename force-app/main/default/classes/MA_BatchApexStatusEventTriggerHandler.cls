@@ -4,7 +4,7 @@
  * GitHub: https://github.com/douglascayers-org/sfdx-mass-action-scheduler
  * License: BSD 3-Clause License
  */
-public without sharing class MA_BatchApexStatusEventTriggerHandler {
+public with sharing class MA_BatchApexStatusEventTriggerHandler {
 
     public MA_BatchApexStatusEventTriggerHandler() {}
 
@@ -25,7 +25,24 @@ public without sharing class MA_BatchApexStatusEventTriggerHandler {
         Map<String, Mass_Action_Log__c> parentLogsToUpdateMap = new Map<String, Mass_Action_Log__c>();
         List<Mass_Action_Log__c> childLogsToInsertList = new List<Mass_Action_Log__c>();
 
+        // Platform event triggers may receive up to 2,000 events.
+        // Apex triggers are limited to 200 records per batch.
+        // Since we are doing DML in this event handler, to mitigate exceeding a governor limit
+        // then we'll chunk the events into smaller batches.
+        // https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/platform_events_subscribe_batch_resume.htm
+
+        Integer BATCH_LIMIT = 200;
+        Integer batchLimitCounter = 0;
+        String lastEventReplyId;
+
         for ( MA_BatchApexStatusEvent__e evt : newList ) {
+
+            batchLimitCounter++;
+            if ( batchLimitCounter > BATCH_LIMIT ) {
+                break;
+            }
+
+            System.debug( 'MA_BatchApexStatusEventTriggerHandler.handleAfterInsert: event=' + JSON.serializePretty( evt ) );
 
             ID asyncApexJobId = ID.valueOf( evt.Job_ID__c );
             AsyncApexJob job = jobIdToJobMap.get( asyncApexJobId );
@@ -62,6 +79,8 @@ public without sharing class MA_BatchApexStatusEventTriggerHandler {
 
             }
 
+            lastEventReplyId = evt.ReplayId;
+
         }
 
         Database.DMLOptions dmo = new Database.DMLOptions();
@@ -69,6 +88,15 @@ public without sharing class MA_BatchApexStatusEventTriggerHandler {
 
         Database.insert( childLogsToInsertList, dmo );
         Database.update( parentLogsToUpdateMap.values(), dmo );
+
+        // When the trigger stops its flow of execution, either intentionally or because of an unhandled exception,
+        // such as a limit exception, it fires again with a new batch (the sObject list in Trigger.New).
+        // The new batch starts with the event message after the one with the replay ID that you set.
+        // Therefore, we don't want to set this resume checkpoint until we know that the above DML operations complete.
+        // https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/platform_events_subscribe_batch_resume.htm
+        if ( String.isNotBlank( lastEventReplyId ) ) {
+            EventBus.TriggerContext.currentContext().setResumeCheckpoint( lastEventReplyId );
+        }
 
     }
 

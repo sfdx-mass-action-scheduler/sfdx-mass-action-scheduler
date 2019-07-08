@@ -81,7 +81,7 @@
             </componentInstanceProperties>
             <componentInstanceProperties>
                 <name>relatedListApiName</name>
-                <value>Mass_Action_Logs__r</value>
+                <value>Mass_Action_Parent_Logs__r</value>
             </componentInstanceProperties>
             <componentInstanceProperties>
                 <name>relatedListComponentOverride</name>
