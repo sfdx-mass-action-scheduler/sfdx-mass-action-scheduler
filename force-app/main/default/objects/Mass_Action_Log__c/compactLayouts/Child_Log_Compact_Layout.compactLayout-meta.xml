@@ -4,7 +4,7 @@
     <fields>Name</fields>
     <fields>Mass_Action_Configuration__c</fields>
     <fields>Job_ID__c</fields>
-    <fields>Parent_Log__c</fields>
     <fields>Message_Type__c</fields>
+    <fields>Parent_Log__c</fields>
     <label>Child Log Compact Layout</label>
 </CompactLayout>

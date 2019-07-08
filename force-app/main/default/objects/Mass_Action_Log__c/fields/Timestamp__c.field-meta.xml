@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Timestamp__c</fullName>
+    <description>Pairs to the Timestamp field on the Mass Action Batch Apex Status Event object. Platform Events are processed asynchronously. The timestamp field represents the original date/time the cause of this event occurred. The value is displayed as a number to provide a way to sort log records in near their actual chronological order despite when the log records were eventually inserted.</description>
+    <externalId>false</externalId>
+    <label>Timestamp</label>
+    <length>255</length>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

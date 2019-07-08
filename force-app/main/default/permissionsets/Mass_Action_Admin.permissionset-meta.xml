@@ -425,6 +425,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>Mass_Action_Log__c.Timestamp__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>Mass_Action_Log__c.Total_Batches__c</field>
         <readable>true</readable>
     </fieldPermissions>
