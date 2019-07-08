@@ -169,36 +169,39 @@ private class MA_ReportSourceBatchableTest {
 
         Test.setMock( HttpCalloutMock.class, new MA_HttpCalloutMock() );
 
-        Test.startTest();
+        try {
 
-        ID jobId = Database.executeBatch( new MA_ReportSourceBatchable( config.Id ), config.Batch_Size__c.intValue() );
+            Test.startTest();
 
-        Test.stopTest();
+            Database.executeBatch( new MA_ReportSourceBatchable( config.Id ), config.Batch_Size__c.intValue() );
 
-        AsyncApexJob job = MA_MassActionBatchUtils.getJobById( jobId );
+            // Async code completes once the test stops,
+            // and any exceptions that occurred will be thrown.
+            // To avoid the test failing because of that,
+            // we have a try..catch block. An event will
+            // still be raised that the batch job failed.
+            Test.stopTest();
 
-        config = [
-            SELECT
-                Id,
-                Last_Run_Completed_Date__c,
-                Last_Run_Completed_With_Errors__c
-            FROM
-                Mass_Action_Configuration__c
-            WHERE
-                Id = :config.Id
-        ];
+            System.assert( false, 'should have failed' );
 
-        System.debug( [ SELECT Id, Message__c FROM Mass_Action_Log__c WHERE Mass_Action_Configuration__c = :config.Id ] );
-        System.assertEquals( 1, [ SELECT COUNT() FROM Mass_Action_Log__c WHERE Mass_Action_Configuration__c = :config.Id ] );
-        System.assertEquals( job.CompletedDate, config.Last_Run_Completed_Date__c );
-        System.assertEquals( true, config.Last_Run_Completed_With_Errors__c );
+        } catch ( MA_Exceptions.NoSourceFieldException e ) {
+
+            System.assertEquals( configFieldMapping.Source_Field_Name__c, e.sourceFieldName );
+
+        } catch ( Exception e ) {
+
+            System.assert( false, 'failed for wrong exception' );
+
+        } finally {
+
+            Test.getEventBus().deliver();
+
+        }
 
     }
 
     @IsTest( SeeAllData = true )
     static void test_batchable_fail_no_report() {
-
-        Boolean noDataFoundExceptionThrown = false;
 
         Mass_Action_Configuration__c config = buildTestConfiguration();
         config.Source_Report_ID__c = null;
@@ -215,49 +218,30 @@ private class MA_ReportSourceBatchableTest {
 
         insert configFieldMapping;
 
-        try {
+        Test.setMock( HttpCalloutMock.class, new MA_HttpCalloutMock() );
 
-            Test.setMock( HttpCalloutMock.class, new MA_HttpCalloutMock() );
+        try {
 
             Test.startTest();
 
-            ID jobId = Database.executeBatch( new MA_ReportSourceBatchable( config.Id ), config.Batch_Size__c.intValue() );
+            Database.executeBatch( new MA_ReportSourceBatchable( config.Id ), config.Batch_Size__c.intValue() );
 
             Test.stopTest();
 
-            AsyncApexJob job = MA_MassActionBatchUtils.getJobById( jobId );
+            System.assert( false, 'should have failed' );
 
-            config = [
-                SELECT
-                    Id,
-                    Last_Run_Completed_Date__c,
-                    Last_Run_Completed_With_Errors__c
-                FROM
-                    Mass_Action_Configuration__c
-                WHERE
-                    Id = :config.Id
-            ];
-
-            System.debug( [ SELECT Id, Message__c FROM Mass_Action_Log__c WHERE Mass_Action_Configuration__c = :config.Id ] );
-            System.assertEquals( 1, [ SELECT COUNT() FROM Mass_Action_Log__c WHERE Mass_Action_Configuration__c = :config.Id ] );
-            System.assertEquals( job.CompletedDate, config.Last_Run_Completed_Date__c );
-            System.assertEquals( true, config.Last_Run_Completed_With_Errors__c );
-
-        } catch ( NoDataFoundException ex ) {
+        } catch ( NoDataFoundException e ) {
 
             // because the batchable throws the error in the start method
             // then we're getting a synchronous exception caught rather than
             // the job's finish method logging the error asynchronously
-            noDataFoundExceptionThrown = true;
+            System.assert( true );
 
         } catch ( Exception e ) {
 
-            // catch other types of exceptions
-            System.assert( false, 'failed for the wrong reason' );
+            System.assert( false, 'failed for wrong exception' );
 
         }
-
-        System.assert( noDataFoundExceptionThrown, 'should have failed with a \'NoDataFoundException\'.' );
 
     }
 
@@ -272,29 +256,34 @@ private class MA_ReportSourceBatchableTest {
 
         Test.setMock( HttpCalloutMock.class, new MA_HttpCalloutMock() );
 
-        Test.startTest();
+        try {
 
-        ID jobId = Database.executeBatch( new MA_ReportSourceBatchable( config.Id ), config.Batch_Size__c.intValue() );
+            Test.startTest();
 
-        Test.stopTest();
+            Database.executeBatch( new MA_ReportSourceBatchable( config.Id ), config.Batch_Size__c.intValue() );
 
-        AsyncApexJob job = MA_MassActionBatchUtils.getJobById( jobId );
+            // Async code completes once the test stops,
+            // and any exceptions that occurred will be thrown.
+            // To avoid the test failing because of that,
+            // we have a try..catch block. An event will
+            // still be raised that the batch job failed.
+            Test.stopTest();
 
-        config = [
-            SELECT
-                Id,
-                Last_Run_Completed_Date__c,
-                Last_Run_Completed_With_Errors__c
-            FROM
-                Mass_Action_Configuration__c
-            WHERE
-                Id = :config.Id
-        ];
+            System.assert( false, 'should have failed' );
 
-        System.debug( [ SELECT Id, Message__c FROM Mass_Action_Log__c WHERE Mass_Action_Configuration__c = :config.Id ] );
-        System.assertEquals( 1, [ SELECT COUNT() FROM Mass_Action_Log__c WHERE Mass_Action_Configuration__c = :config.Id AND Message__c LIKE '%COMPILE_FAIL%' ] );
-        System.assertEquals( job.CompletedDate, config.Last_Run_Completed_Date__c );
-        System.assertEquals( true, config.Last_Run_Completed_With_Errors__c );
+        } catch ( MA_Exceptions.AnonymousApexException e ) {
+
+            System.assert( true );
+
+        } catch ( Exception e ) {
+
+            System.assert( false, 'failed for wrong exception' );
+
+        } finally {
+
+            Test.getEventBus().deliver();
+
+        }
 
     }
 
@@ -309,29 +298,34 @@ private class MA_ReportSourceBatchableTest {
 
         Test.setMock( HttpCalloutMock.class, new MA_HttpCalloutMock() );
 
-        Test.startTest();
+        try {
 
-        ID jobId = Database.executeBatch( new MA_ReportSourceBatchable( config.Id ), config.Batch_Size__c.intValue() );
+            Test.startTest();
 
-        Test.stopTest();
+            Database.executeBatch( new MA_ReportSourceBatchable( config.Id ), config.Batch_Size__c.intValue() );
 
-        AsyncApexJob job = MA_MassActionBatchUtils.getJobById( jobId );
+            // Async code completes once the test stops,
+            // and any exceptions that occurred will be thrown.
+            // To avoid the test failing because of that,
+            // we have a try..catch block. An event will
+            // still be raised that the batch job failed.
+            Test.stopTest();
 
-        config = [
-            SELECT
-                Id,
-                Last_Run_Completed_Date__c,
-                Last_Run_Completed_With_Errors__c
-            FROM
-                Mass_Action_Configuration__c
-            WHERE
-                Id = :config.Id
-        ];
+            System.assert( false, 'should have failed' );
 
-        System.debug( [ SELECT Id, Message__c FROM Mass_Action_Log__c WHERE Mass_Action_Configuration__c = :config.Id ] );
-        System.assertEquals( 1, [ SELECT COUNT() FROM Mass_Action_Log__c WHERE Mass_Action_Configuration__c = :config.Id AND Message__c LIKE '%Anonymous Apex Error%TEST_SOAP_FAULT%' ] );
-        System.assertEquals( job.CompletedDate, config.Last_Run_Completed_Date__c );
-        System.assertEquals( true, config.Last_Run_Completed_With_Errors__c );
+        } catch ( MA_Exceptions.AnonymousApexException e ) {
+
+            System.assert( true );
+
+        } catch ( Exception e ) {
+
+            System.assert( false, 'failed for wrong exception' );
+
+        } finally {
+
+            Test.getEventBus().deliver();
+
+        }
 
     }
 

@@ -183,6 +183,8 @@ private class MA_SoqlSourceBatchableTest {
             // still be raised that the batch job failed.
             Test.stopTest();
 
+            System.assert( false, 'should have failed' );
+
         } catch ( MA_Exceptions.NoSourceFieldException e ) {
 
             System.assertEquals( configFieldMapping.Source_Field_Name__c, e.sourceFieldName );
@@ -229,6 +231,8 @@ private class MA_SoqlSourceBatchableTest {
             // still be raised that the batch job failed.
             Test.stopTest();
 
+            System.assert( false, 'should have failed' );
+
         } catch ( MA_Exceptions.AnonymousApexException e ) {
 
             System.assert( true );
@@ -274,6 +278,8 @@ private class MA_SoqlSourceBatchableTest {
             // we have a try..catch block. An event will
             // still be raised that the batch job failed.
             Test.stopTest();
+
+            System.assert( false, 'should have failed' );
 
         } catch ( MA_Exceptions.AnonymousApexException e ) {
 
