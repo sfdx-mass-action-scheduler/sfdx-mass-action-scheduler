@@ -25,9 +25,11 @@ public with sharing class MA_SoqlSourceBatchable implements Database.Batchable<S
 
         this.config = MA_MassActionUtils.getConfiguration( this.configId );
 
+        Database.QueryLocator queryLocator = Database.getQueryLocator( this.config.Source_SOQL_Query__c );
+
         MA_MassActionBatchUtils.handleBatchJobStarted( this.configId, context.getJobId() );
 
-        return Database.getQueryLocator( this.config.Source_SOQL_Query__c );
+        return queryLocator;
     }
 
     public void execute( Database.BatchableContext context, List<SObject> records ) {

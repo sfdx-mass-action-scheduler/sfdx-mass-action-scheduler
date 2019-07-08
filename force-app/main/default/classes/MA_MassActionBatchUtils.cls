@@ -131,7 +131,17 @@ public inherited sharing class MA_MassActionBatchUtils {
 
         System.debug( 'MA_MassActionBatchUtils.handleBatchJobStarted: configId=' + configId + ', jobId=' + jobId );
 
-        updateJobParentLogStatus( configId, jobId );
+        List<MA_BatchApexStatusEvent__e> events = new List<MA_BatchApexStatusEvent__e>{
+            new MA_BatchApexStatusEvent__e(
+                Job_ID__c = jobId,
+                Phase__c = 'START',
+                Message_Type__c = 'Success',
+                Message__c = 'Started',
+                Timestamp__c = String.valueOf( DateTime.now().getTime() )
+            )
+        };
+
+        publish( events );
 
     }
 
@@ -140,46 +150,20 @@ public inherited sharing class MA_MassActionBatchUtils {
      */
     public static void handleBatchJobExecution( ID configId, ID jobId, Integer jobScopeSize, String jobScope ) {
 
-        System.debug( 'MA_MassActionBatchUtils.handleBatchJobExecution: configId=' + configId + ', jobId=' + jobId + ', jobScopeSize=' + jobScopeSize + ', jobScope=' + jobScope );
+        System.debug( 'MA_MassActionBatchUtils.handleBatchJobExecution: configId=' + configId + ', jobId=' + jobId );
 
-        updateJobParentLogStatus( configId, jobId );
+        List<MA_BatchApexStatusEvent__e> events = new List<MA_BatchApexStatusEvent__e>{
+            new MA_BatchApexStatusEvent__e(
+                Job_ID__c = jobId,
+                Phase__c = 'EXECUTE',
+                Message_Type__c = 'Success',
+                Message__c = 'Processed ' + jobScopeSize + ' records',
+                Job_Scope__c = jobScope,
+                Timestamp__c = String.valueOf( DateTime.now().getTime() )
+            )
+        };
 
-        Map<String,RecordTypeInfo> logRecordTypeInfosMap = Mass_Action_Log__c.SObjectType.getDescribe().getRecordTypeInfosByDeveloperName();
-
-        // We don't have lookup fields to AsyncApexJob records,
-        // so standardizing on the 15 character id, least common denominator.
-        // Also, must use string variable type because ID variable type
-        // always coerces the assigned value back to 18 characters.
-        String jobId15 = String.valueOf( jobId ).left( 15 );
-
-        Mass_Action_Log__c parentLog = [
-            SELECT
-                Id, Mass_Action_Configuration__c, Job_ID__c
-            FROM
-                Mass_Action_Log__c
-            WHERE
-                Mass_Action_Configuration__c = :configId
-                AND
-                Job_ID__c = :jobId15
-                AND
-                RecordType.DeveloperName = 'Parent_Log'
-        ];
-
-        Mass_Action_Log__c childLog = new Mass_Action_Log__c(
-            RecordTypeId = logRecordTypeInfosMap.get( 'Child_Log' ).getRecordTypeId(),
-            Mass_Action_Configuration__c = parentLog.Mass_Action_Configuration__c,
-            Parent_Log__c = parentLog.Id,
-            Job_ID__c = parentLog.Job_ID__c,
-            Message_Type__c = 'Success',
-            Message__c = 'Processed ' + jobScopeSize + ' records',
-            Long_Message__c = 'Phase: EXECUTION' + '\nMessage: Processed ' + jobScopeSize + ' records',
-            Job_Scope__c = jobScope
-        );
-
-        Database.DMLOptions dmo = new Database.DMLOptions();
-        dmo.allowFieldTruncation = true;
-
-        Database.insert( childLog, dmo );
+        publish( events );
 
     }
 
@@ -190,104 +174,91 @@ public inherited sharing class MA_MassActionBatchUtils {
 
         System.debug( 'MA_MassActionBatchUtils.handleBatchJobFinished: configId=' + configId + ', jobId=' + jobId );
 
-        updateJobParentLogStatus( configId, jobId );
+        List<MA_BatchApexStatusEvent__e> events = new List<MA_BatchApexStatusEvent__e>{
+            new MA_BatchApexStatusEvent__e(
+                Job_ID__c = jobId,
+                Phase__c = 'FINISH',
+                Message_Type__c = 'Success',
+                Message__c = 'Finished',
+                Timestamp__c = String.valueOf( DateTime.now().getTime() )
+            )
+        };
 
-        // We don't have lookup fields to AsyncApexJob records,
-        // so standardizing on the 15 character id, least common denominator.
-        // Also, must use string variable type because ID variable type
-        // always coerces the assigned value back to 18 characters.
-        String jobId15 = String.valueOf( jobId ).left( 15 );
-
-        AsyncApexJob job = getJobById( jobId );
-
-        // If actual batch job didn't fail with an error,
-        // check if any of the batch executions logged errors
-        Integer jobErrorLogCount = [
-            SELECT
-                COUNT()
-            FROM
-                Mass_Action_Log__c
-            WHERE
-                Mass_Action_Configuration__c = :configId
-                AND
-                Job_ID__c = :jobId15
-                AND
-                Message_Type__c = 'Error'
-        ];
-
-        Mass_Action_Configuration__c config = new Mass_Action_Configuration__c(
-            Id = configId,
-            Last_Run_Completed_Date__c = job.CompletedDate,
-            Last_Run_Completed_With_Errors__c = ( jobErrorLogCount > 0 || job.NumberOfErrors > 0 )
-        );
-
-        update config;
+        publish( events );
 
     }
 
     // ----------------------------------------------------
 
-    /**
-     * Designed to be called once per batch job's start, execute, and finish phases.
-     *
-     * Updates the parent log record with details from the AsyncApexJob,
-     * such as items processed and the current job status.
-     *
-     * @param configId
-     *      Configuration that owns the log record.
-     * @param jobId
-     *      AsyncApexJob the log is tracking progress for.
-     */
-    private static void updateJobParentLogStatus( ID configId, ID jobId ) {
+    // map { jobId => job }
+    public static Map<ID, AsyncApexJob> getJobsByJobIdMap( List<MA_BatchApexStatusEvent__e> events ) {
 
-        System.debug( 'MA_MassActionBatchUtils.updateJobLogStatus: configId=' + configId + ', jobId=' + jobId );
+        Set<ID> jobIds = new Set<ID>();
 
-        // We don't have lookup fields to AsyncApexJob records,
-        // so standardizing on the 15 character id, least common denominator.
-        // Also, must use string variable type because ID variable type
-        // always coerces the assigned value back to 18 characters.
-        String jobId15 = String.valueOf( jobId ).left( 15 );
-
-        AsyncApexJob job = getJobById( jobId );
-
-        // Technically, there should be exactly 0 or 1
-        // parent logs for this apex job, but just in case
-        // there are multiples, and just in case there are none,
-        // a SOQL-FOR loop is simplest approach to handle all use cases.
-        for ( List<Mass_Action_Log__c> parentLogs : [
-            SELECT
-                Id, Mass_Action_Configuration__c, Job_ID__c, Parent_Log__c,
-                Job_Scope__c, Message_Type__c, Message__c, Long_Message__c,
-                Submitted_Date__c, Total_Batches__c, Processed_Batches__c, Failed_Batches__c
-            FROM
-                Mass_Action_Log__c
-            WHERE
-                Mass_Action_Configuration__c = :configId
-                AND
-                Job_ID__c = :jobId15
-                AND
-                RecordType.DeveloperName = 'Parent_Log'
-            FOR UPDATE
-        ]) {
-
-            for ( Mass_Action_Log__c parentLog : parentLogs ) {
-                parentLog.Message__c = 'Batch job ' + ( String.isBlank( job.Status ) ? 'details' : job.Status ).toLowerCase();
-                parentLog.Submitted_Date__c = job.CreatedDate;
-                parentLog.Total_Batches__c = job.TotalJobItems;
-                parentLog.Processed_Batches__c = job.JobItemsProcessed;
-                parentLog.Failed_Batches__c = job.NumberOfErrors;
+        for ( MA_BatchApexStatusEvent__e evt : events ) {
+            if ( String.isNotBlank( evt.Job_ID__c ) ) {
+                jobIds.add( ID.valueOf( evt.Job_ID__c ) );
             }
-
-            Database.DMLOptions dmo = new Database.DMLOptions();
-            dmo.allowFieldTruncation = true;
-
-            Database.update( parentLogs, dmo );
-
         }
 
+        return getJobsByJobIdMap( jobIds );
     }
 
-    // ----------------------------------------------------
+    // map { jobId => job }
+    public static Map<ID, AsyncApexJob> getJobsByJobIdMap( List<BatchApexErrorEvent> events ) {
+
+        Set<ID> jobIds = new Set<ID>();
+
+        for ( BatchApexErrorEvent evt : events ) {
+            if ( String.isNotBlank( evt.AsyncApexJobId ) ) {
+                jobIds.add( ID.valueOf( evt.AsyncApexJobId ) );
+            }
+        }
+
+        return getJobsByJobIdMap( jobIds );
+    }
+
+    public static Map<ID, AsyncApexJob> getJobsByJobIdMap( Set<ID> jobIds ) {
+
+        return new Map<ID, AsyncApexJob>([
+            SELECT
+                Id, ParentJobId, Status, ExtendedStatus, TotalJobItems, JobItemsProcessed, NumberOfErrors, CreatedDate
+            FROM
+                AsyncApexJob
+            WHERE
+                Id IN :jobIds
+        ]);
+    }
+
+    // map { jobId => log }
+    public static Map<ID, Mass_Action_Log__c> getParentLogsByJobIdMap( List<AsyncApexJob> jobs ) {
+
+        // It's possible that the batch error event's job id is
+        // a child job of the main batch job that represents the
+        // mass action configuration's execution.
+        // The parent log record's job id will be a parent job id.
+        // So to be able to cross-ref correctly, we need the parent job ids.
+        Set<String> parentJobIds = new Set<String>();
+        for ( AsyncApexJob job : jobs ) {
+            parentJobIds.add( String.valueOf( String.isNotBlank( job.ParentJobId ) ? job.ParentJobId : job.Id ).left( 15 ) );
+        }
+
+        Map<ID, Mass_Action_Log__c> jobIdToParentLogMap = new Map<ID, Mass_Action_Log__c>();
+        for ( Mass_Action_Log__c parentLog : [
+            SELECT
+                Id, Job_ID__c, Mass_Action_Configuration__c
+            FROM
+                Mass_Action_Log__c
+            WHERE
+                Job_ID__c IN :parentJobIds
+                AND
+                RecordType.DeveloperName = 'Parent_Log'
+        ]) {
+            jobIdToParentLogMap.put( ID.valueOf( parentLog.Job_ID__c ), parentLog );
+        }
+
+        return jobIdToParentLogMap;
+    }
 
     public static AsyncApexJob getJobById( ID jobId ) {
 
@@ -321,6 +292,28 @@ public inherited sharing class MA_MassActionBatchUtils {
         }
 
         return job;
+    }
+
+    public static List<Database.SaveResult> publish( List<MA_BatchApexStatusEvent__e> events ) {
+
+        System.debug( 'MA_MassActionBatchUtils.publish' );
+
+        List<Database.SaveResult> results = EventBus.publish( events );
+
+        for ( Integer i = 0; i < results.size(); i ++ ) {
+
+            Database.SaveResult result = results[i];
+            MA_BatchApexStatusEvent__e evt = events[i];
+
+            System.debug( 'MA_MassActionBatchUtils.publish: event: ' + JSON.serializePretty( evt ) );
+
+            for ( Database.Error err : result.getErrors() ) {
+                System.debug( LoggingLevel.ERROR, 'MA_MassActionBatchUtils.publish: error: ' + JSON.serializePretty( err ) );
+            }
+
+        }
+
+        return results;
     }
 
 }

@@ -29,9 +29,11 @@ public with sharing class MA_ReportSourceBatchable implements Database.Batchable
 
         this.reportDescribe = Reports.ReportManager.describeReport( config.Source_Report_ID__c );
 
+        Iterable<Reports.ReportDetailRow> reportIterable = new MA_ReportService.ReportRowIterator( this.config.Source_Report_ID__c, this.config.Source_Report_Column_Name__c );
+
         MA_MassActionBatchUtils.handleBatchJobStarted( this.configId, context.getJobId() );
 
-        return new MA_ReportService.ReportRowIterator( this.config.Source_Report_ID__c, this.config.Source_Report_Column_Name__c );
+        return reportIterable;
     }
 
     public void execute( Database.BatchableContext context, List<Reports.ReportDetailRow> reportRows ) {

@@ -29,9 +29,11 @@ public with sharing class MA_ListViewSourceBatchable implements Database.Batchab
 
         this.listViewDescribe = MA_MassActionUtils.describeListView( MA_MassActionUtils.getCalloutRestEndpointURL( this.config.Named_Credential__c ), this.config.Source_List_View_ID__c );
 
+        Database.QueryLocator queryLocator = Database.getQueryLocator( this.listViewDescribe.query );
+
         MA_MassActionBatchUtils.handleBatchJobStarted( this.configId, context.getJobId() );
 
-        return Database.getQueryLocator( this.listViewDescribe.query );
+        return queryLocator;
     }
 
     public void execute( Database.BatchableContext context, List<SObject> records ) {

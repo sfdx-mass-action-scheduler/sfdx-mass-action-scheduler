@@ -16,136 +16,42 @@ public without sharing class MA_BatchApexErrorEventTriggerHandler {
 
         System.debug( 'MA_BatchApexErrorEventTriggerHandler.handleAfterInsert' );
 
-        // We don't have lookup fields to AsyncApexJob records,
-        // so standardizing on the 15 character id, least common denominator.
-        // Also, must use string variable type because ID variable type
-        // always coerces the assigned value back to 18 characters.
+        Map<ID, AsyncApexJob> jobIdToJobMap = MA_MassActionBatchUtils.getJobsByJobIdMap( newList );
 
-        Set<String> jobIds = new Set<String>();
+        Map<ID, Mass_Action_Log__c> jobIdtoParentLogMap = MA_MassActionBatchUtils.getParentLogsByJobIdMap( jobIdToJobMap.values() );
 
-        for ( BatchApexErrorEvent evt : newList ) {
-
-            System.debug( 'MA_BatchApexErrorEventTriggerHandler.handleAfterInsert: ' + JSON.serializePretty( evt ) );
-
-            jobIds.add( evt.AsyncApexJobId.left( 15 ) );
-
-        }
-
-        Map<ID, AsyncApexJob> jobsMap = new Map<ID, AsyncApexJob>([
-            SELECT
-                Id, ParentJobId, Status, ExtendedStatus, TotalJobItems, JobItemsProcessed, NumberOfErrors, CreatedDate
-            FROM
-                AsyncApexJob
-            WHERE
-                Id IN :jobIds
-        ]);
-
-        // It's possible that the batch error event's job id is
-        // a child job of the main batch job that represents the
-        // mass action configuration's execution.
-        // The parent log record's job id will be a parent job id.
-        // So to be able to cross-ref correctly, we need the parent job ids.
-        Set<String> parentJobIds = new Set<String>();
-        for ( AsyncApexJob job : jobsMap.values() ) {
-            parentJobIds.add( String.valueOf( String.isNotBlank( job.ParentJobId ) ? job.ParentJobId : job.Id ).left( 15 ) );
-        }
-
-        Map<String, Mass_Action_Log__c> jobIdToParentLogMap = new Map<String, Mass_Action_Log__c>();
-        for ( Mass_Action_Log__c parentLog : [
-            SELECT
-                Id, Job_ID__c, Mass_Action_Configuration__c
-            FROM
-                Mass_Action_Log__c
-            WHERE
-                Job_ID__c IN :parentJobIds
-                AND
-                RecordType.DeveloperName = 'Parent_Log'
-        ]) {
-            jobIdToParentLogMap.put( parentLog.Job_ID__c.left( 15 ), parentLog );
-        }
-
-        Map<String,RecordTypeInfo> logRecordTypeInfosMap = Mass_Action_Log__c.SObjectType.getDescribe().getRecordTypeInfosByDeveloperName();
-
-        List<Mass_Action_Log__c> parentLogsToUpdate = new List<Mass_Action_Log__c>();
-        List<Mass_Action_Log__c> childLogsToInsert = new List<Mass_Action_Log__c>();
+        List<MA_BatchApexStatusEvent__e> jobStatusEvents = new List<MA_BatchApexStatusEvent__e>();
 
         for ( BatchApexErrorEvent evt : newList ) {
 
-            AsyncApexJob job = jobsMap.get( ID.valueOf( evt.AsyncApexJobId ) );
-            Mass_Action_Log__c parentLog = jobIdToParentLogMap.get( evt.AsyncApexJobId.left( 15 ) );
+            ID asyncApexJobId = ID.valueOf( evt.AsyncApexJobId );
+            AsyncApexJob job = jobIdToJobMap.get( asyncApexJobId );
+            Mass_Action_Log__c parentLog = jobIdToParentLogMap.get( asyncApexJobId );
 
             // if either the job or parent log are null then
             // this batch error event is not for mass action scheduler, skip it
             if ( job != null && parentLog != null ) {
 
-                switch on ( evt.Phase ) {
-
-                    when 'START' {
-
-                        parentLogsToUpdate.add( new Mass_Action_Log__c(
-                            Id = parentLog.Id,
-                            Message_Type__c = 'Error',
-                            Message__c = 'Error in batch job phase ' + evt.Phase + ': ' + evt.Message,
-                            Long_Message__c = 'Phase: ' + evt.Phase + '\nMessage: ' + evt.Message + '\nExceptionType: ' + evt.ExceptionType + '\nStackTrace: ' + evt.StackTrace,
-                            Job_Scope__c = evt.JobScope,
-                            Submitted_Date__c = job.CreatedDate,
-                            Total_Batches__c = job.TotalJobItems,
-                            Processed_Batches__c = job.JobItemsProcessed,
-                            Failed_Batches__c = job.NumberOfErrors
-                        ));
-
-                    }
-
-                    when 'EXECUTE' {
-
-                        parentLogsToUpdate.add( new Mass_Action_Log__c(
-                            Id = parentLog.Id,
-                            Submitted_Date__c = job.CreatedDate,
-                            Total_Batches__c = job.TotalJobItems,
-                            Processed_Batches__c = job.JobItemsProcessed,
-                            Failed_Batches__c = job.NumberOfErrors
-                        ));
-
-                        childLogsToInsert.add( new Mass_Action_Log__c(
-                            RecordTypeId = logRecordTypeInfosMap.get( 'Child_Log' ).getRecordTypeId(),
-                            Mass_Action_Configuration__c = parentLog.Mass_Action_Configuration__c,
-                            Parent_Log__c = parentLog.Id,
-                            Job_ID__c = parentLog.Job_ID__c,
-                            Message_Type__c = 'Error',
-                            Message__c = 'Error in batch job phase ' + evt.Phase + ': ' + evt.Message,
-                            Long_Message__c = 'Phase: ' + evt.Phase + '\nMessage: ' + evt.Message + '\nExceptionType: ' + evt.ExceptionType + '\nStackTrace: ' + evt.StackTrace,
-                            Job_Scope__c = evt.JobScope
-                        ));
-
-                    }
-
-                    WHEN 'FINISH' {
-
-                        parentLogsToUpdate.add( new Mass_Action_Log__c(
-                            Id = parentLog.Id,
-                            Message_Type__c = 'Error',
-                            Message__c = 'Error in batch job phase ' + evt.Phase + ': ' + evt.Message,
-                            Long_Message__c = 'Phase: ' + evt.Phase + '\nMessage: ' + evt.Message + '\nExceptionType: ' + evt.ExceptionType + '\nStackTrace: ' + evt.StackTrace,
-                            Job_Scope__c = evt.JobScope,
-                            Submitted_Date__c = job.CreatedDate,
-                            Total_Batches__c = job.TotalJobItems,
-                            Processed_Batches__c = job.JobItemsProcessed,
-                            Failed_Batches__c = job.NumberOfErrors
-                        ));
-
-                    }
-
-                }
+                jobStatusEvents.add( new MA_BatchApexStatusEvent__e(
+                    Job_ID__c = job.Id,
+                    Phase__c = evt.Phase,
+                    Message_Type__c = 'Error',
+                    Message__c = 'Error in job phase ' + evt.Phase + ': ' + evt.Message,
+                    Long_Message__c = (
+                        'Phase: ' + evt.Phase + '\n' +
+                        'Message: ' + evt.Message + '\n' +
+                        'ExceptionType: ' + evt.ExceptionType + '\n' +
+                        'StackTrace: ' + evt.StackTrace
+                    ),
+                    Job_Scope__c = evt.JobScope,
+                    Timestamp__c = String.valueOf( evt.CreatedDate.getTime() )
+                ));
 
             }
 
         }
 
-        Database.DMLOptions dmo = new Database.DMLOptions();
-        dmo.allowFieldTruncation = true;
-
-        Database.insert( childLogsToInsert, dmo );
-        Database.update( parentLogsToUpdate, dmo );
+        MA_MassActionBatchUtils.publish( jobStatusEvents );
 
     }
 
