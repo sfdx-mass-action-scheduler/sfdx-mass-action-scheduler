@@ -44,6 +44,12 @@ public with sharing class MA_BatchApexErrorEventTriggerHandler {
                         'StackTrace: ' + evt.StackTrace
                     ),
                     Job_Scope__c = evt.JobScope,
+                    // It is very important that we use the event's created date
+                    // and not when we're processing the event because platform events
+                    // are handled asynchronously. If we use "now" vs. "then" then
+                    // our log records will be out of order chronologically.
+                    // The logs would appear in the order we got to insert them
+                    // rather than the real time of when the cause occurred.
                     Timestamp__c = String.valueOf( evt.CreatedDate.getTime() )
                 ));
 

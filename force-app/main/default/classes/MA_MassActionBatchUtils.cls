@@ -138,7 +138,8 @@ public inherited sharing class MA_MassActionBatchUtils {
                 Phase__c = 'START',
                 Message_Type__c = 'Informational',
                 Message__c = 'Started',
-                Timestamp__c = String.valueOf( DateTime.now().getTime() )
+                Long_Message__c = 'Started',
+                Timestamp__c = String.valueOf( getDateTimeWithoutMillis( DateTime.now() ).getTime() )
             )
         };
 
@@ -159,8 +160,9 @@ public inherited sharing class MA_MassActionBatchUtils {
                 Phase__c = 'EXECUTE',
                 Message_Type__c = 'Success',
                 Message__c = 'Processed ' + jobScopeSize + ' records',
+                Long_Message__c = 'Processed ' + jobScopeSize + ' records',
                 Job_Scope__c = jobScope,
-                Timestamp__c = String.valueOf( DateTime.now().getTime() )
+                Timestamp__c = String.valueOf( getDateTimeWithoutMillis( DateTime.now() ).getTime() )
             )
         };
 
@@ -181,7 +183,8 @@ public inherited sharing class MA_MassActionBatchUtils {
                 Phase__c = 'FINISH',
                 Message_Type__c = 'Informational',
                 Message__c = 'Finished',
-                Timestamp__c = String.valueOf( DateTime.now().getTime() )
+                Long_Message__c = 'Finished',
+                Timestamp__c = String.valueOf( getDateTimeWithoutMillis( DateTime.now() ).getTime() )
             )
         };
 
@@ -357,6 +360,29 @@ public inherited sharing class MA_MassActionBatchUtils {
         }
 
         return results;
+    }
+
+    /**
+     * Apex DateTime precision supports milliseconds.
+     * Platform Event datetimes do not.
+     * This means that occasionally the "start" event would
+     * sort in the logs AFTER some "execution" events based on the
+     * Timestamp__c field. To mitigate this and put things on the
+     * same playing field, we truncate the milliseconds from the
+     * date/times when set on events from Apex to match the precision
+     * of the date/times provided in platform events.
+     *
+     * For example, see MA_BatchApexErrorEventTriggerHandler when it
+     * creates a MA_BatchApexStatusEvent__e and sets the Timestamp__c
+     * to evt.CreatedDate. That value's precision won't include milliseconds.
+     *
+     * https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/platform_events_api_considerations.htm
+     */
+    private static DateTime getDateTimeWithoutMillis( DateTime dt ) {
+        return DateTime.newInstanceGMT(
+            Date.newInstance( dt.yearGMT(), dt.monthGMT(), dt.dayGMT() ),
+            Time.newInstance( dt.hourGMT(), dt.minuteGMT(), dt.secondGMT(), 0 )
+        );
     }
 
 }
