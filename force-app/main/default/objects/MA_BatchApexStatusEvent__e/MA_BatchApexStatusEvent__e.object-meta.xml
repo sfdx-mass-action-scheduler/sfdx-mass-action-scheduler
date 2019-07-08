@@ -5,5 +5,5 @@
     <eventType>HighVolume</eventType>
     <label>Mass Action Batch Apex Status Event</label>
     <pluralLabel>Mass Action Batch Apex Status Events</pluralLabel>
-    <publishBehavior>PublishAfterCommit</publishBehavior>
+    <publishBehavior>PublishImmediately</publishBehavior>
 </CustomObject>
