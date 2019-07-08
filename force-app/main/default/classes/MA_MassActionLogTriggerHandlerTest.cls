@@ -8,8 +8,97 @@
 private class MA_MassActionLogTriggerHandlerTest {
 
     @IsTest
-    static void todo() {
-        System.assert( false, 'not yet implemented' );
+    static void test_format_job_id() {
+
+        Test.startTest();
+
+        Mass_Action_Configuration__c config = new Mass_Action_Configuration__c(
+            Name = 'Test Config',
+            DeveloperName__c = 'Test_Config'
+        );
+
+        insert config;
+
+        Mass_Action_Log__c log = new Mass_Action_Log__c(
+            Mass_Action_Configuration__c = config.Id,
+            Job_ID__c = ID.valueOf( '707f40000000001' )
+        );
+
+        System.assertEquals( 18, log.Job_ID__c.length() );
+
+        insert log;
+
+        Test.stopTest();
+
+        log = [ SELECT Job_ID__c FROM Mass_Action_Log__c WHERE Id = :log.Id ];
+
+        System.assertEquals( 15, log.Job_ID__c.length() );
+
+    }
+
+    @IsTest
+    static void test_assign_parent_log_configuration() {
+
+        Test.startTest();
+
+        Map<String,RecordTypeInfo> logRecordTypeInfosMap = Mass_Action_Log__c.SObjectType.getDescribe().getRecordTypeInfosByDeveloperName();
+
+        Mass_Action_Configuration__c config = new Mass_Action_Configuration__c(
+            Name = 'Test Config',
+            DeveloperName__c = 'Test_Config'
+        );
+
+        insert config;
+
+        Mass_Action_Log__c parentLog = new Mass_Action_Log__c(
+            RecordTypeId = logRecordTypeInfosMap.get( 'Parent_Log' ).getRecordTypeId(),
+            Mass_Action_Configuration__c = config.Id,
+            Job_ID__c = ID.valueOf( '707f40000000001' )
+        );
+
+        insert parentLog;
+
+        Mass_Action_Log__c childLog = new Mass_Action_Log__c(
+            RecordTypeId = logRecordTypeInfosMap.get( 'Child_Log' ).getRecordTypeId(),
+            Mass_Action_Configuration__c = config.Id,
+            Parent_Log__c = parentLog.Id,
+            Job_ID__c = ID.valueOf( '707f40000000001' )
+        );
+
+        insert childLog;
+
+        Test.stopTest();
+
+        System.assertEquals( 2, [ SELECT COUNT() FROM Mass_Action_Log__c WHERE Mass_Action_Configuration__c = :config.Id ] );
+        System.assertEquals( 1, [ SELECT COUNT() FROM Mass_Action_Log__c WHERE Parent_Log_Configuration__c = :config.Id ] );
+        System.assertEquals( 1, [ SELECT COUNT() FROM Mass_Action_Log__c WHERE Parent_Log_Configuration__c = :config.Id AND Id = :parentLog.Id ] );
+
+    }
+
+    @IsTest
+    static void test_crud() {
+
+        Test.startTest();
+
+        Mass_Action_Configuration__c config = new Mass_Action_Configuration__c(
+            Name = 'Test Config',
+            DeveloperName__c = 'Test_Config'
+        );
+
+        insert config;
+
+        Mass_Action_Log__c log = new Mass_Action_Log__c(
+            Mass_Action_Configuration__c = config.Id
+        );
+
+        insert log;
+
+        update log;
+
+        delete log;
+
+        Test.stopTest();
+
     }
 
 }

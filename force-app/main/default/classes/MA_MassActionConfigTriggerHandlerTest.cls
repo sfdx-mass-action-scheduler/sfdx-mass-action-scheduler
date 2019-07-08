@@ -156,7 +156,7 @@ private class MA_MassActionConfigTriggerHandlerTest {
         Test.startTest();
 
         Mass_Action_Configuration__c config = new Mass_Action_Configuration__c(
-            name = 'Test Config',
+            Name = 'Test Config',
             DeveloperName__c = 'Test_Config'
         );
 
