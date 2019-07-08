@@ -229,13 +229,15 @@ private class MA_MassActionBatchUtilsTest {
     public class TestIterable implements Iterable<Map<String, Object>> {
         public Iterator<Map<String, Object>> iterator() {
             return new List<Map<String, Object>>{
-                new Map<String, Object>{ 'Id' => '001xxxxxxxxxxxx' }
+                new Map<String, Object>{ 'Id' => '001000000000000' }
             }.iterator();
         }
     }
 
     @IsTest
-    static void test_log_job_exception() {
+    static void test_handle_batch_job_started() {
+
+        AsyncApexJob job = MA_AsyncApexJobMock.getJobById( MA_AsyncApexJobMock.PROCESSING_JOB_ID );
 
         Mass_Action_Configuration__c config = new Mass_Action_Configuration__c(
             Name = 'Test Config',
@@ -245,20 +247,52 @@ private class MA_MassActionBatchUtilsTest {
 
         insert config;
 
-        Exception ex = new System.UnexpectedException( 'Test Exception' );
+        Map<String,RecordTypeInfo> logRecordTypeInfosMap = Mass_Action_Log__c.SObjectType.getDescribe().getRecordTypeInfosByDeveloperName();
+
+        Mass_Action_Log__c parentLog = new Mass_Action_Log__c(
+            RecordTypeId = logRecordTypeInfosMap.get( 'Parent_Log' ).getRecordTypeId(),
+            Mass_Action_Configuration__c = config.Id,
+            Job_ID__c = job.Id,
+            Submitted_Date__c = DateTime.now(),
+            Timestamp__c = String.valueOf( DateTime.now().getTime() ),
+            Message__c = 'Batch job enqueued',
+            Message_Type__c = 'Informational'
+        );
+
+        insert parentLog;
 
         Test.startTest();
 
-//        MA_MassActionBatchUtils.logJobException( config.Id, MA_AsyncApexJobMock.FAIL_JOB_ID, ex );
+        MA_MassActionBatchUtils.handleBatchJobStarted( config.Id, job.Id );
+
+        Test.getEventBus().deliver();
 
         Test.stopTest();
 
-        System.assertEquals( 1, [ SELECT COUNT() FROM Mass_Action_Log__c WHERE Mass_Action_Configuration__c = :config.Id ] );
+        parentLog = [
+            SELECT
+                Id, Message__c, Message_Type__c,
+                ( SELECT Message_Type__c, Message__c, Job_Scope__c FROM Mass_Action_Logs__r )
+            FROM
+                Mass_Action_Log__c
+            WHERE
+                Id = :parentLog.Id
+        ];
+
+        System.assertEquals( 'Batch job ' + job.Status.toLowerCase(), parentLog.Message__c );
+        System.assertEquals( 'Informational', parentLog.Message_Type__c );
+
+        System.assertEquals( 1, parentLog.Mass_Action_Logs__r.size() );
+        System.assertEquals( 'Started', parentLog.Mass_Action_Logs__r[0].Message__c );
+        System.assertEquals( 'Informational', parentLog.Mass_Action_Logs__r[0].Message_Type__c );
+        System.assertEquals( null, parentLog.Mass_Action_Logs__r[0].Job_Scope__c );
 
     }
 
     @IsTest
-    static void test_log_job_errors() {
+    static void test_handle_batch_job_execution() {
+
+        AsyncApexJob job = MA_AsyncApexJobMock.getJobById( MA_AsyncApexJobMock.PROCESSING_JOB_ID );
 
         Mass_Action_Configuration__c config = new Mass_Action_Configuration__c(
             Name = 'Test Config',
@@ -268,47 +302,129 @@ private class MA_MassActionBatchUtilsTest {
 
         insert config;
 
-        AsyncApexJob job = MA_AsyncApexJobMock.getJobById( MA_AsyncApexJobMock.FAIL_JOB_ID );
+        Map<String,RecordTypeInfo> logRecordTypeInfosMap = Mass_Action_Log__c.SObjectType.getDescribe().getRecordTypeInfosByDeveloperName();
+
+        Mass_Action_Log__c parentLog = new Mass_Action_Log__c(
+            RecordTypeId = logRecordTypeInfosMap.get( 'Parent_Log' ).getRecordTypeId(),
+            Mass_Action_Configuration__c = config.Id,
+            Job_ID__c = job.Id,
+            Submitted_Date__c = DateTime.now(),
+            Timestamp__c = String.valueOf( DateTime.now().getTime() ),
+            Message__c = 'Batch job enqueued',
+            Message_Type__c = 'Informational'
+        );
+
+        insert parentLog;
 
         Test.startTest();
 
-//        MA_MassActionBatchUtils.logJobErrors( config.Id, job, new System.UnexpectedException( 'Test Exception' ) );
+        MA_MassActionBatchUtils.handleBatchJobExecution( config.Id, job.Id, 1, 'TEST JOB SCOPE' );
+
+        Test.getEventBus().deliver();
 
         Test.stopTest();
 
-        System.assertEquals( 1, [ SELECT COUNT() FROM Mass_Action_Log__c WHERE Mass_Action_Configuration__c = :config.Id AND Message__c = :job.ExtendedStatus ] );
+        parentLog = [
+            SELECT
+                Id, Message__c, Message_Type__c,
+                ( SELECT Message_Type__c, Message__c, Job_Scope__c FROM Mass_Action_Logs__r )
+            FROM
+                Mass_Action_Log__c
+            WHERE
+                Id = :parentLog.Id
+        ];
+
+        System.assertEquals( 'Batch job ' + job.Status.toLowerCase(), parentLog.Message__c );
+        System.assertEquals( 'Informational', parentLog.Message_Type__c );
+
+        System.assertEquals( 1, parentLog.Mass_Action_Logs__r.size() );
+        System.assertEquals( 'Processed 1 records', parentLog.Mass_Action_Logs__r[0].Message__c );
+        System.assertEquals( 'Success', parentLog.Mass_Action_Logs__r[0].Message_Type__c );
+        System.assertEquals( 'TEST JOB SCOPE', parentLog.Mass_Action_Logs__r[0].Job_Scope__c );
 
     }
 
     @IsTest
-    static void test_mock_job_pass() {
+    static void test_handle_batch_job_finished() {
+
+        AsyncApexJob job = MA_AsyncApexJobMock.getJobById( MA_AsyncApexJobMock.COMPLETED_JOB_ID );
+
+        Mass_Action_Configuration__c config = new Mass_Action_Configuration__c(
+            Name = 'Test Config',
+            DeveloperName__c = 'Test_Config',
+            Active__c = true
+        );
+
+        insert config;
+
+        Map<String,RecordTypeInfo> logRecordTypeInfosMap = Mass_Action_Log__c.SObjectType.getDescribe().getRecordTypeInfosByDeveloperName();
+
+        Mass_Action_Log__c parentLog = new Mass_Action_Log__c(
+            RecordTypeId = logRecordTypeInfosMap.get( 'Parent_Log' ).getRecordTypeId(),
+            Mass_Action_Configuration__c = config.Id,
+            Job_ID__c = job.Id,
+            Submitted_Date__c = DateTime.now(),
+            Timestamp__c = String.valueOf( DateTime.now().getTime() ),
+            Message__c = 'Batch job enqueued',
+            Message_Type__c = 'Informational'
+        );
+
+        insert parentLog;
 
         Test.startTest();
 
-        AsyncApexJob job = MA_AsyncApexJobMock.getJobById( MA_AsyncApexJobMock.PASS_JOB_ID );
+        MA_MassActionBatchUtils.handleBatchJobFinished( config.Id, job.Id );
 
-        System.assertEquals( MA_AsyncApexJobMock.PASS_JOB_ID, job.Id );
-        System.assertEquals( 'Test Job Success', job.ExtendedStatus );
-        System.assertEquals( 1, job.TotalJobItems );
-        System.assertEquals( 1, job.TotalJobItems );
-        System.assertEquals( 0, job.NumberOfErrors );
+        Test.getEventBus().deliver();
 
         Test.stopTest();
+
+        parentLog = [
+            SELECT
+                Id, Message__c, Message_Type__c,
+                ( SELECT Message_Type__c, Message__c, Job_Scope__c FROM Mass_Action_Logs__r )
+            FROM
+                Mass_Action_Log__c
+            WHERE
+                Id = :parentLog.Id
+        ];
+
+        System.assertEquals( 'Batch job ' + job.Status.toLowerCase(), parentLog.Message__c );
+        System.assertEquals( 'Success', parentLog.Message_Type__c );
+
+        System.assertEquals( 1, parentLog.Mass_Action_Logs__r.size() );
+        System.assertEquals( 'Finished', parentLog.Mass_Action_Logs__r[0].Message__c );
+        System.assertEquals( 'Informational', parentLog.Mass_Action_Logs__r[0].Message_Type__c );
+        System.assertEquals( null, parentLog.Mass_Action_Logs__r[0].Job_Scope__c );
+
+        config = [
+            SELECT
+                Id,
+                Last_Run_Completed_Date__c,
+                Last_Run_Completed_With_Errors__c
+            FROM
+                Mass_Action_Configuration__c
+            WHERE
+                Id = :config.Id
+        ];
+
+        System.assertEquals( job.CompletedDate, config.Last_Run_Completed_Date__c );
+        System.assertEquals( false, config.Last_Run_Completed_With_Errors__c );
 
     }
 
     @IsTest
-    static void test_mock_job_fail() {
+    static void test_mock_jobs() {
 
         Test.startTest();
 
-        AsyncApexJob job = MA_AsyncApexJobMock.getJobById( MA_AsyncApexJobMock.FAIL_JOB_ID );
+        // Specific details of what the mock jobs return
+        // is validated by other test methods that use these job ids.
+        // This test method is just to ensure code coverage.
 
-        System.assertEquals( MA_AsyncApexJobMock.FAIL_JOB_ID, job.Id );
-        System.assertEquals( 'Test Job Failure', job.ExtendedStatus );
-        System.assertEquals( 1, job.TotalJobItems );
-        System.assertEquals( 1, job.TotalJobItems );
-        System.assertEquals( 1, job.NumberOfErrors );
+        for ( ID jobId : MA_AsyncApexJobMock.MOCK_JOB_IDS ) {
+            MA_AsyncApexJobMock.getJobById( jobId );
+        }
 
         Test.stopTest();
 

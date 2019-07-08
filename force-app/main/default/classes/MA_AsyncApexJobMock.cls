@@ -4,48 +4,64 @@
  * GitHub: https://github.com/douglascayers-org/sfdx-mass-action-scheduler
  * License: BSD 3-Clause License
  */
+/*
+ * Test coverage provided by MA_MassActionBatchUtilsTest.
+ */
 public inherited sharing class MA_AsyncApexJobMock {
 
-    public static final ID PASS_JOB_ID = '707f4000000PASS';
-    public static final ID FAIL_JOB_ID = '707f4000000FAIL';
+    public static final ID QUEUED_JOB_ID                = '707f40000000001';
+    public static final ID PREPARING_JOB_ID             = '707f40000000002';
+    public static final ID PROCESSING_JOB_ID            = '707f40000000003';
+    public static final ID ABORTED_JOB_ID               = '707f40000000004';
+    public static final ID FAILED_JOB_ID                = '707f40000000005';
+    public static final ID COMPLETED_JOB_ID             = '707f40000000006';
+    public static final ID COMPLETED_WITH_ERRORS_JOB_ID = '707f40000000007';
 
     public static final Set<ID> MOCK_JOB_IDS = new Set<ID>{
-        PASS_JOB_ID, FAIL_JOB_ID
+        QUEUED_JOB_ID,
+        PREPARING_JOB_ID,
+        PROCESSING_JOB_ID,
+        ABORTED_JOB_ID,
+        FAILED_JOB_ID,
+        COMPLETED_JOB_ID,
+        COMPLETED_WITH_ERRORS_JOB_ID
     };
 
     public static AsyncApexJob getJobById( ID jobId ) {
 
         AsyncApexJob job;
 
-        if ( jobId == PASS_JOB_ID ) {
-
-            // this object has non-writable fields so we use the json serialization trick to populate a mock record
-            job = (AsyncApexJob) JSON.deserialize( JSON.serialize( new Map<String, Object>{
-                'Id' => jobId,
-                'ExtendedStatus' => 'Test Job Success',
-                'TotalJobItems' => 1,
-                'TotalJobItems' => 1,
-                'NumberOfErrors' => 0,
-                'CreatedDate' => DateTime.now(),
-                'CompletedDate' => DateTime.now()
-            }), AsyncApexJob.class );
-
-        } else if ( jobId == FAIL_JOB_ID ) {
-
-            // this object has non-writable fields so we use the json serialization trick to populate a mock record
-            job = (AsyncApexJob) JSON.deserialize( JSON.serialize( new Map<String, Object>{
-                'Id' => jobId,
-                'ExtendedStatus' => 'Test Job Failure',
-                'TotalJobItems' => 1,
-                'JobItemsProcessed' => 1,
-                'NumberOfErrors' => 1,
-                'CreatedDate' => DateTime.now(),
-                'CompletedDate' => DateTime.now()
-            }), AsyncApexJob.class );
-
+        if ( jobId == QUEUED_JOB_ID ) {
+            job = mockJob( jobId, 'Queued', null, null, null, null );
+        } else if ( jobId == PREPARING_JOB_ID ) {
+            job = mockJob( jobId, 'Preparing', null, null, null, null );
+        } else if ( jobId == PROCESSING_JOB_ID ) {
+            job = mockJob( jobId, 'Processing', null, 2, 0, 0 );
+        } else if ( jobId == ABORTED_JOB_ID ) {
+            job = mockJob( jobId, 'Aborted', null, 2, 1, 0 );
+        } else if ( jobId == FAILED_JOB_ID ) {
+            job = mockJob( jobId, 'Failed', 'Test Job Failed', 2, 0, 2 );
+        } else if ( jobId == COMPLETED_JOB_ID ) {
+            job = mockJob( jobId, 'Completed', null, 2, 2, 0 );
+        } else if ( jobId == COMPLETED_WITH_ERRORS_JOB_ID ) {
+            job = mockJob( jobId, 'Completed', 'Test Job Completed with Errors', 2, 0, 2 );
         }
 
         return job;
+    }
+
+    private static AsyncApexJob mockJob( ID jobId, String status, String extendedStatus, Integer totalJobItems, Integer jobItemsProcessed, Integer numberOfErrors ) {
+        // this object has non-writable fields so we use the json serialization trick to populate a mock record
+        return (AsyncApexJob) JSON.deserialize( JSON.serialize( new Map<String, Object>{
+            'Id' => jobId,
+            'Status' => status,
+            'ExtendedStatus' => extendedStatus,
+            'TotalJobItems' => totalJobItems,
+            'JobItemsProcessed' => jobItemsProcessed,
+            'NumberOfErrors' => numberOfErrors,
+            'CreatedDate' => DateTime.now(),
+            'CompletedDate' => DateTime.now()
+        }), AsyncApexJob.class );
     }
 
 }

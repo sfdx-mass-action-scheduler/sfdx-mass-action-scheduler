@@ -251,16 +251,33 @@ public inherited sharing class MA_MassActionBatchUtils {
      */
     public static Map<ID, AsyncApexJob> getJobsByJobIdMap( Set<ID> jobIds ) {
 
-        return new Map<ID, AsyncApexJob>([
-            SELECT
-                Id, ParentJobId, Status, ExtendedStatus,
-                TotalJobItems, JobItemsProcessed, NumberOfErrors,
-                CreatedDate, CompletedDate
-            FROM
-                AsyncApexJob
-            WHERE
-                Id IN :jobIds
-        ]);
+        Map<ID, AsyncApexJob> jobsMap = new Map<ID, AsyncApexJob>();
+
+        if ( Test.isRunningTest() ) {
+            for ( ID jobId : jobIds ) {
+                AsyncApexJob job = getJobById( jobId );
+                if ( job != null ) {
+                    jobsMap.put( job.Id, job );
+                }
+            }
+        }
+
+        // acrobatics for test coverage and the fact that
+        // AsyncApexJob records can't truly be mocked
+        if ( jobsMap.isEmpty() && !MA_AsyncApexJobMock.MOCK_JOB_IDS.containsAll( jobIds ) ) {
+            jobsMap = new Map<ID, AsyncApexJob>([
+                SELECT
+                    Id, ParentJobId, Status, ExtendedStatus,
+                    TotalJobItems, JobItemsProcessed, NumberOfErrors,
+                    CreatedDate, CompletedDate
+                FROM
+                    AsyncApexJob
+                WHERE
+                    Id IN :jobIds
+            ]);
+        }
+
+        return jobsMap;
     }
 
     /**
