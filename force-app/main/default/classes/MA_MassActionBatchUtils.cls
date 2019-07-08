@@ -55,6 +55,7 @@ public inherited sharing class MA_MassActionBatchUtils {
                 Mass_Action_Configuration__c = configId,
                 Job_ID__c = jobId15,
                 Submitted_Date__c = DateTime.now(),
+                Timestamp__c = String.valueOf( DateTime.now().getTime() ),
                 Message__c = 'Batch job enqueued',
                 Message_Type__c = 'Informational'
             );
@@ -135,7 +136,7 @@ public inherited sharing class MA_MassActionBatchUtils {
             new MA_BatchApexStatusEvent__e(
                 Job_ID__c = jobId,
                 Phase__c = 'START',
-                Message_Type__c = 'Success',
+                Message_Type__c = 'Informational',
                 Message__c = 'Started',
                 Timestamp__c = String.valueOf( DateTime.now().getTime() )
             )
@@ -178,7 +179,7 @@ public inherited sharing class MA_MassActionBatchUtils {
             new MA_BatchApexStatusEvent__e(
                 Job_ID__c = jobId,
                 Phase__c = 'FINISH',
-                Message_Type__c = 'Success',
+                Message_Type__c = 'Informational',
                 Message__c = 'Finished',
                 Timestamp__c = String.valueOf( DateTime.now().getTime() )
             )
@@ -190,7 +191,12 @@ public inherited sharing class MA_MassActionBatchUtils {
 
     // ----------------------------------------------------
 
-    // map { jobId => job }
+    /**
+     * Extracts the Async Apex Job ID from the list of events then
+     * returns a map of job id to job record.
+     *
+     * Useful in platform event triggers to get a map of related jobs.
+     */
     public static Map<ID, AsyncApexJob> getJobsByJobIdMap( List<MA_BatchApexStatusEvent__e> events ) {
 
         Set<ID> jobIds = new Set<ID>();
@@ -204,7 +210,12 @@ public inherited sharing class MA_MassActionBatchUtils {
         return getJobsByJobIdMap( jobIds );
     }
 
-    // map { jobId => job }
+    /**
+     * Extracts the Async Apex Job ID from the list of events then
+     * returns a map of job id to job record.
+     *
+     * Useful in platform event triggers to get a map of related jobs.
+     */
     public static Map<ID, AsyncApexJob> getJobsByJobIdMap( List<BatchApexErrorEvent> events ) {
 
         Set<ID> jobIds = new Set<ID>();
@@ -218,11 +229,18 @@ public inherited sharing class MA_MassActionBatchUtils {
         return getJobsByJobIdMap( jobIds );
     }
 
+    /**
+     * Returns a map of AsyncApexJob records.
+     *
+     * Useful in platform event triggers to get a map of related jobs.
+     */
     public static Map<ID, AsyncApexJob> getJobsByJobIdMap( Set<ID> jobIds ) {
 
         return new Map<ID, AsyncApexJob>([
             SELECT
-                Id, ParentJobId, Status, ExtendedStatus, TotalJobItems, JobItemsProcessed, NumberOfErrors, CreatedDate
+                Id, ParentJobId, Status, ExtendedStatus,
+                TotalJobItems, JobItemsProcessed, NumberOfErrors,
+                CreatedDate, CompletedDate
             FROM
                 AsyncApexJob
             WHERE
@@ -230,7 +248,14 @@ public inherited sharing class MA_MassActionBatchUtils {
         ]);
     }
 
-    // map { jobId => log }
+    /**
+     * Finds the parent log records associated with each async apex job.
+     * Returns a map of job id to parent log record.
+     *
+     * Useful in platform event triggers to identify the parent log
+     * for the job the event is for so can know to update the log
+     * or for which log to insert child logs.
+     */
     public static Map<ID, Mass_Action_Log__c> getParentLogsByJobIdMap( List<AsyncApexJob> jobs ) {
 
         // It's possible that the batch error event's job id is
@@ -260,6 +285,9 @@ public inherited sharing class MA_MassActionBatchUtils {
         return jobIdToParentLogMap;
     }
 
+    /**
+     * Utility function to get apex job details.
+     */
     public static AsyncApexJob getJobById( ID jobId ) {
 
         AsyncApexJob job;
@@ -294,9 +322,22 @@ public inherited sharing class MA_MassActionBatchUtils {
         return job;
     }
 
+    /**
+     * Convenience function to publish events and debug log details about them
+     * and ensure the long text field values are abbreviated within max length allowed.
+     */
     public static List<Database.SaveResult> publish( List<MA_BatchApexStatusEvent__e> events ) {
 
         System.debug( 'MA_MassActionBatchUtils.publish' );
+
+        // Ensure text fields are within field length limits.
+        // Manually need to do this since event publishing doesn't
+        // accept a DMLOptions argument to enable field truncation.
+        for ( MA_BatchApexStatusEvent__e evt : events ) {
+            evt.Message__c = MA_StringUtils.abbreviateWithinFieldLength( evt.Message__c, MA_BatchApexStatusEvent__e.Message__c );
+            evt.Long_Message__c = MA_StringUtils.abbreviateWithinFieldLength( evt.Long_Message__c, MA_BatchApexStatusEvent__e.Long_Message__c );
+            evt.Job_Scope__c = MA_StringUtils.abbreviateWithinFieldLength( evt.Job_Scope__c, MA_BatchApexStatusEvent__e.Job_Scope__c );
+        }
 
         List<Database.SaveResult> results = EventBus.publish( events );
 
@@ -305,10 +346,12 @@ public inherited sharing class MA_MassActionBatchUtils {
             Database.SaveResult result = results[i];
             MA_BatchApexStatusEvent__e evt = events[i];
 
-            System.debug( 'MA_MassActionBatchUtils.publish: event: ' + JSON.serializePretty( evt ) );
+            System.debug( 'MA_MassActionBatchUtils.publish: operationId=' + EventBus.getOperationId( result ) + ', event: ' + JSON.serializePretty( evt ) );
 
-            for ( Database.Error err : result.getErrors() ) {
-                System.debug( LoggingLevel.ERROR, 'MA_MassActionBatchUtils.publish: error: ' + JSON.serializePretty( err ) );
+            if ( !result.isSuccess() ) {
+                for ( Database.Error err : result.getErrors() ) {
+                    System.debug( LoggingLevel.ERROR, 'MA_MassActionBatchUtils.publish: error: ' + JSON.serializePretty( err ) );
+                }
             }
 
         }

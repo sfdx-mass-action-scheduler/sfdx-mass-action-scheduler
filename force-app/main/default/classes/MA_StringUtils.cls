@@ -14,6 +14,11 @@ public inherited sharing class MA_StringUtils {
         return ( String.isNotBlank( str ) ? str : defaultStr );
     }
 
+    /**
+     * Returns a random string of uppercase letters with the given length.
+     * Originally designed for auto-generating unique names for configuration
+     * records when subscribers upgraded to the version that introduced the unique name field.
+     */
     public static String getRandomLetters( Integer length ) {
 
         final String[] LETTERS = 'A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z'.split(',');
@@ -26,6 +31,24 @@ public inherited sharing class MA_StringUtils {
         }
 
         return text;
+    }
+
+    /**
+     * Returns an abbreviated string value no longer than max allowable length for the field.
+     * If string value is empty or null then returns an empty string.
+     * @see String.abbreviate
+     */
+    public static String abbreviateWithinFieldLength( String value, SObjectField field ) {
+        return abbreviate( value, field.getDescribe().getLength() );
+    }
+
+    /**
+     * Returns an abbreviated string value no longer than `maxWidth`.
+     * If string value is empty or null then returns empty string.
+     * @see String.abbreviate
+     */
+    public static String abbreviate( String value, Integer maxWidth ) {
+        return ( String.isBlank( value ) ? '' : value.abbreviate( maxWidth ) );
     }
 
 }
