@@ -5,7 +5,7 @@
  * License: BSD 3-Clause License
  */
 @IsTest
-private class MA_MassActionLogTriggerHandlerTest {
+private class MA_BatchApexStatusEventTriggerTest {
 
     @IsTest
     static void todo() {
