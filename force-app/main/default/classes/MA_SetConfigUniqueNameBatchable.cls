@@ -108,7 +108,6 @@ public without sharing class MA_SetConfigUniqueNameBatchable implements Database
 
         String uniqueName = name;
 
-
         if ( uniqueName != null ) {
 
             // trim whitespace

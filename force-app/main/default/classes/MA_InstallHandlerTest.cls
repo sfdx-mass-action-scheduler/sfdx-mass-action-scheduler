@@ -7,8 +7,10 @@
 @IsTest
 private class MA_InstallHandlerTest {
 
-    @isTest
+    @IsTest
     static void test_new_install() {
+
+        System.assertEquals( 0, [ SELECT COUNT() FROM AsyncApexJob WHERE JobType = 'BatchApex' ] );
 
         Test.startTest();
 
@@ -16,23 +18,14 @@ private class MA_InstallHandlerTest {
 
         Test.stopTest();
 
+        System.assertEquals( 2, [ SELECT COUNT() FROM AsyncApexJob WHERE JobType = 'BatchApex' ] );
+
     }
 
-    @isTest
+    @IsTest
     static void test_upgrade() {
 
-        List<Mass_Action_Configuration__c> records = new List<Mass_Action_Configuration__c>();
-
-        for ( Integer i = 0; i < 200; i++ ) {
-            records.add( new Mass_Action_Configuration__c(
-                Name = 'duplicate'
-            ));
-        }
-
-        insert records;
-
-        System.assertEquals( records.size(), [ SELECT COUNT() FROM Mass_Action_Configuration__c WHERE Name = 'duplicate' ] );
-        System.assertEquals( records.size(), [ SELECT COUNT() FROM Mass_Action_Configuration__c WHERE DeveloperName__c = null ] );
+        System.assertEquals( 0, [ SELECT COUNT() FROM AsyncApexJob WHERE JobType = 'BatchApex' ] );
 
         Test.startTest();
 
@@ -40,8 +33,7 @@ private class MA_InstallHandlerTest {
 
         Test.stopTest();
 
-        System.assertEquals( 1, [ SELECT COUNT() FROM Mass_Action_Configuration__c WHERE DeveloperName__c = 'duplicate' ] );
-        System.assertEquals( records.size() - 1, [ SELECT COUNT() FROM Mass_Action_Configuration__c WHERE DeveloperName__c LIKE 'duplicate_%' ] );
+        System.assertEquals( 2, [ SELECT COUNT() FROM AsyncApexJob WHERE JobType = 'BatchApex' ] );
 
     }
 

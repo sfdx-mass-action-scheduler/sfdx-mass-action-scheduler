@@ -10,6 +10,8 @@ public without sharing class MA_InstallHandler implements System.InstallHandler 
 
         Database.executeBatch( new MA_SetConfigUniqueNameBatchable() );
 
+        Database.executeBatch( new MA_UpgradeMassActionLogsBatchable() );
+
     }
 
 }
