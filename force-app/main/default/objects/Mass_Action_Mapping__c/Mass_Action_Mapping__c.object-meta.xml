@@ -143,6 +143,7 @@
     <allowInChatterGroups>false</allowInChatterGroups>
     <compactLayoutAssignment>Default_Compact_Layout</compactLayoutAssignment>
     <deploymentStatus>Deployed</deploymentStatus>
+    <deprecated>false</deprecated>
     <description>Defines field mappings between sources and targets.
 https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/</description>
     <enableActivities>false</enableActivities>

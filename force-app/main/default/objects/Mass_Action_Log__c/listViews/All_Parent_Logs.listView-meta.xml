@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>All_Parent_Logs</fullName>
+    <columns>NAME</columns>
+    <columns>Mass_Action_Configuration__c</columns>
+    <columns>Job_ID__c</columns>
+    <columns>Message_Type__c</columns>
+    <columns>Message__c</columns>
+    <columns>Batch_Success_Rate__c</columns>
+    <columns>Total_Batches__c</columns>
+    <columns>Failed_Batches__c</columns>
+    <columns>Processed_Batches__c</columns>
+    <columns>CREATED_DATE</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>RECORDTYPE</field>
+        <operation>equals</operation>
+        <value>Mass_Action_Log__c.Parent_Log</value>
+    </filters>
+    <label>All Parent Logs</label>
+</ListView>

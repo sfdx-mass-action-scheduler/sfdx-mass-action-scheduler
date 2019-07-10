@@ -9,5 +9,5 @@
     <columns>Message__c</columns>
     <columns>CREATED_DATE</columns>
     <filterScope>Everything</filterScope>
-    <label>All</label>
+    <label>All Logs</label>
 </ListView>

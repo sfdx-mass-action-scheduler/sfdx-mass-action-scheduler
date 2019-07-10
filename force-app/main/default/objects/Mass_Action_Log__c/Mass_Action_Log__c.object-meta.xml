@@ -149,6 +149,7 @@
     <allowInChatterGroups>true</allowInChatterGroups>
     <compactLayoutAssignment>Default_Compact_Layout</compactLayoutAssignment>
     <deploymentStatus>Deployed</deploymentStatus>
+    <deprecated>false</deprecated>
     <description>Information about Mass Action batch job executions. You can safely delete these records after their related batch job has finished.
 https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/</description>
     <enableActivities>true</enableActivities>
@@ -170,20 +171,30 @@ https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/</descripti
     <pluralLabel>Mass Action Logs</pluralLabel>
     <recordTypeTrackHistory>false</recordTypeTrackHistory>
     <searchLayouts>
+        <customTabListAdditionalFields>Mass_Action_Configuration__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Job_ID__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Message_Type__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Message__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>RECORDTYPE</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Timestamp__c</customTabListAdditionalFields>
         <lookupDialogsAdditionalFields>Mass_Action_Configuration__c</lookupDialogsAdditionalFields>
         <lookupDialogsAdditionalFields>Job_ID__c</lookupDialogsAdditionalFields>
-        <lookupDialogsAdditionalFields>Submitted_Date__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>Message_Type__c</lookupDialogsAdditionalFields>
         <lookupDialogsAdditionalFields>Message__c</lookupDialogsAdditionalFields>
-        <lookupDialogsAdditionalFields>Total_Batches__c</lookupDialogsAdditionalFields>
-        <lookupDialogsAdditionalFields>Processed_Batches__c</lookupDialogsAdditionalFields>
-        <lookupDialogsAdditionalFields>Failed_Batches__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>RECORDTYPE</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>Timestamp__c</lookupDialogsAdditionalFields>
         <lookupPhoneDialogsAdditionalFields>Mass_Action_Configuration__c</lookupPhoneDialogsAdditionalFields>
         <lookupPhoneDialogsAdditionalFields>Job_ID__c</lookupPhoneDialogsAdditionalFields>
-        <lookupPhoneDialogsAdditionalFields>Submitted_Date__c</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>Message_Type__c</lookupPhoneDialogsAdditionalFields>
         <lookupPhoneDialogsAdditionalFields>Message__c</lookupPhoneDialogsAdditionalFields>
-        <lookupPhoneDialogsAdditionalFields>Total_Batches__c</lookupPhoneDialogsAdditionalFields>
-        <lookupPhoneDialogsAdditionalFields>Processed_Batches__c</lookupPhoneDialogsAdditionalFields>
-        <lookupPhoneDialogsAdditionalFields>Failed_Batches__c</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>RECORDTYPE</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>Timestamp__c</lookupPhoneDialogsAdditionalFields>
+        <searchResultsAdditionalFields>Mass_Action_Configuration__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>Job_ID__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>Message_Type__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>Message__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>RECORDTYPE</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>Timestamp__c</searchResultsAdditionalFields>
     </searchLayouts>
     <sharingModel>ControlledByParent</sharingModel>
     <visibility>Public</visibility>
