@@ -314,7 +314,7 @@ public inherited sharing class MA_MassActionUtils {
         // `execute( List<Map<String, Object>> sourceRecordsBatch )`
         // and that is the hook to receive the source records for processing.
 
-        String sourceRowMapsJson = JSON.serialize( sourceRowMaps ).escapeEcmaScript();
+        String sourceRowMapsJson = JSON.serialize( sourceRowMaps );
 
         String apexScript = (
             ' void mas_initApexBlock() { ' +
