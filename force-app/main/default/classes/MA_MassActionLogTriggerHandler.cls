@@ -50,7 +50,7 @@ public with sharing class MA_MassActionLogTriggerHandler {
 
     public void handleBeforeDelete( List<Mass_Action_Log__c> oldList, Map<ID, Mass_Action_Log__c> oldMap ) {
 
-        // no logic yet
+        cascadeDeleteChildLogs( oldMap.keySet() );
 
     }
 
@@ -61,6 +61,29 @@ public with sharing class MA_MassActionLogTriggerHandler {
     }
 
     // -------------------------------------------------------
+
+    /**
+     * Designed to be called during `before delete` trigger event.
+     *
+     * If this were called during `after delete` then the parent logs
+     * will have been deleted and the child log's Parent_Log__c field
+     * will have been blanked out and so the query will not find any
+     * child logs to delete.
+     */
+    private static void cascadeDeleteChildLogs( Set<ID> parentLogIds ) {
+        delete [
+            SELECT
+                Id
+            FROM
+                Mass_Action_Log__c
+            WHERE
+                Parent_Log__c IN :parentLogIds
+                AND
+                RecordType.DeveloperName = 'Child_Log'
+            ORDER BY
+                Parent_Log__c
+        ];
+    }
 
     /**
      * Designed to be called during `before insert` and `before update` trigger events.

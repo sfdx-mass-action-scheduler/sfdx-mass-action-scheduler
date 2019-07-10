@@ -76,6 +76,60 @@ private class MA_MassActionLogTriggerHandlerTest {
     }
 
     @IsTest
+    static void test_cascade_delete_child_logs() {
+
+        Map<String,RecordTypeInfo> logRecordTypeInfosMap = Mass_Action_Log__c.SObjectType.getDescribe().getRecordTypeInfosByDeveloperName();
+
+        Mass_Action_Configuration__c config = new Mass_Action_Configuration__c(
+            Name = 'Test Config',
+            DeveloperName__c = 'Test_Config'
+        );
+
+        insert config;
+
+        List<Mass_Action_Log__c> parentLogs = new List<Mass_Action_Log__c>();
+        List<Mass_Action_Log__c> childLogs = new List<Mass_Action_Log__c>();
+
+        for ( Integer i = 0; i < 200; i++ ) {
+            parentLogs.add( new Mass_Action_Log__c(
+                RecordTypeId = logRecordTypeInfosMap.get( 'Parent_Log' ).getRecordTypeId(),
+                Mass_Action_Configuration__c = config.Id,
+                Job_ID__c = ID.valueOf( '707f40000000001' )
+            ));
+        }
+
+        insert parentLogs;
+
+        for ( Mass_Action_Log__c parentLog : parentLogs ) {
+            for ( Integer i = 0; i < 20; i++ ) {
+                childLogs.add( new Mass_Action_Log__c(
+                    Mass_Action_Configuration__c = parentLog.Mass_Action_Configuration__c,
+                    Parent_Log__c = parentLog.Id,
+                    RecordTypeId = logRecordTypeInfosMap.get( 'Child_Log' ).getRecordTypeId()
+                ));
+            }
+        }
+
+        insert childLogs;
+
+        System.assertEquals( parentLogs.size(), [ SELECT COUNT() FROM Mass_Action_Log__c WHERE RecordType.DeveloperName = 'Parent_Log' ] );
+        System.assertEquals( childLogs.size(), [ SELECT COUNT() FROM Mass_Action_Log__c WHERE RecordType.DeveloperName = 'Child_Log' ] );
+
+        Test.startTest();
+
+        // delete only the parent logs
+        // then assert that the child logs
+        // were cascade deleted too
+        delete parentLogs;
+
+        Test.stopTest();
+
+        System.assertEquals( 0, [ SELECT COUNT() FROM Mass_Action_Log__c WHERE RecordType.DeveloperName = 'Parent_Log' ] );
+        System.assertEquals( 0, [ SELECT COUNT() FROM Mass_Action_Log__c WHERE RecordType.DeveloperName = 'Child_Log' ] );
+
+    }
+
+    @IsTest
     static void test_crud() {
 
         Test.startTest();
