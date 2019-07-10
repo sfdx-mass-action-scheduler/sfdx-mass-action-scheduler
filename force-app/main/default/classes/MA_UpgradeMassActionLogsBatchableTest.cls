@@ -10,7 +10,7 @@ private class MA_UpgradeMassActionLogsBatchableTest {
     @IsTest
     static void test_batch_200() {
 
-        AsyncApexJob job1 = MA_AsyncApexJobMock.getJobById( MA_AsyncApexJobMock.COMPLETED_JOB_ID );
+        AsyncApexJob job1 = MA_AsyncApexJobMock.getJobById( MA_AsyncApexJobMock.ABORTED_JOB_ID );
         AsyncApexJob job2 = MA_AsyncApexJobMock.getJobById( MA_AsyncApexJobMock.COMPLETED_WITH_ERRORS_JOB_ID );
 
         Mass_Action_Configuration__c config = new Mass_Action_Configuration__c(
@@ -59,19 +59,19 @@ private class MA_UpgradeMassActionLogsBatchableTest {
         System.assertEquals( 100, [ SELECT COUNT() FROM Mass_Action_Log__c WHERE Parent_Log__c = :parentLog1.Id ] );
         System.assertEquals( 100, [ SELECT COUNT() FROM Mass_Action_Log__c WHERE Parent_Log__c = :parentLog2.Id ] );
 
-        System.assertEquals( 'Success', parentLog1.Message_Type__c );
-        System.assertEquals( 'Batch job completed', parentLog1.Message__c );
+        System.assertEquals( 'Error', parentLog1.Message_Type__c );
+        System.assertEquals( 'Batch job aborted', parentLog1.Message__c );
         System.assertEquals( true, job1.CreatedDate.isSameDay( parentLog1.Submitted_Date__c ) );
         System.assertEquals( job1.TotalJobItems, parentLog1.Total_Batches__c );
         System.assertEquals( job1.JobItemsProcessed, parentLog1.Processed_Batches__c );
-        System.assertEquals( job1.NumberOfErrors, parentLog1.Failed_Batches__c );
+        System.assertEquals( 100, parentLog1.Failed_Batches__c, 'should match number of child logs that were converted' );
 
         System.assertEquals( 'Error', parentLog2.Message_Type__c );
         System.assertEquals( 'Batch job completed with errors', parentLog2.Message__c );
         System.assertEquals( true, job2.CreatedDate.isSameDay( parentLog2.Submitted_Date__c ) );
         System.assertEquals( job2.TotalJobItems, parentLog2.Total_Batches__c );
         System.assertEquals( job2.JobItemsProcessed, parentLog2.Processed_Batches__c );
-        System.assertEquals( job2.NumberOfErrors, parentLog2.Failed_Batches__c );
+        System.assertEquals( 100, parentLog2.Failed_Batches__c, 'should match number of child logs that were converted' );
 
     }
 

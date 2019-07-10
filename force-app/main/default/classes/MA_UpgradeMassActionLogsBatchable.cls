@@ -93,24 +93,20 @@ public without sharing class MA_UpgradeMassActionLogsBatchable implements Databa
                     Job_ID__c = log.Job_ID__c,
                     Message_Type__c = 'Informational',
                     Message__c = 'Batch job information',
-                    Timestamp__c = String.valueOf( log.CreatedDate.getTime() )
+                    Timestamp__c = String.valueOf( log.CreatedDate.getTime() ),
+                    Total_Batches__c = 0,
+                    Processed_Batches__c = 0,
+                    Failed_Batches__c = 0
                 );
 
                 // very old jobs may have been deleted and no longer exist
                 // so if not, just skip this part
                 if ( job != null ) {
 
-                    Boolean jobFailed = ( job.Status == 'Failed' );
-                    Boolean jobHasErrors = ( String.isNotBlank( job.ExtendedStatus ) || job.NumberOfErrors > 0 );
-
-                    String messageType = (
-                        ( job.Status == 'Aborted' || job.Status == 'Failed' || jobHasErrors ) ? 'Error' :
-                        ( job.CompletedDate != null && job.TotalJobItems == job.JobItemsProcessed ) ? 'Success' :
-                        'Informational'
-                    );
+                    String messageType = 'Error';
 
                     String message = 'Batch job ' + (
-                        ( job.Status == 'Completed' && jobHasErrors ) ? 'completed with errors' :
+                        ( job.Status == 'Completed' ) ? 'completed with errors' :
                         String.isBlank( job.Status ) ? 'information' :
                         job.Status.toLowerCase()
                     );
@@ -120,7 +116,9 @@ public without sharing class MA_UpgradeMassActionLogsBatchable implements Databa
                     parentLog.Submitted_Date__c = job.CreatedDate;
                     parentLog.Total_Batches__c = job.TotalJobItems;
                     parentLog.Processed_Batches__c = job.JobItemsProcessed;
-                    parentLog.Failed_Batches__c = job.NumberOfErrors;
+
+                    // See comment further down where we increment failed batches
+                    //parentLog.Failed_Batches__c = job.NumberOfErrors;
 
                 }
 
@@ -165,6 +163,46 @@ public without sharing class MA_UpgradeMassActionLogsBatchable implements Databa
         // update child logs
         update childLogsToUpdate;
 
+        // In prior versions, only batch job errors were
+        // logged, but to do I used try/catch in the start/execute/finish
+        // methods and inserted log records right then.
+        // This let us log the errors, but the batch job considered
+        // all executions were successful -- no number of errors.
+        // For this data migration, assume any log record means an error.
+        // We will set the number of errors equal to number of log records we find.
+        for ( List<AggregateResult> results : [
+            SELECT
+                Mass_Action_Configuration__c configId,
+                Job_ID__c jobId,
+                Parent_Log__c parentLogId,
+                COUNT( Id ) logCount
+            FROM
+                Mass_Action_Log__c
+            WHERE
+                Parent_Log__c IN :parentLogsMap.values()
+            GROUP BY
+                Mass_Action_Configuration__c,
+                Job_ID__c,
+                Parent_Log__c
+        ]) {
+            for ( AggregateResult result : results ) {
+
+                System.debug( result );
+
+                ID configId = (ID) result.get( 'configId' );
+                ID jobId = (ID) result.get( 'jobId' );
+                ID parentLogId = (ID) result.get( 'parentLogId' );
+                Integer logCount = (Integer) result.get( 'logCount' );
+
+                String key = computeKey( configId, jobId );
+                Mass_Action_Log__c parentLog = parentLogsMap.get( key );
+                parentLog.Failed_Batches__c = logCount;
+
+            }
+        }
+
+        update parentLogsMap.values();
+
     }
 
     public void finish( Database.BatchableContext context ) {
@@ -187,7 +225,8 @@ public without sharing class MA_UpgradeMassActionLogsBatchable implements Databa
 
         for ( Mass_Action_Log__c parentLog : [
             SELECT
-                Id, Mass_Action_Configuration__c, Job_ID__c
+                Id, Mass_Action_Configuration__c, Job_ID__c,
+                Total_Batches__c, Processed_Batches__c, Failed_Batches__c
             FROM
                 Mass_Action_Log__c
             WHERE
