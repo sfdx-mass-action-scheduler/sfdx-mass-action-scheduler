@@ -102,15 +102,24 @@
     <members>Mass_Action_Log_Record_Page</members>
   </types>
   <types>
+    <name>Flow</name>
+    <members>MAS_Mass_Action_Configuration</members>
+  </types>
+  <types>
     <name>Layout</name>
     <members>Mass_Action_Configuration__c-Mass Action Configuration Layout</members>
     <members>Mass_Action_Log__c-Mass Action Child Log Layout</members>
     <members>Mass_Action_Log__c-Mass Action Log Layout</members>
+    <members>Mass_Action_Log__c-Mass Action Parent Log Layout</members>
     <members>Mass_Action_Mapping__c-Mass Action Mapping Layout</members>
   </types>
   <types>
     <name>NamedCredential</name>
     <members>Mass_Action_Test_Named_Credential</members>
+  </types>
+  <types>
+    <name>CustomNotificationType</name>
+    <members>MAS_Mass_Action_Configuration</members>
   </types>
   <types>
     <name>CustomObject</name>
@@ -155,6 +164,8 @@
     <members>Mass_Action_Configuration__c.Target_SObject_Type__c</members>
     <members>Mass_Action_Configuration__c.Target_Type__c</members>
     <members>Mass_Action_Job_Change_Event__e.Payload__c</members>
+    <members>Mass_Action_Log__c.Batch_Success_Percentage__c</members>
+    <members>Mass_Action_Log__c.Batch_Success_Rate__c</members>
     <members>Mass_Action_Log__c.Failed_Batches__c</members>
     <members>Mass_Action_Log__c.Job_ID__c</members>
     <members>Mass_Action_Log__c.Job_Scope__c</members>
@@ -177,12 +188,14 @@
     <members>Mass_Action_Configuration__c.Default_Compact_Layout</members>
     <members>Mass_Action_Log__c.Child_Log_Compact_Layout</members>
     <members>Mass_Action_Log__c.Default_Compact_Layout</members>
+    <members>Mass_Action_Log__c.Parent_Log_Compact_Layout</members>
     <members>Mass_Action_Mapping__c.Default_Compact_Layout</members>
   </types>
   <types>
     <name>ListView</name>
     <members>Mass_Action_Configuration__c.All</members>
     <members>Mass_Action_Log__c.All</members>
+    <members>Mass_Action_Log__c.All_Parent_Logs</members>
   </types>
   <types>
     <name>RecordType</name>
