@@ -5,7 +5,7 @@
     <externalId>false</externalId>
     <formula>IMAGE(
   &#39;https://img.shields.io/static/v1.svg?label=&amp;message=&#39; &amp;
-  TEXT( Batch_Success_Percentage__c * 100 )  &amp; &#39;%&#39; &amp;
+  TEXT( ROUND( Batch_Success_Percentage__c * 100, 0 ) )  &amp; &#39;%&#39; &amp;
   &#39;&amp;color=&#39; &amp;
   IF( Batch_Success_Percentage__c &gt;= 0.90, &#39;4CC620&#39;, /* brightgreen */
     IF( Batch_Success_Percentage__c &gt;= 0.80, &#39;4bca81&#39;, /* green */
@@ -14,7 +14,7 @@
       )
     )
   ),
-  TEXT( Batch_Success_Percentage__c * 100 ) &amp; &#39;%&#39;
+  TEXT( ROUND( Batch_Success_Percentage__c * 100, 0 ) ) &amp; &#39;%&#39;
 )</formula>
     <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
     <inlineHelpText>Visualizes the batch success percentage in color.</inlineHelpText>
