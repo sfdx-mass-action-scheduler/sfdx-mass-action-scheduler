@@ -41,6 +41,14 @@
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
+        <apexClass>MA_BatchApexStatusEventTriggerHandler</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>MA_BatchApexStatusEventTriggerTest</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>MA_EditConfigCmpController</apexClass>
         <enabled>true</enabled>
     </classAccesses>
@@ -145,6 +153,14 @@
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
+        <apexClass>MA_MassActionLogTriggerHandler</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>MA_MassActionLogTriggerHandlerTest</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>MA_MassActionSchedulable</apexClass>
         <enabled>true</enabled>
     </classAccesses>
@@ -242,6 +258,14 @@
     </classAccesses>
     <classAccesses>
         <apexClass>MA_StringUtilsTest</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>MA_UpgradeMassActionLogsBatchable</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>MA_UpgradeMassActionLogsBatchableTest</apexClass>
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
