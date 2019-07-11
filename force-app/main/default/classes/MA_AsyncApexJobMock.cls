@@ -27,27 +27,18 @@ public inherited sharing class MA_AsyncApexJobMock {
         COMPLETED_WITH_ERRORS_JOB_ID
     };
 
+    private static final Map<ID, AsyncApexJob> MOCK_JOBS_MAP = new Map<ID, AsyncApexJob>{
+        QUEUED_JOB_ID => mockJob( QUEUED_JOB_ID, 'Queued', null, null, null, null ),
+        PREPARING_JOB_ID => mockJob( PREPARING_JOB_ID, 'Preparing', null, null, null, null ),
+        PROCESSING_JOB_ID => mockJob( PROCESSING_JOB_ID, 'Processing', null, 2, 0, 0 ),
+        ABORTED_JOB_ID => mockJob( ABORTED_JOB_ID, 'Aborted', null, 2, 1, 0 ),
+        FAILED_JOB_ID => mockJob( FAILED_JOB_ID, 'Failed', 'Test Job Failed', 2, 0, 2 ),
+        COMPLETED_JOB_ID => mockJob( COMPLETED_JOB_ID, 'Completed', null, 2, 2, 0 ),
+        COMPLETED_WITH_ERRORS_JOB_ID => mockJob( COMPLETED_WITH_ERRORS_JOB_ID, 'Completed', 'Test Job Completed with Errors', 2, 0, 2 )
+    };
+
     public static AsyncApexJob getJobById( ID jobId ) {
-
-        AsyncApexJob job;
-
-        if ( jobId == QUEUED_JOB_ID ) {
-            job = mockJob( jobId, 'Queued', null, null, null, null );
-        } else if ( jobId == PREPARING_JOB_ID ) {
-            job = mockJob( jobId, 'Preparing', null, null, null, null );
-        } else if ( jobId == PROCESSING_JOB_ID ) {
-            job = mockJob( jobId, 'Processing', null, 2, 0, 0 );
-        } else if ( jobId == ABORTED_JOB_ID ) {
-            job = mockJob( jobId, 'Aborted', null, 2, 1, 0 );
-        } else if ( jobId == FAILED_JOB_ID ) {
-            job = mockJob( jobId, 'Failed', 'Test Job Failed', 2, 0, 2 );
-        } else if ( jobId == COMPLETED_JOB_ID ) {
-            job = mockJob( jobId, 'Completed', null, 2, 2, 0 );
-        } else if ( jobId == COMPLETED_WITH_ERRORS_JOB_ID ) {
-            job = mockJob( jobId, 'Completed', 'Test Job Completed with Errors', 2, 0, 2 );
-        }
-
-        return job;
+        return MOCK_JOBS_MAP.get( jobId );
     }
 
     private static AsyncApexJob mockJob( ID jobId, String status, String extendedStatus, Integer totalJobItems, Integer jobItemsProcessed, Integer numberOfErrors ) {
