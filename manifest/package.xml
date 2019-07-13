@@ -12,6 +12,7 @@
     <members>MA_CheckForPackageUpdatesCmp</members>
     <members>MA_DevelopedByCmp</members>
     <members>MA_EditConfigCmp</members>
+    <members>MA_FlowStagePathCmp</members>
     <members>MA_RunConfigCmp</members>
     <members>MA_WizardCoachingCmp</members>
     <members>defaultTokens</members>
@@ -104,6 +105,7 @@
   <types>
     <name>Flow</name>
     <members>MAS_Mass_Action_Configuration</members>
+    <members>MAS_Run_Mass_Action_Flow</members>
   </types>
   <types>
     <name>Layout</name>
