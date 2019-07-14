@@ -5,7 +5,7 @@
         <label>Run Mass Action</label>
         <locationX>709</locationX>
         <locationY>213</locationY>
-        <actionName>dca_mass_action__MA_RunConfigInvocable</actionName>
+        <actionName>MA_RunConfigInvocable</actionName>
         <actionType>apex</actionType>
         <connector>
             <targetReference>Set_Stage_3</targetReference>
@@ -74,16 +74,16 @@
         <dataType>String</dataType>
         <displayField>Name</displayField>
         <filters>
-            <field>dca_mass_action__Active__c</field>
+            <field>Active__c</field>
             <operator>EqualTo</operator>
             <value>
                 <booleanValue>true</booleanValue>
             </value>
         </filters>
-        <object>dca_mass_action__Mass_Action_Configuration__c</object>
+        <object>Mass_Action_Configuration__c</object>
         <sortField>Name</sortField>
         <sortOrder>Asc</sortOrder>
-        <valueField>dca_mass_action__DeveloperName__c</valueField>
+        <valueField>DeveloperName__c</valueField>
     </dynamicChoiceSets>
     <formulas>
         <name>varJobId15</name>
