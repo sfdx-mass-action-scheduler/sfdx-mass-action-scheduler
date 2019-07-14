@@ -181,6 +181,14 @@
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
+        <apexClass>MA_MetadataDeployCallback</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>MA_MetadataDeployCallbackTest</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>MA_ReportService</apexClass>
         <enabled>true</enabled>
     </classAccesses>
@@ -266,6 +274,14 @@
     </classAccesses>
     <classAccesses>
         <apexClass>MA_UpgradeMassActionLogsBatchableTest</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>MA_UpgradePageLayoutsService</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>MA_UpgradePageLayoutsServiceTest</apexClass>
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>

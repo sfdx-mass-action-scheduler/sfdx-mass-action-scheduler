@@ -64,7 +64,7 @@
                 <field>Last_Run_Completed_Date__c</field>
             </layoutItems>
             <layoutItems>
-                <behavior>Edit</behavior>
+                <behavior>Readonly</behavior>
                 <field>Last_Run_Completed_With_Errors__c</field>
             </layoutItems>
         </layoutColumns>
@@ -224,7 +224,7 @@
             <sortOrder>2</sortOrder>
         </platformActionListItems>
         <platformActionListItems>
-            <actionName>Mass_Action_Configuration__c.Run</actionName>
+            <actionName>Mass_Action_Configuration__c.Run_via_Flow</actionName>
             <actionType>QuickAction</actionType>
             <sortOrder>3</sortOrder>
         </platformActionListItems>

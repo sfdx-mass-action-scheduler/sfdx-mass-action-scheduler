@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <QuickAction xmlns="http://soap.sforce.com/2006/04/metadata">
-    <description>Runs the Mass Action now.</description>
+    <description>(deprecated) Runs the Mass Action now.</description>
     <height>250</height>
     <label>Run</label>
     <lightningComponent>MA_RunConfigCmp</lightningComponent>
