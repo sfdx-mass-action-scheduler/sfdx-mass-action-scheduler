@@ -67,6 +67,8 @@
     <members>MA_MassActionScheduleUtils</members>
     <members>MA_MassActionScheduleUtilsTest</members>
     <members>MA_MassActionUtils</members>
+    <members>MA_MetadataDeployCallback</members>
+    <members>MA_MetadataDeployCallbackTest</members>
     <members>MA_ReportService</members>
     <members>MA_ReportServiceTest</members>
     <members>MA_ReportSourceBatchable</members>
@@ -89,6 +91,8 @@
     <members>MA_StringUtilsTest</members>
     <members>MA_UpgradeMassActionLogsBatchable</members>
     <members>MA_UpgradeMassActionLogsBatchableTest</members>
+    <members>MA_UpgradePageLayoutsService</members>
+    <members>MA_UpgradePageLayoutsServiceTest</members>
     <members>MA_XMLUtils</members>
     <members>MA_XMLUtilsTest</members>
   </types>
