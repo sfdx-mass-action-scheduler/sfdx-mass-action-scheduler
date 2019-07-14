@@ -21,12 +21,33 @@
  */
 public without sharing class MA_UpgradePageLayoutsService {
 
-    public void upgrade() {
+    /**
+     *
+     *
+     * @return the deployment id
+     */
+    public ID upgrade() {
 
-        System.debug( 'MA_UpgradeMassActionConfigPageLayout: upgrade page layouts' );
+        System.debug( 'MA_UpgradePageLayoutsService.upgrade' );
+
+        Metadata.DeployContainer container = buildMetadataDeployContainer();
+        Metadata.DeployCallback callback = new MA_MetadataDeployCallback();
+
+        ID deploymentId = ( Test.isRunningTest() ? '0Af00000000000TEST' : Metadata.Operations.enqueueDeployment( container, callback ) );
+
+        System.debug( 'MA_UpgradePageLayoutsService.upgrade: deploymentId=' + deploymentId );
+
+        return deploymentId;
+    }
+
+    /**
+     *
+     *
+     */
+    @TestVisible
+    private Metadata.DeployContainer buildMetadataDeployContainer() {
 
         Metadata.DeployContainer container = new Metadata.DeployContainer();
-        Metadata.DeployCallback callback = new MA_MetadataDeployCallback();
 
         List<Metadata.Metadata> metadataToDeploy = new List<Metadata.Metadata>();
         metadataToDeploy.addAll( update_MassActionConfiguration_PageLayouts() );
@@ -35,10 +56,7 @@ public without sharing class MA_UpgradePageLayoutsService {
             container.addMetadata( md );
         }
 
-        System.debug( 'MA_UpgradeMassActionConfigPageLayout: enqueue deployment' );
-        ID deploymentId = Metadata.Operations.enqueueDeployment( container, callback );
-        System.debug( 'deploymentId=' + deploymentId );
-
+        return container;
     }
 
     // ------------------------------------------------------------------------
@@ -57,7 +75,7 @@ public without sharing class MA_UpgradePageLayoutsService {
             }
         );
 
-        System.debug( 'MA_UpgradeMassActionConfigPageLayout.update_MassActionConfiguration_PageLayouts: current page layouts:' );
+        System.debug( 'MA_UpgradePageLayoutsService.update_MassActionConfiguration_PageLayouts: current page layouts:' );
         System.debug( JSON.serializePretty( layouts ) );
 
         Metadata.Layout layout = (Metadata.Layout) layouts[0];
@@ -65,7 +83,7 @@ public without sharing class MA_UpgradePageLayoutsService {
         update_MassActionConfigurationLayout_PlatformActionItems( layout );
         update_MassActionConfigurationLayout_RelatedLists( layout );
 
-        System.debug( 'MA_UpgradeMassActionConfigPageLayout.update_MassActionConfiguration_PageLayouts: updated page layouts:' );
+        System.debug( 'MA_UpgradePageLayoutsService.update_MassActionConfiguration_PageLayouts: updated page layouts:' );
         System.debug( JSON.serializePretty( layouts ) );
 
         return layouts;
@@ -92,57 +110,47 @@ public without sharing class MA_UpgradePageLayoutsService {
         String runActionItemRegex = '(?i)(dca_mass_action__)?Mass_Action_Configuration__c\\.(dca_mass_action__)?(Run|Run_via_Flow)';
         String quickEditActionItemRegex = '(?i)(dca_mass_action__)?Mass_Action_Configuration__c\\.(dca_mass_action__)?Quick_Edit';
 
-        Metadata.PlatformActionList platformActionList = layout.platformActionList;
+        List<Metadata.PlatformActionListItem> platformActionListItemsToKeep = new List<Metadata.PlatformActionListItem>();
 
-        Metadata.PlatformActionListItem runActionItem;
-        Metadata.PlatformActionListItem quickEditActionItem;
+        for ( Metadata.PlatformActionListItem platformActionListItem : layout.platformActionList.platformActionListItems ) {
 
-        // Check if the Run and Quick Edit action items are already on the page layout
-        for ( Metadata.PlatformActionListItem platformActionListItem : platformActionList.platformActionListItems ) {
-            if ( MA_StringUtils.matches( platformActionListItem.actionName, runActionItemRegex ) ) {
-                runActionItem = platformActionListItem;
+            Boolean matchesRunActionItem = MA_StringUtils.matches( platformActionListItem.actionName, runActionItemRegex );
+            Boolean matchesQuickEditActionItem = MA_StringUtils.matches( platformActionListItem.actionName, quickEditActionItemRegex );
+
+            if ( !matchesRunActionItem && !matchesQuickEditActionItem ) {
+                platformActionListItemsToKeep.add( platformActionListItem );
             }
-            else if ( MA_StringUtils.matches( platformActionListItem.actionName, quickEditActionItemRegex ) ) {
-                quickEditActionItem = platformActionListItem;
-            }
+
         }
 
         // -----------------------------------------------------------
 
-        // If the run action is not in the layout, add it
-        if ( runActionItem == null ) {
-            runActionItem = new Metadata.PlatformActionListItem();
-            runActionItem.actionType = Metadata.PlatformActionTypeEnum.QuickAction;
-            platformActionList.platformActionListItems.add( runActionItem );
-        }
-
-        // Ensure the run action has the correct fully qualified name
+        Metadata.PlatformActionListItem runActionItem = new Metadata.PlatformActionListItem();
+        runActionItem.actionType = Metadata.PlatformActionTypeEnum.QuickAction;
         runActionItem.actionName = String.format(
             '{0}Mass_Action_Configuration__c.{0}Run_via_Flow',
             new Object[] { namespace }
         );
 
+        platformActionListItemsToKeep.add( runActionItem );
+
         // -----------------------------------------------------------
 
-        // If the quick edit action is not in the layout, add it
-        if ( quickEditActionItem == null ) {
-            quickEditActionItem = new Metadata.PlatformActionListItem();
-            quickEditActionItem.actionType = Metadata.PlatformActionTypeEnum.QuickAction;
-            platformActionList.platformActionListItems.add( quickEditActionItem );
-        }
-
-        // Ensure the quick edit action has the correct fully qualified name
+        Metadata.PlatformActionListItem quickEditActionItem = new Metadata.PlatformActionListItem();
+        quickEditActionItem.actionType = Metadata.PlatformActionTypeEnum.QuickAction;
         quickEditActionItem.actionName = String.format(
             '{0}Mass_Action_Configuration__c.{0}Quick_Edit',
             new Object[] { namespace }
         );
+
+        platformActionListItemsToKeep.add( quickEditActionItem );
 
         // -----------------------------------------------------------
 
         // Sort the action items.
         // Our Run and Quick Edit actions will be the first two.
         Integer sortIndex = 2;
-        for ( Metadata.PlatformActionListItem platformActionListItem : platformActionList.platformActionListItems ) {
+        for ( Metadata.PlatformActionListItem platformActionListItem : platformActionListItemsToKeep ) {
             if ( platformActionListItem == runActionItem ) {
                 platformActionListItem.sortOrder = 0;
             } else if ( platformActionListItem == quickEditActionItem ) {
@@ -151,6 +159,10 @@ public without sharing class MA_UpgradePageLayoutsService {
                 platformActionListItem.sortOrder = sortIndex++;
             }
         }
+
+        // -----------------------------------------------------------
+
+        layout.platformActionList.platformActionListItems = platformActionListItemsToKeep;
 
     }
 
@@ -163,32 +175,30 @@ public without sharing class MA_UpgradePageLayoutsService {
         // Pattern to identify related lists part of the MAS codebase.
         // Note the `?` to indicate the namespace may or may not exist.
         // This upgrade code handles that by ensuring the appropriate names are assigned.
-        String fieldMappingRegex = '(?i)(dca_mass_action__)?Mass_Action_Mapping__c\\.(dca_mass_action__)?Mass_Action_Configuration__c';
-        String parentLogsRegex = '(?i)(dca_mass_action__)?Mass_Action_Log__c\\.(dca_mass_action__)?Parent_Log_Configuration__c';
-        String allLogsRegex = '(?i)(dca_mass_action__)?Mass_Action_Log__c\\.(dca_mass_action__)?Mass_Action_Configuration__c';
+        String fieldMappingsListRegex = '(?i)(dca_mass_action__)?Mass_Action_Mapping__c\\.(dca_mass_action__)?Mass_Action_Configuration__c';
+        String parentLogsListRegex = '(?i)(dca_mass_action__)?Mass_Action_Log__c\\.(dca_mass_action__)?Parent_Log_Configuration__c';
+        String allLogsListRegex = '(?i)(dca_mass_action__)?Mass_Action_Log__c\\.(dca_mass_action__)?Mass_Action_Configuration__c';
 
-        List<Metadata.RelatedListItem> relatedListItems = layout.relatedLists;
+        // existing related lists to keep on page layout
+        List<Metadata.RelatedListItem> relatedListItemsToKeep = new List<Metadata.RelatedListItem>();
 
-        Metadata.RelatedListItem fieldMappingRelatedListItem;
-        Metadata.RelatedListItem parentLogsRelatedListItem;
+        // exclude any of our related lists while preserving ones the subscriber org has added
+        for ( Metadata.RelatedListItem relatedListItem : layout.relatedLists ) {
 
-        for ( Metadata.RelatedListItem relatedListItem : relatedListItems ) {
-            if ( MA_StringUtils.matches( relatedListItem.relatedList, fieldMappingRegex ) ) {
-                fieldMappingRelatedListItem = relatedListItem;
-            } else if ( MA_StringUtils.matches( relatedListItem.relatedList, parentLogsRegex ) ) {
-                parentLogsRelatedListItem = relatedListItem;
+            Boolean matchesFieldMappingList = MA_StringUtils.matches( relatedListItem.relatedList, fieldMappingsListRegex );
+            Boolean matchesParentLogsList = MA_StringUtils.matches( relatedListItem.relatedList, parentLogsListRegex );
+            Boolean matchesAllLogsList = MA_StringUtils.matches( relatedListItem.relatedList, allLogsListRegex );
+
+            if ( !matchesFieldMappingList && !matchesParentLogsList && !matchesAllLogsList ) {
+                relatedListItemsToKeep.add( relatedListItem );
             }
+
         }
 
         // -----------------------------------------------------------
 
-        // If the related list is not in the layout, add it
-        if ( fieldMappingRelatedListItem == null ) {
-            fieldMappingRelatedListItem = new Metadata.RelatedListItem();
-            relatedListItems.add( fieldMappingRelatedListItem );
-        }
+        Metadata.RelatedListItem fieldMappingRelatedListItem = new Metadata.RelatedListItem();
 
-        // Ensure the related list has the correct fully qualified name
         fieldMappingRelatedListItem.relatedList = String.format(
             '{0}Mass_Action_Mapping__c.{0}Mass_Action_Configuration__c',
             new Object[] { namespace }
@@ -214,12 +224,8 @@ public without sharing class MA_UpgradePageLayoutsService {
 
         // -----------------------------------------------------------
 
-        if ( parentLogsRelatedListItem == null ) {
-            parentLogsRelatedListItem = new Metadata.RelatedListItem();
-            relatedListItems.add( parentLogsRelatedListItem );
-        }
+        Metadata.RelatedListItem parentLogsRelatedListItem = new Metadata.RelatedListItem();
 
-        // Ensure the related list has the correct fully qualified name
         parentLogsRelatedListItem.relatedList = String.format(
             '{0}Mass_Action_Log__c.{0}Parent_Log_Configuration__c',
             new Object[] { namespace }
@@ -265,15 +271,13 @@ public without sharing class MA_UpgradePageLayoutsService {
 
         // -----------------------------------------------------------
 
-        // Replace the related lists on the page layout
-        List<Metadata.RelatedListItem> relatedListItemsToKeep = new List<Metadata.RelatedListItem>();
-        for ( Metadata.RelatedListItem relatedListItem : relatedListItems ) {
-            Boolean matchesAllLogsList = MA_StringUtils.matches( relatedListItem.relatedList, allLogsRegex );
-            if ( !matchesAllLogsList ) {
-                relatedListItemsToKeep.add( relatedListItem );
-            }
-        }
-        layout.relatedLists = relatedListItemsToKeep;
+        // add related lists in the order we want them
+        List<Metadata.RelatedListItem> relatedListItemsToAdd = new List<Metadata.RelatedListItem>();
+        relatedListItemsToAdd.add( fieldMappingRelatedListItem );
+        relatedListItemsToAdd.add( parentLogsRelatedListItem );
+        relatedListItemsToAdd.addAll( relatedListItemsToKeep );
+
+        layout.relatedLists = relatedListItemsToAdd;
 
     }
 

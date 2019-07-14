@@ -7,10 +7,110 @@
 @IsTest
 private class MA_UpgradePageLayoutsServiceTest {
 
+    // https://trailhead.salesforce.com/content/learn/modules/apex_metadata_api/apex_metadata_api_testing
+
     @IsTest
-    static void todo() {
-        // https://trailhead.salesforce.com/content/learn/modules/apex_metadata_api/apex_metadata_api_testing
-        System.assert( false, 'todo' );
+    static void test_upgrade() {
+
+        Test.startTest();
+
+        MA_UpgradePageLayoutsService service = new MA_UpgradePageLayoutsService();
+
+        ID deploymentId = service.upgrade();
+
+        Test.stopTest();
+
+        // can't actually do a deployment in a test,
+        // so assert we got back our mock deploy id
+        System.assertEquals( '0Af00000000000TEST', deploymentId );
+
+    }
+
+    @IsTest
+    static void test_buildMetadataDeployContainer() {
+
+        String namespace = MA_MassActionUtils.NAMESPACE_API;
+
+        String MassActionConfigurationPageLayoutName = String.format(
+            '{0}Mass_Action_Configuration__c-{0}Mass Action Configuration Layout',
+            new Object[] { namespace }
+        );
+
+        Test.startTest();
+
+        MA_UpgradePageLayoutsService service = new MA_UpgradePageLayoutsService();
+
+        Metadata.DeployContainer container = service.buildMetadataDeployContainer();
+
+        Test.stopTest();
+
+        System.debug( JSON.serializePretty( container ) );
+
+        Boolean foundMassActionConfigurationPageLayout = false;
+
+        for ( Metadata.Metadata md : container.getMetadata() ) {
+            if ( md.fullName == MassActionConfigurationPageLayoutName ) {
+                foundMassActionConfigurationPageLayout = true;
+                validateMassActionConfigurationPageLayout( (Metadata.Layout) md );
+            }
+        }
+
+        System.assertEquals( true, foundMassActionConfigurationPageLayout, 'did not find Mass Action Configuration page layout' );
+
+    }
+
+    private static void validateMassActionConfigurationPageLayout( Metadata.Layout layout ) {
+
+        String namespace = MA_MassActionUtils.NAMESPACE_API;
+
+        String runActionListItemName = String.format( '{0}Mass_Action_Configuration__c.{0}Run', new Object[] { namespace } );
+        String runFlowActionListItemName = String.format( '{0}Mass_Action_Configuration__c.{0}Run_via_Flow', new Object[] { namespace } );
+        String quickEditActionListItemName = String.format( '{0}Mass_Action_Configuration__c.{0}Quick_Edit', new Object[] { namespace } );
+
+        Boolean foundRunFlowActionListItem = false;
+        Boolean foundQuickEditActionListItem = false;
+
+        System.assert( layout.platformActionList.platformActionListItems.size() >= 2, 'missing action list items' );
+
+        for ( Metadata.PlatformActionListItem action : layout.platformActionList.platformActionListItems ) {
+            if ( action.actionName == runActionListItemName ) {
+                System.assert( false, 'found ' + action.actionName + ' action list item, but it should have been removed' );
+            } else if ( action.actionName == runFlowActionListItemName ) {
+                foundRunFlowActionListItem = true;
+                System.assertEquals( 0, action.sortOrder );
+            } else if ( action.actionName == quickEditActionListItemName ) {
+                foundQuickEditActionListItem = true;
+                System.assertEquals( 1, action.sortOrder );
+            }
+        }
+
+        System.assertEquals( true, foundRunFlowActionListItem, 'did not find Run Flow action list item' );
+        System.assertEquals( true, foundQuickEditActionListItem, 'did not find Quick Edit action list item' );
+
+        // -----------------------------------------------------------
+
+        String fieldMappingsListName = String.format( '{0}Mass_Action_Mapping__c.{0}Mass_Action_Configuration__c', new Object[] { namespace } );
+        String parentLogsListName = String.format( '{0}Mass_Action_Log__c.{0}Parent_Log_Configuration__c', new Object[] { namespace } );
+        String allLogsListName = String.format( '{0}Mass_Action_Log__c.{0}Mass_Action_Configuration__c', new Object[] { namespace } );
+
+        Boolean foundFieldMappingsList = false;
+        Boolean foundParentLogsList = false;
+
+        System.assert( layout.relatedLists.size() >= 2, 'missing related lists' );
+
+        for ( Metadata.RelatedListItem relatedListItem : layout.relatedLists ) {
+            if ( relatedListItem.relatedList == allLogsListName ) {
+                System.assert( false, 'found ' + relatedListItem.relatedList + ' related list, but it should have been removed' );
+            } else if ( relatedListItem.relatedList == fieldMappingsListName ) {
+                foundFieldMappingsList = true;
+            } else if ( relatedListItem.relatedList == parentLogsListName ) {
+                foundParentLogsList = true;
+            }
+        }
+
+        System.assertEquals( true, foundFieldMappingsList, 'did not find Field Mappings related list' );
+        System.assertEquals( true, foundParentLogsList, 'did not find Parent Logs related list' );
+
     }
 
 }

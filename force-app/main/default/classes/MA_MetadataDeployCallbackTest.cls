@@ -64,7 +64,7 @@ private class MA_MetadataDeployCallbackTest {
 
     private class MockMetadataDeployCallbackContext extends Metadata.DeployCallbackContext {
         public override ID getCallbackJobId() {
-            return '0Af1h00000BXwP9';
+            return '0Af00000000000TEST';
         }
     }
 
