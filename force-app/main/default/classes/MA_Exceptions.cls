@@ -25,7 +25,7 @@ public inherited sharing class MA_Exceptions {
             this.exceptionStackTrace = exceptionStackTrace;
             this.setMessage( sanitizeMessage( String.format(
                 'Anonymous Apex Error:\ncompileProblem: {0}\nexceptionMessage: {1}\nexceptionStackTrace: {2}\n\n{3}',
-                new String[] { compileProblem, exceptionMessage, exceptionStackTrace, super.getMessage() }
+                new Object[] { compileProblem, exceptionMessage, exceptionStackTrace, super.getMessage() }
             )));
         }
 
@@ -55,7 +55,7 @@ public inherited sharing class MA_Exceptions {
             this.errorMessage = errorMessage;
             this.setMessage( sanitizeMessage( String.format(
                 'SOQL Query Error:\nquery: {0}\nerrorType: {1}\nerrorMessage: {2}\n\n{3}',
-                new String[] { query, errorType, errorMessage, super.getMessage() }
+                new Object[] { query, errorType, errorMessage, super.getMessage() }
             )));
         }
 
@@ -81,7 +81,7 @@ public inherited sharing class MA_Exceptions {
             this.sourceType = sourceType;
             this.setMessage( sanitizeMessage( String.format(
                 'Error: Unsupported Source Type: {0}',
-                new String[] { sourceType }
+                new Object[] { sourceType }
             )));
         }
 
@@ -135,12 +135,34 @@ public inherited sharing class MA_Exceptions {
             this.response = response;
             this.setMessage( sanitizeMessage( String.format(
                 'Invoke Action Error: {0}\n{1}\n\n{2}\n{3}',
-                new String[] { response.toString(), response.getBody(), request.toString(), request.getBody() }
+                new Object[] { response.toString(), response.getBody(), request.toString(), request.getBody() }
             )));
         }
 
         public InvokeActionException( HttpRequest request, HttpResponse response, Exception cause ) {
             this( request, response );
+            this.initCause( cause );
+        }
+
+    }
+
+    /**
+     * Indicates there was an error deploying metadata with Apex API.
+     */
+    public inherited sharing class MetadataDeployException extends Exception {
+
+        public Metadata.DeployResult result { get; set; }
+
+        public MetadataDeployException( Metadata.DeployResult result ) {
+            this.result = result;
+            this.setMessage( sanitizeMessage( String.format(
+                'Metadata Deployment Error: {0}: {1}\n{2}',
+                new Object[] { result.errorStatusCode, result.errorMessage, JSON.serializePretty( result ) }
+            )));
+        }
+
+        public MetadataDeployException( Metadata.DeployResult result, Exception cause ) {
+            this( result );
             this.initCause( cause );
         }
 

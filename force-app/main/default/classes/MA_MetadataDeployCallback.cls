@@ -4,15 +4,21 @@
  * GitHub: https://github.com/douglascayers-org/sfdx-mass-action-scheduler
  * License: BSD 3-Clause License
  */
-public without sharing class MA_InstallHandler implements System.InstallHandler {
+/*
+ * This class explicitly uses 'without sharing' because it is invoked by the package install handler
+ * and it is documented that the use of 'with sharing' by apex classes called by the handler may prevent installation.
+ * https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_install_handler.htm
+ */
+public without sharing class MA_MetadataDeployCallback implements Metadata.DeployCallback {
 
-    public void onInstall( InstallContext context ) {
+    public void handleResult( Metadata.DeployResult result, Metadata.DeployCallbackContext context ) {
 
-        new MA_UpgradePageLayoutsService().upgrade();
+        System.debug( 'MA_MetadataDeployCallback.handleResult: ' + context );
+        System.debug( JSON.serializePretty( result ) );
 
-        Database.executeBatch( new MA_SetConfigUniqueNameBatchable() );
-
-        Database.executeBatch( new MA_UpgradeMassActionLogsBatchable() );
+        if ( !result.success ) {
+            throw new MA_Exceptions.MetadataDeployException( result );
+        }
 
     }
 

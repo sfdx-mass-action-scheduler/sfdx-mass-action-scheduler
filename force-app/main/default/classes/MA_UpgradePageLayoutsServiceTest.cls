@@ -4,16 +4,13 @@
  * GitHub: https://github.com/douglascayers-org/sfdx-mass-action-scheduler
  * License: BSD 3-Clause License
  */
-public without sharing class MA_InstallHandler implements System.InstallHandler {
+@IsTest
+private class MA_UpgradePageLayoutsServiceTest {
 
-    public void onInstall( InstallContext context ) {
-
-        new MA_UpgradePageLayoutsService().upgrade();
-
-        Database.executeBatch( new MA_SetConfigUniqueNameBatchable() );
-
-        Database.executeBatch( new MA_UpgradeMassActionLogsBatchable() );
-
+    @IsTest
+    static void todo() {
+        // https://trailhead.salesforce.com/content/learn/modules/apex_metadata_api/apex_metadata_api_testing
+        System.assert( false, 'todo' );
     }
 
 }

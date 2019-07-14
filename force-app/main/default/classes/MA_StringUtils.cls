@@ -51,6 +51,16 @@ public inherited sharing class MA_StringUtils {
         return ( String.isBlank( value ) ? '' : value.abbreviate( maxWidth ) );
     }
 
+    /**
+     * Determines if the input matches the regular expression.
+     * @see Matcher.matches
+     */
+    public static Boolean matches( String input, String regex ) {
+        Pattern p = Pattern.compile( regex );
+        Matcher m = p.matcher( input );
+        return m.matches();
+    }
+
 }
 /*
 BSD 3-Clause License

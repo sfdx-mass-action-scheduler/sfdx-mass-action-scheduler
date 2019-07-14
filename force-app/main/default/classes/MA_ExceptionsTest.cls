@@ -167,6 +167,36 @@ private class MA_ExceptionsTest {
     }
 
     @IsTest
+    static void test_MetadataDeployException() {
+
+        Test.startTest();
+
+        Metadata.DeployResult result = new Metadata.DeployResult();
+        result.errorStatusCode = Metadata.StatusCode.INTERNAL_ERROR;
+        result.errorMessage = 'the error message';
+        result.success = false;
+
+        Exception cause = new System.NoAccessException();
+
+        try {
+
+            throw new MA_Exceptions.MetadataDeployException( result, cause );
+
+        } catch ( MA_Exceptions.MetadataDeployException e ) {
+
+            System.assertEquals( result, e.result );
+
+            System.assert( e.getMessage().containsIgnoreCase( String.valueOf( result.errorStatusCode ) ) );
+            System.assert( e.getMessage().containsIgnoreCase( result.errorMessage ) );
+            System.assertEquals( cause, e.getCause() );
+
+        }
+
+        Test.stopTest();
+
+    }
+
+    @IsTest
     static void test_buildException() {
 
         Test.startTest();
