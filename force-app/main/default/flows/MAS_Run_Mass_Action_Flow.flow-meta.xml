@@ -118,7 +118,7 @@
         </connector>
         <fields>
             <name>ChooseActionPath</name>
-            <extensionName>dca_mass_action:MA_FlowStagePathCmp</extensionName>
+            <extensionName>c:MA_FlowStagePathCmp</extensionName>
             <fieldType>ComponentInstance</fieldType>
             <inputParameters>
                 <name>currentStage</name>
@@ -164,7 +164,7 @@
         </connector>
         <fields>
             <name>ConfirmActionPath</name>
-            <extensionName>dca_mass_action:MA_FlowStagePathCmp</extensionName>
+            <extensionName>c:MA_FlowStagePathCmp</extensionName>
             <fieldType>ComponentInstance</fieldType>
             <inputParameters>
                 <name>currentStage</name>
@@ -198,7 +198,7 @@
         <allowPause>false</allowPause>
         <fields>
             <name>ReviewActionPath</name>
-            <extensionName>dca_mass_action:MA_FlowStagePathCmp</extensionName>
+            <extensionName>c:MA_FlowStagePathCmp</extensionName>
             <fieldType>ComponentInstance</fieldType>
             <inputParameters>
                 <name>currentStage</name>
