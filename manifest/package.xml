@@ -223,6 +223,7 @@
     <name>QuickAction</name>
     <members>Mass_Action_Configuration__c.Quick_Edit</members>
     <members>Mass_Action_Configuration__c.Run</members>
+    <members>Mass_Action_Configuration__c.Run_via_Flow</members>
   </types>
   <types>
     <name>Report</name>
