@@ -22,9 +22,10 @@
 public without sharing class MA_UpgradePageLayoutsService {
 
     /**
+     * Updates page layouts bundled with the Mass Action Scheduler managed package,
+     * such as ensure action buttons are on the layout and related lists are configured.
      *
-     *
-     * @return the deployment id
+     * Returns the enqueued metadata deployment id.
      */
     public ID upgrade() {
 
@@ -41,8 +42,10 @@ public without sharing class MA_UpgradePageLayoutsService {
     }
 
     /**
+     * Builds a metadata deploy container to include any page layout
+     * changes to make in this package upgrade.
      *
-     *
+     * For easier testability, this exists as its own method.
      */
     @TestVisible
     private Metadata.DeployContainer buildMetadataDeployContainer() {
@@ -63,7 +66,7 @@ public without sharing class MA_UpgradePageLayoutsService {
 
     private List<Metadata.Metadata> update_MassActionConfiguration_PageLayouts() {
 
-        String namespace = MA_MassActionUtils.NAMESPACE_API;
+        String namespace = MA_NamespaceUtils.NAMESPACE_API;
 
         List<Metadata.Metadata> layouts = Metadata.Operations.retrieve(
             Metadata.MetadataType.Layout,
@@ -97,7 +100,7 @@ public without sharing class MA_UpgradePageLayoutsService {
 
         // This may or may not be blank depending on if the code is
         // part of the managed package or not
-        String namespace = MA_MassActionUtils.NAMESPACE_API;
+        String namespace = MA_NamespaceUtils.NAMESPACE_API;
 
         // Pattern to identify action items part of the MAS codebase.
         // Note the `?` to indicate the namespace may or may not exist
@@ -170,7 +173,7 @@ public without sharing class MA_UpgradePageLayoutsService {
 
         // This may or may not be blank depending on if the code is
         // part of the managed package or not
-        String namespace = MA_MassActionUtils.NAMESPACE_API;
+        String namespace = MA_NamespaceUtils.NAMESPACE_API;
 
         // Pattern to identify related lists part of the MAS codebase.
         // Note the `?` to indicate the namespace may or may not exist.

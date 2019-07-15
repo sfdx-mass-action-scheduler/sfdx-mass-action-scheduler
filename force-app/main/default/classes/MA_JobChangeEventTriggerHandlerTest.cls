@@ -10,7 +10,7 @@ private class MA_JobChangeEventTriggerHandlerTest {
     @IsTest
     static void test_schedule_jobs() {
 
-        String objectName = MA_MassActionUtils.NAMESPACE_API + 'Mass_Action_Configuration__c';
+        String objectName = MA_NamespaceUtils.NAMESPACE_API + 'Mass_Action_Configuration__c';
         ListView lv = [ SELECT Id, Name, DeveloperName, SobjectType FROM ListView WHERE DeveloperName = 'All' AND SobjectType = :objectName AND IsSoqlCompatible = true LIMIT 1 ];
 
         Mass_Action_Configuration__c configA = new Mass_Action_Configuration__c(
@@ -87,7 +87,7 @@ private class MA_JobChangeEventTriggerHandlerTest {
     @IsTest
     static void test_unschedule_jobs() {
 
-        String objectName = MA_MassActionUtils.NAMESPACE_API + 'Mass_Action_Configuration__c';
+        String objectName = MA_NamespaceUtils.NAMESPACE_API + 'Mass_Action_Configuration__c';
         ListView lv = [ SELECT Id, Name, DeveloperName, SobjectType FROM ListView WHERE DeveloperName = 'All' AND SobjectType = :objectName AND IsSoqlCompatible = true LIMIT 1 ];
 
         Mass_Action_Configuration__c configA = new Mass_Action_Configuration__c(

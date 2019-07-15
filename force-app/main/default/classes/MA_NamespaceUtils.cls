@@ -9,22 +9,16 @@
  * and it is documented that the use of 'with sharing' by apex classes called by the handler may prevent installation.
  * https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_install_handler.htm
  */
-/*
- * IMPORTANT!!! ALL APEX CLASSES THAT ARE EXPLICITLY OR IMPLICITLY INVOKED BY THIS
- * INSTALL HANDLER AT INSTALL TIME MUST USE "WITHOUT SHARING" KEYWORD OR THE INSTALL
- * WILL FAIL DUE TO INSTALL USER NOT BEING GRANTED SUFFICIENT PRIVILEGES.
- */
-public without sharing class MA_InstallHandler implements System.InstallHandler {
+public without sharing class MA_NamespaceUtils {
 
-    public void onInstall( InstallContext context ) {
+    // -- private --
 
-        new MA_UpgradePageLayoutsService().upgrade();
+    private static final String MY_NAMESPACE = [ SELECT NamespacePrefix FROM ApexClass WHERE Name = 'MA_MassActionUtils' LIMIT 1 ].NamespacePrefix;
 
-        Database.executeBatch( new MA_SetConfigUniqueNameBatchable() );
+    // -- public --
 
-        Database.executeBatch( new MA_UpgradeMassActionLogsBatchable() );
-
-    }
+    public static final String NAMESPACE = String.isBlank( MY_NAMESPACE ) ? '' : MY_NAMESPACE;
+    public static final String NAMESPACE_API = String.isBlank( MY_NAMESPACE ) ? '' : MY_NAMESPACE + '__';
 
 }
 /*

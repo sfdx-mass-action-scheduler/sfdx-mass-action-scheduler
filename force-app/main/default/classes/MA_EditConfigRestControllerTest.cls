@@ -453,7 +453,7 @@ private class MA_EditConfigRestControllerTest {
     @IsTest
     static void test_getListViewsByObject() {
 
-        String objectName = MA_MassActionUtils.NAMESPACE_API + 'Mass_Action_Configuration__c';
+        String objectName = MA_NamespaceUtils.NAMESPACE_API + 'Mass_Action_Configuration__c';
         ListView lv = [ SELECT Id, Name, DeveloperName, SobjectType FROM ListView WHERE DeveloperName = 'All' AND SobjectType = :objectName AND IsSoqlCompatible = true LIMIT 1 ];
 
         Test.startTest();
@@ -479,7 +479,7 @@ private class MA_EditConfigRestControllerTest {
     @IsTest
     static void test_getListViewById() {
 
-        String objectName = MA_MassActionUtils.NAMESPACE_API + 'Mass_Action_Configuration__c';
+        String objectName = MA_NamespaceUtils.NAMESPACE_API + 'Mass_Action_Configuration__c';
         ListView lv = [ SELECT Id, Name, DeveloperName, SobjectType FROM ListView WHERE DeveloperName = 'All' AND SobjectType = :objectName AND IsSoqlCompatible = true LIMIT 1 ];
 
         Test.startTest();
@@ -499,7 +499,7 @@ private class MA_EditConfigRestControllerTest {
     @IsTest
     static void test_getListViewColumns() {
 
-        String objectName = MA_MassActionUtils.NAMESPACE_API + 'Mass_Action_Configuration__c';
+        String objectName = MA_NamespaceUtils.NAMESPACE_API + 'Mass_Action_Configuration__c';
         ListView lv = [ SELECT Id, Name, DeveloperName, SobjectType FROM ListView WHERE DeveloperName = 'All' AND SobjectType = :objectName AND IsSoqlCompatible = true LIMIT 1 ];
 
         Test.startTest();
@@ -797,7 +797,7 @@ private class MA_EditConfigRestControllerTest {
     @IsTest
     static void test_getConfigurationObjectDescribe() {
 
-        String objectName = MA_MassActionUtils.NAMESPACE_API + 'Mass_Action_Configuration__c';
+        String objectName = MA_NamespaceUtils.NAMESPACE_API + 'Mass_Action_Configuration__c';
         DescribeSObjectResult objectDescribe = Schema.getGlobalDescribe().get( objectName ).getDescribe();
         Map<String, SObjectField> fieldsMap = objectDescribe.fields.getMap();
 

@@ -598,7 +598,7 @@ global with sharing class MA_EditConfigRestController {
 
     private static Map<String, Object> getConfigurationObjectDescribe() {
 
-        String objectName = MA_MassActionUtils.NAMESPACE_API + 'Mass_Action_Configuration__c';
+        String objectName = MA_NamespaceUtils.NAMESPACE_API + 'Mass_Action_Configuration__c';
 
         // https://salesforce.stackexchange.com/questions/218982/why-is-schema-describesobjectstypes-slower-than-schema-getglobaldescribe
         DescribeSObjectResult objectDescribe = ( (SObject) Type.forName( objectName ).newInstance() ).getSObjectType().getDescribe();

@@ -29,7 +29,7 @@ private class MA_UpgradePageLayoutsServiceTest {
     @IsTest
     static void test_buildMetadataDeployContainer() {
 
-        String namespace = MA_MassActionUtils.NAMESPACE_API;
+        String namespace = MA_NamespaceUtils.NAMESPACE_API;
 
         String MassActionConfigurationPageLayoutName = String.format(
             '{0}Mass_Action_Configuration__c-{0}Mass Action Configuration Layout',
@@ -61,7 +61,7 @@ private class MA_UpgradePageLayoutsServiceTest {
 
     private static void validateMassActionConfigurationPageLayout( Metadata.Layout layout ) {
 
-        String namespace = MA_MassActionUtils.NAMESPACE_API;
+        String namespace = MA_NamespaceUtils.NAMESPACE_API;
 
         String runActionListItemName = String.format( '{0}Mass_Action_Configuration__c.{0}Run', new Object[] { namespace } );
         String runFlowActionListItemName = String.format( '{0}Mass_Action_Configuration__c.{0}Run_via_Flow', new Object[] { namespace } );

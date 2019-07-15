@@ -9,15 +9,6 @@
  */
 public inherited sharing class MA_MassActionUtils {
 
-    // -- private --
-
-    private static final String MY_NAMESPACE = [ SELECT NamespacePrefix FROM ApexClass WHERE Name = 'MA_MassActionUtils' LIMIT 1 ].NamespacePrefix;
-
-    // -- public --
-
-    public static final String NAMESPACE = String.isBlank( MY_NAMESPACE ) ? '' : MY_NAMESPACE;
-    public static final String NAMESPACE_API = String.isBlank( MY_NAMESPACE ) ? '' : MY_NAMESPACE + '__';
-
     public static final String ORG_DOMAIN_URL = URL.getOrgDomainUrl().toExternalForm();
     public static final String REST_API_PATH = '/services/data/v46.0'; // note the 'v' prefix on the version number
     public static final String SOAP_API_PATH = '/services/Soap/s/46.0'; // note no 'v' prefix on the version number
