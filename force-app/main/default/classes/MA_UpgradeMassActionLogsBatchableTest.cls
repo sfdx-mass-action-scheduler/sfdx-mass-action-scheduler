@@ -8,6 +8,53 @@
 private class MA_UpgradeMassActionLogsBatchableTest {
 
     @IsTest
+    static void test_non_existant_job() {
+
+        Mass_Action_Configuration__c config = new Mass_Action_Configuration__c(
+            Name = 'Test Config',
+            DeveloperName__c = 'Test_Config'
+        );
+
+        insert config;
+
+        Mass_Action_Log__c log = new Mass_Action_Log__c(
+            Mass_Action_Configuration__c = config.Id,
+            Message__c = 'the error message',
+            Job_ID__c = '707f400NOTEXIST'
+        );
+
+        insert log;
+
+        System.assertEquals( 0, [ SELECT COUNT() FROM Mass_Action_Log__c WHERE RecordType.DeveloperName = 'Parent_Log' ] );
+        System.assertEquals( 0, [ SELECT COUNT() FROM Mass_Action_Log__c WHERE RecordType.DeveloperName = 'Child_Log' ] );
+
+        Test.startTest();
+
+        Database.executeBatch( new MA_UpgradeMassActionLogsBatchable() );
+
+        Test.stopTest();
+
+        System.assertEquals( 1, [ SELECT COUNT() FROM Mass_Action_Log__c WHERE RecordType.DeveloperName = 'Parent_Log' ] );
+        System.assertEquals( 1, [ SELECT COUNT() FROM Mass_Action_Log__c WHERE RecordType.DeveloperName = 'Child_Log' ] );
+
+        Mass_Action_Log__c parentLog = [
+            SELECT Id, Message__c, Message_Type__c, Submitted_Date__c, Total_Batches__c, Processed_Batches__c, Failed_Batches__c
+            FROM Mass_Action_Log__c
+            WHERE RecordType.DeveloperName = 'Parent_Log' AND Job_ID__c = :String.valueOf( log.Job_ID__c ).left( 15 )
+        ];
+
+        System.assertEquals( 1, [ SELECT COUNT() FROM Mass_Action_Log__c WHERE Parent_Log__c = :parentLog.Id ] );
+
+        System.assertEquals( 'Informational', parentLog.Message_Type__c );
+        System.assertEquals( 'Batch job information incomplete', parentLog.Message__c );
+        System.assertEquals( null, parentLog.Submitted_Date__c );
+        System.assertEquals( 0, parentLog.Total_Batches__c );
+        System.assertEquals( 0, parentLog.Processed_Batches__c );
+        System.assertEquals( 1, parentLog.Failed_Batches__c, 'should match number of child logs that were converted' );
+
+    }
+
+    @IsTest
     static void test_batch_200() {
 
         AsyncApexJob job1 = MA_AsyncApexJobMock.getJobById( MA_AsyncApexJobMock.ABORTED_JOB_ID );

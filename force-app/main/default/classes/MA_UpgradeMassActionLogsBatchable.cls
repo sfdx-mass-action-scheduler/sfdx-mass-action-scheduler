@@ -120,6 +120,29 @@ public without sharing class MA_UpgradeMassActionLogsBatchable implements Databa
                     // See comment further down where we increment failed batches
                     //parentLog.Failed_Batches__c = job.NumberOfErrors;
 
+                } else {
+
+                    // For old logs, the AsyncApexJob record may
+                    // no longer exist or have been purged already.
+                    // If we the job record doesn't exist then we can't
+                    // reliably determine the job's submitted date or
+                    // how many total batches were processed.
+                    // Let's add a message to that effect so the user
+                    // understands why their parent log isn't complete.
+                    parentLog.Message__c = 'Batch job information incomplete';
+                    parentLog.Long_Message__c = (
+                        'Do not be alarmed, this is an informational message only.' +
+                        '\n\n' +
+                        'During the Mass Action Scheduler package upgrade to create parent logs, ' +
+                        'we could not find a batch job for id "7071h00000ehRQZ". ' +
+                        'The AsyncApexJob record from the Apex Jobs page in Setup may have already been purged from the system. ' +
+                        'Therefore, the "Submitted Date", "Total Batches", and "Processed Batches" field values on this log record ' +
+                        'may not be accurate because we did not find an AsyncApexJob record to copy the values from.' +
+                        '\n\n' +
+                        'Tip: You can safely delete Mass Action Log records anytime after the batch job has completed. ' +
+                        'They exist to help you troubleshoot errors and track job progress.'
+                    );
+
                 }
 
                 // add yet to be saved log to map to avoid
