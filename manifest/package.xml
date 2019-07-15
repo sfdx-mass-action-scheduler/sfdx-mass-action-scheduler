@@ -69,6 +69,7 @@
     <members>MA_MassActionUtils</members>
     <members>MA_MetadataDeployCallback</members>
     <members>MA_MetadataDeployCallbackTest</members>
+    <members>MA_NamespaceUtils</members>
     <members>MA_ReportService</members>
     <members>MA_ReportServiceTest</members>
     <members>MA_ReportSourceBatchable</members>
