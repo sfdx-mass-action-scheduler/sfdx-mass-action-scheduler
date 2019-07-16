@@ -241,7 +241,7 @@
         </fields>
         <fields>
             <name>ChooseMassActionNote</name>
-            <fieldText>&lt;p&gt;ℹ️ Only active configurations are available to run.&lt;/p&gt;</fieldText>
+            <fieldText>&lt;p&gt;Only active configurations are available to run.&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
         </fields>
         <showFooter>true</showFooter>
