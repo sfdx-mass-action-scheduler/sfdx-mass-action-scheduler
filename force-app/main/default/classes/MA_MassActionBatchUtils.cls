@@ -293,6 +293,7 @@ public inherited sharing class MA_MassActionBatchUtils {
         // So to be able to cross-ref correctly, we need the parent job ids.
         Set<String> parentJobIds = new Set<String>();
         for ( AsyncApexJob job : jobs ) {
+            parentJobIds.add( String.valueOf( job.Id ).left( 15 ) );
             parentJobIds.add( String.valueOf( String.isNotBlank( job.ParentJobId ) ? job.ParentJobId : job.Id ).left( 15 ) );
         }
 

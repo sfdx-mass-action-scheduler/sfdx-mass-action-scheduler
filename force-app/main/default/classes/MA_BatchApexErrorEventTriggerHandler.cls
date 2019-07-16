@@ -4,7 +4,11 @@
  * GitHub: https://github.com/douglascayers-org/sfdx-mass-action-scheduler
  * License: BSD 3-Clause License
  */
-public with sharing class MA_BatchApexErrorEventTriggerHandler {
+/*
+ * This class explicitly uses 'without sharing' because it runs not as a real user
+ * but rather as the Automated Process user, an entity we can't grant permissions to.
+ */
+public without sharing class MA_BatchApexErrorEventTriggerHandler {
 
     public MA_BatchApexErrorEventTriggerHandler() {}
 
