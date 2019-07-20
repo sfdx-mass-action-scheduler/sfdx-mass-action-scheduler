@@ -30,8 +30,8 @@
     <members>LC_VisualforceDomainControllerTest</members>
     <members>MA_AnonymousApexExecuteResult</members>
     <members>MA_AsyncApexJobMock</members>
-    <members>MA_BatchApexErrorEventTriggerHandler</members>
-    <members>MA_BatchApexErrorEventTriggerHandlerTest</members>
+    <members>MA_BatchApexErrorEventInvocable</members>
+    <members>MA_BatchApexErrorEventInvocableTest</members>
     <members>MA_BatchApexStatusEventTriggerHandler</members>
     <members>MA_BatchApexStatusEventTriggerTest</members>
     <members>MA_EditConfigCmpController</members>
@@ -109,6 +109,7 @@
   </types>
   <types>
     <name>Flow</name>
+    <members>MAS_Batch_Apex_Error_Event</members>
     <members>MAS_Mass_Action_Configuration</members>
     <members>MAS_Run_Mass_Action_Flow</members>
   </types>
@@ -245,7 +246,6 @@
   </types>
   <types>
     <name>ApexTrigger</name>
-    <members>MA_BatchApexErrorEventTrigger</members>
     <members>MA_BatchApexStatusEventTrigger</members>
     <members>MA_JobChangeEventTrigger</members>
     <members>MA_MassActionConfigTrigger</members>
