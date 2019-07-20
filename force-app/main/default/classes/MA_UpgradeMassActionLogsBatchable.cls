@@ -203,6 +203,8 @@ public without sharing class MA_UpgradeMassActionLogsBatchable implements Databa
                 Mass_Action_Log__c
             WHERE
                 Parent_Log__c IN :parentLogsMap.values()
+                AND
+                RecordTypeId = :logRecordTypeInfosMap.get( 'Child_Log' ).getRecordTypeId()
             GROUP BY
                 Mass_Action_Configuration__c,
                 Job_ID__c,
