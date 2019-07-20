@@ -20,7 +20,14 @@ public without sharing class MA_BatchApexStatusEventTriggerHandler {
 
         System.debug( 'MA_BatchApexStatusEventTriggerHandler.handleAfterInsert' );
 
-        Map<ID, AsyncApexJob> jobIdToJobMap = MA_MassActionBatchUtils.getJobsByJobIdMap( newList );
+        Set<ID> jobIds = new Set<ID>();
+        for ( MA_BatchApexStatusEvent__e evt : newList ) {
+            if ( String.isNotBlank( evt.Job_ID__c ) ) {
+                jobIds.add( ID.valueOf( evt.Job_ID__c ) );
+            }
+        }
+
+        Map<ID, AsyncApexJob> jobIdToJobMap = MA_MassActionBatchUtils.getJobsByJobIdMap( jobIds );
 
         Map<ID, Mass_Action_Log__c> jobIdtoParentLogMap = MA_MassActionBatchUtils.getParentLogsByJobIdMap( jobIdToJobMap.values() );
 

@@ -207,44 +207,6 @@ public inherited sharing class MA_MassActionBatchUtils {
     // ----------------------------------------------------
 
     /**
-     * Extracts the Async Apex Job ID from the list of events then
-     * returns a map of job id to job record.
-     *
-     * Useful in platform event triggers to get a map of related jobs.
-     */
-    public static Map<ID, AsyncApexJob> getJobsByJobIdMap( List<MA_BatchApexStatusEvent__e> events ) {
-
-        Set<ID> jobIds = new Set<ID>();
-
-        for ( MA_BatchApexStatusEvent__e evt : events ) {
-            if ( String.isNotBlank( evt.Job_ID__c ) ) {
-                jobIds.add( ID.valueOf( evt.Job_ID__c ) );
-            }
-        }
-
-        return getJobsByJobIdMap( jobIds );
-    }
-
-    /**
-     * Extracts the Async Apex Job ID from the list of events then
-     * returns a map of job id to job record.
-     *
-     * Useful in platform event triggers to get a map of related jobs.
-     */
-    public static Map<ID, AsyncApexJob> getJobsByJobIdMap( List<BatchApexErrorEvent> events ) {
-
-        Set<ID> jobIds = new Set<ID>();
-
-        for ( BatchApexErrorEvent evt : events ) {
-            if ( String.isNotBlank( evt.AsyncApexJobId ) ) {
-                jobIds.add( ID.valueOf( evt.AsyncApexJobId ) );
-            }
-        }
-
-        return getJobsByJobIdMap( jobIds );
-    }
-
-    /**
      * Returns a map of AsyncApexJob records.
      *
      * Useful in platform event triggers to get a map of related jobs.
