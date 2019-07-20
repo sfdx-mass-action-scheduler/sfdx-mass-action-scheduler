@@ -344,6 +344,7 @@ public inherited sharing class MA_MassActionBatchUtils {
         if ( Test.isRunningTest() ) {
             // acrobatics for test coverage and the fact that
             // AsyncApexJob records can't truly be mocked
+            System.debug( 'MA_MassActionBatchUtils.getJobById: running test, getting mock job for id ' + jobId );
             AsyncApexJob mockJob = MA_AsyncApexJobMock.getJobById( jobId );
             if ( mockJob != null ) {
                 job = mockJob;
@@ -359,7 +360,7 @@ public inherited sharing class MA_MassActionBatchUtils {
      */
     public static List<Database.SaveResult> publish( List<MA_BatchApexStatusEvent__e> events ) {
 
-        System.debug( 'MA_MassActionBatchUtils.publish' );
+        System.debug( 'MA_MassActionBatchUtils.publish: eventsToPublish=' + events.size() );
 
         // Ensure text fields are within field length limits.
         // Manually need to do this since event publishing doesn't
@@ -371,6 +372,8 @@ public inherited sharing class MA_MassActionBatchUtils {
         }
 
         List<Database.SaveResult> results = EventBus.publish( events );
+
+        System.debug( 'MA_MassActionBatchUtils.publish: saveResults.size=' + results.size() );
 
         for ( Integer i = 0; i < results.size(); i ++ ) {
 
@@ -400,7 +403,7 @@ public inherited sharing class MA_MassActionBatchUtils {
      * date/times when set on events from Apex to match the precision
      * of the date/times provided in platform events.
      *
-     * For example, see MA_BatchApexErrorEventTriggerHandler when it
+     * For example, see MA_BatchApexErrorEventInvocable when it
      * creates a MA_BatchApexStatusEvent__e and sets the Timestamp__c
      * to evt.CreatedDate. That value's precision won't include milliseconds.
      *

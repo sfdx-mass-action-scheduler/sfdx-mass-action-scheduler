@@ -5,10 +5,10 @@
  * License: BSD 3-Clause License
  */
 @IsTest
-private class MA_BatchApexErrorEventTriggerHandlerTest {
+private class MA_BatchApexErrorEventInvocableTest {
 
     @IsTest
-    static void test_publish() {
+    static void test_invocable() {
 
         AsyncApexJob job = MA_AsyncApexJobMock.getJobById( MA_AsyncApexJobMock.PROCESSING_JOB_ID );
 
@@ -36,20 +36,31 @@ private class MA_BatchApexErrorEventTriggerHandlerTest {
 
         Test.startTest();
 
-        BatchApexErrorEvent evt = new BatchApexErrorEvent(
-            AsyncApexJobId = job.Id,
-            Phase = 'START',
-            Message = 'TEST ERROR MESSAGE',
-            ExceptionType = 'TEST EXCEPTION TYPE',
-            StackTrace = 'TEST STACK TRACE',
-            JobScope = 'TEST JOB SCOPE'
-        );
+        BatchApexErrorEvent evt = (BatchApexErrorEvent) JSON.deserialize( JSON.serialize( new Map<String, Object>{
+            'AsyncApexJobId' => job.Id,
+            'Phase' => 'START',
+            'Message' => 'TEST ERROR MESSAGE',
+            'ExceptionType' => 'TEST EXCEPTION TYPE',
+            'StackTrace' => 'TEST STACK TRACE',
+            'JobScope' => 'TEST JOB SCOPE',
+            'ReplayId' => 'TEST REPLAY ID',
+            'RequestId' => 'TEST REQUEST ID',
+            'CreatedById' => UserInfo.getUserId(),
+            'CreatedDate' => DateTime.now()
+        }), BatchApexErrorEvent.class );
 
-        EventBus.publish( evt );
+        List<MA_BatchApexErrorEventInvocable.Request> requests = new List<MA_BatchApexErrorEventInvocable.Request>{
+            new MA_BatchApexErrorEventInvocable.Request( evt )
+        };
+
+        List<MA_BatchApexErrorEventInvocable.Response> responses = MA_BatchApexErrorEventInvocable.execute( requests );
 
         Test.stopTest();
 
         Test.getEventBus().deliver();
+
+        System.assertEquals( requests.size(), responses.size() );
+        System.assertEquals( true, responses[0].success );
 
         parentLog = [
             SELECT
@@ -68,6 +79,21 @@ private class MA_BatchApexErrorEventTriggerHandlerTest {
         System.assertEquals( 'Error in job phase ' + evt.Phase + ': ' + evt.Message, parentLog.Mass_Action_Logs__r[0].Message__c );
         System.assertEquals( 'Error', parentLog.Mass_Action_Logs__r[0].Message_Type__c );
         System.assertEquals( evt.JobScope, parentLog.Mass_Action_Logs__r[0].Job_Scope__c );
+
+    }
+
+    @IsTest
+    static void instantiate_request_and_response() {
+
+        // Gotta get that code coverage!
+
+        Test.startTest();
+
+        MA_BatchApexErrorEventInvocable.Request req = new MA_BatchApexErrorEventInvocable.Request();
+
+        MA_BatchApexErrorEventInvocable.Response res = new MA_BatchApexErrorEventInvocable.Response();
+
+        Test.stopTest();
 
     }
 

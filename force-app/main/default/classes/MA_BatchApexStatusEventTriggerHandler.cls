@@ -4,7 +4,11 @@
  * GitHub: https://github.com/douglascayers-org/sfdx-mass-action-scheduler
  * License: BSD 3-Clause License
  */
-public with sharing class MA_BatchApexStatusEventTriggerHandler {
+/*
+ * This class explicitly uses 'without sharing' because it runs not as a real user
+ * but rather as the Automated Process user, an entity we can't grant permissions to.
+ */
+public without sharing class MA_BatchApexStatusEventTriggerHandler {
 
     public MA_BatchApexStatusEventTriggerHandler() {}
 
@@ -18,7 +22,7 @@ public with sharing class MA_BatchApexStatusEventTriggerHandler {
 
         Map<ID, AsyncApexJob> jobIdToJobMap = MA_MassActionBatchUtils.getJobsByJobIdMap( newList );
 
-        Map<ID, Mass_Action_Log__c>  jobIdtoParentLogMap = MA_MassActionBatchUtils.getParentLogsByJobIdMap( jobIdToJobMap.values() );
+        Map<ID, Mass_Action_Log__c> jobIdtoParentLogMap = MA_MassActionBatchUtils.getParentLogsByJobIdMap( jobIdToJobMap.values() );
 
         Map<String, RecordTypeInfo> logRecordTypeInfosMap = Mass_Action_Log__c.SObjectType.getDescribe().getRecordTypeInfosByDeveloperName();
 
@@ -33,12 +37,13 @@ public with sharing class MA_BatchApexStatusEventTriggerHandler {
 
         Integer BATCH_LIMIT = 200;
         Integer batchLimitCounter = 0;
-        String lastEventReplyId;
+        String lastEventReplayId;
 
         for ( MA_BatchApexStatusEvent__e evt : newList ) {
 
             batchLimitCounter++;
             if ( batchLimitCounter > BATCH_LIMIT ) {
+                System.debug( 'MA_BatchApexStatusEventTriggerHandler.handleAfterInsert: reached batch limit of ' + BATCH_LIMIT + ', will requeue remaining ' + ( newList.size() - BATCH_LIMIT ) + ' events for processing' );
                 break;
             }
 
@@ -97,9 +102,11 @@ public with sharing class MA_BatchApexStatusEventTriggerHandler {
 
             }
 
-            lastEventReplyId = evt.ReplayId;
+            lastEventReplayId = evt.ReplayId;
 
         }
+
+        System.debug( 'MA_BatchApexStatusEventTriggerHandler.handleAfterInsert: inserting child logs and updating parent logs' );
 
         Database.DMLOptions dmo = new Database.DMLOptions();
         dmo.allowFieldTruncation = true;
@@ -112,8 +119,9 @@ public with sharing class MA_BatchApexStatusEventTriggerHandler {
         // The new batch starts with the event message after the one with the replay ID that you set.
         // Therefore, we don't want to set this resume checkpoint until we know that the above DML operations complete.
         // https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/platform_events_subscribe_batch_resume.htm
-        if ( String.isNotBlank( lastEventReplyId ) ) {
-            EventBus.TriggerContext.currentContext().setResumeCheckpoint( lastEventReplyId );
+        if ( String.isNotBlank( lastEventReplayId ) ) {
+            System.debug( 'MA_BatchApexStatusEventTriggerHandler.handleAfterInsert: setting resume checkpoint: lastEventReplayId=' + lastEventReplayId );
+            EventBus.TriggerContext.currentContext().setResumeCheckpoint( lastEventReplayId );
         }
 
     }
