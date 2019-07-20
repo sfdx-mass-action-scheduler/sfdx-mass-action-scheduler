@@ -9,6 +9,12 @@
  */
 public inherited sharing class MA_AsyncApexJobMock {
 
+    // These are fake job ids that parse via ID.valueOf()
+    // but don't actually exist. This allows test/mock code
+    // to instantiate AsyncApexJobs or pass job ids to methods
+    // and reliably get back a test/mock job record later.
+    // Checkmarx security scanner labels these "low risk hardcoded ids".
+    // They are hardcoded on purpose for testing/mocking purposes.
     public static final ID QUEUED_JOB_ID                = '707f40000000001';
     public static final ID PREPARING_JOB_ID             = '707f40000000002';
     public static final ID PROCESSING_JOB_ID            = '707f40000000003';
