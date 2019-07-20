@@ -95,7 +95,7 @@ License: BSD 3-Clause License
     </aura:method>
 
     <div class="slds-hide">
-        <iframe aura:id="penpalFrame" src="{!v.iframeSrc}"></iframe>
+        <iframe aura:id="penpalFrame" src="{!v.iframeSrc}" sandbox="allow-same-origin allow-scripts"></iframe>
     </div>
 
 </aura:component>
