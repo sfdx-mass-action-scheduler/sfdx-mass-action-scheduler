@@ -82,7 +82,8 @@ License: BSD 3-Clause License
  * `textarea` tag within the component. Therefore, our selector
  * needs to cascade to the `textarea` elements in the component.
  */
-.THIS textarea[name="inputTargetApexScript"] {
+.THIS textarea[name="inputTargetApexScript"],
+.THIS textarea[name="inputSourceSoqlQuery"] {
     height: 200px;
 }
 
