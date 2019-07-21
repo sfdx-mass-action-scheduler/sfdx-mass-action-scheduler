@@ -525,7 +525,6 @@
     </decisions>
     <description>Automates user notifications when a configuration run completes.</description>
     <interviewLabel>MAS_Mass_Action_Configuration-1_InterviewLabel</interviewLabel>
-    <isTemplate>false</isTemplate>
     <label>MAS: Mass Action Configuration</label>
     <processMetadataValues>
         <name>ObjectType</name>
