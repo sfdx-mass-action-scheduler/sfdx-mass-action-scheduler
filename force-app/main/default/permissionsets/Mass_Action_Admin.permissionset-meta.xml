@@ -500,7 +500,7 @@
         <allowEdit>false</allowEdit>
         <allowRead>true</allowRead>
         <modifyAllRecords>false</modifyAllRecords>
-        <object>MA_BatchApexStatusEvent__e</object>
+        <object>Mass_Action_Batch_Apex_Status_Event__e</object>
         <viewAllRecords>false</viewAllRecords>
     </objectPermissions>
     <objectPermissions>

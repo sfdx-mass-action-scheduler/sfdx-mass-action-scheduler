@@ -132,8 +132,8 @@ public inherited sharing class MA_MassActionBatchUtils {
 
         System.debug( 'MA_MassActionBatchUtils.handleBatchJobStarted: configId=' + configId + ', jobId=' + jobId );
 
-        List<MA_BatchApexStatusEvent__e> events = new List<MA_BatchApexStatusEvent__e>{
-            new MA_BatchApexStatusEvent__e(
+        List<Mass_Action_Batch_Apex_Status_Event__e> events = new List<Mass_Action_Batch_Apex_Status_Event__e>{
+            new Mass_Action_Batch_Apex_Status_Event__e(
                 Job_ID__c = jobId,
                 Phase__c = 'START',
                 Message_Type__c = 'Informational',
@@ -154,8 +154,8 @@ public inherited sharing class MA_MassActionBatchUtils {
 
         System.debug( 'MA_MassActionBatchUtils.handleBatchJobExecution: configId=' + configId + ', jobId=' + jobId );
 
-        List<MA_BatchApexStatusEvent__e> events = new List<MA_BatchApexStatusEvent__e>{
-            new MA_BatchApexStatusEvent__e(
+        List<Mass_Action_Batch_Apex_Status_Event__e> events = new List<Mass_Action_Batch_Apex_Status_Event__e>{
+            new Mass_Action_Batch_Apex_Status_Event__e(
                 Job_ID__c = jobId,
                 Phase__c = 'EXECUTE',
                 Message_Type__c = 'Success',
@@ -177,8 +177,8 @@ public inherited sharing class MA_MassActionBatchUtils {
 
         System.debug( 'MA_MassActionBatchUtils.handleBatchJobFinished: configId=' + configId + ', jobId=' + jobId );
 
-        List<MA_BatchApexStatusEvent__e> events = new List<MA_BatchApexStatusEvent__e>{
-            new MA_BatchApexStatusEvent__e(
+        List<Mass_Action_Batch_Apex_Status_Event__e> events = new List<Mass_Action_Batch_Apex_Status_Event__e>{
+            new Mass_Action_Batch_Apex_Status_Event__e(
                 Job_ID__c = jobId,
                 Phase__c = 'FINISH',
                 Message_Type__c = 'Informational',
@@ -320,17 +320,17 @@ public inherited sharing class MA_MassActionBatchUtils {
      * Convenience function to publish events and debug log details about them
      * and ensure the long text field values are abbreviated within max length allowed.
      */
-    public static List<Database.SaveResult> publish( List<MA_BatchApexStatusEvent__e> events ) {
+    public static List<Database.SaveResult> publish( List<Mass_Action_Batch_Apex_Status_Event__e> events ) {
 
         System.debug( 'MA_MassActionBatchUtils.publish: eventsToPublish=' + events.size() );
 
         // Ensure text fields are within field length limits.
         // Manually need to do this since event publishing doesn't
         // accept a DMLOptions argument to enable field truncation.
-        for ( MA_BatchApexStatusEvent__e evt : events ) {
-            evt.Message__c = MA_StringUtils.abbreviateWithinFieldLength( evt.Message__c, MA_BatchApexStatusEvent__e.Message__c );
-            evt.Long_Message__c = MA_StringUtils.abbreviateWithinFieldLength( evt.Long_Message__c, MA_BatchApexStatusEvent__e.Long_Message__c );
-            evt.Job_Scope__c = MA_StringUtils.abbreviateWithinFieldLength( evt.Job_Scope__c, MA_BatchApexStatusEvent__e.Job_Scope__c );
+        for ( Mass_Action_Batch_Apex_Status_Event__e evt : events ) {
+            evt.Message__c = MA_StringUtils.abbreviateWithinFieldLength( evt.Message__c, Mass_Action_Batch_Apex_Status_Event__e.Message__c );
+            evt.Long_Message__c = MA_StringUtils.abbreviateWithinFieldLength( evt.Long_Message__c, Mass_Action_Batch_Apex_Status_Event__e.Long_Message__c );
+            evt.Job_Scope__c = MA_StringUtils.abbreviateWithinFieldLength( evt.Job_Scope__c, Mass_Action_Batch_Apex_Status_Event__e.Job_Scope__c );
         }
 
         List<Database.SaveResult> results = EventBus.publish( events );
@@ -340,7 +340,7 @@ public inherited sharing class MA_MassActionBatchUtils {
         for ( Integer i = 0; i < results.size(); i ++ ) {
 
             Database.SaveResult result = results[i];
-            MA_BatchApexStatusEvent__e evt = events[i];
+            Mass_Action_Batch_Apex_Status_Event__e evt = events[i];
 
             System.debug( 'MA_MassActionBatchUtils.publish: operationId=' + EventBus.getOperationId( result ) + ', event: ' + JSON.serializePretty( evt ) );
 
@@ -366,7 +366,7 @@ public inherited sharing class MA_MassActionBatchUtils {
      * of the date/times provided in platform events.
      *
      * For example, see MA_BatchApexErrorEventInvocable when it
-     * creates a MA_BatchApexStatusEvent__e and sets the Timestamp__c
+     * creates a Mass_Action_Batch_Apex_Status_Event__e and sets the Timestamp__c
      * to evt.CreatedDate. That value's precision won't include milliseconds.
      *
      * https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/platform_events_api_considerations.htm

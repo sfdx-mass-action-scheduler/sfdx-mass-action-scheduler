@@ -4,7 +4,7 @@
  * GitHub: https://github.com/douglascayers-org/sfdx-mass-action-scheduler
  * License: BSD 3-Clause License
  */
-trigger MA_BatchApexStatusEventTrigger on MA_BatchApexStatusEvent__e ( after insert ) {
+trigger MA_BatchApexStatusEventTrigger on Mass_Action_Batch_Apex_Status_Event__e ( after insert ) {
 
     MA_BatchApexStatusEventTriggerHandler handler = new MA_BatchApexStatusEventTriggerHandler();
 

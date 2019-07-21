@@ -131,7 +131,7 @@
   </types>
   <types>
     <name>CustomObject</name>
-    <members>MA_BatchApexStatusEvent__e</members>
+    <members>Mass_Action_Batch_Apex_Status_Event__e</members>
     <members>Mass_Action_Configuration__c</members>
     <members>Mass_Action_Job_Change_Event__e</members>
     <members>Mass_Action_Log__c</members>
@@ -139,13 +139,13 @@
   </types>
   <types>
     <name>CustomField</name>
-    <members>MA_BatchApexStatusEvent__e.Job_ID__c</members>
-    <members>MA_BatchApexStatusEvent__e.Job_Scope__c</members>
-    <members>MA_BatchApexStatusEvent__e.Long_Message__c</members>
-    <members>MA_BatchApexStatusEvent__e.Message_Type__c</members>
-    <members>MA_BatchApexStatusEvent__e.Message__c</members>
-    <members>MA_BatchApexStatusEvent__e.Phase__c</members>
-    <members>MA_BatchApexStatusEvent__e.Timestamp__c</members>
+    <members>Mass_Action_Batch_Apex_Status_Event__e.Job_ID__c</members>
+    <members>Mass_Action_Batch_Apex_Status_Event__e.Job_Scope__c</members>
+    <members>Mass_Action_Batch_Apex_Status_Event__e.Long_Message__c</members>
+    <members>Mass_Action_Batch_Apex_Status_Event__e.Message_Type__c</members>
+    <members>Mass_Action_Batch_Apex_Status_Event__e.Message__c</members>
+    <members>Mass_Action_Batch_Apex_Status_Event__e.Phase__c</members>
+    <members>Mass_Action_Batch_Apex_Status_Event__e.Timestamp__c</members>
     <members>Mass_Action_Configuration__c.Active__c</members>
     <members>Mass_Action_Configuration__c.Batch_Size__c</members>
     <members>Mass_Action_Configuration__c.Description__c</members>

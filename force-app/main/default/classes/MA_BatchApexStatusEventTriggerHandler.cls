@@ -16,12 +16,12 @@ public without sharing class MA_BatchApexStatusEventTriggerHandler {
     // INSERT
     // -------------------------------------------------------
 
-    public void handleAfterInsert( List<MA_BatchApexStatusEvent__e> newList, Map<ID, MA_BatchApexStatusEvent__e> newMap ) {
+    public void handleAfterInsert( List<Mass_Action_Batch_Apex_Status_Event__e> newList, Map<ID, Mass_Action_Batch_Apex_Status_Event__e> newMap ) {
 
         System.debug( 'MA_BatchApexStatusEventTriggerHandler.handleAfterInsert' );
 
         Set<ID> jobIds = new Set<ID>();
-        for ( MA_BatchApexStatusEvent__e evt : newList ) {
+        for ( Mass_Action_Batch_Apex_Status_Event__e evt : newList ) {
             if ( String.isNotBlank( evt.Job_ID__c ) ) {
                 jobIds.add( ID.valueOf( evt.Job_ID__c ) );
             }
@@ -46,7 +46,7 @@ public without sharing class MA_BatchApexStatusEventTriggerHandler {
         Integer batchLimitCounter = 0;
         String lastEventReplayId;
 
-        for ( MA_BatchApexStatusEvent__e evt : newList ) {
+        for ( Mass_Action_Batch_Apex_Status_Event__e evt : newList ) {
 
             batchLimitCounter++;
             if ( batchLimitCounter > BATCH_LIMIT ) {

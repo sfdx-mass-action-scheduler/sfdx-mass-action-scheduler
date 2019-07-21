@@ -31,7 +31,7 @@ public without sharing class MA_BatchApexErrorEventInvocable {
 
         Map<ID, Mass_Action_Log__c> jobIdtoParentLogMap = MA_MassActionBatchUtils.getParentLogsByJobIdMap( jobIdToJobMap.values() );
 
-        List<MA_BatchApexStatusEvent__e> jobStatusEvents = new List<MA_BatchApexStatusEvent__e>();
+        List<Mass_Action_Batch_Apex_Status_Event__e> jobStatusEvents = new List<Mass_Action_Batch_Apex_Status_Event__e>();
 
         for ( Request evt : requests ) {
 
@@ -43,7 +43,7 @@ public without sharing class MA_BatchApexErrorEventInvocable {
             // this batch error event is not for mass action scheduler, skip it
             if ( job != null && parentLog != null ) {
 
-                jobStatusEvents.add( new MA_BatchApexStatusEvent__e(
+                jobStatusEvents.add( new Mass_Action_Batch_Apex_Status_Event__e(
                     Job_ID__c = job.Id,
                     Phase__c = evt.Phase,
                     Message_Type__c = 'Error',
@@ -175,7 +175,7 @@ public without sharing class MA_BatchApexErrorEventInvocable {
 
         @InvocableVariable(
             label = 'Event ID'
-            description = 'ID of the published MA_BatchApexStatusEvent__e event.'
+            description = 'ID of the published Mass_Action_Batch_Apex_Status_Event__e event.'
         )
         public ID eventId;
 

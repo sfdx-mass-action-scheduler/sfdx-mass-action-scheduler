@@ -36,7 +36,7 @@ private class MA_BatchApexStatusEventTriggerTest {
 
         Test.startTest();
 
-        MA_BatchApexStatusEvent__e evt = new MA_BatchApexStatusEvent__e(
+        Mass_Action_Batch_Apex_Status_Event__e evt = new Mass_Action_Batch_Apex_Status_Event__e(
             Job_ID__c = job.Id,
             Phase__c = 'FINISH',
             Message_Type__c = 'Success',
@@ -101,9 +101,9 @@ private class MA_BatchApexStatusEventTriggerTest {
 
         Test.startTest();
 
-        List<MA_BatchApexStatusEvent__e> events = new List<MA_BatchApexStatusEvent__e>();
+        List<Mass_Action_Batch_Apex_Status_Event__e> events = new List<Mass_Action_Batch_Apex_Status_Event__e>();
         for ( Integer i = 0; i < 201; i++ ) {
-            events.add( new MA_BatchApexStatusEvent__e(
+            events.add( new Mass_Action_Batch_Apex_Status_Event__e(
                 Job_ID__c = job.Id,
                 Phase__c = 'FINISH',
                 Message_Type__c = 'Success',
