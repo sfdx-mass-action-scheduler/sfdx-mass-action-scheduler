@@ -127,7 +127,7 @@
   </types>
   <types>
     <name>CustomNotificationType</name>
-    <members>MAS_Mass_Action_Configuration</members>
+    <members>Mass_Action_Notification</members>
   </types>
   <types>
     <name>CustomObject</name>

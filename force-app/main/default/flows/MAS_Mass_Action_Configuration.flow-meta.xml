@@ -4,7 +4,7 @@
         <processMetadataValues>
             <name>customNotifTypeName</name>
             <value>
-                <stringValue>MAS_Mass_Action_Configuration</stringValue>
+                <stringValue>Mass_Action_Notification</stringValue>
             </value>
         </processMetadataValues>
         <processMetadataValues>
@@ -34,7 +34,7 @@
         <inputParameters>
             <name>customNotifTypeName</name>
             <value>
-                <stringValue>MAS_Mass_Action_Configuration</stringValue>
+                <stringValue>Mass_Action_Notification</stringValue>
             </value>
         </inputParameters>
         <inputParameters>
@@ -102,7 +102,7 @@
         <processMetadataValues>
             <name>customNotifTypeName</name>
             <value>
-                <stringValue>MAS_Mass_Action_Configuration</stringValue>
+                <stringValue>Mass_Action_Notification</stringValue>
             </value>
         </processMetadataValues>
         <processMetadataValues>
@@ -132,7 +132,7 @@
         <inputParameters>
             <name>customNotifTypeName</name>
             <value>
-                <stringValue>MAS_Mass_Action_Configuration</stringValue>
+                <stringValue>Mass_Action_Notification</stringValue>
             </value>
         </inputParameters>
         <inputParameters>
