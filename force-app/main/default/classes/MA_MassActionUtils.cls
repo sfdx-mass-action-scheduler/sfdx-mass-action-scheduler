@@ -309,7 +309,7 @@ public inherited sharing class MA_MassActionUtils {
 
         String apexScript = (
             ' void mas_initApexBlock() { ' +
-                ' List<Object> untypedRecords = (List<Object>) JSON.deserializeUntyped( \'' + sourceRowMapsJson + '\' ); ' +
+                ' List<Object> untypedRecords = (List<Object>) JSON.deserializeUntyped( \'' + String.escapeSingleQuotes( sourceRowMapsJson ) + '\' ); ' +
                 ' List<Map<String, Object>> typedRecords = new List<Map<String, Object>>(); ' +
                 ' for ( Object untypedRecord : untypedRecords ) { ' +
                     ' typedRecords.add( (Map<String, Object>) untypedRecord ); ' +
