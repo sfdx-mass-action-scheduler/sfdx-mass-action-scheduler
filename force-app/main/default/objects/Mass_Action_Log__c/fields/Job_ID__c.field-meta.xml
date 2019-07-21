@@ -2,12 +2,13 @@
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Job_ID__c</fullName>
     <deprecated>false</deprecated>
-    <description>Apex Batch Job ID</description>
+    <description>Apex Batch Job ID. Since we can&#39;t have lookup fields to AsyncApexJob records, please standardize on the 15 character id, least common denominator for our use cases. SOQL WHERE filters will fail if stored value and filter value are not same length. Set as external id just so it&#39;s indexed. Don&#39;t UPSERT by this field value.</description>
     <externalId>false</externalId>
-    <inlineHelpText>Apex Batch Job ID</inlineHelpText>
+    <inlineHelpText>Apex Batch Job ID. You can also monitor job status on the Apex Jobs page in Setup.</inlineHelpText>
     <label>Job ID</label>
     <length>255</length>
     <required>false</required>
+    <trackHistory>false</trackHistory>
     <trackTrending>false</trackTrending>
     <type>Text</type>
     <unique>false</unique>

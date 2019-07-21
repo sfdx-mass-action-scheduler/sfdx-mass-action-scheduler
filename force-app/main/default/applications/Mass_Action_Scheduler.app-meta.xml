@@ -7,5 +7,6 @@
     <label>Mass Action Scheduler</label>
     <tabs>Mass_Action_Configuration__c</tabs>
     <tabs>MA_SetupAuthWizardPageTab</tabs>
+    <tabs>Mass_Action_Log__c</tabs>
     <tabs>standard-report</tabs>
 </CustomApplication>

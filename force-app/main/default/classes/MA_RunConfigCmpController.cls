@@ -1,7 +1,7 @@
 /**
  * Author: Doug Ayers
  * Website: https://douglascayers.com
- * GitHub: https://github.com/douglascayers/sfdx-mass-action-scheduler
+ * GitHub: https://github.com/douglascayers-org/sfdx-mass-action-scheduler
  * License: BSD 3-Clause License
  */
 public with sharing class MA_RunConfigCmpController {
@@ -15,8 +15,14 @@ public with sharing class MA_RunConfigCmpController {
 
             ID jobId = MA_MassActionBatchUtils.enqueueAction( configId );
 
+            // We don't have lookup fields to AsyncApexJob records,
+            // so standardizing on the 15 character id, least common denominator.
+            // The Apex Jobs page in Setup also only displays the 15 character id.
+            // So giving the user a value that they can immediately copy/paste
+            // to find a job record in Setup or on the Mass Action Log records.
+
             result.put( 'success', true );
-            result.put( 'jobId', jobId );
+            result.put( 'jobId', String.valueOf( jobId ).left( 15 ) );
 
         } catch ( Exception e ) {
 
@@ -39,7 +45,7 @@ public with sharing class MA_RunConfigCmpController {
 /*
 BSD 3-Clause License
 
-Copyright (c) 2018, Doug Ayers, douglascayers.com
+Copyright (c) 2017-2019, Doug Ayers, douglascayers.com
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

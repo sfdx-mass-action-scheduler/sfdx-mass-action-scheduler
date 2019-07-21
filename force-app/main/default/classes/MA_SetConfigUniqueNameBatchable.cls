@@ -1,7 +1,7 @@
 /**
  * Author: Doug Ayers
  * Website: https://douglascayers.com
- * GitHub: https://github.com/douglascayers/sfdx-mass-action-scheduler
+ * GitHub: https://github.com/douglascayers-org/sfdx-mass-action-scheduler
  * License: BSD 3-Clause License
  */
 /**
@@ -13,7 +13,10 @@
  * and it is documented that the use of 'with sharing' by apex classes called by the handler may prevent installation.
  * https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_install_handler.htm
  */
-public without sharing class MA_SetConfigUniqueNameBatchable implements Database.Batchable<SObject>, Database.RaisesPlatformEvents {
+public without sharing class MA_SetConfigUniqueNameBatchable implements Database.Batchable<SObject>,
+                                                                        Database.Stateful,
+                                                                        Database.AllowsCallouts,
+                                                                        Database.RaisesPlatformEvents {
 
     public Database.QueryLocator start( Database.BatchableContext context ) {
 
@@ -55,11 +58,11 @@ public without sharing class MA_SetConfigUniqueNameBatchable implements Database
 
                     Boolean isDuplicateDeveloperNameError = false;
 
-                    System.debug( 'record failed to update: ' + record );
+                    System.debug( 'MA_SetConfigUniqueNameBatchable.execute: record failed to update: ' + record );
 
                     for ( Database.Error err : saveResult.getErrors() ) {
 
-                        System.debug( err );
+                        System.debug( 'MA_SetConfigUniqueNameBatchable.execute: ' + err );
 
                         // Bug W-4635920: duplicate value errors are not populating which field in Error.getFields() nor Error.getMessage()
                         Boolean isDeveloperNameField = true; // assume so until Salesforce fixes the bug
@@ -73,7 +76,7 @@ public without sharing class MA_SetConfigUniqueNameBatchable implements Database
 
                         // try to make name "more" unique with random suffix
                         record.DeveloperName__c = formatNameAsUniqueName( record.Name, true );
-                        System.debug( 'duplicate developer name, trying a random value: ' + record );
+                        System.debug( 'MA_SetConfigUniqueNameBatchable.execute: duplicate developer name, trying a random value: ' + record );
 
                         recordsToRetry.add( record );
 
@@ -81,7 +84,7 @@ public without sharing class MA_SetConfigUniqueNameBatchable implements Database
 
                     }
 
-                    System.debug( 'isDuplicateDeveloperNameError=' + isDuplicateDeveloperNameError );
+                    System.debug( 'MA_SetConfigUniqueNameBatchable.execute: isDuplicateDeveloperNameError=' + isDuplicateDeveloperNameError );
 
                 }
 
@@ -104,7 +107,6 @@ public without sharing class MA_SetConfigUniqueNameBatchable implements Database
     private String formatNameAsUniqueName( String name, Boolean useRandomSuffix ) {
 
         String uniqueName = name;
-
 
         if ( uniqueName != null ) {
 
@@ -135,7 +137,7 @@ public without sharing class MA_SetConfigUniqueNameBatchable implements Database
 /*
 BSD 3-Clause License
 
-Copyright (c) 2018, Doug Ayers, douglascayers.com
+Copyright (c) 2017-2019, Doug Ayers, douglascayers.com
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

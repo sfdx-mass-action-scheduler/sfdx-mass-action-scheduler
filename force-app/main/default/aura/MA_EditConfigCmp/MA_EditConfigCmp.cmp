@@ -1,12 +1,15 @@
 <!--
 Author: Doug Ayers
 Website: https://douglascayers.com
-GitHub: https://github.com/douglascayers/sfdx-mass-action-scheduler
+GitHub: https://github.com/douglascayers-org/sfdx-mass-action-scheduler
 License: BSD 3-Clause License
 -->
 <aura:component controller="MA_EditConfigCmpController" implements="flexipage:availableForRecordHome,force:hasRecordId,lightning:actionOverride" access="global">
 
-    <ltng:require scripts="{!$Resource.soqlparse}"/>
+    <aura:attribute name="didInitConfig"
+                    type="Boolean"
+                    description="Track if onInit has loaded the configuration record yet."
+                    default="false"/>
 
     <aura:attribute name="objectDescribe"
                     type="Object"
@@ -19,6 +22,10 @@ License: BSD 3-Clause License
     <aura:attribute name="record"
                     type="Object"
                     description="The record object to be displayed. This is a wrapper object and not the sobject."/>
+
+    <aura:attribute name="spinnerTimerIds"
+                    type="String[]"
+                    description="To minimize flickering of the spinner, delay hiding spinner when another async action starts."/>
 
     <c:LC_API aura:id="lc_api"/>
     <c:LC_URL aura:id="lc_url"/>
@@ -290,7 +297,7 @@ License: BSD 3-Clause License
                                             Your future self and those that come after you will appreciate it.
                                         </p>
                                         <p>
-                                            Pro Tip: After you've saved this record, use the <a href="https://github.com/douglascayers/sfdx-mass-action-scheduler/wiki/How-to-Customize-the-Quick-Edit-Page-Layout" target="_blank">Quick Edit</a> button to edit details
+                                            Pro Tip: After you've saved this record, use the <a href="https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/How-to-Customize-the-Quick-Edit-Page-Layout" target="_blank" rel="noopener noreferrer">Quick Edit</a> button to edit details
                                             without needing to step through the entire wizard each time.
                                         </p>
                                         <p>
@@ -299,9 +306,9 @@ License: BSD 3-Clause License
                                         </p>
                                         <p>
                                             <ul>
-                                                <li>For discussion and feedback <a href="https://success.salesforce.com/_ui/core/chatter/groups/GroupProfilePage?g=0F93A000000LhvN" target="_blank">post in the community group</a> or raise well defined issues and ideas via the <a href="https://github.com/douglascayers/sfdx-mass-action-scheduler/issues" target="_blank">Issues feature</a>.</li>
-                                                <li>Read the <a href="https://github.com/douglascayers/sfdx-mass-action-scheduler/wiki" target="_blank">wiki page</a> for further documentation on Mass Action Scheduler.</li>
-                                                <li>Read the <a href="https://github.com/douglascayers/sfdx-mass-action-scheduler/wiki/Frequently-Asked-Questions" target="_blank">FAQ page</a> to help troubleshoot technical issues.</li>
+                                                <li>For discussion and feedback <a href="https://success.salesforce.com/_ui/core/chatter/groups/GroupProfilePage?g=0F93A000000LhvN" target="_blank" rel="noopener noreferrer">post in the community group</a> or raise well defined issues and ideas via the <a href="https://github.com/douglascayers-org/sfdx-mass-action-scheduler/issues" target="_blank" rel="noopener noreferrer">Issues feature</a>.</li>
+                                                <li>Read the <a href="https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki" target="_blank" rel="noopener noreferrer">wiki page</a> for further documentation on Mass Action Scheduler.</li>
+                                                <li>Read the <a href="https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Frequently-Asked-Questions" target="_blank" rel="noopener noreferrer">FAQ page</a> to help troubleshoot technical issues.</li>
                                             </ul>
                                         </p>
                                     </aura:set>
@@ -317,10 +324,10 @@ License: BSD 3-Clause License
                                         </p>
                                         <p>
                                             <b>Batch Size</b> controls the number of times the target action from the Choose Action step is invoked per save transaction.
-                                            As when using Data Loader, you may need to reduce the batch size to stay within <a href="https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm" target="_blank">governor limits</a>.
+                                            As when using Data Loader, you may need to reduce the batch size to stay within <a href="https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm" target="_blank" rel="noopener noreferrer">governor limits</a>.
                                         </p>
                                         <p>
-                                            <b>Named Credential</b> is optional and is a way to <a href="https://github.com/douglascayers/sfdx-mass-action-scheduler/wiki/Specify-the-Running-User-via-Named-Credentials" target="_blank">specify the running user</a> performing the actions.
+                                            <b>Named Credential</b> is optional and is a way to <a href="https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Specify-the-Running-User-via-Named-Credentials" target="_blank" rel="noopener noreferrer">specify the running user</a> performing the actions.
                                             That is to say the user who has their name stamped as the "Last Modified By" on any updated records
                                             by the target action from the Choose Action step.
                                             If not specified, then the user who last activates the configuration, or who manually runs it, is the running user.
@@ -344,21 +351,21 @@ License: BSD 3-Clause License
                                         </p>
                                         <p>
                                             <b>List Views</b> are easy to create and support simple filter criteria.
-                                            Learn how to create list views with the <a href="https://trailhead.salesforce.com/content/learn/modules/lex_customization/lex_customization_list?trail_id=lex_admin_implementation" target="_blank">Create and Customize List Views</a> unit on Trailhead.
+                                            Learn how to create list views with the <a href="https://trailhead.salesforce.com/content/learn/modules/lex_customization/lex_customization_list?trail_id=lex_admin_implementation" target="_blank" rel="noopener noreferrer">Create and Customize List Views</a> unit on Trailhead.
                                         </p>
                                         <p>
                                             <b>Reports</b> are powerful and support complex filter criteria
-                                            like <a href="https://help.salesforce.com/articleView?id=reports_cross_filters_create.htm" target="_blank">Cross Filters</a>.
-                                            Learn how to create reports with the <a href="https://trailhead.salesforce.com/content/learn/modules/lex_implementation_reports_dashboards?trail_id=lex_admin_implementation" target="_blank">Reports &amp; Dashboards for Lightning Experience</a> module on Trailhead.
+                                            like <a href="https://help.salesforce.com/articleView?id=reports_cross_filters_create.htm" target="_blank" rel="noopener noreferrer">Cross Filters</a>.
+                                            Learn how to create reports with the <a href="https://trailhead.salesforce.com/content/learn/modules/lex_implementation_reports_dashboards?trail_id=lex_admin_implementation" target="_blank" rel="noopener noreferrer">Reports &amp; Dashboards for Lightning Experience</a> module on Trailhead.
                                         </p>
                                         <p>
                                             <b>SOQL</b> queries are an advanced technique to search for specific records. Simple queries can be helpful when you don't want to deal with the overhead of creating a list view or a report.
-                                            Learn how to write SOQL queries with the <a href="https://trailhead.salesforce.com/en/content/learn/modules/apex_database/apex_database_soql?trail_id=force_com_dev_beginner" target="_blank">Write SOQL Queries</a> unit on Trailhead.
+                                            Learn how to write SOQL queries with the <a href="https://trailhead.salesforce.com/en/content/learn/modules/apex_database/apex_database_soql?trail_id=force_com_dev_beginner" target="_blank" rel="noopener noreferrer">Write SOQL Queries</a> unit on Trailhead.
                                         </p>
                                         <p>
                                             <b>Apex</b> classes that implement <code class="keyword">Iterable&lt;Map&lt;String, Object&gt;&gt;</code> are an advanced technique that give you full control over what the source data is.
                                             For example, if you need to make multiple SOQL queries, apply complex data filtering, or retrieve data from an external web service with http callouts.
-                                            Learn how to develop custom iterators with the <a href="https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_iterable.htm" target="_blank">Apex Developer Guide</a>.
+                                            Learn how to develop custom iterators with the <a href="https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_iterable.htm" target="_blank" rel="noopener noreferrer">Apex Developer Guide</a>.
                                         </p>
                                     </aura:set>
 
@@ -387,9 +394,9 @@ License: BSD 3-Clause License
                                                         <td class="slds-cell-wrap">
                                                             Up to 10 thousand records.
                                                             <br/>
-                                                            <a href="https://help.salesforce.com/articleView?id=reports_changing_format.htm" target="_blank">Tabular report format</a> only.
+                                                            <a href="https://help.salesforce.com/articleView?id=reports_changing_format.htm" target="_blank" rel="noopener noreferrer">Tabular report format</a> only.
                                                             <br/>
-                                                            Report must be saved in a <a href="https://trailhead.salesforce.com/content/learn/projects/create-reports-and-dashboards-for-sales-and-marketing-managers?trail_id=learn-admin-essentials" target="_blank">custom folder</a>.
+                                                            Report must be saved in a <a href="https://trailhead.salesforce.com/content/learn/projects/create-reports-and-dashboards-for-sales-and-marketing-managers?trail_id=learn-admin-essentials" target="_blank" rel="noopener noreferrer">custom folder</a>.
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -410,15 +417,15 @@ License: BSD 3-Clause License
 
                                         <p>
                                             <b>Alias SOQL aggregate functions</b>. Aggregate functions like <code class="keyword">COUNT</code>, <code class="keyword">MIN</code>, <code class="keyword">MAX</code>, <code class="keyword">AVG</code>, <code class="keyword">SUM</code> and others
-                                            must be <a href="https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_groupby_alias.htm" target="_blank">aliased</a> to be selectable in the Field Mappings step.
-                                            For example, consider the query <code class="keyword">SELECT COUNT(Id) <b>cnt</b>, Type FROM Account GROUP BY Type</code>.
-                                            Without the <b>cnt</b> alias then only the <b>Type</b> field would be available on the Field Mappings step.
+                                            must be <a href="https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_groupby_alias.htm" target="_blank" rel="noopener noreferrer">aliased</a> to be selectable in the Field Mappings step.
+                                            For example, consider the query <code class="keyword">SELECT COUNT(Id) <b>RecordCount</b>, Type FROM Account GROUP BY Type</code>.
+                                            Without the <b>RecordCount</b> alias then only the <b>Type</b> field would be available on the Field Mappings step.
                                         </p>
 
                                         <p>
                                             <b>Test your data source before automating</b>.
                                             Confirm fields and filters by first previewing list views and running reports.
-                                            Execute SOQL queries in a tool like <a href="https://help.salesforce.com/articleView?id=code_dev_console_tab_query_editor.htm" target="_blank">Developer Console</a> or <a href="https://developer.salesforce.com/docs/atlas.en-us.dataLoader.meta/dataLoader/data_loader.htm" target="_blank">Data Loader</a>.
+                                            Execute SOQL queries in a tool like <a href="https://help.salesforce.com/articleView?id=code_dev_console_tab_query_editor.htm" target="_blank" rel="noopener noreferrer">Developer Console</a> or <a href="https://developer.salesforce.com/docs/atlas.en-us.dataLoader.meta/dataLoader/data_loader.htm" target="_blank" rel="noopener noreferrer">Data Loader</a>.
                                         </p>
 
                                     </aura:set>
@@ -439,7 +446,7 @@ License: BSD 3-Clause License
                                             Select the target action you want to process the source records.
                                         </p>
                                         <p>
-                                            Note, Process Builders and Flows are grouped together because the <a href="https://developer.salesforce.com/docs/atlas.en-us.api_action.meta/api_action/actions_obj_flow.htm" target="_blank">REST API</a> does not distinguish between them.
+                                            Note, Process Builders and Flows are grouped together because the <a href="https://developer.salesforce.com/docs/atlas.en-us.api_action.meta/api_action/actions_obj_flow.htm" target="_blank" rel="noopener noreferrer">REST API</a> does not distinguish between them.
                                             You may like to use a naming convention to help you tell them apart. For example, adding the word "Flow" to the names of your flows (e.g. "My Account Flow").
                                         </p>
                                         <p>
@@ -460,11 +467,11 @@ License: BSD 3-Clause License
                                                 <tbody>
                                                     <tr>
                                                         <td class="slds-cell-nowrap"><b>Process Builder</b></td>
-                                                        <td class="slds-cell-wrap">Processes that start when <a href="https://help.salesforce.com/articleView?id=process_start.htm" target="_blank">invoked by another process</a>, not when a record is created or updated.</td>
+                                                        <td class="slds-cell-wrap">Processes that start when <a href="https://help.salesforce.com/articleView?id=process_start.htm" target="_blank" rel="noopener noreferrer">invoked by another process</a>, not when a record is created or updated.</td>
                                                     </tr>
                                                     <tr>
                                                         <td class="slds-cell-nowrap"><b>Flows</b></td>
-                                                        <td class="slds-cell-wrap">Autolaunched flows. Flows that <a href="https://help.salesforce.com/articleView?id=vpm_admin_flow_type.htm" target="_blank">don't require user interaction</a> like screens.</td>
+                                                        <td class="slds-cell-wrap">Autolaunched flows. Flows that <a href="https://help.salesforce.com/articleView?id=flow_concepts_type.htm" target="_blank" rel="noopener noreferrer">don't require user interaction</a> like screens.</td>
                                                     </tr>
                                                     <tr>
                                                         <td class="slds-cell-nowrap"><b>Quick Actions</b></td>
@@ -482,7 +489,7 @@ License: BSD 3-Clause License
                                                         <td class="slds-cell-nowrap"><b>Apex</b></td>
                                                         <td class="slds-cell-wrap">
                                                             <p>
-                                                                Classes annotated with <a href="https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_InvocableMethod.htm" target="_blank">@InvocableMethod</a> or <a href="https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_anonymous_block.htm" target="_blank">anonymous blocks</a>.
+                                                                Classes annotated with <a href="https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_InvocableMethod.htm" target="_blank" rel="noopener noreferrer">@InvocableMethod</a> or <a href="https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_anonymous_block.htm" target="_blank" rel="noopener noreferrer">anonymous blocks</a>.
                                                             </p>
                                                             <p>
                                                                 For anonymous blocks, your script must include the following method definition,
@@ -494,7 +501,7 @@ License: BSD 3-Clause License
                                                                 </code>
                                                             </p>
                                                             <p>
-                                                                Apex classes and anonymous blocks are invoked once per batch of source records, just like the <code class="keyword">execute</code> method of a <a href="https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_batch_interface.htm" target="_blank">Batchable Class</a> or a <a href="https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_triggers_bulk.htm" target="_blank">Bulk Trigger</a>.
+                                                                Apex classes and anonymous blocks are invoked once per batch of source records, just like the <code class="keyword">execute</code> method of a <a href="https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_batch_interface.htm" target="_blank" rel="noopener noreferrer">Batchable Class</a> or a <a href="https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_triggers_bulk.htm" target="_blank" rel="noopener noreferrer">Bulk Trigger</a>.
                                                                 However, unlike batchable or trigger code, no state is preserved within the script between executions. Though you may choose to manage and preserve state yourself between executions via DML to records or custom settings.
                                                             </p>
                                                         </td>
@@ -530,13 +537,13 @@ License: BSD 3-Clause License
                                             <b>Don't see the Source Field you're looking for?</b>
                                             <ul>
                                                 <li>Confirm the field is included in your source type.</li>
-                                                <li>Ensure that your user has <a href="https://trailhead.salesforce.com/content/learn/modules/data_security?trail_id=security" target="_blank">read object and field permissions</a>.</li>
+                                                <li>Ensure that your user has <a href="https://trailhead.salesforce.com/content/learn/modules/data_security?trail_id=security" target="_blank" rel="noopener noreferrer">read object and field permissions</a>.</li>
                                                 <li>If using a Named Credential, ensure that user also has appropriate object and field permissions.</li>
                                                 <li>
                                                     If using SOQL, alias the aggregate functions. Aggregate functions like <code class="keyword">COUNT</code>, <code class="keyword">MIN</code>, <code class="keyword">MAX</code>, <code class="keyword">AVG</code>, <code class="keyword">SUM</code> and others
-                                                    must be <a href="https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_groupby_alias.htm" target="_blank">aliased</a> to be selectable in the Field Mappings step.
-                                                    For example, consider the query <code class="keyword">SELECT COUNT(Id) <b>cnt</b>, Type FROM Account GROUP BY Type</code>.
-                                                    Without the <b>cnt</b> alias then only the <b>Type</b> field would be available on the Field Mappings step.
+                                                    must be <a href="https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_groupby_alias.htm" target="_blank" rel="noopener noreferrer">aliased</a> to be selectable in the Field Mappings step.
+                                                    For example, consider the query <code class="keyword">SELECT COUNT(Id) <b>RecordCount</b>, Type FROM Account GROUP BY Type</code>.
+                                                    Without the <b>RecordCount</b> alias then only the <b>Type</b> field would be available on the Field Mappings step.
                                                 </li>
                                                 <li>
                                                     If using SOQL, child relationship queries are not shown in the Field Mappings step.
@@ -549,9 +556,9 @@ License: BSD 3-Clause License
                                         <p>
                                             <b>Don't see the Target Field you're looking for?</b>
                                             <ul>
-                                                <li>For Flows, ensure the variable's <a href="https://help.salesforce.com/articleView?id=vpm_designer_resources_variable.htm" target="_blank">Input/Output Type</a> is "Input Only" or "Input and Output".</li>
-                                                <li>For Quick Actions, ensure the field is on the <a href="https://help.salesforce.com/articleView?id=action_layout_editor_about.htm" target="_blank">action's layout</a>.</li>
-                                                <li>For Invocable Apex, ensure the class variable has the <a href="https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_InvocableVariable.htm" target="_blank">@InvocableVariable</a> annotation.</li>
+                                                <li>For Flows, ensure the variable's <a href="https://help.salesforce.com/articleView?id=flow_ref_resources_variable.htm" target="_blank" rel="noopener noreferrer">Availability Outside the Flow</a> has <b>Available for input</b> selected.</li>
+                                                <li>For Quick Actions, ensure the field is on the <a href="https://help.salesforce.com/articleView?id=action_layout_editor_about.htm" target="_blank" rel="noopener noreferrer">action's layout</a>.</li>
+                                                <li>For Invocable Apex, ensure the class variable has the <a href="https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_InvocableVariable.htm" target="_blank" rel="noopener noreferrer">@InvocableVariable</a> annotation.</li>
                                                 <li>For Anonymous Apex, the field mappings step is not used. Instead, your script handles all field mapping and logic within its <code class="keyword">execute</code> method.</li>
                                             </ul>
                                         </p>
@@ -581,7 +588,7 @@ License: BSD 3-Clause License
                                         </p>
                                         <p>
                                             <b>Custom</b> allows you to specify your own cron expression which allows more advanced options than the provided simple scheduler.
-                                            Learn more about how to write cron expressions in the "Using the System.Schedule Method" section of the <a href="https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_scheduler.htm" target="_blank">Apex Scheduler</a> documentation.
+                                            Learn more about how to write cron expressions in the "Using the System.Schedule Method" section of the <a href="https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_scheduler.htm" target="_blank" rel="noopener noreferrer">Apex Scheduler</a> documentation.
                                         </p>
                                         <p>
                                             Note, only <b>active</b> configurations will run regardless the schedule frequency chosen.
@@ -594,7 +601,7 @@ License: BSD 3-Clause License
                                             Salesforce has a limit on the number of scheduled Apex jobs at one time. Traditionally this is 100 scheduled jobs.
                                             If you encounter an error trying to save an active configuration with a scheduled or custom frequency,
                                             you may have reached the limit and need to either deactivate other configurations or unschedule other Apex jobs in your org.
-                                            Learn more about these limits in the "Apex Scheduler Limits" section of the <a href="https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_scheduler.htm" target="_blank">Apex Scheduler</a> documentation.
+                                            Learn more about these limits in the "Apex Scheduler Limits" section of the <a href="https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_scheduler.htm" target="_blank" rel="noopener noreferrer">Apex Scheduler</a> documentation.
                                         </p>
                                         <p>
                                             <b>Example cron expressions for custom schedule frequency:</b>
@@ -863,12 +870,6 @@ License: BSD 3-Clause License
                                     messageWhenTooLong="SOQL Query is too long."
                                     class="slds-p-top_x-small slds-text-font_monospace"/>
 
-                                <lightning:button aura:id="validateSourceSoqlQueryButton"
-                                    label="Validate Query"
-                                    iconName="utility:table"
-                                    disabled="{!empty(v.record.sourceSoqlQuery)}"
-                                    onclick="{!c.handleValidateSourceSoqlQuery}"/>
-
                             </aura:if>
 
                             <aura:if isTrue="{!equals( v.sourceType, 'Apex' )}">
@@ -890,7 +891,7 @@ License: BSD 3-Clause License
 
                                 <div class="slds-form-element">
                                     <div class="slds-form-element__control">
-                                        <a href="{!v.sourceTypeURL}" target="_blank">View selected source to confirm fields and filters</a>
+                                        <a href="{!v.sourceTypeURL}" target="_blank" rel="noopener noreferrer">View selected source to confirm fields and filters</a>
                                     </div>
                                 </div>
 
@@ -947,7 +948,7 @@ License: BSD 3-Clause License
                                         <br/>
                                         <b>Evaluation Criteria</b>, which normally decides when a rule fires, is ignored because you are explicitly running the rules with Mass Action Scheduler.
                                         <br/>
-                                        Learn more with the <a href="https://help.salesforce.com/articleView?id=workflow_rules_define.htm" target="_blank">Set the Criteria for Your Workflow Rule</a> help article.
+                                        Learn more with the <a href="https://help.salesforce.com/articleView?id=workflow_rules_define.htm" target="_blank" rel="noopener noreferrer">Set the Criteria for Your Workflow Rule</a> help article.
                                     </div>
 
                                 </div>
@@ -1267,7 +1268,7 @@ License: BSD 3-Clause License
                                          required="true"/>
 
                                     <div class="slds-m-vertical_small">
-                                        Please refer to the <a href="https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_scheduler.htm" target="_blank">Apex Scheduler Developer Documentation</a>
+                                        Please refer to the <a href="https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_scheduler.htm" target="_blank" rel="noopener noreferrer">Apex Scheduler Developer Documentation</a>
                                         for details on creating a cron expression.
                                     </div>
 
@@ -1336,7 +1337,7 @@ License: BSD 3-Clause License
 <!--
 BSD 3-Clause License
 
-Copyright (c) 2018, Doug Ayers, douglascayers.com
+Copyright (c) 2017-2019, Doug Ayers, douglascayers.com
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

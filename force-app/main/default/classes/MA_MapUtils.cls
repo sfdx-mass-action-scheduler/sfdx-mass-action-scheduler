@@ -1,7 +1,7 @@
 /**
  * Author: Doug Ayers
  * Website: https://douglascayers.com
- * GitHub: https://github.com/douglascayers/sfdx-mass-action-scheduler
+ * GitHub: https://github.com/douglascayers-org/sfdx-mass-action-scheduler
  * License: BSD 3-Clause License
  */
 public inherited sharing class MA_MapUtils {
@@ -29,11 +29,102 @@ public inherited sharing class MA_MapUtils {
         return newMap;
     }
 
+    // ------------------------------------------------------------------------
+
+    /**
+     * Visits each field on the given record and puts the values in
+     * the given record map. The map's keys are a concatenation of
+     * the given baseFieldPath and the record's field name.
+     *
+     * If a field's value is itself an SObject or Map then the method is
+     * called again on that record. This time, passing in for the
+     * baseFieldPath the value of the prior baseFieldPath + the field name.
+     *
+     * Ultimately, for a query like:
+     *      SELECT Id, FirstName, Account.Name FROM Contact
+     *
+     * This method generates a map like:
+     *      {
+     *        "Account.Name" : "dca_mass_action: MA Test Account",
+     *        "Account.Id" : "001S00000106yiiIAA",
+     *        "Account" : {
+     *          "attributes" : {
+     *            "type" : "Account",
+     *            "url" : "/services/data/v46.0/sobjects/Account/001S00000106yiiIAA"
+     *          },
+     *          "Id" : "001S00000106yiiIAA",
+     *          "Name" : "dca_mass_action: MA Test Account"
+     *        },
+     *        "AccountId" : "001S00000106yiiIAA",
+     *        "FirstName" : "Doug",
+     *        "Id" : "003S0000018BxKOIA0"
+     *      }
+     *
+     * @param record
+     *      SObject or Map whose field values to add to the record map.
+     * @param baseFieldPath
+     *      Essentially, the prefix for the keys when putting values in the record map.
+     * @param recordMap
+     *      Map of field values from the given record.
+     *      The map keys are a concatenation of `baseFieldPath + fieldName`.
+     */
+
+    public static Map<String, Object> visitFieldPaths( SObject record ) {
+
+        Map<String, Object> recordMap = new Map<String, Object>();
+
+        if ( record != null ) {
+            visitFieldPaths( record, '', recordMap );
+        }
+
+        return recordMap;
+    }
+
+    public static Map<String, Object> visitFieldPaths( Map<String, Object> record ) {
+
+        Map<String, Object> recordMap = new Map<String, Object>();
+
+        if ( record != null ) {
+            visitFieldPaths( record, '', recordMap );
+        }
+
+        return recordMap;
+    }
+
+    private static void visitFieldPaths( SObject record, String baseFieldPath, Map<String, Object> recordMap ) {
+        if ( record != null ) {
+            visitFieldPaths( record.getPopulatedFieldsAsMap(), baseFieldPath, recordMap );
+        }
+    }
+
+    private static void visitFieldPaths( Map<String, Object> record, String baseFieldPath, Map<String, Object> recordMap ) {
+
+        baseFieldPath = ( String.isBlank( baseFieldPath ) ? '' : baseFieldPath + '.' );
+
+        Map<String, Object> populatedFieldsMap = record;
+
+        for ( String fieldName : populatedFieldsMap.keySet() ) {
+
+            String fieldPath = baseFieldPath + fieldName;
+            Object fieldValue = populatedFieldsMap.get( fieldName );
+
+            recordMap.put( fieldPath, fieldValue );
+
+            if ( fieldValue instanceof SObject ) {
+                visitFieldPaths( (SObject) fieldValue, fieldPath, recordMap );
+            } else if ( fieldValue instanceof Map<String, Object> ) {
+                visitFieldPaths( (Map<String, Object>) fieldValue, fieldPath, recordMap );
+            }
+
+        }
+
+    }
+
 }
 /*
 BSD 3-Clause License
 
-Copyright (c) 2018, Doug Ayers, douglascayers.com
+Copyright (c) 2017-2019, Doug Ayers, douglascayers.com
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

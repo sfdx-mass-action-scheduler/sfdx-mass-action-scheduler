@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>All</fullName>
+    <columns>NAME</columns>
+    <columns>Mass_Action_Configuration__c</columns>
+    <columns>Job_ID__c</columns>
+    <columns>RECORDTYPE</columns>
+    <columns>Message_Type__c</columns>
+    <columns>Message__c</columns>
+    <columns>CREATED_DATE</columns>
+    <filterScope>Everything</filterScope>
+    <label>All Logs</label>
+</ListView>

@@ -39,7 +39,7 @@ License: BSD 3-Clause License
 
         Example usage:
             component.find( 'lcAPI' ).restRequest({
-                'url' : '/services/data/v45.0/sobjects/Account',
+                'url' : '/services/data/v46.0/sobjects/Account',
                 'method' : 'post',
                 'body' : JSON.stringify({
                     'Name' : 'Salesforce',
@@ -95,14 +95,14 @@ License: BSD 3-Clause License
     </aura:method>
 
     <div class="slds-hide">
-        <iframe aura:id="penpalFrame" src="{!v.iframeSrc}"></iframe>
+        <iframe aura:id="penpalFrame" src="{!v.iframeSrc}" sandbox="allow-same-origin allow-scripts"></iframe>
     </div>
 
 </aura:component>
 <!--
 BSD 3-Clause License
 
-Copyright (c) 2018, Doug Ayers, douglascayers.com
+Copyright (c) 2017-2019, Doug Ayers, douglascayers.com
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

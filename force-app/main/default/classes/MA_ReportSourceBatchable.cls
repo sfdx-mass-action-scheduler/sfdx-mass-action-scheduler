@@ -1,10 +1,13 @@
 /**
  * Author: Doug Ayers
  * Website: https://douglascayers.com
- * GitHub: https://github.com/douglascayers/sfdx-mass-action-scheduler
+ * GitHub: https://github.com/douglascayers-org/sfdx-mass-action-scheduler
  * License: BSD 3-Clause License
  */
-public with sharing class MA_ReportSourceBatchable implements Database.Batchable<Reports.ReportDetailRow>, Database.Stateful, Database.AllowsCallouts, Database.RaisesPlatformEvents {
+public with sharing class MA_ReportSourceBatchable implements Database.Batchable<Reports.ReportDetailRow>,
+                                                              Database.Stateful,
+                                                              Database.AllowsCallouts,
+                                                              Database.RaisesPlatformEvents {
 
     private ID configId { get; set; }
 
@@ -26,26 +29,22 @@ public with sharing class MA_ReportSourceBatchable implements Database.Batchable
 
         this.reportDescribe = Reports.ReportManager.describeReport( config.Source_Report_ID__c );
 
-        return new MA_ReportService.ReportRowIterator( this.config.Source_Report_ID__c, this.config.Source_Report_Column_Name__c );
+        Iterable<Reports.ReportDetailRow> reportIterable = new MA_ReportService.ReportRowIterator( this.config.Source_Report_ID__c, this.config.Source_Report_Column_Name__c );
+
+        MA_MassActionBatchUtils.handleBatchJobStarted( this.configId, context.getJobId() );
+
+        return reportIterable;
     }
 
     public void execute( Database.BatchableContext context, List<Reports.ReportDetailRow> reportRows ) {
 
-        try {
+        System.debug( 'MA_ReportSourceBatchable.execute: ' + context + ', configId=' + this.configId );
 
-            System.debug( 'MA_ReportSourceBatchable.execute: ' + context + ', configId=' + this.configId );
+        List<Map<String, Object>> sourceRowMaps = convertReportRowsToMaps( reportRows, this.reportDescribe );
 
-            List<Map<String, Object>> sourceRowMaps = convertReportRowsToMaps( reportRows, this.reportDescribe );
+        MA_MassActionUtils.invokeTargetAction( this.config, sourceRowMaps );
 
-            MA_MassActionUtils.invokeTargetAction( this.config, sourceRowMaps );
-
-        } catch ( Exception e ) {
-
-            System.debug( LoggingLevel.ERROR, e.getMessage() + ' : ' + e.getStackTraceString() );
-
-            MA_MassActionBatchUtils.logJobException( this.configId, context.getJobId(), e );
-
-        }
+        MA_MassActionBatchUtils.handleBatchJobExecution( this.configId, context.getJobId(), reportRows.size(), JSON.serializePretty( sourceRowMaps ) );
 
     }
 
@@ -53,7 +52,7 @@ public with sharing class MA_ReportSourceBatchable implements Database.Batchable
 
         System.debug( 'MA_ReportSourceBatchable.finish: ' + context + ', configId=' + this.configId );
 
-        MA_MassActionBatchUtils.handleBatchJobFinished( this.config.Id, context.getJobId() );
+        MA_MassActionBatchUtils.handleBatchJobFinished( this.configId, context.getJobId() );
 
     }
 
@@ -125,7 +124,7 @@ public with sharing class MA_ReportSourceBatchable implements Database.Batchable
                     // important to grab the value and not the label
                     // otherwise get the text literal "true"/false
                     // instead of the boolean true/false
-                    // which led to https://github.com/douglascayers/sfdx-mass-action-scheduler/issues/64
+                    // which led to https://github.com/douglascayers-org/sfdx-mass-action-scheduler/issues/64
                     extractedValue = cellValue;
                 }
 
@@ -181,7 +180,7 @@ public with sharing class MA_ReportSourceBatchable implements Database.Batchable
 /*
 BSD 3-Clause License
 
-Copyright (c) 2018, Doug Ayers, douglascayers.com
+Copyright (c) 2017-2019, Doug Ayers, douglascayers.com
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

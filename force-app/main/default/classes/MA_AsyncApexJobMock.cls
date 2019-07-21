@@ -1,58 +1,71 @@
 /**
  * Author: Doug Ayers
  * Website: https://douglascayers.com
- * GitHub: https://github.com/douglascayers/sfdx-mass-action-scheduler
+ * GitHub: https://github.com/douglascayers-org/sfdx-mass-action-scheduler
  * License: BSD 3-Clause License
+ */
+/*
+ * Test coverage provided by MA_MassActionBatchUtilsTest.
  */
 public inherited sharing class MA_AsyncApexJobMock {
 
-    public static final ID PASS_JOB_ID = '707f4000000PASS';
-    public static final ID FAIL_JOB_ID = '707f4000000FAIL';
+    // These are fake job ids that parse via ID.valueOf()
+    // but don't actually exist. This allows test/mock code
+    // to instantiate AsyncApexJobs or pass job ids to methods
+    // and reliably get back a test/mock job record later.
+    // Checkmarx security scanner labels these "low risk hardcoded ids".
+    // They are hardcoded on purpose for testing/mocking purposes.
+    public static final ID QUEUED_JOB_ID                = '707f40000000001';
+    public static final ID PREPARING_JOB_ID             = '707f40000000002';
+    public static final ID PROCESSING_JOB_ID            = '707f40000000003';
+    public static final ID ABORTED_JOB_ID               = '707f40000000004';
+    public static final ID FAILED_JOB_ID                = '707f40000000005';
+    public static final ID COMPLETED_JOB_ID             = '707f40000000006';
+    public static final ID COMPLETED_WITH_ERRORS_JOB_ID = '707f40000000007';
 
     public static final Set<ID> MOCK_JOB_IDS = new Set<ID>{
-        PASS_JOB_ID, FAIL_JOB_ID
+        QUEUED_JOB_ID,
+        PREPARING_JOB_ID,
+        PROCESSING_JOB_ID,
+        ABORTED_JOB_ID,
+        FAILED_JOB_ID,
+        COMPLETED_JOB_ID,
+        COMPLETED_WITH_ERRORS_JOB_ID
+    };
+
+    private static final Map<ID, AsyncApexJob> MOCK_JOBS_MAP = new Map<ID, AsyncApexJob>{
+        QUEUED_JOB_ID => mockJob( QUEUED_JOB_ID, 'Queued', null, null, null, null ),
+        PREPARING_JOB_ID => mockJob( PREPARING_JOB_ID, 'Preparing', null, null, null, null ),
+        PROCESSING_JOB_ID => mockJob( PROCESSING_JOB_ID, 'Processing', null, 2, 0, 0 ),
+        ABORTED_JOB_ID => mockJob( ABORTED_JOB_ID, 'Aborted', null, 2, 1, 0 ),
+        FAILED_JOB_ID => mockJob( FAILED_JOB_ID, 'Failed', 'Test Job Failed', 2, 0, 2 ),
+        COMPLETED_JOB_ID => mockJob( COMPLETED_JOB_ID, 'Completed', null, 2, 2, 0 ),
+        COMPLETED_WITH_ERRORS_JOB_ID => mockJob( COMPLETED_WITH_ERRORS_JOB_ID, 'Completed', 'Test Job Completed with Errors', 2, 0, 2 )
     };
 
     public static AsyncApexJob getJobById( ID jobId ) {
+        return MOCK_JOBS_MAP.get( jobId );
+    }
 
-        AsyncApexJob job;
-
-        if ( jobId == PASS_JOB_ID ) {
-
-            // this object has non-writable fields so we use the json serialization trick to populate a mock record
-            job = (AsyncApexJob) JSON.deserialize( JSON.serialize( new Map<String, Object>{
-                'Id' => jobId,
-                'ExtendedStatus' => 'Test Job Success',
-                'TotalJobItems' => 1,
-                'TotalJobItems' => 1,
-                'NumberOfErrors' => 0,
-                'CreatedDate' => DateTime.now(),
-                'CompletedDate' => DateTime.now()
-            }), AsyncApexJob.class );
-
-        } else if ( jobId == FAIL_JOB_ID ) {
-
-            // this object has non-writable fields so we use the json serialization trick to populate a mock record
-            job = (AsyncApexJob) JSON.deserialize( JSON.serialize( new Map<String, Object>{
-                'Id' => jobId,
-                'ExtendedStatus' => 'Test Job Failure',
-                'TotalJobItems' => 1,
-                'JobItemsProcessed' => 1,
-                'NumberOfErrors' => 1,
-                'CreatedDate' => DateTime.now(),
-                'CompletedDate' => DateTime.now()
-            }), AsyncApexJob.class );
-
-        }
-
-        return job;
+    private static AsyncApexJob mockJob( ID jobId, String status, String extendedStatus, Integer totalJobItems, Integer jobItemsProcessed, Integer numberOfErrors ) {
+        // this object has non-writable fields so we use the json serialization trick to populate a mock record
+        return (AsyncApexJob) JSON.deserialize( JSON.serialize( new Map<String, Object>{
+            'Id' => jobId,
+            'Status' => status,
+            'ExtendedStatus' => extendedStatus,
+            'TotalJobItems' => totalJobItems,
+            'JobItemsProcessed' => jobItemsProcessed,
+            'NumberOfErrors' => numberOfErrors,
+            'CreatedDate' => DateTime.now(),
+            'CompletedDate' => DateTime.now()
+        }), AsyncApexJob.class );
     }
 
 }
 /*
 BSD 3-Clause License
 
-Copyright (c) 2018, Doug Ayers, douglascayers.com
+Copyright (c) 2017-2019, Doug Ayers, douglascayers.com
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

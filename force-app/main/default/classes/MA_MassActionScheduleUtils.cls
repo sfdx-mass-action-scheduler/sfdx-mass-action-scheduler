@@ -1,7 +1,7 @@
 /**
  * Author: Doug Ayers
  * Website: https://douglascayers.com
- * GitHub: https://github.com/douglascayers/sfdx-mass-action-scheduler
+ * GitHub: https://github.com/douglascayers-org/sfdx-mass-action-scheduler
  * License: BSD 3-Clause License
  */
 /**
@@ -36,7 +36,7 @@ public inherited sharing class MA_MassActionScheduleUtils {
 
             for ( CronTrigger cronTrigger : cronTriggers ) {
 
-                System.debug( 'Aborting job: ' + JSON.serializePretty( cronTrigger ) );
+                System.debug( 'MA_MassActionScheduleUtils.unscheduleMassActions: Aborting job: ' + JSON.serializePretty( cronTrigger ) );
                 System.abortJob( cronTrigger.Id );
 
             }
@@ -73,9 +73,9 @@ public inherited sharing class MA_MassActionScheduleUtils {
             String jobName = 'MA_MassAction_' + config.Id;
             String cron = buildCron( config );
 
-            System.debug( 'Scheduling job: jobName=' + jobName + ', cron=' + cron );
+            System.debug( 'MA_MassActionScheduleUtils.scheduleMassActions: Scheduling job: jobName=' + jobName + ', cron=' + cron );
             ID jobId = System.schedule( jobName, cron, new MA_MassActionSchedulable( config.Id ) );
-            System.debug( 'Scheduled job: ' + jobId );
+            System.debug( 'MA_MassActionScheduleUtils.scheduleMassActions: Scheduled job: ' + jobId );
 
         }
 
@@ -83,7 +83,7 @@ public inherited sharing class MA_MassActionScheduleUtils {
 
     public static String buildCron( Mass_Action_Configuration__c config ) {
 
-        System.debug( 'Build Cron: ' + config );
+        System.debug( 'MA_MassActionScheduleUtils.buildCron: ' + config );
 
         String cron = '';
 
@@ -107,7 +107,7 @@ public inherited sharing class MA_MassActionScheduleUtils {
 
         }
 
-        System.debug( 'Cron: ' + cron );
+        System.debug( 'MA_MassActionScheduleUtils.buildCron: cron=' + cron );
 
         return cron;
     }
@@ -116,7 +116,7 @@ public inherited sharing class MA_MassActionScheduleUtils {
 /*
 BSD 3-Clause License
 
-Copyright (c) 2018, Doug Ayers, douglascayers.com
+Copyright (c) 2017-2019, Doug Ayers, douglascayers.com
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

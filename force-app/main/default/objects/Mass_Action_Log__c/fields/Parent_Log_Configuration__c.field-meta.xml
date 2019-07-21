@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Parent_Log_Configuration__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description>Populated only when the log record type is &quot;Parent Log&quot;, otherwise it is null. This allows us to have a filtered related list of parent logs on Mass Action Configuration page layout. https://douglascayers.com/2015/11/18/salesforce-filter-related-lists-without-code/</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Populated only when the log record type is &quot;Parent Log&quot;, otherwise it is null.</inlineHelpText>
+    <label>Parent Log Configuration</label>
+    <referenceTo>Mass_Action_Configuration__c</referenceTo>
+    <relationshipLabel>Mass Action Logs</relationshipLabel>
+    <relationshipName>Mass_Action_Parent_Logs</relationshipName>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

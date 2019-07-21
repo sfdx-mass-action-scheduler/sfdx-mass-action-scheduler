@@ -1,7 +1,7 @@
 <!--
 Author: Doug Ayers
 Website: https://douglascayers.com
-GitHub: https://github.com/douglascayers/sfdx-mass-action-scheduler
+GitHub: https://github.com/douglascayers-org/sfdx-mass-action-scheduler
 License: BSD 3-Clause License
 -->
 <aura:component implements="flexipage:availableForAllPageTypes" access="global">
@@ -21,8 +21,8 @@ License: BSD 3-Clause License
     <aura:if isTrue="{!v.upgradeAvailable}">
         <div class="slds-p-around_xx-small slds-m-bottom_x-small slds-text-align_center slds-theme_success">
             A new version is available.
-            You're on version <a href="{!v.linkToInstalledVersion}" target="_blank">{!v.installedVersionNumber}</a>.
-            Upgrade to version <a href="{!v.linkToLatestVersion}" target="_blank">{!v.latestVersionNumber}</a>.
+            You're on version <a href="{!v.linkToInstalledVersion}" target="_blank" rel="noopener noreferrer">{!v.installedVersionNumber}</a>.
+            Upgrade to version <a href="{!v.linkToLatestVersion}" target="_blank" rel="noopener noreferrer">{!v.latestVersionNumber}</a>.
         </div>
     </aura:if>
 
@@ -30,7 +30,7 @@ License: BSD 3-Clause License
 <!--
 BSD 3-Clause License
 
-Copyright (c) 2018, Doug Ayers, douglascayers.com
+Copyright (c) 2017-2019, Doug Ayers, douglascayers.com
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

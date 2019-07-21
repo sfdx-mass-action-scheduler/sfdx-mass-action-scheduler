@@ -1,14 +1,28 @@
 /**
  * Author: Doug Ayers
  * Website: https://douglascayers.com
- * GitHub: https://github.com/douglascayers/sfdx-mass-action-scheduler
+ * GitHub: https://github.com/douglascayers-org/sfdx-mass-action-scheduler
  * License: BSD 3-Clause License
+ */
+/*
+ * This class explicitly uses 'without sharing' because it is invoked by the package install handler
+ * and it is documented that the use of 'with sharing' by apex classes called by the handler may prevent installation.
+ * https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_install_handler.htm
+ */
+/*
+ * IMPORTANT!!! ALL APEX CLASSES THAT ARE EXPLICITLY OR IMPLICITLY INVOKED BY THIS
+ * INSTALL HANDLER AT INSTALL TIME MUST USE "WITHOUT SHARING" KEYWORD OR THE INSTALL
+ * WILL FAIL DUE TO INSTALL USER NOT BEING GRANTED SUFFICIENT PRIVILEGES.
  */
 public without sharing class MA_InstallHandler implements System.InstallHandler {
 
     public void onInstall( InstallContext context ) {
 
+        new MA_UpgradePageLayoutsService().upgrade();
+
         Database.executeBatch( new MA_SetConfigUniqueNameBatchable() );
+
+        Database.executeBatch( new MA_UpgradeMassActionLogsBatchable() );
 
     }
 
@@ -16,7 +30,7 @@ public without sharing class MA_InstallHandler implements System.InstallHandler 
 /*
 BSD 3-Clause License
 
-Copyright (c) 2018, Doug Ayers, douglascayers.com
+Copyright (c) 2017-2019, Doug Ayers, douglascayers.com
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

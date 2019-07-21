@@ -1,10 +1,13 @@
 /**
  * Author: Doug Ayers
  * Website: https://douglascayers.com
- * GitHub: https://github.com/douglascayers/sfdx-mass-action-scheduler
+ * GitHub: https://github.com/douglascayers-org/sfdx-mass-action-scheduler
  * License: BSD 3-Clause License
  */
-public with sharing class MA_IterableSourceBatchable implements Database.Batchable<Map<String, Object>>, Database.Stateful, Database.AllowsCallouts, Database.RaisesPlatformEvents {
+public with sharing class MA_IterableSourceBatchable implements Database.Batchable<Map<String, Object>>,
+                                                                Database.Stateful,
+                                                                Database.AllowsCallouts,
+                                                                Database.RaisesPlatformEvents {
 
     private ID configId { get; set; }
 
@@ -25,24 +28,20 @@ public with sharing class MA_IterableSourceBatchable implements Database.Batchab
 
         this.config = MA_MassActionUtils.getConfiguration( this.configId );
 
+        MA_MassActionBatchUtils.handleBatchJobStarted( this.configId, context.getJobId() );
+
         return this.iterable;
     }
 
-    public void execute( Database.BatchableContext context, List<Map<String, Object>> sourceRowMaps ) {
+    public void execute( Database.BatchableContext context, List<Map<String, Object>> records ) {
 
-        try {
+        System.debug( 'MA_IterableSourceBatchable.execute: ' + context + ', configId=' + this.configId );
 
-            System.debug( 'MA_IterableSourceBatchable.execute: ' + context + ', configId=' + this.configId );
+        List<Map<String, Object>> sourceRowMaps = convertRecordsToMaps( records );
 
-            MA_MassActionUtils.invokeTargetAction( this.config, sourceRowMaps );
+        MA_MassActionUtils.invokeTargetAction( this.config, sourceRowMaps );
 
-        } catch ( Exception e ) {
-
-            System.debug( LoggingLevel.ERROR, e.getMessage() + ' : ' + e.getStackTraceString() );
-
-            MA_MassActionBatchUtils.logJobException( this.configId, context.getJobId(), e );
-
-        }
+        MA_MassActionBatchUtils.handleBatchJobExecution( this.configId, context.getJobId(), records.size(), JSON.serializePretty( records ) );
 
     }
 
@@ -56,11 +55,27 @@ public with sharing class MA_IterableSourceBatchable implements Database.Batchab
 
     // ------------------------------------------------------------------------
 
+    private List<Map<String, Object>> convertRecordsToMaps( List<Map<String, Object>> records ) {
+
+        List<Map<String, Object>> maps = new List<Map<String, Object>>();
+
+        for ( Map<String, Object> record : records ) {
+            maps.add( convertRecordToMap( record ) );
+        }
+
+        return maps;
+    }
+
+    private Map<String, Object> convertRecordToMap( Map<String, Object> record ) {
+
+        return MA_MapUtils.visitFieldPaths( record );
+    }
+
 }
 /*
 BSD 3-Clause License
 
-Copyright (c) 2018, Doug Ayers, douglascayers.com
+Copyright (c) 2017-2019, Doug Ayers, douglascayers.com
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

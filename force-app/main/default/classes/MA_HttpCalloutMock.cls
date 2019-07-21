@@ -1,7 +1,7 @@
 /**
  * Author: Doug Ayers
  * Website: https://douglascayers.com
- * GitHub: https://github.com/douglascayers/sfdx-mass-action-scheduler
+ * GitHub: https://github.com/douglascayers-org/sfdx-mass-action-scheduler
  * License: BSD 3-Clause License
  */
 /*
@@ -72,7 +72,7 @@ public inherited sharing class MA_HttpCalloutMock implements HttpCalloutMock {
                 '     "label" : "Test Flow", ' +
                 '     "name" : "Test_Flow", ' +
                 '     "type" : "FLOW", ' +
-                '     "url" : "/services/data/v45.0/actions/custom/flow/Test_Flow" ' +
+                '     "url" : "/services/data/v46.0/actions/custom/flow/Test_Flow" ' +
                 '   } ] ' +
                 ' } '
             );
@@ -83,7 +83,7 @@ public inherited sharing class MA_HttpCalloutMock implements HttpCalloutMock {
 
             response.setBody(
                 ' { ' +
-                '   "Account" : "/services/data/v45.0/actions/custom/quickAction/Account" ' +
+                '   "Account" : "/services/data/v46.0/actions/custom/quickAction/Account" ' +
                 ' } '
             );
 
@@ -97,7 +97,7 @@ public inherited sharing class MA_HttpCalloutMock implements HttpCalloutMock {
                 '     "label" : "Test Quick Action", ' +
                 '     "name" : "Test_Quick_Action", ' +
                 '     "type" : "QUICKACTION", ' +
-                '     "url" : "/services/data/v45.0/actions/custom/quickAction/Account/Test_Quick_Action" ' +
+                '     "url" : "/services/data/v46.0/actions/custom/quickAction/Account/Test_Quick_Action" ' +
                 '   } ] ' +
                 ' } '
             );
@@ -108,7 +108,7 @@ public inherited sharing class MA_HttpCalloutMock implements HttpCalloutMock {
 
             response.setBody(
                 ' { ' +
-                '   "Account" : "/services/data/v45.0/actions/custom/emailAlert/Account" ' +
+                '   "Account" : "/services/data/v46.0/actions/custom/emailAlert/Account" ' +
                 ' } '
             );
 
@@ -122,7 +122,7 @@ public inherited sharing class MA_HttpCalloutMock implements HttpCalloutMock {
                 '     "label" : "Test Email Alert", ' +
                 '     "name" : "Test_Email_Alert", ' +
                 '     "type" : "EMAILALERT", ' +
-                '     "url" : "/services/data/v45.0/actions/custom/emailalert/Account/Test_Email_Alert" ' +
+                '     "url" : "/services/data/v46.0/actions/custom/emailalert/Account/Test_Email_Alert" ' +
                 '   } ] ' +
                 ' } '
             );
@@ -137,7 +137,7 @@ public inherited sharing class MA_HttpCalloutMock implements HttpCalloutMock {
                 '     "label" : "Test Apex", ' +
                 '     "name" : "Test_Apex", ' +
                 '     "type" : "APEX", ' +
-                '     "url" : "/services/data/v45.0/actions/custom/apex/Test_Apex" ' +
+                '     "url" : "/services/data/v46.0/actions/custom/apex/Test_Apex" ' +
                 '   } ] ' +
                 ' } '
             );
@@ -244,7 +244,7 @@ public inherited sharing class MA_HttpCalloutMock implements HttpCalloutMock {
                 '   "records" : [ { ' +
                 '     "attributes" : { ' +
                 '       "type" : "Account", ' +
-                '       "url" : "/services/data/v45.0/sobjects/Account/001f400000CukanAAB" ' +
+                '       "url" : "/services/data/v46.0/sobjects/Account/001f400000CukanAAB" ' +
                 '     }, ' +
                 '     "Id" : "001f400000CukanAAB", ' +
                 '     "Name" : "Test Account 1" ' +
@@ -271,7 +271,7 @@ public inherited sharing class MA_HttpCalloutMock implements HttpCalloutMock {
                 '   "records" : [ { ' +
                 '     "attributes" : { ' +
                 '       "type" : "Account", ' +
-                '       "url" : "/services/data/v45.0/sobjects/Account/001f400000lxT2JAAU" ' +
+                '       "url" : "/services/data/v46.0/sobjects/Account/001f400000lxT2JAAU" ' +
                 '     }, ' +
                 '     "Id" : "001f400000lxT2JAAU", ' +
                 '     "Name" : "Test Account 2" ' +
@@ -295,43 +295,14 @@ public inherited sharing class MA_HttpCalloutMock implements HttpCalloutMock {
             );
 
         }
-        // Anonymous Apex (failure)
-        else if ( matches( request.getEndpoint(), '(.*)/tooling/executeAnonymous(/)?\\?anonymousBody=(.*)TEST_FAIL(.*)' ) ) {
-
-            response.setBody(
-                ' { ' +
-                '   "line" : 1, ' +
-                '   "column" : 14, ' +
-                '   "compiled" : false, ' +
-                '   "success" : false, ' +
-                '   "compileProblem" : "Some error about why Apex did not compile", ' +
-                '   "exceptionStackTrace" : null, ' +
-                '   "exceptionMessage" : null ' +
-                ' } '
-            );
-
-        }
-        // Anonymous Apex (success)
-        else if ( matches( request.getEndpoint(), '(.*)/tooling/executeAnonymous(/)?\\?anonymousBody=(.*)' ) ) {
-
-            response.setBody(
-                ' { ' +
-                '   "line" : -1, ' +
-                '   "column" : -1, ' +
-                '   "compiled" : true, ' +
-                '   "success" : true, ' +
-                '   "compileProblem" : null, ' +
-                '   "exceptionStackTrace" : null, ' +
-                '   "exceptionMessage" : null ' +
-                ' } '
-            );
-
-        }
         else {
 
             response.setStatus( 'ERROR' );
             response.setStatusCode( 400 );
-            response.setBody( 'Unsupported endpoint: ' + request.getEndpoint() );
+            response.setBody(
+                'Unsupported endpoint: ' + request.getEndpoint() + '\n' +
+                'If you expected this to not return an error, add support for this endpoint in the callout mock class.'
+            );
 
         }
 
@@ -407,11 +378,78 @@ public inherited sharing class MA_HttpCalloutMock implements HttpCalloutMock {
 
 
         }
+        // Anonymous Apex (failure)
+        else if ( matches( request.getBody(), '(.*)\\<apex:executeAnonymous\\>(.*)TEST_FAIL(.*)' ) ) {
+
+            response.setBody(
+                ' <?xml version="1.0" encoding="UTF-8"?> ' +
+                ' <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns="http://soap.sforce.com/2006/08/apex" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"> ' +
+                    ' <soapenv:Body> ' +
+                        ' <executeAnonymousResponse> ' +
+                            ' <result> ' +
+                                ' <column>5</column> ' +
+                                ' <line>12</line> ' +
+                                ' <compiled>false</compiled> ' +
+                                ' <compileProblem xsi:nil="true">COMPILE_FAIL</compileProblem> ' +
+                                ' <exceptionMessage xsi:nil="true">EXCEPTION_FAIL</exceptionMessage> ' +
+                                ' <exceptionStackTrace xsi:nil="true">STACKTRACE_FAIL</exceptionStackTrace> ' +
+                                ' <success>false</success> ' +
+                            ' </result> ' +
+                        ' </executeAnonymousResponse> ' +
+                    ' </soapenv:Body> ' +
+                ' </soapenv:Envelope> '
+            );
+
+        }
+        // Anonymous Apex (soap fault)
+        else if ( matches( request.getBody(), '(.*)\\<apex:executeAnonymous\\>(.*)TEST_SOAP_FAULT(.*)' ) ) {
+
+            response.setStatus( 'ERROR' );
+            response.setStatusCode( 500 );
+            response.setBody(
+                '<?xml version="1.0" encoding="UTF-8"?>' +
+                '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">' +
+                    '<soapenv:Body>' +
+                        '<soapenv:Fault>' +
+                            '<faultcode>soapenv:Client</faultcode>' +
+                            '<faultstring>TEST_SOAP_FAULT</faultstring>' +
+                        '</soapenv:Fault>' +
+                    '</soapenv:Body>' +
+                '</soapenv:Envelope>'
+            );
+
+        }
+        // Anonymous Apex (success)
+        else if ( matches( request.getBody(), '(.*)\\<apex:executeAnonymous\\>(.*)' ) ) {
+
+            response.setBody(
+                ' <?xml version="1.0" encoding="UTF-8"?> ' +
+                ' <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns="http://soap.sforce.com/2006/08/apex" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"> ' +
+                    ' <soapenv:Body> ' +
+                        ' <executeAnonymousResponse> ' +
+                            ' <result> ' +
+                                ' <column>-1</column> ' +
+                                ' <line>-1</line> ' +
+                                ' <compiled>true</compiled> ' +
+                                ' <compileProblem xsi:nil="true"/> ' +
+                                ' <exceptionMessage xsi:nil="true"/> ' +
+                                ' <exceptionStackTrace xsi:nil="true"/> ' +
+                                ' <success>true</success> ' +
+                            ' </result> ' +
+                        ' </executeAnonymousResponse> ' +
+                    ' </soapenv:Body> ' +
+                ' </soapenv:Envelope> '
+            );
+
+        }
         else {
 
             response.setStatus( 'ERROR' );
             response.setStatusCode( 400 );
-            response.setBody( 'Unsupported endpoint: ' + request.getEndpoint() );
+            response.setBody(
+                'Unsupported endpoint: ' + request.getEndpoint() + '\n' +
+                'If you expected this to not return an error, add support for this endpoint in the callout mock class.'
+            );
 
         }
 
@@ -430,7 +468,7 @@ public inherited sharing class MA_HttpCalloutMock implements HttpCalloutMock {
 /*
 BSD 3-Clause License
 
-Copyright (c) 2018, Doug Ayers, douglascayers.com
+Copyright (c) 2017-2019, Doug Ayers, douglascayers.com
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

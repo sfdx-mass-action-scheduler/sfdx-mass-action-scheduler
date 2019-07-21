@@ -7,6 +7,7 @@
     <inlineHelpText>Enter SOQL query that identifies the records to process. Use aliases with Aggregate functions (COUNT, SUM, MIN, MAX, AVG, etc.) to make them available in the Field Mappings step.</inlineHelpText>
     <label>Source SOQL Query</label>
     <length>20000</length>
+    <trackHistory>false</trackHistory>
     <trackTrending>false</trackTrending>
     <type>LongTextArea</type>
     <visibleLines>5</visibleLines>

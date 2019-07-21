@@ -1,7 +1,7 @@
 /**
  * Author: Doug Ayers
  * Website: https://douglascayers.com
- * GitHub: https://github.com/douglascayers/sfdx-mass-action-scheduler
+ * GitHub: https://github.com/douglascayers-org/sfdx-mass-action-scheduler
  * License: BSD 3-Clause License
  */
 /*
@@ -9,34 +9,43 @@
  */
 public inherited sharing class MA_MassActionUtils {
 
-    // -- private --
+    public static final String ORG_DOMAIN_URL = URL.getOrgDomainUrl().toExternalForm();
+    public static final String REST_API_PATH = '/services/data/v46.0'; // note the 'v' prefix on the version number
+    public static final String SOAP_API_PATH = '/services/Soap/s/46.0'; // note no 'v' prefix on the version number
 
-    private static final String MY_NAMESPACE = [ SELECT NamespacePrefix FROM ApexClass WHERE Name = 'MA_MassActionUtils' LIMIT 1 ].NamespacePrefix;
-
-    // -- public --
-
-    public static final String NAMESPACE = String.isBlank( MY_NAMESPACE ) ? '' : MY_NAMESPACE;
-    public static final String NAMESPACE_API = String.isBlank( MY_NAMESPACE ) ? '' : MY_NAMESPACE + '__';
-
-    public static final String REST_API_SERVICES_DATA_URL = Url.getOrgDomainUrl().toExternalForm() + '/services/data/v45.0';
+    public static final String REST_API_SERVICES_URL = ORG_DOMAIN_URL + REST_API_PATH;
+    public static final String SOAP_API_SERVICES_URL = ORG_DOMAIN_URL + SOAP_API_PATH;
 
     // ------------------------------------------------------------------------
 
     /**
-     * Returns the URL for use with invoking the Salesforce REST APIs.
+     * Returns the base URL for use with invoking the Salesforce APIs.
      *
      * @param namedCredential
      *      (optional) Name of a Named Credential to use, without the 'callout:' prefix.
      *      If blank then the org's domain URL is used instead.
      *
-     * @return URL for use with Salesforce REST API (e.g. https://yourinstance.my.salesforce.com/services/data/v45.0 or callout:YourNamedCredential)
+     * @return URL for use with Salesforce REST API (e.g. https://yourinstance.my.salesforce.com or callout:YourNamedCredential)
+     *  with the path '/services/data/v46.0' appended to it.
      */
     public static String getCalloutRestEndpointURL( String namedCredential ) {
+        String url;
         if ( String.isBlank( namedCredential ) ) {
-            return REST_API_SERVICES_DATA_URL;
+            url = REST_API_SERVICES_URL;
         } else {
-            return 'callout:' + namedCredential;
+            url = 'callout:' + namedCredential + REST_API_PATH;
         }
+        return url;
+    }
+
+    public static String getCalloutSoapEndpointURL( String namedCredential ) {
+        String url;
+        if ( String.isBlank( namedCredential ) ) {
+            url = SOAP_API_SERVICES_URL;
+        } else {
+            url = 'callout:' + namedCredential + SOAP_API_PATH;
+        }
+        return url;
     }
 
     // ------------------------------------------------------------------------
@@ -47,8 +56,7 @@ public inherited sharing class MA_MassActionUtils {
      */
     public static Mass_Action_Configuration__c getConfiguration( ID recordId ) {
 
-        System.debug( 'MA_MassActionUtils.getConfiguration' );
-        System.debug( 'recordId: ' + recordId );
+        System.debug( 'MA_MassActionUtils.getConfiguration: recordId=' + recordId );
 
         Mass_Action_Configuration__c config = null;
 
@@ -119,17 +127,16 @@ public inherited sharing class MA_MassActionUtils {
      */
     public static Map<String, Object> saveConfiguration( String wrapperJson, String fieldMappingsJson ) {
 
-        System.debug( 'MA_MassActionUtils.saveConfiguration' );
-        System.debug( wrapperJson );
-        System.debug( fieldMappingsJson );
+        System.debug( 'MA_MassActionUtils.saveConfiguration: wrapperJson=\n' + wrapperJson );
+        System.debug( 'MA_MassActionUtils.saveConfiguration: fieldMappingsJson=\n' + fieldMappingsJson );
 
         Map<String, Object> result = new Map<String, Object>();
 
         MA_MassActionConfigWrapper wrapper = (MA_MassActionConfigWrapper) JSON.deserializeStrict( wrapperJson, MA_MassActionConfigWrapper.class );
         Map<String, String> fieldMappings = (Map<String, String>) JSON.deserializeStrict( fieldMappingsJson, Map<String, String>.class );
 
-        System.debug( wrapper );
-        System.debug( fieldMappings );
+        System.debug( 'MA_MassActionUtils.saveConfiguration: wrapper=\n' + wrapper );
+        System.debug( 'MA_MassActionUtils.saveConfiguration: fieldMappings=\n' + fieldMappings );
 
         Mass_Action_Configuration__c config = wrapper.toConfiguration();
         upsert config;
@@ -165,7 +172,7 @@ public inherited sharing class MA_MassActionUtils {
 
     /**
      * The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     * or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v45.0').
+     * or the org's My Domain URL without any path (e.g. 'https://yourdomain.my.salesforce.com').
      */
     public static MA_ListViewDescribeResult describeListView( String baseURL, ID listViewId ) {
 
@@ -251,7 +258,7 @@ public inherited sharing class MA_MassActionUtils {
 
     /**
      * Designed as a simple way to invoke a configured target action with a given batch of source records.
-     * Based on the config's target action and other properties, the appropriate REST API call will be invoked.
+     * Based on the config's target action and other properties, the appropriate API call will be invoked.
      *
      * Originally designed as an easy way for batch classes to invoke an action from their `execute` methods
      * with a batch of source records. This keeps logic out of the batch classes for knowing "how" to invoke the actions.
@@ -263,16 +270,16 @@ public inherited sharing class MA_MassActionUtils {
      */
     public static void invokeTargetAction( Mass_Action_Configuration__c config, List<Map<String, Object>> sourceRowMaps ) {
 
-        String baseUrl = MA_MassActionUtils.getCalloutRestEndpointURL( config.Named_Credential__c );
-
         if ( config.Target_Type__c == 'Apex' && String.isNotBlank( config.Target_Apex_Script__c ) ) {
 
+            String baseUrl = MA_MassActionUtils.getCalloutSoapEndpointURL( config.Named_Credential__c );
             MA_MassActionUtils.invokeExecuteAnonymous( baseUrl, config, sourceRowMaps );
 
         } else {
 
             List<Map<String, Object>> targetRowMaps = MA_MassActionUtils.buildActionInputs( sourceRowMaps, config.Mass_Action_Mappings__r );
 
+            String baseUrl = MA_MassActionUtils.getCalloutRestEndpointURL( config.Named_Credential__c );
             MA_MassActionUtils.invokeAction( baseUrl, config, targetRowMaps );
 
         }
@@ -280,8 +287,8 @@ public inherited sharing class MA_MassActionUtils {
     }
 
     /**
-     * Invokes Tooling REST API via http callout.
-     * https://developer.salesforce.com/docs/atlas.en-us.api_tooling.meta/api_tooling/intro_rest_resources.htm
+     * Invokes Apex SOAP API via http callout.
+     * https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_api.htm
      */
     public static void invokeExecuteAnonymous( String baseURL, Mass_Action_Configuration__c config, List<Map<String, Object>> sourceRowMaps ) {
 
@@ -294,14 +301,15 @@ public inherited sharing class MA_MassActionUtils {
         // to the anonymous block while supporting the developers to just write code on-the-fly,
         // we prepend to the developer's script our own code that inlines the JSON of the source
         // data then calls an anonymous method named `execute` with a list of maps of source records.
-        // In this manner, the developer's anonymous script simply needs to define a method `execute( List<Map<String, Object>> sourceRecordsBatch )`
+        // In this manner, the developer's anonymous script simply needs to define a method
+        // `execute( List<Map<String, Object>> sourceRecordsBatch )`
         // and that is the hook to receive the source records for processing.
 
         String sourceRowMapsJson = JSON.serialize( sourceRowMaps );
 
         String apexScript = (
             ' void mas_initApexBlock() { ' +
-                ' List<Object> untypedRecords = (List<Object>) JSON.deserializeUntyped( \'' + sourceRowMapsJson + '\' ); ' +
+                ' List<Object> untypedRecords = (List<Object>) JSON.deserializeUntyped( \'' + String.escapeSingleQuotes( sourceRowMapsJson ) + '\' ); ' +
                 ' List<Map<String, Object>> typedRecords = new List<Map<String, Object>>(); ' +
                 ' for ( Object untypedRecord : untypedRecords ) { ' +
                     ' typedRecords.add( (Map<String, Object>) untypedRecord ); ' +
@@ -312,14 +320,50 @@ public inherited sharing class MA_MassActionUtils {
             config.Target_Apex_Script__c
         );
 
-        HttpRequest req = buildExecuteAnonymousHttpRequest( baseUrl, apexScript );
-        HttpResponse res = sendHttpRequest( req );
+        try {
 
-        // if there was an error compiling or executing the script, the http response will still be OK 200
-        // so we need to actually inspect the response body to see if something is wrong
-        Map<String, Object> resMap = (Map<String, Object>) JSON.deserializeUntyped( res.getBody() );
-        if ( resMap == null || resMap.get( 'success' ) == null || String.valueOf( resMap.get( 'success' ) ) != 'true' ) {
-            throw new MA_Exceptions.InvokeActionException( req, res );
+            HttpRequest req = buildExecuteAnonymousHttpRequest( baseUrl, apexScript );
+            HttpResponse res = sendHttpRequest( req );
+
+            MA_AnonymousApexExecuteResult result = parseAnonymousApexHttpResponse( res );
+
+            // if there was an error compiling or executing the script, the http response will still be OK 200
+            // so we need to actually inspect the response body to see if something is wrong
+            if ( result.success == false ) {
+                throw new MA_Exceptions.AnonymousApexException(
+                    req, res, result.compileProblem, result.exceptionMessage, result.exceptionStackTrace
+                );
+            }
+
+        } catch ( MA_Exceptions.InvokeActionException e ) {
+
+            Exception throwable = e;
+
+            try {
+
+                String responseString = e.response.getBody();
+                DOM.Document responseDocument = e.response.getBodyDocument();
+                DOM.XMLNode root = responseDocument.getRootElement();
+
+                if ( responseString.containsIgnoreCase( '<soapenv:Fault>' ) ) {
+
+                    String faultCode = MA_XMLUtils.getChildNodeTextByPath( root, '/Body/Fault/faultcode' );
+                    String faultString = MA_XMLUtils.getChildNodeTextByPath( root, '/Body/Fault/faultstring' );
+
+                    throwable = new MA_Exceptions.AnonymousApexException(
+                        e.request, e.response, null, faultString, faultCode, e
+                    );
+
+                }
+
+            } catch ( Exception ex ) {
+
+                // do nothing
+
+            }
+
+            throw throwable;
+
         }
 
     }
@@ -347,7 +391,7 @@ public inherited sharing class MA_MassActionUtils {
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v45.0').
+     *      or the org's My Domain URL without any path (e.g. 'https://yourdomain.my.salesforce.com').
      * @param actionType
      *      Value from picklist Mass_Action_Configuration__c.Target_Type__c (e.g. 'QuickAction', 'EmailAlert')
      */
@@ -371,7 +415,7 @@ public inherited sharing class MA_MassActionUtils {
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v45.0').
+     *      or the org's My Domain URL without any path (e.g. 'https://yourdomain.my.salesforce.com').
      * @param actionType
      *      Value from picklist Mass_Action_Configuration__c.Target_Type__c (e.g. 'QuickAction', 'EmailAlert')
      * @param objectName
@@ -398,7 +442,7 @@ public inherited sharing class MA_MassActionUtils {
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v45.0').
+     *      or the org's My Domain URL without any path (e.g. 'https://yourdomain.my.salesforce.com').
      * @param actionType
      *      Value from picklist Mass_Action_Configuration__c.Target_Type__c (e.g. 'QuickAction', 'EmailAlert')
      * @param actionName
@@ -425,12 +469,13 @@ public inherited sharing class MA_MassActionUtils {
     // ------------------------------------------------------------------------
 
     /**
-     * Creates an HttpRequest with a configured enpoint to invoke the Tooling API
+     * Creates an HttpRequest with a configured enpoint to invoke the Apex SOAP API
      * to execute anonymous Apex. Also sets common headers for an authorized JSON request.
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v45.0').
+     *      or the org's My Domain URL without any path (e.g. 'https://yourdomain.my.salesforce.com'),
+     *      with the SOAP API path suffix of '/services/Soap/s/46.0'.
      * @param apexScript
      *      The anonymous apex script to execute. This method URL encodes the string.
      */
@@ -440,17 +485,50 @@ public inherited sharing class MA_MassActionUtils {
         System.debug( 'baseURL: ' + baseURL );
         System.debug( 'apexScript: ' + apexScript );
 
+        Boolean usesNamedCredential = ( baseURL.startsWithIgnoreCase( 'callout:' ) );
+        String sessionId = ( usesNamedCredential ? '{!$Credential.OAuthToken}' : UserInfo.getSessionId() );
+
+        String envelopeHeader =
+            ' <soapenv:Envelope ' +
+                ' xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" ' +
+                ' xmlns:meta="http://soap.sforce.com/2006/04/metadata" ' +
+                ' xmlns:apex="http://soap.sforce.com/2006/08/apex" ' +
+                ' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"> ';
+
+        String soapHeader =
+            ' <soapenv:Header> ' +
+                ' <apex:SessionHeader> ' +
+                    ' <apex:sessionId>' + sessionId + '</apex:sessionId> ' +
+                ' </apex:SessionHeader> ' +
+            ' </soapenv:Header> ';
+
+        String soapBody =
+            ' <soapenv:Body> ' +
+                ' <apex:executeAnonymous> ' +
+                    ' <apex:String> ' + apexScript.escapeXml() + ' </apex:String> ' +
+                ' </apex:executeAnonymous> ' +
+            ' </soapenv:Body> ';
+
+        String envelopeFooter =
+            ' </soapenv:Envelope> ';
+
+        String soapMessage = (
+            envelopeHeader +
+            soapHeader +
+            soapBody +
+            envelopeFooter
+        );
+
         HttpRequest req = new HttpRequest();
-        req.setEndpoint( String.format(
-            '{0}/tooling/executeAnonymous?anonymousBody={1}',
-            new String[] { baseURL, EncodingUtil.urlEncode( apexScript, 'UTF-8' ) }
-        ));
-        req.setMethod( 'GET' );
+        req.setEndpoint( baseURL );
+        req.setMethod( 'POST' );
+        req.setHeader( 'SOAPAction', 'executeAnonymous' );
         req.setTimeout( 120000 ); // max wait of 2 mins
         req.setCompressed( true );
-        req.setHeader( 'Content-Type', 'application/json' );
-        req.setHeader( 'Accepts', 'application/json' );
+        req.setHeader( 'Content-Type', 'text/xml' );
+        req.setHeader( 'Accepts', 'text/xml' );
         req.setHeader( 'Authorization', 'Bearer ' + UserInfo.getSessionId() );
+        req.setBody( soapMessage );
 
         return req;
     }
@@ -463,7 +541,7 @@ public inherited sharing class MA_MassActionUtils {
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v45.0').
+     *      or the org's My Domain URL without any path (e.g. 'https://yourdomain.my.salesforce.com').
      * @param config
      *      Mass Action Configuration record.
      * @param targetRowMaps
@@ -490,7 +568,7 @@ public inherited sharing class MA_MassActionUtils {
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v45.0').
+     *      or the org's My Domain URL without any path (e.g. 'https://yourdomain.my.salesforce.com').
      * @param config
      *      Mass Action Configuration record.
      */
@@ -620,7 +698,7 @@ public inherited sharing class MA_MassActionUtils {
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v45.0').
+     *      or the org's My Domain URL without any path (e.g. 'https://yourdomain.my.salesforce.com').
      * @param actionType
      *      Value from picklist Mass_Action_Configuration__c.Target_Type__c (e.g. 'QuickAction', 'EmailAlert')
      * @param objectName
@@ -646,7 +724,7 @@ public inherited sharing class MA_MassActionUtils {
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v45.0').
+     *      or the org's My Domain URL without any path (e.g. 'https://yourdomain.my.salesforce.com').
      * @param actionType
      *      Value from picklist Mass_Action_Configuration__c.Target_Type__c (e.g. 'QuickAction', 'EmailAlert')
      * @param objectName
@@ -697,7 +775,7 @@ public inherited sharing class MA_MassActionUtils {
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v45.0').
+     *      or the org's My Domain URL without any path (e.g. 'https://yourdomain.my.salesforce.com').
      * @param actionType
      *      Value from picklist Mass_Action_Configuration__c.Target_Type__c (e.g. 'QuickAction', 'EmailAlert')
      * @param actionName
@@ -725,7 +803,7 @@ public inherited sharing class MA_MassActionUtils {
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v45.0').
+     *      or the org's My Domain URL without any path (e.g. 'https://yourdomain.my.salesforce.com').
      * @param actionType
      *      Value from picklist Mass_Action_Configuration__c.Target_Type__c (e.g. 'QuickAction', 'EmailAlert')
      * @param actionName
@@ -778,7 +856,7 @@ public inherited sharing class MA_MassActionUtils {
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v45.0').
+     *      or the org's My Domain URL without any path (e.g. 'https://yourdomain.my.salesforce.com').
      * @param query
      *      SOQL query to execute.
      * @param batchSize
@@ -809,10 +887,8 @@ public inherited sharing class MA_MassActionUtils {
             List<Object> errors = (List<Object>) JSON.deserializeUntyped( e.response.getBody() );
             for ( Object item : errors ) {
                 Map<String, Object> err = (Map<String, Object>) item;
-                throwable = new MA_Exceptions.SOQLQueryRestApiException(
-                    query,
-                    (String) err.get( 'errorType' ),
-                    (String) err.get( 'message' )
+                throwable = new MA_Exceptions.SOQLQueryException(
+                    e.request, e.response, query, (String) err.get( 'errorType' ), (String) err.get( 'message' ), e
                 );
             }
 
@@ -827,7 +903,7 @@ public inherited sharing class MA_MassActionUtils {
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v45.0').
+     *      or the org's My Domain URL without any path (e.g. 'https://yourdomain.my.salesforce.com').
      * @param query
      *      SOQL query to execute.
      * @param batchSize
@@ -860,7 +936,7 @@ public inherited sharing class MA_MassActionUtils {
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v45.0').
+     *      or the org's My Domain URL without any path (e.g. 'https://yourdomain.my.salesforce.com').
      * @param query
      *      SOQL query to execute.
      */
@@ -882,7 +958,7 @@ public inherited sharing class MA_MassActionUtils {
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v45.0').
+     *      or the org's My Domain URL without any path (e.g. 'https://yourdomain.my.salesforce.com').
      * @param nextRecordsId
      *      The last path part in the 'nextRecordsUrl' property from a query response
      *      that identifies the next page of records to return.
@@ -914,10 +990,8 @@ public inherited sharing class MA_MassActionUtils {
             List<Object> errors = (List<Object>) JSON.deserializeUntyped( e.response.getBody() );
             for ( Object item : errors ) {
                 Map<String, Object> err = (Map<String, Object>) item;
-                throwable = new MA_Exceptions.SOQLQueryRestApiException(
-                    nextRecordsId,
-                    (String) err.get( 'errorType' ),
-                    (String) err.get( 'message' )
+                throwable = new MA_Exceptions.SOQLQueryException(
+                    e.request, e.response, nextRecordsId, (String) err.get( 'errorType' ), (String) err.get( 'message' ), e
                 );
             }
 
@@ -932,7 +1006,7 @@ public inherited sharing class MA_MassActionUtils {
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v45.0').
+     *      or the org's My Domain URL without any path (e.g. 'https://yourdomain.my.salesforce.com').
      * @param nextRecordsId
      *      The last path part in the 'nextRecordsUrl' property from a query response
      *      that identifies the next page of records to return.
@@ -966,7 +1040,7 @@ public inherited sharing class MA_MassActionUtils {
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v45.0').
+     *      or the org's My Domain URL without any path (e.g. 'https://yourdomain.my.salesforce.com').
      * @param nextRecordsId
      *      The last path part in the 'nextRecordsUrl' property from a query response
      *      that identifies the next page of records to return.
@@ -1109,11 +1183,43 @@ public inherited sharing class MA_MassActionUtils {
         return inputs;
     }
 
+    /**
+     * XML deserializes the response.
+     * Assumes this is a succcessful response.
+     * A SOAP fault should have been checked prior to calling this method.
+     */
+    private static MA_AnonymousApexExecuteResult parseAnonymousApexHttpResponse( HttpResponse res ) {
+
+        // Parse the SOAP response
+        // https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/sforce_api_calls_executeanonymous_result.htm
+
+        DOM.Document responseDocument = res.getBodyDocument();
+        DOM.XMLNode root = responseDocument.getRootElement();
+
+        MA_AnonymousApexExecuteResult result = new MA_AnonymousApexExecuteResult();
+
+        result.column = Integer.valueOf( MA_XMLUtils.getChildNodeTextByPath( root, 'Body/executeAnonymousResponse/result/column' ) );
+        result.line = Integer.valueOf( MA_XMLUtils.getChildNodeTextByPath( root, 'Body/executeAnonymousResponse/result/line' ) );
+
+        result.compiled = Boolean.valueOf( MA_XMLUtils.getChildNodeTextByPath( root, 'Body/executeAnonymousResponse/result/compiled' ) );
+        result.compileProblem = MA_XMLUtils.getChildNodeTextByPath( root, 'Body/executeAnonymousResponse/result/compileProblem' );
+
+        result.exceptionMessage = MA_XMLUtils.getChildNodeTextByPath( root, 'Body/executeAnonymousResponse/result/exceptionMessage' );
+        result.exceptionStackTrace = MA_XMLUtils.getChildNodeTextByPath( root, 'Body/executeAnonymousResponse/result/exceptionStackTrace' );
+
+        result.success = Boolean.valueOf( MA_XMLUtils.getChildNodeTextByPath( root, 'Body/executeAnonymousResponse/result/success' ) );
+
+        System.debug( 'MA_MassActionUtils.parseAnonymousApexHttpResponse' );
+        System.debug( result );
+
+        return result;
+    }
+
 }
 /*
 BSD 3-Clause License
 
-Copyright (c) 2018, Doug Ayers, douglascayers.com
+Copyright (c) 2017-2019, Doug Ayers, douglascayers.com
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

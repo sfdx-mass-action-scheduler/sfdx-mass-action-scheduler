@@ -1,7 +1,7 @@
 /**
  * Author: Doug Ayers
  * Website: https://douglascayers.com
- * GitHub: https://github.com/douglascayers/sfdx-mass-action-scheduler
+ * GitHub: https://github.com/douglascayers-org/sfdx-mass-action-scheduler
  * License: BSD 3-Clause License
  */
 @IsTest
@@ -170,29 +170,34 @@ private class MA_SoqlSourceBatchableTest {
 
         Test.setMock( HttpCalloutMock.class, new MA_HttpCalloutMock() );
 
-        Test.startTest();
+        try {
 
-        ID jobId = Database.executeBatch( new MA_SoqlSourceBatchable( config.Id ), config.Batch_Size__c.intValue() );
+            Test.startTest();
 
-        Test.stopTest();
+            Database.executeBatch( new MA_SoqlSourceBatchable( config.Id ), config.Batch_Size__c.intValue() );
 
-        AsyncApexJob job = MA_MassActionBatchUtils.getJobById( jobId );
+            // Async code completes once the test stops,
+            // and any exceptions that occurred will be thrown.
+            // To avoid the test failing because of that,
+            // we have a try..catch block. An event will
+            // still be raised that the batch job failed.
+            Test.stopTest();
 
-        config = [
-            SELECT
-                Id,
-                Last_Run_Completed_Date__c,
-                Last_Run_Completed_With_Errors__c
-            FROM
-                Mass_Action_Configuration__c
-            WHERE
-                Id = :config.Id
-        ];
+            System.assert( false, 'should have failed' );
 
-        System.debug( [ SELECT Id, Message__c FROM Mass_Action_Log__c WHERE Mass_Action_Configuration__c = :config.Id ] );
-        System.assertEquals( 1, [ SELECT COUNT() FROM Mass_Action_Log__c WHERE Mass_Action_Configuration__c = :config.Id ] );
-        System.assertEquals( job.CompletedDate, config.Last_Run_Completed_Date__c );
-        System.assertEquals( true, config.Last_Run_Completed_With_Errors__c );
+        } catch ( MA_Exceptions.NoSourceFieldException e ) {
+
+            System.assertEquals( configFieldMapping.Source_Field_Name__c, e.sourceFieldName );
+
+        } catch ( Exception e ) {
+
+            System.assert( false, 'failed for wrong exception' );
+
+        } finally {
+
+            Test.getEventBus().deliver();
+
+        }
 
     }
 
@@ -213,29 +218,82 @@ private class MA_SoqlSourceBatchableTest {
 
         Test.setMock( HttpCalloutMock.class, new MA_HttpCalloutMock() );
 
-        Test.startTest();
+        try {
 
-        ID jobId = Database.executeBatch( new MA_SoqlSourceBatchable( config.Id ), config.Batch_Size__c.intValue() );
+            Test.startTest();
 
-        Test.stopTest();
+            Database.executeBatch( new MA_SoqlSourceBatchable( config.Id ), config.Batch_Size__c.intValue() );
 
-        AsyncApexJob job = MA_MassActionBatchUtils.getJobById( jobId );
+            // Async code completes once the test stops,
+            // and any exceptions that occurred will be thrown.
+            // To avoid the test failing because of that,
+            // we have a try..catch block. An event will
+            // still be raised that the batch job failed.
+            Test.stopTest();
 
-        config = [
-            SELECT
-                Id,
-                Last_Run_Completed_Date__c,
-                Last_Run_Completed_With_Errors__c
-            FROM
-                Mass_Action_Configuration__c
-            WHERE
-                Id = :config.Id
-        ];
+            System.assert( false, 'should have failed' );
 
-        System.debug( [ SELECT Id, Message__c FROM Mass_Action_Log__c WHERE Mass_Action_Configuration__c = :config.Id ] );
-        System.assertEquals( 1, [ SELECT COUNT() FROM Mass_Action_Log__c WHERE Mass_Action_Configuration__c = :config.Id AND Message__c LIKE '%Apex did not compile%' ] );
-        System.assertEquals( job.CompletedDate, config.Last_Run_Completed_Date__c );
-        System.assertEquals( true, config.Last_Run_Completed_With_Errors__c );
+        } catch ( MA_Exceptions.AnonymousApexException e ) {
+
+            System.assert( true );
+
+        } catch ( Exception e ) {
+
+            System.assert( false, 'failed for wrong exception' );
+
+        } finally {
+
+            Test.getEventBus().deliver();
+
+        }
+
+    }
+
+    @IsTest
+    static void test_batchable_fail_soap_fault_apex_script() {
+
+        Mass_Action_Configuration__c config = buildTestConfiguration();
+        config.Target_Type__c = 'Apex';
+        config.Target_Apex_Script__c = 'TEST_SOAP_FAULT'; // callout mock looks for this keyword
+
+        insert config;
+
+        Account acct = new Account(
+            Name = 'Test Account'
+        );
+
+        insert acct;
+
+        Test.setMock( HttpCalloutMock.class, new MA_HttpCalloutMock() );
+
+        try {
+
+            Test.startTest();
+
+            Database.executeBatch( new MA_SoqlSourceBatchable( config.Id ), config.Batch_Size__c.intValue() );
+
+            // Async code completes once the test stops,
+            // and any exceptions that occurred will be thrown.
+            // To avoid the test failing because of that,
+            // we have a try..catch block. An event will
+            // still be raised that the batch job failed.
+            Test.stopTest();
+
+            System.assert( false, 'should have failed' );
+
+        } catch ( MA_Exceptions.AnonymousApexException e ) {
+
+            System.assert( true );
+
+        } catch ( Exception e ) {
+
+            System.assert( false, 'failed for wrong exception' );
+
+        } finally {
+
+            Test.getEventBus().deliver();
+
+        }
 
     }
 
@@ -243,7 +301,7 @@ private class MA_SoqlSourceBatchableTest {
 /*
 BSD 3-Clause License
 
-Copyright (c) 2018, Doug Ayers, douglascayers.com
+Copyright (c) 2017-2019, Doug Ayers, douglascayers.com
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

@@ -1,7 +1,7 @@
 /**
  * Author: Doug Ayers
  * Website: https://douglascayers.com
- * GitHub: https://github.com/douglascayers/sfdx-mass-action-scheduler
+ * GitHub: https://github.com/douglascayers-org/sfdx-mass-action-scheduler
  * License: BSD 3-Clause License
  */
 @RestResource( urlMapping = '/config/edit/*' )
@@ -36,7 +36,7 @@ global with sharing class MA_EditConfigRestController {
 
         try {
 
-            System.debug( req );
+            System.debug( 'MA_EditConfigRestController.handlePost: request: ' + req );
 
             requestUrlParams = req.params;
             requestBodyParams = (Map<String, Object>) JSON.deserializeUntyped( ( req.requestBody == null ) ? '{}' : req.requestBody.toString() );
@@ -44,8 +44,8 @@ global with sharing class MA_EditConfigRestController {
 
             String operation = requestUrlParams.get( 'operation' );
 
-            System.debug( 'RequestUrlParams: ' + JSON.serializePretty( requestUrlParams ) );
-            System.debug( 'RequestBody: ' + JSON.serializePretty( requestBodyParams ) );
+            System.debug( 'MA_EditConfigRestController.handlePost: requestUrlParams: ' + JSON.serializePretty( requestUrlParams ) );
+            System.debug( 'MA_EditConfigRestController.handlePost: requestBody: ' + JSON.serializePretty( requestBodyParams ) );
 
             handleRequestOperation( operation, requestBodyParams, responseBodyParams );
 
@@ -69,8 +69,8 @@ global with sharing class MA_EditConfigRestController {
         res.addHeader( 'Access-Control-Allow-Origin', req.headers.get( 'Origin' ) );
         res.addHeader( 'Content-Type', 'application/json; charset=utf-8' );
 
-        System.debug( res );
-        System.debug( 'ResponseBody: ' + res.responseBody.toString() );
+        System.debug( 'MA_EditConfigRestController.handlePost: response: ' + res );
+        System.debug( 'MA_EditConfigRestController.handlePost: responseBody: ' + res.responseBody.toString() );
 
     }
 
@@ -106,14 +106,14 @@ global with sharing class MA_EditConfigRestController {
 
             when 'getObjectsWithInvocableActions' {
                 responseBody.put( 'result', getObjectsWithInvocableActions(
-                    MA_MassActionUtils.REST_API_SERVICES_DATA_URL,
+                    MA_MassActionUtils.REST_API_SERVICES_URL,
                     (String) requestBody.get( 'actionType' )
                 ));
             }
 
             when 'getInvocableActions' {
                 responseBody.put( 'result', getInvocableActions(
-                    MA_MassActionUtils.REST_API_SERVICES_DATA_URL,
+                    MA_MassActionUtils.REST_API_SERVICES_URL,
                     (String) requestBody.get( 'actionType' ),
                     (String) requestBody.get( 'objectName' )
                 ));
@@ -121,7 +121,7 @@ global with sharing class MA_EditConfigRestController {
 
             when 'getInvocableActionInputs' {
                 responseBody.put( 'result', getInvocableActionInputs(
-                    MA_MassActionUtils.REST_API_SERVICES_DATA_URL,
+                    MA_MassActionUtils.REST_API_SERVICES_URL,
                     (String) requestBody.get( 'actionType' ),
                     (String) requestBody.get( 'actionName' ),
                     (String) requestBody.get( 'objectName' )
@@ -158,6 +158,10 @@ global with sharing class MA_EditConfigRestController {
                 responseBody.put( 'result', getObjectNames() );
             }
 
+            when 'getObjectNamesWithListViews' {
+                responseBody.put( 'result', getObjectNamesWithListViews() );
+            }
+
             when 'getListViewsByObject' {
                 responseBody.put( 'result', getListViewsByObject(
                     (String) requestBody.get( 'objectName' )
@@ -172,7 +176,7 @@ global with sharing class MA_EditConfigRestController {
 
             when 'getListViewColumns' {
                 responseBody.put( 'result', getListViewColumns(
-                    MA_MassActionUtils.REST_API_SERVICES_DATA_URL,
+                    MA_MassActionUtils.REST_API_SERVICES_URL,
                     (ID) requestBody.get( 'listViewId' )
                 ));
             }
@@ -181,7 +185,7 @@ global with sharing class MA_EditConfigRestController {
 
             when 'getSoqlQueryResults' {
                 responseBody.put( 'result', getSoqlQueryResults(
-                    MA_MassActionUtils.REST_API_SERVICES_DATA_URL,
+                    MA_MassActionUtils.REST_API_SERVICES_URL,
                     (String) requestBody.get( 'query' ),
                     (Integer) requestBody.get( 'batchSize' )
                 ));
@@ -189,7 +193,7 @@ global with sharing class MA_EditConfigRestController {
 
             when 'getSoqlQueryNextRecordsResults' {
                 responseBody.put( 'result', getSoqlQueryNextRecordsResults(
-                    MA_MassActionUtils.REST_API_SERVICES_DATA_URL,
+                    MA_MassActionUtils.REST_API_SERVICES_URL,
                     (String) requestBody.get( 'nextRecordsId' ),
                     (Integer) requestBody.get( 'batchSize' )
                 ));
@@ -243,7 +247,7 @@ global with sharing class MA_EditConfigRestController {
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v45.0').
+     *      or the org's My Domain URL without any path (e.g. 'https://yourdomain.my.salesforce.com').
      * @param actionType
      *      Value from picklist Mass_Action_Configuration__c.Target_Type__c (e.g. 'QuickAction', 'EmailAlert')
      */
@@ -280,7 +284,7 @@ global with sharing class MA_EditConfigRestController {
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v45.0').
+     *      or the org's My Domain URL without any path (e.g. 'https://yourdomain.my.salesforce.com').
      * @param actionType
      *      Specific kind of actions to retrieve like Flows or Email Alerts.
      *      Value should match API value of Mass_Action_Configuration__c.Target_Type__c picklist entry.
@@ -308,7 +312,7 @@ global with sharing class MA_EditConfigRestController {
      *
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     *      or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v45.0').
+     *      or the org's My Domain URL without any path (e.g. 'https://yourdomain.my.salesforce.com').
      * @param actionType
      *      Specific kind of action like Flows or Email Alerts.
      *      Value should match API value of Mass_Action_Configuration__c.Target_Type__c picklist entry.
@@ -438,6 +442,47 @@ global with sharing class MA_EditConfigRestController {
         return options;
     }
 
+    private static List<Map<String, Object>> getObjectNamesWithListViews() {
+
+        Set<String> sobjectsWithListViews = new Set<String>();
+        for ( AggregateResult result : [
+            SELECT SObjectType
+            FROM ListView
+            WHERE IsSoqlCompatible = true
+            GROUP BY SObjectType
+            ORDER BY SObjectType ASC
+            LIMIT 2000
+        ]) {
+            // lowercase the object names to match keys in the global describe map
+            // because the Set method `contains` is case-sensitive
+            sobjectsWithListViews.add( ( (String) result.get( 'SObjectType' ) ).toLowerCase() );
+        }
+
+        Map<String, SObjectType> globalDescribeMap = Schema.getGlobalDescribe();
+
+        List<ObjectNameWrapper> wrappers = new List<ObjectNameWrapper>();
+
+        for ( String key : globalDescribeMap.keySet() ) {
+            if ( sobjectsWithListViews.contains( key ) ) {
+                DescribeSObjectResult objDescribe = globalDescribeMap.get( key ).getDescribe();
+                wrappers.add( new ObjectNameWrapper( objDescribe.getLabel(), objDescribe.getName() ) );
+            }
+        }
+
+        wrappers.sort();
+
+        List<Map<String, Object>> options = new List<Map<String, Object>>();
+
+        for ( ObjectNameWrapper wrapper : wrappers ) {
+            options.add( new Map<String, Object>{
+                'label' => String.format( '{0} ({1})', new String[] { wrapper.objectLabel, wrapper.objectName } ),
+                'value' => wrapper.objectName
+            });
+        }
+
+        return options;
+    }
+
     private static List<Map<String, Object>> getListViewsByObject( String objectName ) {
 
         List<Map<String, Object>> options = new List<Map<String, Object>>();
@@ -465,7 +510,7 @@ global with sharing class MA_EditConfigRestController {
 
     /**
      * The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     * or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v45.0').
+     * or the org's My Domain URL without any path (e.g. 'https://yourdomain.my.salesforce.com').
      */
     private static List<Map<String, Object>> getListViewColumns( String baseURL, ID listViewId ) {
 
@@ -492,7 +537,7 @@ global with sharing class MA_EditConfigRestController {
 
     /**
      * The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     * or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v45.0').
+     * or the org's My Domain URL without any path (e.g. 'https://yourdomain.my.salesforce.com').
      */
     private static MA_SoqlQueryExecuteResult getSoqlQueryResults( String baseURL, String query, Integer batchSize ) {
 
@@ -502,7 +547,7 @@ global with sharing class MA_EditConfigRestController {
 
     /**
      * The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
-     * or the full path, to REST API (e.g. 'https://yourdomain.my.salesforce.com/services/data/v45.0').
+     * or the org's My Domain URL without any path (e.g. 'https://yourdomain.my.salesforce.com').
      */
     private static MA_SoqlQueryExecuteResult getSoqlQueryNextRecordsResults( String baseURL, String nextRecordsId, Integer batchSize ) {
 
@@ -553,7 +598,7 @@ global with sharing class MA_EditConfigRestController {
 
     private static Map<String, Object> getConfigurationObjectDescribe() {
 
-        String objectName = MA_MassActionUtils.NAMESPACE_API + 'Mass_Action_Configuration__c';
+        String objectName = MA_NamespaceUtils.NAMESPACE_API + 'Mass_Action_Configuration__c';
 
         // https://salesforce.stackexchange.com/questions/218982/why-is-schema-describesobjectstypes-slower-than-schema-getglobaldescribe
         DescribeSObjectResult objectDescribe = ( (SObject) Type.forName( objectName ).newInstance() ).getSObjectType().getDescribe();
@@ -589,7 +634,7 @@ global with sharing class MA_EditConfigRestController {
 
             Database.rollback( sp );
 
-            System.debug( LoggingLevel.ERROR, e.getMessage() + ' : ' + e.getStackTraceString() );
+            System.debug( LoggingLevel.ERROR, 'MA_EditConfigRestController.saveConfiguration: ' + e.getMessage() + ' : ' + e.getStackTraceString() );
 
             throw e;
 
@@ -673,7 +718,7 @@ global with sharing class MA_EditConfigRestController {
 /*
 BSD 3-Clause License
 
-Copyright (c) 2018, Doug Ayers, douglascayers.com
+Copyright (c) 2017-2019, Doug Ayers, douglascayers.com
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

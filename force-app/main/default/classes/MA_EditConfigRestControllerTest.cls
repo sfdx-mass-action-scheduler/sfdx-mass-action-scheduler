@@ -1,7 +1,7 @@
 /**
  * Author: Doug Ayers
  * Website: https://douglascayers.com
- * GitHub: https://github.com/douglascayers/sfdx-mass-action-scheduler
+ * GitHub: https://github.com/douglascayers-org/sfdx-mass-action-scheduler
  * License: BSD 3-Clause License
  */
 @IsTest
@@ -419,9 +419,41 @@ private class MA_EditConfigRestControllerTest {
     }
 
     @IsTest
+    static void test_getObjectNamesWithListViews() {
+
+        Set<String> sobjectsWithListViews = new Set<String>();
+        for ( AggregateResult result : [
+            SELECT SObjectType
+            FROM ListView
+            WHERE IsSoqlCompatible = true
+            GROUP BY SObjectType
+            ORDER BY SObjectType ASC
+            LIMIT 2000
+        ]) {
+            // lowercase the object names to match keys in the global describe map
+            // because the Set method `contains` is case-sensitive
+            sobjectsWithListViews.add( ( (String) result.get( 'SObjectType' ) ).toLowerCase() );
+        }
+
+        Test.startTest();
+
+        Map<String, Object> responseBodyMap = test_handlePost( 'getObjectNamesWithListViews', new Map<String, Object>() );
+
+        Test.stopTest();
+
+        List<Object> objectNames = (List<Object>) responseBodyMap.get( 'result' );
+
+        for ( Object item : objectNames ) {
+            Map<String, Object> objectName = (Map<String, Object>) item;
+            System.assert( sobjectsWithListViews.contains( String.valueOf( objectName.get( 'value' ) ).toLowerCase() ) );
+        }
+
+    }
+
+    @IsTest
     static void test_getListViewsByObject() {
 
-        String objectName = MA_MassActionUtils.NAMESPACE_API + 'Mass_Action_Configuration__c';
+        String objectName = MA_NamespaceUtils.NAMESPACE_API + 'Mass_Action_Configuration__c';
         ListView lv = [ SELECT Id, Name, DeveloperName, SobjectType FROM ListView WHERE DeveloperName = 'All' AND SobjectType = :objectName AND IsSoqlCompatible = true LIMIT 1 ];
 
         Test.startTest();
@@ -447,7 +479,7 @@ private class MA_EditConfigRestControllerTest {
     @IsTest
     static void test_getListViewById() {
 
-        String objectName = MA_MassActionUtils.NAMESPACE_API + 'Mass_Action_Configuration__c';
+        String objectName = MA_NamespaceUtils.NAMESPACE_API + 'Mass_Action_Configuration__c';
         ListView lv = [ SELECT Id, Name, DeveloperName, SobjectType FROM ListView WHERE DeveloperName = 'All' AND SobjectType = :objectName AND IsSoqlCompatible = true LIMIT 1 ];
 
         Test.startTest();
@@ -467,7 +499,7 @@ private class MA_EditConfigRestControllerTest {
     @IsTest
     static void test_getListViewColumns() {
 
-        String objectName = MA_MassActionUtils.NAMESPACE_API + 'Mass_Action_Configuration__c';
+        String objectName = MA_NamespaceUtils.NAMESPACE_API + 'Mass_Action_Configuration__c';
         ListView lv = [ SELECT Id, Name, DeveloperName, SobjectType FROM ListView WHERE DeveloperName = 'All' AND SobjectType = :objectName AND IsSoqlCompatible = true LIMIT 1 ];
 
         Test.startTest();
@@ -579,7 +611,7 @@ private class MA_EditConfigRestControllerTest {
             });
 
             System.assertEquals( false, responseBodyMap.get( 'success' ), 'should fail' );
-            System.assertEquals( 'Test Fail', responseBodyMap.get( 'error' ), 'failed for wrong reason' );
+            System.assert( ( (String) responseBodyMap.get( 'error' ) ).startsWithIgnoreCase( 'SOQL Query Error:' ), 'failed for wrong reason' );
 
         } catch ( Exception e ) {
 
@@ -629,7 +661,7 @@ private class MA_EditConfigRestControllerTest {
             });
 
             System.assertEquals( false, responseBodyMap.get( 'success' ), 'should fail' );
-            System.assertEquals( 'Test Fail', responseBodyMap.get( 'error' ), 'failed for wrong reason' );
+            System.assert( ( (String) responseBodyMap.get( 'error' ) ).startsWithIgnoreCase( 'SOQL Query Error:' ), 'failed for wrong reason' );
 
         } catch ( Exception e ) {
 
@@ -765,7 +797,7 @@ private class MA_EditConfigRestControllerTest {
     @IsTest
     static void test_getConfigurationObjectDescribe() {
 
-        String objectName = MA_MassActionUtils.NAMESPACE_API + 'Mass_Action_Configuration__c';
+        String objectName = MA_NamespaceUtils.NAMESPACE_API + 'Mass_Action_Configuration__c';
         DescribeSObjectResult objectDescribe = Schema.getGlobalDescribe().get( objectName ).getDescribe();
         Map<String, SObjectField> fieldsMap = objectDescribe.fields.getMap();
 
@@ -874,10 +906,24 @@ private class MA_EditConfigRestControllerTest {
 
         Test.startTest();
 
-        System.assertEquals( 'callout:TestNamedCredential', MA_MassActionUtils.getCalloutRestEndpointURL( 'TestNamedCredential' ) );
-        System.assertEquals( MA_MassActionUtils.REST_API_SERVICES_DATA_URL, MA_MassActionUtils.getCalloutRestEndpointURL( null ) );
-        System.assertEquals( MA_MassActionUtils.REST_API_SERVICES_DATA_URL, MA_MassActionUtils.getCalloutRestEndpointURL( '' ) );
-        System.assertEquals( MA_MassActionUtils.REST_API_SERVICES_DATA_URL, MA_MassActionUtils.getCalloutRestEndpointURL( ' ' ) );
+        System.assertEquals( 'callout:TestNamedCredential' + MA_MassActionUtils.REST_API_PATH, MA_MassActionUtils.getCalloutRestEndpointURL( 'TestNamedCredential' ) );
+        System.assertEquals( MA_MassActionUtils.REST_API_SERVICES_URL, MA_MassActionUtils.getCalloutRestEndpointURL( null ) );
+        System.assertEquals( MA_MassActionUtils.REST_API_SERVICES_URL, MA_MassActionUtils.getCalloutRestEndpointURL( '' ) );
+        System.assertEquals( MA_MassActionUtils.REST_API_SERVICES_URL, MA_MassActionUtils.getCalloutRestEndpointURL( ' ' ) );
+
+        Test.stopTest();
+
+    }
+
+    @IsTest
+    static void test_getCalloutSoapEndpointURL() {
+
+        Test.startTest();
+
+        System.assertEquals( 'callout:TestNamedCredential' + MA_MassActionUtils.SOAP_API_PATH, MA_MassActionUtils.getCalloutSoapEndpointURL( 'TestNamedCredential' ) );
+        System.assertEquals( MA_MassActionUtils.SOAP_API_SERVICES_URL, MA_MassActionUtils.getCalloutSoapEndpointURL( null ) );
+        System.assertEquals( MA_MassActionUtils.SOAP_API_SERVICES_URL, MA_MassActionUtils.getCalloutSoapEndpointURL( '' ) );
+        System.assertEquals( MA_MassActionUtils.SOAP_API_SERVICES_URL, MA_MassActionUtils.getCalloutSoapEndpointURL( ' ' ) );
 
         Test.stopTest();
 
@@ -967,7 +1013,7 @@ private class MA_EditConfigRestControllerTest {
 /*
 BSD 3-Clause License
 
-Copyright (c) 2018, Doug Ayers, douglascayers.com
+Copyright (c) 2017-2019, Doug Ayers, douglascayers.com
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

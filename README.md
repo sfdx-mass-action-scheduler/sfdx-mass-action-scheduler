@@ -3,6 +3,8 @@
 [![Salesforce Community Support][community-shield]][community-url]
 [![Sponsor][sponsor-shield]][sponsor-url]
 [![License][license-shield]][license-url]
+[![Build Status][cicd-shield]][cicd-url]
+[![Code Coverage][codecov-shield]][codecov-url]
 
 <!-- PROJECT LOGO -->
 <p align="center">
@@ -37,60 +39,55 @@
 * [Acknowledgements](#-acknowledgements)
 * [License](#-license)
 
-<br />
-
 ## 🧐 About the Project
 
-#### Ethos
+#### 🗣 Ethos
 
 Mass Action Scheduler is a [free-as-in-speech](https://www.howtogeek.com/howto/31717/what-do-the-phrases-free-speech-vs.-free-beer-really-mean/) and [open source](https://opensource.com/resources/what-open-source) developed passion project of [Doug Ayers](https://douglascayers.com).
 
-#### Mission
+#### 💪 Mission
 
 Put the power of [Batch Apex](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_batch.htm) within reach of [declarative configuration](https://help.salesforce.com/articleView?id=extend_click_intro.htm&type=5).
 
-#### Value Proposition
+#### 🚀 Value Proposition
 
-🚀 Declaratively schedule Process Builder, Flows, Quick Actions, Email Alerts, Workflow Rules, or Apex to process records from Reports, List Views, SOQL, or Apex.
+Declaratively schedule Process Builder, Flows, Quick Actions, Email Alerts, Workflow Rules, or Apex to process records from Reports, List Views, SOQL, or Apex.
 
-⏳ No more waiting for records to be updated or creating clever workarounds to cause records to be updated to cause these actions to fire.
+No more waiting for records to be updated or creating clever workarounds to cause records to be updated to cause these actions to fire.
 
-#### Inspiration
+#### 💡 Inspiration
 
-💡 This project is inspired by the following IdeaExchange ideas. Please vote them up to increase chances this functionality becomes standard on the Salesforce platform. Thank you!
+This project is inspired by the following IdeaExchange ideas. Please vote them up to increase chances this functionality becomes standard on the Salesforce platform. Thank you!
 
-  * Inspired by Marie Chandra's idea [Ability to Schedule when Process Builder Triggers](https://success.salesforce.com/ideaView?id=08730000000DjEmAAK).
+Inspired by Marie Chandra's idea [Ability to Schedule when Process Builder Triggers](https://success.salesforce.com/ideaView?id=08730000000DjEmAAK).
 
-  * Inspired by Narender Singh's idea [Ability to schedule flows, workflows and processes in process builder](https://success.salesforce.com/ideaView?id=0873A000000EA71QAG).
-
-<br />
+Inspired by Narender Singh's idea [Ability to schedule flows, workflows and processes in process builder](https://success.salesforce.com/ideaView?id=0873A000000EA71QAG).
 
 ## 🎈 Features
 
-🙌 **Declarative** - no code necessary, never write Batch Apex again for queries that can be expressed in a report or list view and actions that can be expressed with a declarative alternative.
+**Declarative** - no code necessary, never write Batch Apex again for queries that can be expressed in a report or list view and actions that can be expressed with a declarative alternative.
 
-☁️ **On Platform** - everything happens in Salesforce so no exporting or uploading data necessary.
+**On Platform** - everything happens in Salesforce so no exporting or uploading data necessary.
 
-⏰ **Timely** - run actions manually or schedule hourly, daily, weekly, or any time in between.
+**Timely** - run actions [manually](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/On-Demand-Scheduling) or [schedule](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Scheduling) hourly, daily, weekly, or any time in between.
 
-🦄 **Versatile** - explore the many [data sources](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Sources) and [actions](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Actions) that can be [scheduled](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Scheduling) with Mass Action Scheduler.
-
-<br />
+**Versatile** - explore the many [data sources](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Sources) and [actions](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Actions) that can be [scheduled](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Scheduling) with Mass Action Scheduler.
 
 ## 🗺 Roadmap
 
 See the [open issues](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/issues) for a list of proposed features (and known issues).
 
-<br />
+See the [open milestones](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/milestones?state=open) for a list of upcoming planned releases.
 
 ## 📘 Documentation and 💬 Discussion
 
-* Read the [wiki](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki) for documentation on Mass Action Scheduler.
-* Read the [FAQ](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Frequently-Asked-Questions) to troubleshoot common technical issues.
-* Join our [community group](https://success.salesforce.com/_ui/core/chatter/groups/GroupProfilePage?g=0F93A000000LhvN) to discuss and solution with other Mass Action Scheduler users.
-* Raise well defined issues and ideas via the [issue tracker](https://github.com/douglascayers/sfdx-mass-action-scheduler/issues).
+Read the [wiki](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki) for documentation on Mass Action Scheduler.
 
-<br />
+Read the [FAQ](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Frequently-Asked-Questions) to troubleshoot common technical issues.
+
+Join our [community group](https://success.salesforce.com/_ui/core/chatter/groups/GroupProfilePage?g=0F93A000000LhvN) to discuss and solution with other Mass Action Scheduler users.
+
+Raise well defined issues and ideas via the [issue tracker](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/issues).
 
 ## 👋 Getting Started
 
@@ -106,11 +103,9 @@ Please see the [instructions in the wiki](https://github.com/douglascayers-org/s
 
 ### 📦 Install Package
 
-* See the [Release Notes](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Release-Notes) for install links to each package version.
-* Assign the **Mass Action Admin** permission set to users who will configure mass actions.
-* Finish reviewing the [Getting Started](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Getting-Started) instructions.
-
-<br />
+1. See the [Release Notes](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Release-Notes) for install links to each package version.
+2. Assign the **Mass Action Admin** permission set to users who will configure mass actions.
+3. Finish reviewing the [Getting Started](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Getting-Started) instructions.
 
 ## 💎 Sponsoring
 
@@ -125,8 +120,6 @@ Thank you! ❤️
 
 https://douglascayers.com/thanks-for-your-support/
 
-<br />
-
 ## 🙏 Contributing
 
 Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
@@ -140,27 +133,25 @@ For code contributions, please follow the [GitHub flow](https://help.github.com/
 2. Create your feature branch (`git checkout -b feature/AmazingFeature`).
 3. Commit your changes (`git commit -m 'Add some AmazingFeature'`).
 4. Push to your feature branch (`git push origin feature/AmazingFeature`).
-5. Open a pull request.
-
-<br />
+5. Open a pull request to the `develop` branch.
 
 ## ✍️ Authors
 
-* [Doug Ayers](https://douglascayers.com) develops and maintains the project.
+[Doug Ayers](https://douglascayers.com) develops and maintains the project.
 
 See also the list of [contributors](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/contributors) who participated in this project.
 
-<br />
-
 ## 🎉 Acknowledgements
 
-* [Appiphony](http://www.lightningstrike.io) for developing the Strike Wizard component based on Lightning Design System [Path blueprint](https://www.lightningdesignsystem.com/components/path/).
-* [Salesforce Foundation](https://github.com/SalesforceFoundation/CampaignTools) for developing tools for querying Salesforce Reports API in Apex.
-* [Shinichi Tomita](https://twitter.com/stomita) for developing [jsforce](https://jsforce.github.io/) and [soql-parse](https://github.com/stomita/soql-parse) libraries for easy use of Salesforce REST APIs in JavaScript.
-* [jQuery](https://jquery.com/) for developing jQuery library.
-* [Aaron Hardy](https://twitter.com/aaronius) for developing [Penpal](https://github.com/Aaronius/penpal), a promise-based library for securely communicating with iframes via postMessage.
+[Appiphony](http://www.lightningstrike.io) for developing the Strike Wizard component based on Lightning Design System [Path blueprint](https://www.lightningdesignsystem.com/components/path/).
 
-<br />
+[Salesforce Foundation](https://github.com/SalesforceFoundation/CampaignTools) for developing tools for querying Salesforce Reports API in Apex.
+
+[Shinichi Tomita](https://twitter.com/stomita) for developing [jsforce](https://jsforce.github.io/) and [soql-parse](https://github.com/stomita/soql-parse) libraries for easy use of Salesforce REST APIs in JavaScript.
+
+[jQuery](https://jquery.com/) for developing jQuery library.
+
+[Aaron Hardy](https://twitter.com/aaronius) for developing [Penpal](https://github.com/Aaronius/penpal), a promise-based library for securely communicating with iframes via postMessage.
 
 ## 👀 License
 
@@ -176,6 +167,12 @@ The source code is licensed under the [BSD 3-Clause License](LICENSE).
 
 [community-shield]: https://img.shields.io/badge/-Join_our_Community-blue.svg?logo=salesforce&logoColor=white
 [community-url]: https://success.salesforce.com/_ui/core/chatter/groups/GroupProfilePage?g=0F93A000000LhvN
+
+[cicd-shield]: https://img.shields.io/circleci/build/github/douglascayers-org/sfdx-mass-action-scheduler/develop.svg?logo=circleci
+[cicd-url]: https://circleci.com/gh/douglascayers-org/sfdx-mass-action-scheduler/tree/develop
+
+[codecov-shield]: https://img.shields.io/codecov/c/github/douglascayers-org/sfdx-mass-action-scheduler/develop.svg?logo=codecov
+[codecov-url]: https://codecov.io/gh/douglascayers-org/sfdx-mass-action-scheduler
 
 <!-- https://stackoverflow.com/questions/42679712/why-does-the-red-heart-emoji-require-two-code-points-but-the-other-colored-hear -->
 [sponsor-shield]: https://img.shields.io/badge/-💜_Sponsor_this_project-ff69b4.svg

@@ -64,7 +64,7 @@
                 <field>Last_Run_Completed_Date__c</field>
             </layoutItems>
             <layoutItems>
-                <behavior>Edit</behavior>
+                <behavior>Readonly</behavior>
                 <field>Last_Run_Completed_With_Errors__c</field>
             </layoutItems>
         </layoutColumns>
@@ -209,27 +209,27 @@
     <platformActionList>
         <actionListContext>Record</actionListContext>
         <platformActionListItems>
-            <actionName>Mass_Action_Configuration__c.Run</actionName>
+            <actionName>FeedItem.TextPost</actionName>
             <actionType>QuickAction</actionType>
             <sortOrder>0</sortOrder>
         </platformActionListItems>
         <platformActionListItems>
-            <actionName>Mass_Action_Configuration__c.Quick_Edit</actionName>
+            <actionName>FeedItem.ContentPost</actionName>
             <actionType>QuickAction</actionType>
             <sortOrder>1</sortOrder>
         </platformActionListItems>
         <platformActionListItems>
-            <actionName>FeedItem.TextPost</actionName>
+            <actionName>FeedItem.LinkPost</actionName>
             <actionType>QuickAction</actionType>
             <sortOrder>2</sortOrder>
         </platformActionListItems>
         <platformActionListItems>
-            <actionName>FeedItem.ContentPost</actionName>
+            <actionName>Mass_Action_Configuration__c.Run_via_Flow</actionName>
             <actionType>QuickAction</actionType>
             <sortOrder>3</sortOrder>
         </platformActionListItems>
         <platformActionListItems>
-            <actionName>FeedItem.LinkPost</actionName>
+            <actionName>Mass_Action_Configuration__c.Quick_Edit</actionName>
             <actionType>QuickAction</actionType>
             <sortOrder>4</sortOrder>
         </platformActionListItems>
@@ -262,12 +262,13 @@
         <fields>NAME</fields>
         <fields>Job_ID__c</fields>
         <fields>Message__c</fields>
-        <fields>Submitted_Date__c</fields>
+        <fields>Batch_Success_Rate__c</fields>
         <fields>Total_Batches__c</fields>
         <fields>Processed_Batches__c</fields>
         <fields>Failed_Batches__c</fields>
-        <relatedList>Mass_Action_Log__c.Mass_Action_Configuration__c</relatedList>
-        <sortField>NAME</sortField>
+        <fields>Timestamp__c</fields>
+        <relatedList>Mass_Action_Log__c.Parent_Log_Configuration__c</relatedList>
+        <sortField>Timestamp__c</sortField>
         <sortOrder>Desc</sortOrder>
     </relatedLists>
     <showEmailCheckbox>false</showEmailCheckbox>

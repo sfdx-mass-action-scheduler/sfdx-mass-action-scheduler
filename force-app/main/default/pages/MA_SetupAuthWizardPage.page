@@ -1,7 +1,7 @@
 <!--
 Author: Doug Ayers
 Website: https://douglascayers.com
-GitHub: https://github.com/douglascayers/sfdx-mass-action-scheduler
+GitHub: https://github.com/douglascayers-org/sfdx-mass-action-scheduler
 License: BSD 3-Clause License
  -->
 <apex:page controller="MA_SetupAuthWizardPageController">
@@ -65,7 +65,7 @@ License: BSD 3-Clause License
 
                         <div class="slds-text-heading_medium">1. Usage</div>
                         <p class="slds-p-bottom_medium">
-                            Mass Action Scheduler uses the <a href="https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_what_is_rest_api.htm" target="_blank">Salesforce REST API</a>
+                            Mass Action Scheduler uses the <a href="https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_what_is_rest_api.htm" target="_blank" rel="noopener noreferrer">Salesforce REST API</a>
                             to provide you a robust configuration wizard as well as
                             to invoke your Flows, Processes, Quick Actions, Apex, and Workflow Rules per your defined schedules.
                         </p>
@@ -73,13 +73,13 @@ License: BSD 3-Clause License
                         <div class="slds-text-heading_medium">2. Security Requirements</div>
                         <p class="slds-p-bottom_medium">
                             For security purposes, Salesforce requires Lightning Components to
-                            <a href="https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_understanding_authentication.htm" target="_blank">authenticate</a> to the Salesforce REST API
-                            through <a href="https://help.salesforce.com/articleView?id=remoteaccess_authenticate.htm&type=5" target="_blank">OAuth</a>
-                            via <a href="https://developer.salesforce.com/docs/atlas.en-us.lightning.meta/lightning/apex_api_calls.htm" target="_blank">Apex</a>.
+                            <a href="https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_understanding_authentication.htm" target="_blank" rel="noopener noreferrer">authenticate</a> to the Salesforce REST API
+                            through <a href="https://help.salesforce.com/articleView?id=remoteaccess_authenticate.htm&type=5" target="_blank" rel="noopener noreferrer">OAuth</a>
+                            via <a href="https://developer.salesforce.com/docs/atlas.en-us.lightning.meta/lightning/apex_api_calls.htm" target="_blank" rel="noopener noreferrer">Apex</a>.
                             As a Salesforce Admin, you satisfy these requirements by declaratively creating a
-                            <a href="https://help.salesforce.com/articleView?id=connected_app_overview.htm&type=5" target="_blank">Connected App</a>,
-                            <a href="https://help.salesforce.com/articleView?id=sso_provider_sfdc.htm&type=5" target="_blank">Auth. Provider</a>, and
-                            <a href="https://help.salesforce.com/articleView?id=named_credentials_about.htm&type=5" target="_blank">Named Credential</a>.
+                            <a href="https://help.salesforce.com/articleView?id=connected_app_overview.htm&type=5" target="_blank" rel="noopener noreferrer">Connected App</a>,
+                            <a href="https://help.salesforce.com/articleView?id=sso_provider_sfdc.htm&type=5" target="_blank" rel="noopener noreferrer">Auth. Provider</a>, and
+                            <a href="https://help.salesforce.com/articleView?id=named_credentials_about.htm&type=5" target="_blank" rel="noopener noreferrer">Named Credential</a>.
                             These metadata components also ensure that custom apps, like Mass Action Scheduler, never actually receive or know your Salesforce password
                             and that you have explicitly authorized the app to perform Salesforce operations on your behalf. For example, to run a flow at 5am while you are sleeping 🙂
                         </p>
@@ -89,15 +89,15 @@ License: BSD 3-Clause License
                             The manual setup of the Connected App, Auth. Provider, and Named Credential is several clicks and copying and pasting very long and specific values between forms.
                             This is the primary complaint and barrier to adoption of the Mass Action Scheduler app.
                             Therefore, the automated setup option is recommended and provided as a convenience.
-                            However, if desired, you can create these items manually by following the instructions on the <a href="https://github.com/douglascayers/sfdx-mass-action-scheduler/wiki/Pre-Requisites-Instructions">project wiki page</a>.
+                            However, if desired, you can create these items manually by following the instructions on the <a href="https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Specify-the-Running-User-via-Named-Credentials">project wiki page</a>.
                         </p>
 
                         <div class="slds-text-heading_medium">3b. Automated Setup</div>
                         <p class="slds-p-bottom_medium">
                             This setup wizard will automatically configure the
-                            <a href="https://help.salesforce.com/articleView?id=connected_app_overview.htm&type=5" target="_blank">Connected App</a>,
-                            <a href="https://help.salesforce.com/articleView?id=sso_provider_sfdc.htm&type=5" target="_blank">Auth. Provider</a>, and
-                            <a href="https://help.salesforce.com/articleView?id=named_credentials_about.htm&type=5" target="_blank">Named Credential</a>
+                            <a href="https://help.salesforce.com/articleView?id=connected_app_overview.htm&type=5" target="_blank" rel="noopener noreferrer">Connected App</a>,
+                            <a href="https://help.salesforce.com/articleView?id=sso_provider_sfdc.htm&type=5" target="_blank" rel="noopener noreferrer">Auth. Provider</a>, and
+                            <a href="https://help.salesforce.com/articleView?id=named_credentials_about.htm&type=5" target="_blank" rel="noopener noreferrer">Named Credential</a>
                             metadata required for Mass Action Scheduler to access the Salesforce REST API.
                             The metadata will be created with the names <b>Mass_Action</b>.
                         </p>
@@ -134,7 +134,7 @@ License: BSD 3-Clause License
                                     <b>Wait 10 minutes</b> for the Connected App to become available to the Salesforce login servers, otherwise you will get error <span class="slds-text-color_error">invalid_client_id</span> in step 4b.
                                 </li>
                                 <li class="slds-m-vertical_small">
-                                    In Setup, go to the <a href="/one/one.app#/setup/NamedCredential/home" target="_blank">Named Credential</a> record,
+                                    In Setup, go to the <a href="/lightning/setup/NamedCredential/home" target="_blank" rel="noopener noreferrer">Named Credential</a> record,
                                     click <b>Edit</b>, ensure the <b>Start Authentication Flow on Save</b> checkbox is selected, then click <b>Save</b>.
                                 </li>
                                 <li class="slds-m-vertical_small">
@@ -196,7 +196,7 @@ License: BSD 3-Clause License
 
         var conn = new jsforce.Connection({
             accessToken : '{!$Api.Session_Id}',
-            version : '45.0'
+            version : '46.0'
         });
 
         const consumerKey = getRandomLetters( 85 );
@@ -247,7 +247,7 @@ License: BSD 3-Clause License
                         })
                         .then( function( result ) {
                             console.log( result );
-                            showMessage( 'Wait <b>10 minutes</b> then complete authentication flow by <a href="/one/one.app#/setup/NamedCredential/page?address=%2F' + result.records[0].Id + '%2Fe" target="_blank">re-saving the Named Credential</a>', 'WARNING' );
+                            showMessage( 'Wait <b>10 minutes</b> then complete authentication flow by <a href="/lightning/setup/NamedCredential/page?address=%2F' + result.records[0].Id + '%2Fe" target="_blank" rel="noopener noreferrer">re-saving the Named Credential</a>', 'WARNING' );
                         });
 
                 })
@@ -294,10 +294,12 @@ License: BSD 3-Clause License
                 fullName : fullName,
                 label : label,
                 authProvider : fullName,
-                endpoint : orgDomainURL + '/services/data/v45.0',
+                endpoint : orgDomainURL,
                 oauthScope : 'full refresh_token',
                 principalType : 'NamedUser',
-                protocol : 'Oauth'
+                protocol : 'Oauth',
+                allowMergeFieldsInHeader : true,
+                allowMergeFieldsInBody : true
             };
         }
 
@@ -399,7 +401,7 @@ License: BSD 3-Clause License
 <!--
 BSD 3-Clause License
 
-Copyright (c) 2018, Doug Ayers, douglascayers.com
+Copyright (c) 2017-2019, Doug Ayers, douglascayers.com
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

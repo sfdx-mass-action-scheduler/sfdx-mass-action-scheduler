@@ -9,6 +9,7 @@ Custom = user provided own cron expression</description>
     <inlineHelpText>How often will this action run?</inlineHelpText>
     <label>Schedule Frequency</label>
     <required>false</required>
+    <trackHistory>false</trackHistory>
     <trackTrending>false</trackTrending>
     <type>Picklist</type>
     <valueSet>

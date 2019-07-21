@@ -4,8 +4,7 @@
     <fields>Name</fields>
     <fields>Mass_Action_Configuration__c</fields>
     <fields>Job_ID__c</fields>
-    <fields>Total_Batches__c</fields>
-    <fields>Processed_Batches__c</fields>
-    <fields>Failed_Batches__c</fields>
+    <fields>Message_Type__c</fields>
+    <fields>RecordTypeId</fields>
     <label>Default Compact Layout</label>
 </CompactLayout>

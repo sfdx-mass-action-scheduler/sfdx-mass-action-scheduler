@@ -1,0 +1,425 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <description>Runs a Mass Action Configuration record now, despite it&#39;s normal schedule.</description>
+        <name>Run_Mass_Action</name>
+        <label>Run Mass Action</label>
+        <locationX>1114</locationX>
+        <locationY>59</locationY>
+        <actionName>MA_RunConfigInvocable</actionName>
+        <actionType>apex</actionType>
+        <connector>
+            <targetReference>Set_Stage_3</targetReference>
+        </connector>
+        <inputParameters>
+            <name>configUniqueName</name>
+            <value>
+                <elementReference>varConfigRecord.DeveloperName__c</elementReference>
+            </value>
+        </inputParameters>
+        <outputParameters>
+            <assignToReference>varJobId</assignToReference>
+            <name>jobId</name>
+        </outputParameters>
+    </actionCalls>
+    <assignments>
+        <description>The stages are visualized by a path component on each screen.</description>
+        <name>Set_Stage_1</name>
+        <label>Set Stage 1</label>
+        <locationX>591</locationX>
+        <locationY>58</locationY>
+        <assignmentItems>
+            <assignToReference>$Flow.CurrentStage</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Stage_01_Choose_Action</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>ChooseActionScreen</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>The stages are visualized by a path component on each screen.</description>
+        <name>Set_Stage_2</name>
+        <label>Set Stage 2</label>
+        <locationX>773</locationX>
+        <locationY>282</locationY>
+        <assignmentItems>
+            <assignToReference>$Flow.CurrentStage</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Stage_02_Confirm_Action</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>ConfirmActionScreen</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>The stages are visualized by a path component on each screen.</description>
+        <name>Set_Stage_3</name>
+        <label>Set Stage 3</label>
+        <locationX>1259</locationX>
+        <locationY>59</locationY>
+        <assignmentItems>
+            <assignToReference>$Flow.CurrentStage</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Stage_03_Summary</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>ReviewActionScreen</targetReference>
+        </connector>
+    </assignments>
+    <choices>
+        <description>On the Choose Action screen, this is the default choice listed to prompt user to make a selection.</description>
+        <name>Choice_ChooseActionPlaceholder</name>
+        <choiceText>Choose a Mass Action Configuration</choiceText>
+        <dataType>String</dataType>
+    </choices>
+    <choices>
+        <description>On the Confirm Action screen, this choice indicates the user wants to be routed back to choose a different configuration.</description>
+        <name>Choice_ConfirmActionChange</name>
+        <choiceText>Choose a different configuration</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>ChooseNewConfigurationToRun</stringValue>
+        </value>
+    </choices>
+    <choices>
+        <description>On the Confirm Action screen, this choice indicates the user wants to run the selected configuration.</description>
+        <name>Choice_ConfirmActionRun</name>
+        <choiceText>{!varConfigRecord.Name}</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <elementReference>varConfigRecord.DeveloperName__c</elementReference>
+        </value>
+    </choices>
+    <decisions>
+        <description>Determines if the `recordId` input variable was provided or not. If yes, go to the Confirm Action screen, otherwise go to the Choose Action screen.</description>
+        <name>Decision_Have_Record_Id</name>
+        <label>Have Record Id?</label>
+        <locationX>236</locationX>
+        <locationY>52</locationY>
+        <defaultConnector>
+            <targetReference>Set_Stage_1</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No</defaultConnectorLabel>
+        <rules>
+            <name>Decision_Have_Record_Id_Yes</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>recordId</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Config_Record_By_Id</targetReference>
+            </connector>
+            <label>Yes</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Route to next step based on user&#39;s choice on the Confirm Action screen: run the selected configuration or choose a different one.</description>
+        <name>Decision_Run_Config</name>
+        <label>Run Config?</label>
+        <locationX>928</locationX>
+        <locationY>59</locationY>
+        <defaultConnector>
+            <targetReference>Set_Stage_1</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No</defaultConnectorLabel>
+        <rules>
+            <name>Decision_Run_Config_Yes</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>ConfirmActionOption</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <elementReference>Choice_ConfirmActionRun</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Run_Mass_Action</targetReference>
+            </connector>
+            <label>Yes</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Prevent moving to next screen if the user did not make a valid selection.</description>
+        <name>Decision_Validate_Choice</name>
+        <label>Validate Choice</label>
+        <locationX>581</locationX>
+        <locationY>285</locationY>
+        <defaultConnector>
+            <targetReference>Set_Stage_1</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Invalid</defaultConnectorLabel>
+        <rules>
+            <name>Decision_Validate_Choice_Valid</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>varConfigRecord</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_Stage_2</targetReference>
+            </connector>
+            <label>Valid</label>
+        </rules>
+    </decisions>
+    <description>Prompts user to choose an active Mass Action Configuration to run. Upon user confirmation, the flow submits the configuration and displays the batch job id.</description>
+    <dynamicChoiceSets>
+        <description>List of active Mass Action Configuration records the user may choose to run. Note that when a user makes a selection, we set the `recordId` input variable. This allows the flow to navigate to the beginning again and start as if it had been given a selection so that we can reuse the &quot;Get By Id&quot; action without duplicating logic or needing an extra Assignment step.</description>
+        <name>varConfigRecordChoices</name>
+        <dataType>String</dataType>
+        <displayField>Name</displayField>
+        <filters>
+            <field>Active__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <object>Mass_Action_Configuration__c</object>
+        <outputAssignments>
+            <assignToReference>recordId</assignToReference>
+            <field>Id</field>
+        </outputAssignments>
+        <sortField>Name</sortField>
+        <sortOrder>Asc</sortOrder>
+        <valueField>Id</valueField>
+    </dynamicChoiceSets>
+    <formulas>
+        <description>Mass Action Scheduler app standardizes on showing users the 15 character batch job id. This makes it easy to copy/paste the value to cross reference on the Apex Jobs page in Setup and the Mass Action Log records.</description>
+        <name>varJobId15</name>
+        <dataType>String</dataType>
+        <expression>LEFT({!varJobId}, 15)</expression>
+    </formulas>
+    <interviewLabel>MAS: Run Mass Action Flow {!$Flow.CurrentDateTime}</interviewLabel>
+    <isTemplate>true</isTemplate>
+    <label>MAS: Run Mass Action Flow</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>Flow</processType>
+    <recordLookups>
+        <description>Query the configuration record identified by the `recordId` input variable. If found, we will use it as the default choice for which configuration to run.</description>
+        <name>Get_Config_Record_By_Id</name>
+        <label>Get By Id</label>
+        <locationX>244</locationX>
+        <locationY>284</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Decision_Validate_Choice</targetReference>
+        </connector>
+        <filters>
+            <field>Active__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </filters>
+        <object>Mass_Action_Configuration__c</object>
+        <outputReference>varConfigRecord</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>Name</queriedFields>
+        <queriedFields>DeveloperName__c</queriedFields>
+        <sortField>Id</sortField>
+        <sortOrder>Asc</sortOrder>
+    </recordLookups>
+    <screens>
+        <description>Prompt user to choose an active Mass Action Configuration record to run.</description>
+        <name>ChooseActionScreen</name>
+        <label>Choose Action</label>
+        <locationX>422</locationX>
+        <locationY>128</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <connector>
+            <targetReference>Decision_Have_Record_Id</targetReference>
+        </connector>
+        <fields>
+            <name>ChooseActionPath</name>
+            <extensionName>c:MA_FlowStagePathCmp</extensionName>
+            <fieldType>ComponentInstance</fieldType>
+            <inputParameters>
+                <name>currentStage</name>
+                <value>
+                    <elementReference>$Flow.CurrentStage</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>stages</name>
+                <value>
+                    <elementReference>$Flow.ActiveStages</elementReference>
+                </value>
+            </inputParameters>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>ChooseActionConfigId</name>
+            <choiceReferences>Choice_ChooseActionPlaceholder</choiceReferences>
+            <choiceReferences>varConfigRecordChoices</choiceReferences>
+            <dataType>String</dataType>
+            <defaultSelectedChoiceReference>Choice_ChooseActionPlaceholder</defaultSelectedChoiceReference>
+            <fieldText>Mass Action Configuration</fieldText>
+            <fieldType>DropdownBox</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>ChooseActionNote</name>
+            <fieldText>&lt;p&gt;Only active configurations are available to run.&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
+        <description>Provide user an opportunity to confirm the action to run.</description>
+        <name>ConfirmActionScreen</name>
+        <label>Confirm Action</label>
+        <locationX>936</locationX>
+        <locationY>282</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <connector>
+            <targetReference>Decision_Run_Config</targetReference>
+        </connector>
+        <fields>
+            <name>ConfirmActionPath</name>
+            <extensionName>c:MA_FlowStagePathCmp</extensionName>
+            <fieldType>ComponentInstance</fieldType>
+            <inputParameters>
+                <name>currentStage</name>
+                <value>
+                    <elementReference>$Flow.CurrentStage</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>stages</name>
+                <value>
+                    <elementReference>$Flow.ActiveStages</elementReference>
+                </value>
+            </inputParameters>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>ConfirmActionOption</name>
+            <choiceReferences>Choice_ConfirmActionRun</choiceReferences>
+            <choiceReferences>Choice_ConfirmActionChange</choiceReferences>
+            <dataType>String</dataType>
+            <defaultSelectedChoiceReference>Choice_ConfirmActionRun</defaultSelectedChoiceReference>
+            <fieldText>Confirm Action</fieldText>
+            <fieldType>RadioButtons</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
+        <description>Show user the batch job id that was submitted. They can use it to look up job details and log records to track progress.</description>
+        <name>ReviewActionScreen</name>
+        <label>Review Action</label>
+        <locationX>1395</locationX>
+        <locationY>59</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>ReviewActionPath</name>
+            <extensionName>c:MA_FlowStagePathCmp</extensionName>
+            <fieldType>ComponentInstance</fieldType>
+            <inputParameters>
+                <name>currentStage</name>
+                <value>
+                    <elementReference>$Flow.CurrentStage</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>stages</name>
+                <value>
+                    <elementReference>$Flow.ActiveStages</elementReference>
+                </value>
+            </inputParameters>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>ReviewActionNote</name>
+            <fieldText>&lt;p&gt;&lt;b style=&quot;font-size: 14px;&quot;&gt;Mass Action Configuration&lt;/b&gt;&lt;/p&gt;&lt;p&gt;{!varConfigRecord.Name}&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;b style=&quot;font-size: 14px;&quot;&gt;Batch Job Submitted&lt;/b&gt;&lt;/p&gt;&lt;p&gt;{!varJobId15}&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;Review the related Mass Action Logs for progress updates and any error messages.&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <stages>
+        <name>Stage_01_Choose_Action</name>
+        <isActive>true</isActive>
+        <label>Choose Action</label>
+        <stageOrder>1</stageOrder>
+    </stages>
+    <stages>
+        <name>Stage_02_Confirm_Action</name>
+        <isActive>true</isActive>
+        <label>Confirm Action</label>
+        <stageOrder>2</stageOrder>
+    </stages>
+    <stages>
+        <name>Stage_03_Summary</name>
+        <isActive>true</isActive>
+        <label>Summary</label>
+        <stageOrder>3</stageOrder>
+    </stages>
+    <startElementReference>Decision_Have_Record_Id</startElementReference>
+    <status>Active</status>
+    <variables>
+        <description>The id of the Mass Action Configuration record where the flow was launched by a quick action on the record page. If your flow has a Text input variable called `recordId`, the quick action passes the record&#39;s ID into that variable at runtime. If not, it doesn&#39;t and the flow tries to run anyway. This is how we can pre-select the configuration record in the flow.</description>
+        <name>recordId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>The currently selected Mass Action Configuration record to run.</description>
+        <name>varConfigRecord</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Mass_Action_Configuration__c</objectType>
+    </variables>
+    <variables>
+        <description>The batch id after submitting the selected Mass Action Configuration record.</description>
+        <name>varJobId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>true</isOutput>
+    </variables>
+</Flow>

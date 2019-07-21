@@ -7,6 +7,7 @@
     <inlineHelpText>Type of action to perform on the source records.</inlineHelpText>
     <label>Target Type</label>
     <required>false</required>
+    <trackHistory>false</trackHistory>
     <trackTrending>false</trackTrending>
     <type>Picklist</type>
     <valueSet>

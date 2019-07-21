@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QuickAction xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>(recommended) The flow prompts the user to choose an active configuration to run. Upon user confirmation, submits the batch job. Same concept as &quot;Run Flow&quot; action, but this one remains in page layouts after package upgrades.</description>
+    <flowDefinition>MAS_Run_Mass_Action_Flow</flowDefinition>
+    <label>Run</label>
+    <optionsCreateFeedItem>false</optionsCreateFeedItem>
+    <type>Flow</type>
+</QuickAction>
