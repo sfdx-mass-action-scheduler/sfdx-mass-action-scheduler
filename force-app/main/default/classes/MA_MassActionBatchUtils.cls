@@ -139,7 +139,9 @@ public inherited sharing class MA_MassActionBatchUtils {
                 Message_Type__c = 'Informational',
                 Message__c = 'Started',
                 Long_Message__c = 'Started',
-                Timestamp__c = String.valueOf( getDateTimeWithoutMillis( DateTime.now() ).getTime() )
+                // Massaging the timestamp for the "start" event to ensure it chronologically always is first.
+                // See comments in the getDateTimeWithoutMillis() method for more details.
+                Timestamp__c = String.valueOf( getDateTimeWithoutMillis( DateTime.now().addSeconds( -1 ) ).getTime() )
             )
         };
 
@@ -162,7 +164,7 @@ public inherited sharing class MA_MassActionBatchUtils {
                 Message__c = 'Processed ' + jobScopeSize + ' records',
                 Long_Message__c = 'Processed ' + jobScopeSize + ' records',
                 Job_Scope__c = jobScope,
-                Timestamp__c = String.valueOf( getDateTimeWithoutMillis( DateTime.now() ).getTime() )
+                Timestamp__c = String.valueOf( DateTime.now().getTime() )
             )
         };
 
