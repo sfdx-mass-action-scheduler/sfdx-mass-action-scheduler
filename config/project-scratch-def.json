@@ -1,10 +1,19 @@
 {
-  "orgName" : "Mass Action Scheduler",
-  "edition" : "Developer",
-  "features" : [],
-  "settings" : {
-    "orgPreferenceSettings" : {
-      "s1EncryptedStoragePref2" : false
+    "orgName" : "Mass Action Scheduler",
+    "edition" : "Enterprise",
+    "hasSampleData" : true,
+    "features" : [],
+    "settings" : {
+        "orgPreferenceSettings" : {
+            "s1EncryptedStoragePref2" : false
+        },
+        "securitySettings" : {
+            "sessionSettings" : {
+                "lockerServiceCSP" : true,
+                "lockerServiceFrozenRealm" : true,
+                "enableClickjackNonsetupUser" : false,
+                "enableClickjackNonsetupUserHeaderless" : false
+            }
+        }
     }
-  }
 }
