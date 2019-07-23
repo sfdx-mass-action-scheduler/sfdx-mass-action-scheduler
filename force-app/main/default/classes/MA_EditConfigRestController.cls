@@ -448,7 +448,7 @@ global with sharing class MA_EditConfigRestController {
         for ( AggregateResult result : [
             SELECT SObjectType
             FROM ListView
-            WHERE IsSoqlCompatible = true
+            WHERE IsSoqlCompatible = true AND SObjectType != null
             GROUP BY SObjectType
             ORDER BY SObjectType ASC
             LIMIT 2000
