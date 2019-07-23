@@ -1,7 +1,7 @@
 {
     "orgName" : "Mass Action Scheduler",
     "edition" : "Enterprise",
-    "hasSampleData" : true,
+    "hasSampleData" : false,
     "features" : [],
     "settings" : {
         "orgPreferenceSettings" : {
