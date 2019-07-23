@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ApexTestSuite xmlns="http://soap.sforce.com/2006/04/metadata">
+    <testClassName>LC_URLControllerTest</testClassName>
+    <testClassName>LC_VisualforceDomainControllerTest</testClassName>
+    <testClassName>MA_BatchApexErrorEventInvocableTest</testClassName>
+    <testClassName>MA_BatchApexStatusEventTriggerTest</testClassName>
+    <testClassName>MA_EditConfigCmpControllerTest</testClassName>
+    <testClassName>MA_EditConfigRestControllerTest</testClassName>
+    <testClassName>MA_ExceptionsTest</testClassName>
+    <testClassName>MA_InstallHandlerTest</testClassName>
+    <testClassName>MA_IterableSourceBatchableTest</testClassName>
+    <testClassName>MA_JobChangeEventTriggerHandlerTest</testClassName>
+    <testClassName>MA_ListViewDescribeResultTest</testClassName>
+    <testClassName>MA_ListViewSourceBatchableTest</testClassName>
+    <testClassName>MA_MapUtilsTest</testClassName>
+    <testClassName>MA_MassActionBatchUtilsTest</testClassName>
+    <testClassName>MA_MassActionConfigTriggerHandlerTest</testClassName>
+    <testClassName>MA_MassActionLogTriggerHandlerTest</testClassName>
+    <testClassName>MA_MassActionSchedulableTest</testClassName>
+    <testClassName>MA_MassActionScheduleUtilsTest</testClassName>
+    <testClassName>MA_MetadataDeployCallbackTest</testClassName>
+    <testClassName>MA_ReportServiceTest</testClassName>
+    <testClassName>MA_ReportSourceBatchableTest</testClassName>
+    <testClassName>MA_RunConfigCmpControllerTest</testClassName>
+    <testClassName>MA_RunConfigInvocableTest</testClassName>
+    <testClassName>MA_SetConfigUniqueNameBatchableTest</testClassName>
+    <testClassName>MA_SetupAuthWizardPageControllerTest</testClassName>
+    <testClassName>MA_SoqlQueryExecuteResultTest</testClassName>
+    <testClassName>MA_SoqlSourceBatchableTest</testClassName>
+    <testClassName>MA_SoqlSourceIterableTest</testClassName>
+    <testClassName>MA_StringUtilsTest</testClassName>
+    <testClassName>MA_UpgradeMassActionLogsBatchableTest</testClassName>
+    <testClassName>MA_UpgradePageLayoutsServiceTest</testClassName>
+    <testClassName>MA_XMLUtilsTest</testClassName>
+</ApexTestSuite>

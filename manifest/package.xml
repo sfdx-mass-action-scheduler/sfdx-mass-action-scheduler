@@ -245,6 +245,10 @@
     <members>Mass_Action_Log__c</members>
   </types>
   <types>
+    <name>ApexTestSuite</name>
+    <members>Mass_Action_Scheduler_Test_Suite</members>
+  </types>
+  <types>
     <name>ApexTrigger</name>
     <members>MA_BatchApexStatusEventTrigger</members>
     <members>MA_JobChangeEventTrigger</members>
