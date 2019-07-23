@@ -140,9 +140,11 @@ workflows:
                 requires:
                     - setup_tooling
             - deploy_source:
+                context: douglascayers-org
                 requires:
                     - setup_dx_orgs
             - run_apex_tests:
+                context: douglascayers-org
                 requires:
                     - deploy_source
             - upload_code_coverage:
@@ -150,6 +152,7 @@ workflows:
                 requires:
                     - run_apex_tests
             - cleanup_dx_orgs:
+                context: douglascayers-org
                 requires:
                     - setup_dx_orgs
                     - deploy_source
