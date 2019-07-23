@@ -91,7 +91,7 @@ jobs:
                 name: Run Apex Tests
                 command: |
                     mkdir -p ./tests/apex
-                    node_modules/sfdx-cli/bin/run force:apex:test:run --targetusername ciorg --codecoverage --resultformat human --outputdir ./test-results/apex --wait 20
+                    node_modules/sfdx-cli/bin/run force:apex:test:run --targetusername ciorg --codecoverage --resultformat human --suitenames Mass_Action_Scheduler_Test_Suite --outputdir ./test-results/apex --wait 20
             - persist_to_workspace:
                 # The Apex test will store the test results in the `test-results` folder (which is a sub-folder of 'project')
                 # The test data will be uploaded to Codecov.io in another step.
