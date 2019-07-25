@@ -29,51 +29,119 @@ License: BSD 3-Clause License
      */
     onRender: function( component, event, helper ) {
 
-        let initialized = component.get( 'v.penpalInitialized' );
+        const isPenpalFrameCreated = component.get( 'v.penpalFrameCreated' );
 
+        // For Penpal to operate correctly, you must ensure that `connectToChild`
+        // is called before the iframe has called `connectToParent`.
         // Since the iframe source is calculated asynchronously,
         // we listen to the component's render events and each time
-        // check if the iframe is ready, and if so, then we initialize
+        // check if the iframe source is ready, and if so, then we initialize
         // penpal to connect this component to the iframe.
         // Since we only want to do this once, we also set the initialized flag.
-        if ( !initialized ) {
+        if ( !isPenpalFrameCreated ) {
 
-            let iframeElmt = component.find( 'penpalFrame' ).getElement();
+            const container = component.find( 'penpalFrameContainer' );
+            const iframeSrc = component.get( 'v.iframeSrc' );
 
-            if ( !$A.util.isEmpty( iframeElmt.src ) ) {
+            // Ensure the container element has rendered otherwise we can't
+            // append child elements to it. And wait for the iframe source to
+            // be available otherwise no reason to create the iframe element.
+            if ( !$A.util.isEmpty( container ) && !$A.util.isEmpty( iframeSrc ) ) {
 
-                component.set( 'v.penpalInitialized', true );
+                $A.createComponent(
+                    "aura:html",
+                    {
+                        "aura:id": "penpalFrame",
+                        "tag": "iframe",
+                        "HTMLAttributes": {
+                            "src": iframeSrc
+                        }
+                    },
+                    function ( iframeCmp, status, errorMessage ) {
+
+                        // This callback happened asynchronously, so make one
+                        // more check on whether the penpal frame has been initialized or not
+                        // in the off chance a separate render cycle got here before this one.
+                        const isPenpalFrameCreated = component.get( 'v.penpalFrameCreated' );
+
+                        if ( isPenpalFrameCreated ) {
+
+                            console.log( 'LC_API: iframe is already initialized' );
+
+                        } else if ( status === 'SUCCESS' ) {
+
+                            // At this point, the iframe component has been constructed
+                            // but not yet been rendered, so we don't have access to the
+                            // HTML iframe element yet. We need to wait for another render cycle,
+                            // that is, we need to wait for the render() method to be called again
+                            // after we append the new iframe component to the body of its container.
+                            // Once we're able to find the 'penpalFrame' on the page then
+                            // we can proceed with the rest of the penpal initialization.
+
+                            component.set( 'v.penpalFrameCreated', true );
+
+                            container.set( 'v.body', [ iframeCmp ] );
+
+                            console.info( 'LC_API: iframe initialized' );
+
+                        } else if ( status === 'INCOMPLETE' ) {
+
+                            console.warn( 'LC_API: No response from server or client is offline' );
+
+                        } else if ( status === 'ERROR' ) {
+
+                            console.error( 'LC_API: Error creating iframe: ' + errorMessage );
+
+                        }
+
+                    }
+                );
+
+            } // else, iframe source is empty, keep waiting
+
+        } else {
+
+            const isPenpalFrameConnected = component.get( 'v.penpalFrameConnected' );
+            const iframeCmp = component.find( 'penpalFrame' );
+
+            if ( !$A.util.isEmpty( iframeCmp ) && !isPenpalFrameConnected ) {
 
                 const connection = Penpal.connectToChild({
                     // The iframe to which a connection should be made
-                    iframe: iframeElmt
+                    iframe: iframeCmp.getElement()
                 });
 
                 helper._penpal.connection = connection;
 
                 connection.promise.then( $A.getCallback( function( child ) {
+
                     // Cache a reference to the child so that we can
                     // use it in the restRequest/fetchRequest methods,
                     // as well as be able to destroy it when this component unrenders.
                     helper._penpal.child = child;
+                    console.info( 'LC_API: connected to iframe ' + iframeCmp.getGlobalId() );
+                    component.set( 'v.penpalFrameConnected', true );
+
                 })).catch( $A.getCallback( function( err ) {
-                    console.error( 'LC_API: Error establishing connection to iframe', err );
-                    component.set( 'v.penpalInitialized', false );
+
+                    console.error( 'LC_API: Error establishing connection to iframe ' + iframeCmp.getGlobalId(), err );
+                    component.set( 'v.penpalFrameConnected', false );
+
                 }));
 
-            } // else, iframe source is empty, keep waiting
+            }
 
         }
 
     },
 
     onRestRequest: function( component, event, helper ) {
-        var params = event.getParam( 'arguments' );
+        const params = event.getParam( 'arguments' );
         return helper.handleRestRequest( component, params.request );
     },
 
     onFetchRequest: function( component, event, helper ) {
-        var params = event.getParam( 'arguments' );
+        const params = event.getParam( 'arguments' );
         return helper.handleFetchRequest( component, params.request );
     }
 })

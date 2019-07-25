@@ -14,11 +14,17 @@ License: BSD 3-Clause License
                     access="private"
                     description="Which visualforce page to load for bridging API calls."/>
 
-    <aura:attribute name="penpalInitialized"
+    <aura:attribute name="penpalFrameCreated"
                     type="Boolean"
                     access="private"
                     default="false"
-                    description="Has the Penpal connection been initialized?"/>
+                    description="Has the Penpal iframe been created?"/>
+
+    <aura:attribute name="penpalFrameConnected"
+                    type="Boolean"
+                    access="private"
+                    default="false"
+                    description="Has the Penpal iframe been connected?"/>
 
     <aura:handler name="init" value="{!this}" action="{!c.onInit}"/>
 
@@ -94,8 +100,8 @@ License: BSD 3-Clause License
                         description="Supports these keys: url (string), options (map)."/>
     </aura:method>
 
-    <div class="slds-hide">
-        <iframe aura:id="penpalFrame" src="{!v.iframeSrc}" sandbox="allow-same-origin allow-scripts"></iframe>
+    <div aura:id="penpalFrameContainer" class="slds-hide">
+        {!v.body}
     </div>
 
 </aura:component>
