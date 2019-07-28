@@ -55,6 +55,26 @@ Declaratively schedule Process Builder, Flows, Quick Actions, Email Alerts, Work
 
 No more waiting for records to be updated or creating clever workarounds to cause records to be updated to cause these actions to fire.
 
+##### Choose source data to process
+
+![image](https://raw.githubusercontent.com/wiki/douglascayers-org/sfdx-mass-action-scheduler/images/sources-choose-source.png)
+
+##### Choose an action to automate
+
+![image](https://raw.githubusercontent.com/wiki/douglascayers-org/sfdx-mass-action-scheduler/images/actions-choose-action.png)
+
+##### Map fields as inputs to selected action
+
+![image](https://raw.githubusercontent.com/wiki/douglascayers-org/sfdx-mass-action-scheduler/images/field-mappings-choose-fields.png)
+
+##### Choose how often to automate action
+
+![image](https://raw.githubusercontent.com/wiki/douglascayers-org/sfdx-mass-action-scheduler/images/schedule-choose-scheduled.png)
+
+##### Receive near real-time updates on batch job successes and failures
+
+![image](https://raw.githubusercontent.com/wiki/douglascayers-org/sfdx-mass-action-scheduler/images/related-logs-of-parent-log-with-errors.png)
+
 #### 💡 Inspiration
 
 This project is inspired by the following IdeaExchange ideas. Please vote them up to increase chances this functionality becomes standard on the Salesforce platform. Thank you!
