@@ -4,8 +4,8 @@
     "hasSampleData" : false,
     "features" : [],
     "settings" : {
-        "orgPreferenceSettings" : {
-            "s1EncryptedStoragePref2" : false
+        "mobileSettings": {
+            "enableS1EncryptedStoragePref2": false
         },
         "securitySettings" : {
             "sessionSettings" : {
