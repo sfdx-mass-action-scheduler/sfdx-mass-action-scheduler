@@ -255,5 +255,5 @@
     <members>MA_MassActionConfigTrigger</members>
     <members>MA_MassActionLogTrigger</members>
   </types>
-  <version>46.0</version>
+  <version>47.0</version>
 </Package>
