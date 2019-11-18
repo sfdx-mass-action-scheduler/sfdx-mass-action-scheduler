@@ -5,7 +5,7 @@ version: 2.1
 # Defining default values for all jobs
 defaults: &defaults
     docker:
-        - image: salesforce/salesforcedx:latest-full
+        - image: salesforce/salesforcedx:7.33.2-full
 
 jobs:
     setup_dx_orgs:
