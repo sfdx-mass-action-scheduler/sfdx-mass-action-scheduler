@@ -106,11 +106,8 @@ workflows:
     version: 2.1
     build_and_test:
         jobs:
-            - setup_tooling
             - setup_dx_orgs:
                 context: douglascayers-org
-                requires:
-                    - setup_tooling
             - deploy_source:
                 context: douglascayers-org
                 requires:
