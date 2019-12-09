@@ -10,8 +10,8 @@
 public inherited sharing class MA_MassActionUtils {
 
     public static final String ORG_DOMAIN_URL = URL.getOrgDomainUrl().toExternalForm();
-    public static final String REST_API_PATH = '/services/data/v46.0'; // note the 'v' prefix on the version number
-    public static final String SOAP_API_PATH = '/services/Soap/s/46.0'; // note no 'v' prefix on the version number
+    public static final String REST_API_PATH = '/services/data/v47.0'; // note the 'v' prefix on the version number
+    public static final String SOAP_API_PATH = '/services/Soap/s/47.0'; // note no 'v' prefix on the version number
 
     public static final String REST_API_SERVICES_URL = ORG_DOMAIN_URL + REST_API_PATH;
     public static final String SOAP_API_SERVICES_URL = ORG_DOMAIN_URL + SOAP_API_PATH;
@@ -26,7 +26,7 @@ public inherited sharing class MA_MassActionUtils {
      *      If blank then the org's domain URL is used instead.
      *
      * @return URL for use with Salesforce REST API (e.g. https://yourinstance.my.salesforce.com or callout:YourNamedCredential)
-     *  with the path '/services/data/v46.0' appended to it.
+     *  with the path '/services/data/v47.0' appended to it.
      */
     public static String getCalloutRestEndpointURL( String namedCredential ) {
         String url;
@@ -475,7 +475,7 @@ public inherited sharing class MA_MassActionUtils {
      * @param baseURL
      *      The 'baseURL' parameter can either be a Named Credential (e.g. 'callout:YourNC'),
      *      or the org's My Domain URL without any path (e.g. 'https://yourdomain.my.salesforce.com'),
-     *      with the SOAP API path suffix of '/services/Soap/s/46.0'.
+     *      with the SOAP API path suffix of '/services/Soap/s/47.0'.
      * @param apexScript
      *      The anonymous apex script to execute. This method URL encodes the string.
      */

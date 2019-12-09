@@ -28,7 +28,7 @@ License: BSD 3-Clause License
 
             const jsforceConn = new jsforce.Connection({
                 accessToken: '{!$Api.Session_Id}',
-                version: '46.0'
+                version: '47.0'
             });
 
             const penpalConn = Penpal.connectToParent({
