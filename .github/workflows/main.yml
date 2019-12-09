@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  # Trigger the workflow on push or pull request,
+  # but only for the master branch.
+  push:
+    branches: 
+      - master
+  pull_request:
+    branches: 
+      - master
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Create Auth URL to DevHub from secrets
+      run: echo ${{ secrets.SFDX_DEVHUB_URL }} > ./SFDX_DEVHUB_URL.txt
+
+    - name: Install Salesforce CLI
+      run: |
+        npm install sfdx-cli npx
+        npx sfdx-cli update
+        npx sfdx-cli --version
+        npx sfdx-cli plugins --core
