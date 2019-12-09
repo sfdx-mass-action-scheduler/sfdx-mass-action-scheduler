@@ -24,6 +24,37 @@ jobs:
     - name: Install Salesforce CLI
       run: |
         npm install sfdx-cli npx
-        npx sfdx-cli update
         npx sfdx-cli --version
         npx sfdx-cli plugins --core
+        
+    - name: Authorize DevHub
+      run: npx sfdc-cli force:auth:sfdxurl:store --sfdxurlfile ./SFDX_DEVHUB_URL.txt --setalias devhub --setdefaultdevhubusername
+      
+    - name: Create Scratch Org
+      run: npx sfdc-cli force:org:create --targetdevhubusername devhub --setalias ciorg --setdefaultusername --definitionfile config/project-scratch-def.json --durationdays 1
+      
+    - name: Push Source
+      run: npx sfdc-cli force:source:push --targetusername ciorg
+    
+    - name: Assign Permission Set
+      run: npx sfdc-cli force:user:permset:assign --targetusername ciorg --permsetname Mass_Action_Admin
+      
+    - name: Load Test Data
+      run: npx sfdc-cli force:data:record:create --targetusername ciorg --sobjecttype Account --values "Name='dca_mass_action: MA Test Account'"
+      
+    - name: Run Apex Tests
+      run: npx sfdc-cli force:apex:test:run --targetusername ciorg --codecoverage --resultformat human --suitenames Mass_Action_Scheduler_Test_Suite --outputdir ./test-results/apex --wait 20
+      
+    - name: Collect Flow Test Coverage
+      run: |
+        npx sfdx-cli force:data:soql:query --targetusername ciorg --usetoolingapi --query "SELECT FlowVersionId, FlowVersion.Definition.DeveloperName, MAX(NumElementsCovered) ItemsCovered, MIN(NumElementsNotCovered) ItemsNotCovered FROM FlowTestCoverage WHERE FlowVersionId IN (SELECT ActiveVersionId FROM FlowDefinition) GROUP BY FlowVersionId, FlowVersion.Definition.DeveloperName" --json | jq -r '[ .result.records[] | ( .ItemsCovered + .ItemsNotCovered ) as $totalLines | ( ( .ItemsCovered / $totalLines * 100 ) | round ) as $coveredPercent | { id: .FlowVersionId, name: ( .DeveloperName + ".flow-meta.xml" ), totalLines: $totalLines, totalCovered: .ItemsCovered, coveredPercent: $coveredPercent } ]' > ./test-results/apex/test-result-flowcoverage.json
+        npx sfdx-cli force:data:soql:query --targetusername ciorg --usetoolingapi --query "SELECT ActiveVersionId, DeveloperName FROM FlowDefinition WHERE ActiveVersionId NOT IN ( SELECT FlowVersionId FROM FlowTestCoverage ) AND ActiveVersion.ProcessType IN ( 'AutoLaunchedFlow', 'CustomEvent', 'InvocableProcess', 'Workflow' )" --json | jq -r '[ .result.records[] | { id: .ActiveVersionId, name: ( .DeveloperName + ".flow-meta.xml" ), totalLines: 0, totalCovered: 0, coveredPercent: 0 } ]' > ./test-results/apex/test-result-noflowcoverage.json
+
+    # Uploads code coverage results to Codecov.io.
+    # https://codecov.io/gh/douglascayers-org/sfdx-mass-action-scheduler
+    - name: Upload Code Coverage
+      run: bash <(curl -s https://codecov.io/bash)
+      env: CODECOV_TOKEN="${{ secrets.CODECOV_TOKEN }}"
+    
+    - name: Delete Scratch Org
+      run: npx sfdc-cli force:org:delete --targetdevhubusername devhub --targetusername ciorg --noprompt
