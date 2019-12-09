@@ -18,13 +18,6 @@ jobs:
     steps:
     - uses: actions/checkout@v1
       
-    - uses: actions/cache@v1
-      with:
-        path: ~/.npm
-        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-node-
-
     - name: Create Auth URL to DevHub from secrets
       run: echo ${{ secrets.SFDX_DEVHUB_URL }} > ./SFDX_DEVHUB_URL.txt
 
@@ -33,7 +26,14 @@ jobs:
         npm install sfdx-cli npx
         npx sfdx-cli --version
         npx sfdx-cli plugins --core
-        
+      
+    - uses: actions/cache@v1
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+      
     - name: Authorize DevHub
       run: npx sfdc-cli force:auth:sfdxurl:store --sfdxurlfile ./SFDX_DEVHUB_URL.txt --setalias devhub --setdefaultdevhubusername
       
