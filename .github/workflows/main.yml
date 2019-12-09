@@ -21,49 +21,60 @@ jobs:
     - name: Create Auth URL to DevHub from secrets
       run: echo ${{ secrets.SFDX_DEVHUB_URL }} > ./SFDX_DEVHUB_URL.txt
 
+    - name: Restore npm Cache
+      id: cache
+      uses: actions/cache@v1
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-npm
+
     - name: Install Salesforce CLI
+      if: steps.cache.outputs.cache-hit != 'true'
       run: |
         npm install sfdx-cli npx
         npx sfdx-cli --version
         npx sfdx-cli plugins --core
-      
-    - uses: actions/cache@v1
+
+    - name: Update Dependencies
+      if: steps.cache.outputs.cache-hit == 'true'
+      run: npm update sfdc-cli npx
+
+    - name: Cache npm
+      uses: actions/cache@v1
       with:
         path: ~/.npm
-        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-node-
-      
+        key: ${{ runner.os }}-npm
+ 
     - name: Authorize DevHub
-      run: npx sfdc-cli force:auth:sfdxurl:store --sfdxurlfile ./SFDX_DEVHUB_URL.txt --setalias devhub --setdefaultdevhubusername
+      run: npx sfdx-cli force:auth:sfdxurl:store --sfdxurlfile ./SFDX_DEVHUB_URL.txt --setalias devhub --setdefaultdevhubusername
       
     - name: Create Scratch Org
-      run: npx sfdc-cli force:org:create --targetdevhubusername devhub --setalias ciorg --setdefaultusername --definitionfile config/project-scratch-def.json --durationdays 1
+      run: npx sfdx-cli force:org:create --targetdevhubusername devhub --setalias ciorg --setdefaultusername --definitionfile config/project-scratch-def.json --durationdays 1
       
     - name: Push Source
-      run: npx sfdc-cli force:source:push --targetusername ciorg
+      run: npx sfdx-cli force:source:push --targetusername ciorg
     
     - name: Assign Permission Set
-      run: npx sfdc-cli force:user:permset:assign --targetusername ciorg --permsetname Mass_Action_Admin
+      run: npx sfdx-cli force:user:permset:assign --targetusername ciorg --permsetname Mass_Action_Admin
       
     - name: Load Test Data
-      # The test account name includes a colon ":" which breaks the yaml parser.
+      # The test account name, "dca_mass_action: MA Test Account", includes a colon ":", which breaks the yaml parser.
       # As workaround, I put the test name as a secret and bind that to the query instead.
-      run: npx sfdc-cli force:data:record:create --targetusername ciorg --sobjecttype Account --values "Name='${{ secrets.TEST_ACCOUNT_NAME_FOR_APEX_TESTS }}'"
+      run: npx sfdx-cli force:data:record:create --targetusername ciorg --sobjecttype Account --values "Name='${{ secrets.TEST_ACCOUNT_NAME_FOR_APEX_TESTS }}'"
       
     - name: Run Apex Tests
-      run: npx sfdc-cli force:apex:test:run --targetusername ciorg --codecoverage --resultformat human --suitenames Mass_Action_Scheduler_Test_Suite --outputdir ./test-results/apex --wait 20
+      run: npx sfdx-cli force:apex:test:run --targetusername ciorg --codecoverage --resultformat human --suitenames Mass_Action_Scheduler_Test_Suite --outputdir ./test-results/apex --wait 20
       
     - name: Collect Flow Test Coverage
       run: |
         npx sfdx-cli force:data:soql:query --targetusername ciorg --usetoolingapi --query "SELECT FlowVersionId, FlowVersion.Definition.DeveloperName, MAX(NumElementsCovered) ItemsCovered, MIN(NumElementsNotCovered) ItemsNotCovered FROM FlowTestCoverage WHERE FlowVersionId IN (SELECT ActiveVersionId FROM FlowDefinition) GROUP BY FlowVersionId, FlowVersion.Definition.DeveloperName" --json | jq -r '[ .result.records[] | ( .ItemsCovered + .ItemsNotCovered ) as $totalLines | ( ( .ItemsCovered / $totalLines * 100 ) | round ) as $coveredPercent | { id: .FlowVersionId, name: ( .DeveloperName + ".flow-meta.xml" ), totalLines: $totalLines, totalCovered: .ItemsCovered, coveredPercent: $coveredPercent } ]' > ./test-results/apex/test-result-flowcoverage.json
         npx sfdx-cli force:data:soql:query --targetusername ciorg --usetoolingapi --query "SELECT ActiveVersionId, DeveloperName FROM FlowDefinition WHERE ActiveVersionId NOT IN ( SELECT FlowVersionId FROM FlowTestCoverage ) AND ActiveVersion.ProcessType IN ( 'AutoLaunchedFlow', 'CustomEvent', 'InvocableProcess', 'Workflow' )" --json | jq -r '[ .result.records[] | { id: .ActiveVersionId, name: ( .DeveloperName + ".flow-meta.xml" ), totalLines: 0, totalCovered: 0, coveredPercent: 0 } ]' > ./test-results/apex/test-result-noflowcoverage.json
 
-    # Uploads code coverage results to Codecov.io.
-    # https://codecov.io/gh/douglascayers-org/sfdx-mass-action-scheduler
     - name: Upload Code Coverage
+      # Uploads code coverage results to Codecov.io.
+      # https://codecov.io/gh/douglascayers-org/sfdx-mass-action-scheduler
       run: bash <(curl -s https://codecov.io/bash)
       env: CODECOV_TOKEN="${{ secrets.CODECOV_TOKEN }}"
     
     - name: Delete Scratch Org
-      run: npx sfdc-cli force:org:delete --targetdevhubusername devhub --targetusername ciorg --noprompt
+      run: npx sfdx-cli force:org:delete --targetdevhubusername devhub --targetusername ciorg --noprompt
