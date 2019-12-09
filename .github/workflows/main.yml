@@ -67,8 +67,9 @@ jobs:
     - name: Upload Code Coverage
       # Uploads code coverage results to Codecov.io.
       # https://codecov.io/gh/douglascayers-org/sfdx-mass-action-scheduler
-      run: bash <(curl -s https://codecov.io/bash)
-      env: CODECOV_TOKEN="${{ secrets.CODECOV_TOKEN }}"
-    
+      uses: codecov/codecov-action@v1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+
     - name: Delete Scratch Org
       run: npx sfdx-cli force:org:delete --targetdevhubusername devhub --targetusername ciorg --noprompt
