@@ -37,13 +37,7 @@ jobs:
 
     - name: Update Dependencies
       if: steps.cache.outputs.cache-hit == 'true'
-      run: npm update sfdc-cli npx
-
-    - name: Cache npm
-      uses: actions/cache@v1
-      with:
-        path: ~/.npm
-        key: ${{ runner.os }}-npm
+      run: npm update sfdx-cli npx
  
     - name: Authorize DevHub
       run: npx sfdx-cli force:auth:sfdxurl:store --sfdxurlfile ./SFDX_DEVHUB_URL.txt --setalias devhub --setdefaultdevhubusername
@@ -67,7 +61,7 @@ jobs:
       
     - name: Collect Flow Test Coverage
       run: |
-        npx sfdx-cli force:data:soql:query --targetusername ciorg --usetoolingapi --query "SELECT FlowVersionId, FlowVersion.Definition.DeveloperName, MAX(NumElementsCovered) ItemsCovered, MIN(NumElementsNotCovered) ItemsNotCovered FROM FlowTestCoverage WHERE FlowVersionId IN (SELECT ActiveVersionId FROM FlowDefinition) GROUP BY FlowVersionId, FlowVersion.Definition.DeveloperName" --json | jq -r '[ .result.records[] | ( .ItemsCovered + .ItemsNotCovered ) as $totalLines | ( ( .ItemsCovered / $totalLines * 100 ) | round ) as $coveredPercent | { id: .FlowVersionId, name: ( .DeveloperName + ".flow-meta.xml" ), totalLines: $totalLines, totalCovered: .ItemsCovered, coveredPercent: $coveredPercent } ]' > ./test-results/apex/test-result-flowcoverage.json
+        npx sfdx-cli force:data:soql:query --targetusername ciorg --usetoolingapi --query "SELECT FlowVersionId, FlowVersion.Definition.DeveloperName, MAX(NumElementsCovered) ItemsCovered, MIN(NumElementsNotCovered) ItemsNotCovered FROM FlowTestCoverage WHERE FlowVersionId IN (SELECT ActiveVersionId FROM FlowDefinition) GROUP BY FlowVersionId, FlowVersion.Definition.DeveloperName" --json | jq -r '[ .result.records[] | ( .ItemsCovered + .ItemsNotCovered ) as $totalLines | ( ( .ItemsCovered / $totalLines * 100 ) | floor ) as $coveredPercent | { id: .FlowVersionId, name: ( .DeveloperName + ".flow-meta.xml" ), totalLines: $totalLines, totalCovered: .ItemsCovered, coveredPercent: $coveredPercent } ]' > ./test-results/apex/test-result-flowcoverage.json
         npx sfdx-cli force:data:soql:query --targetusername ciorg --usetoolingapi --query "SELECT ActiveVersionId, DeveloperName FROM FlowDefinition WHERE ActiveVersionId NOT IN ( SELECT FlowVersionId FROM FlowTestCoverage ) AND ActiveVersion.ProcessType IN ( 'AutoLaunchedFlow', 'CustomEvent', 'InvocableProcess', 'Workflow' )" --json | jq -r '[ .result.records[] | { id: .ActiveVersionId, name: ( .DeveloperName + ".flow-meta.xml" ), totalLines: 0, totalCovered: 0, coveredPercent: 0 } ]' > ./test-results/apex/test-result-noflowcoverage.json
 
     - name: Upload Code Coverage
