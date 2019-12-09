@@ -40,7 +40,9 @@ jobs:
       run: npx sfdc-cli force:user:permset:assign --targetusername ciorg --permsetname Mass_Action_Admin
       
     - name: Load Test Data
-      run: npx sfdc-cli force:data:record:create --targetusername ciorg --sobjecttype Account --values "Name='dca_mass_action: MA Test Account'"
+      # The test account name includes a colon ":" which breaks the yaml parser.
+      # As workaround, I put the test name as a secret and bind that to the query instead.
+      run: npx sfdc-cli force:data:record:create --targetusername ciorg --sobjecttype Account --values "Name='${{ secrets.TEST_ACCOUNT_NAME_FOR_APEX_TESTS }}'"
       
     - name: Run Apex Tests
       run: npx sfdc-cli force:apex:test:run --targetusername ciorg --codecoverage --resultformat human --suitenames Mass_Action_Scheduler_Test_Suite --outputdir ./test-results/apex --wait 20
