@@ -45,7 +45,7 @@ License: BSD 3-Clause License
 
         Example usage:
             component.find( 'lcAPI' ).restRequest({
-                'url' : '/services/data/v46.0/sobjects/Account',
+                'url' : '/services/data/v47.0/sobjects/Account',
                 'method' : 'post',
                 'body' : JSON.stringify({
                     'Name' : 'Salesforce',

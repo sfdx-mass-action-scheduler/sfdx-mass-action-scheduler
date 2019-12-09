@@ -57,7 +57,7 @@ License: BSD 3-Clause License
                             "src": iframeSrc
                         }
                     },
-                    function ( iframeCmp, status, errorMessage ) {
+                    function( iframeCmp, status, errorMessage ) {
 
                         // This callback happened asynchronously, so make one
                         // more check on whether the penpal frame has been initialized or not

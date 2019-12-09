@@ -47,7 +47,7 @@ License: BSD 3-Clause License
 
         const helper = this;
 
-        return new Promise( function( resolve, reject ) {
+        return new Promise( $A.getCallback( function( resolve, reject ) {
 
             let child = helper._penpal.child;
 
@@ -89,7 +89,7 @@ License: BSD 3-Clause License
 
             }
 
-        });
+        }));
 
     },
 
@@ -143,7 +143,7 @@ License: BSD 3-Clause License
 
         const helper = this;
 
-        return new Promise( function( resolve, reject ) {
+        return new Promise( $A.getCallback( function( resolve, reject ) {
 
             const action = component.get( actionName );
 
@@ -174,7 +174,7 @@ License: BSD 3-Clause License
 
             $A.enqueueAction( action );
 
-        });
+        }));
 
     },
 

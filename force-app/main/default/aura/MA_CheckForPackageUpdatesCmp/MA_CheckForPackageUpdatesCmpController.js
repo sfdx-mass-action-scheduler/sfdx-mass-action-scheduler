@@ -8,22 +8,22 @@
         promises.push(
             lcApi.fetchRequest({
                 'url' : 'https://gist.githubusercontent.com/douglascayers/e96c53304dc78dc83e59a85753f29111/raw/sfdx-mass-action-scheduler-version.js'
-            }).then( function ( response ) {
+            }).then( $A.getCallback( function( response ) {
                 return response;
-            })
+            }))
         );
 
         // get the currently installed package version
         promises.push(
             lcApi.restRequest({
-                'url' : '/services/data/v46.0/tooling/query?q=SELECT+Id,+SubscriberPackageId,+SubscriberPackage.Name,+SubscriberPackage.NamespacePrefix,+SubscriberPackageVersion.MajorVersion,+SubscriberPackageVersion.MinorVersion+FROM+InstalledSubscriberPackage'
-            }).then( function ( response ) {
+                'url' : '/services/data/v47.0/tooling/query?q=SELECT+Id,+SubscriberPackageId,+SubscriberPackage.Name,+SubscriberPackage.NamespacePrefix,+SubscriberPackageVersion.MajorVersion,+SubscriberPackageVersion.MinorVersion+FROM+InstalledSubscriberPackage'
+            }).then( $A.getCallback( function( response ) {
                 // The InstalledSubscriberPackage object doesn't support WHERE clause filtering on the package's namespace
                 // so we have to filter the results ourselves
                 return response.records.find( ( record ) => {
                     return ( record.SubscriberPackage.NamespacePrefix === 'dca_mass_action' );
                 });
-            })
+            }))
         );
 
         // notify user if there's a newer package version to upgrade to
