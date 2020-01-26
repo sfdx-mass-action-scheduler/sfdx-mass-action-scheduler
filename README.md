@@ -188,7 +188,7 @@ The source code is licensed under the [BSD 3-Clause License](LICENSE).
 [community-shield]: https://img.shields.io/badge/-Join_our_Community-blue.svg?logo=salesforce&logoColor=white
 [community-url]: https://success.salesforce.com/_ui/core/chatter/groups/GroupProfilePage?g=0F93A000000LhvN
 
-[cicd-shield]: https://img.shields.io/circleci/build/github/douglascayers-org/sfdx-mass-action-scheduler.svg?logo=circleci
+[cicd-shield]: https://img.shields.io/github/workflow/status/douglascayers-org/sfdx-mass-action-scheduler/CI?logo=github
 [cicd-url]: https://circleci.com/gh/douglascayers-org/sfdx-mass-action-scheduler
 
 [codecov-shield]: https://img.shields.io/codecov/c/github/douglascayers-org/sfdx-mass-action-scheduler.svg?logo=codecov
