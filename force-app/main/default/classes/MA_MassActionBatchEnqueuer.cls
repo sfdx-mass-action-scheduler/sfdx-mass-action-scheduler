@@ -18,7 +18,7 @@ public with sharing class MA_MassActionBatchEnqueuer implements MA_MassActionSch
 /*
 BSD 3-Clause License
 
-Copyright (c) 2017-2019, Doug Ayers, douglascayers.com
+Copyright (c) 2017-2020, Doug Ayers, douglascayers.com
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

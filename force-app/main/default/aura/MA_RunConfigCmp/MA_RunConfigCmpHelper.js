@@ -94,7 +94,7 @@
 
         var helper = this;
 
-        var p = new Promise( function( resolve, reject ) {
+        var p = new Promise( $A.getCallback( function( resolve, reject ) {
 
             helper.showSpinner( component );
 
@@ -125,7 +125,7 @@
 
             $A.enqueueAction( action );
 
-        });
+        }));
 
         return p;
     },

@@ -1,7 +1,3 @@
-/*
-Version: 1.2.5
-GitHub: https://github.com/ruslan-kurchenko/sfdc-lax
- */
 /**
  * @license
  * MIT License
@@ -32,12 +28,12 @@ GitHub: https://github.com/ruslan-kurchenko/sfdc-lax
  */
 // eslint-disable-next-line no-unused-expressions,strict
 ({
-  /**
-   * Initialization function called every time Lax Aura Component instantiated
-   * @memberof LaxController#
-   * @param component {Object} - the lax component object
-   */
-  onInit: function onInit(component, event, helper) {
-    helper.init(component, event);
-  }
-});
+    /**
+     * Initialization function called every time Lax Aura Component instantiated
+     * @memberof LaxController#
+     * @param component {Object} - the lax component object
+     */
+    onInit: function onInit(component, event, helper) {
+      helper.init(component, event);
+    }
+  });

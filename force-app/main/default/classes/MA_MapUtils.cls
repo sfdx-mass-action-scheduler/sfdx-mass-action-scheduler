@@ -50,7 +50,7 @@ public inherited sharing class MA_MapUtils {
      *        "Account" : {
      *          "attributes" : {
      *            "type" : "Account",
-     *            "url" : "/services/data/v46.0/sobjects/Account/001S00000106yiiIAA"
+     *            "url" : "/services/data/v47.0/sobjects/Account/001S00000106yiiIAA"
      *          },
      *          "Id" : "001S00000106yiiIAA",
      *          "Name" : "dca_mass_action: MA Test Account"
@@ -124,7 +124,7 @@ public inherited sharing class MA_MapUtils {
 /*
 BSD 3-Clause License
 
-Copyright (c) 2017-2019, Doug Ayers, douglascayers.com
+Copyright (c) 2017-2020, Doug Ayers, douglascayers.com
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

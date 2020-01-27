@@ -2,6 +2,6 @@
 <StaticResource xmlns="http://soap.sforce.com/2006/04/metadata">
     <cacheControl>Public</cacheControl>
     <contentType>application/javascript</contentType>
-    <description>v4.0.0
+    <description>v4.1.1
 https://github.com/Aaronius/penpal</description>
 </StaticResource>

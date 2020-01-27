@@ -2,6 +2,6 @@
 <StaticResource xmlns="http://soap.sforce.com/2006/04/metadata">
     <cacheControl>Public</cacheControl>
     <contentType>application/javascript</contentType>
-    <description>v1.9.1
+    <description>v1.9.2
 http://jsforce.github.io/</description>
 </StaticResource>

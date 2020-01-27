@@ -7,13 +7,13 @@ License: BSD 3-Clause License
 ({
     handleRestRequest: function( component, request ) {
 
-        var helper = this;
+        const helper = this;
 
-        var defaultRequest = {
+        const defaultRequest = {
             'method' : 'get'
         };
 
-        var defaultHeaders = {
+        const defaultHeaders = {
             'Content-Type': 'application/json'
         };
 
@@ -28,7 +28,7 @@ License: BSD 3-Clause License
 
     handleFetchRequest: function( component, request ) {
 
-        var helper = this;
+        const helper = this;
 
         return helper.getPenpalChild().then( $A.getCallback( function( child ) {
             return helper.makePenpalRequest( 'fetch', child, request );
@@ -45,11 +45,11 @@ License: BSD 3-Clause License
      */
     getPenpalChild: function() {
 
-        var helper = this;
+        const helper = this;
 
-        return new Promise( function( resolve, reject ) {
+        return new Promise( $A.getCallback( function( resolve, reject ) {
 
-            var child = helper._penpal.child;
+            let child = helper._penpal.child;
 
             if ( child ) {
 
@@ -58,12 +58,12 @@ License: BSD 3-Clause License
             } else {
 
                 // all time values in milliseconds
-                var timeout = 10000; // ten seconds
-                var pollFrequency = 500; // half a second
-                var startTime = new Date().getTime();
-                var endTime = startTime + timeout;
+                const timeout = 10000; // ten seconds
+                const pollFrequency = 500; // half a second
+                const startTime = new Date().getTime();
+                const endTime = startTime + timeout;
 
-                var timerId = setInterval( $A.getCallback( function() {
+                const timerId = setInterval( $A.getCallback( function() {
 
                     child = helper._penpal.child;
 
@@ -76,7 +76,7 @@ License: BSD 3-Clause License
                     } else {
 
                         // check if we have exceeded our timeout
-                        var currentTime = new Date().getTime();
+                        const currentTime = new Date().getTime();
                         if ( currentTime > endTime ) {
                             clearInterval( timerId );
                             reject( 'LC_API: Timeout trying to establish connection to iframe' );
@@ -89,7 +89,7 @@ License: BSD 3-Clause License
 
             }
 
-        });
+        }));
 
     },
 
@@ -117,7 +117,7 @@ License: BSD 3-Clause License
             if ( response.success ) {
                 return response.data;
             } else {
-                throw new Error( response.data );
+                return Promise.reject( response.data );
             }
         }));
 
@@ -141,11 +141,11 @@ License: BSD 3-Clause License
      */
     makeApexRequest: function( component, actionName, params, options ) {
 
-        var helper = this;
+        const helper = this;
 
-        return new Promise( function( resolve, reject ) {
+        return new Promise( $A.getCallback( function( resolve, reject ) {
 
-            var action = component.get( actionName );
+            const action = component.get( actionName );
 
             if ( params ) {
                 action.setParams( params );
@@ -174,7 +174,7 @@ License: BSD 3-Clause License
 
             $A.enqueueAction( action );
 
-        });
+        }));
 
     },
 
@@ -201,7 +201,7 @@ License: BSD 3-Clause License
 /*
 BSD 3-Clause License
 
-Copyright (c) 2017-2019, Doug Ayers, douglascayers.com
+Copyright (c) 2017-2020, Doug Ayers, douglascayers.com
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

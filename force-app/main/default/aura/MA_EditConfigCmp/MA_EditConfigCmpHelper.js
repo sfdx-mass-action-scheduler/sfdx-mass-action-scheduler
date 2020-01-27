@@ -608,8 +608,8 @@ License: BSD 3-Clause License
                     component.set( 'v.sourceFieldsInputType', 'combobox' );
 
                     return helper.getReportColumnsAsync( component, sourceReportId )
-                        .catch( $A.getCallback( function ( err ) {
-                            throw new Error( 'Error getting report columns: ' + helper.unwrapAuraErrorMessage( err ) );
+                        .catch( $A.getCallback( function( err ) {
+                            return Promise.reject( 'Error getting report columns: ' + helper.unwrapAuraErrorMessage( err ) );
                         }));
 
                 } else if ( sourceType == 'ListView' ) {
@@ -617,8 +617,8 @@ License: BSD 3-Clause License
                     component.set( 'v.sourceFieldsInputType', 'combobox' );
 
                     return helper.getListViewColumnsAsync( component, sourceListViewId )
-                        .catch( $A.getCallback( function ( err ) {
-                            throw new Error( 'Error getting list view columns: ' + helper.unwrapAuraErrorMessage( err ) );
+                        .catch( $A.getCallback( function( err ) {
+                            return Promise.reject( 'Error getting list view columns: ' + helper.unwrapAuraErrorMessage( err ) );
                         }));
 
                 } else if ( sourceType == 'SOQL' ) {
@@ -626,8 +626,8 @@ License: BSD 3-Clause License
                     component.set( 'v.sourceFieldsInputType', 'combobox' );
 
                     return helper.getSoqlQueryColumnsAsync( component, sourceSoqlQuery )
-                        .catch( $A.getCallback( function ( err ) {
-                            throw new Error( 'Error getting SOQL query columns: ' + helper.unwrapAuraErrorMessage( err ) );
+                        .catch( $A.getCallback( function( err ) {
+                            return Promise.reject( 'Error getting SOQL query columns: ' + helper.unwrapAuraErrorMessage( err ) );
                         }));
 
                 } else if ( sourceType == 'Apex' ) {
@@ -1347,13 +1347,13 @@ License: BSD 3-Clause License
 
                         } else {
 
-                            throw new Error( validationResult.message );
+                            return Promise.reject( validationResult.message );
 
                         }
 
                     })).catch( $A.getCallback( function( err ) {
 
-                        throw new Error( 'Error validating SOQL query: ' + helper.unwrapAuraErrorMessage( err ) );
+                        return Promise.reject( 'Error validating SOQL query: ' + helper.unwrapAuraErrorMessage( err ) );
 
                     }));
 
@@ -1566,7 +1566,7 @@ License: BSD 3-Clause License
                 if ( response.success ) {
                     return response.result;
                 } else {
-                    throw new Error( response.error );
+                    return Promise.reject( response.error );
                 }
 
             })).catch( $A.getCallback( function( err ) {
@@ -1600,7 +1600,7 @@ License: BSD 3-Clause License
 
         var helper = this;
 
-        var p = new Promise( function( resolve, reject ) {
+        var p = new Promise( $A.getCallback( function( resolve, reject ) {
 
             helper.showSpinner( component );
 
@@ -1631,7 +1631,7 @@ License: BSD 3-Clause License
 
             $A.enqueueAction( action );
 
-        });
+        }));
 
         return p;
     },
@@ -1691,7 +1691,7 @@ License: BSD 3-Clause License
 /*
 BSD 3-Clause License
 
-Copyright (c) 2017-2019, Doug Ayers, douglascayers.com
+Copyright (c) 2017-2020, Doug Ayers, douglascayers.com
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
