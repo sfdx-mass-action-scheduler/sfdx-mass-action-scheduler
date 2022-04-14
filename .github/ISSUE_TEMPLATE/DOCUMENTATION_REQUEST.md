@@ -9,7 +9,7 @@ assignees: ''
 
 <!--
   Documentation lives in the project wiki at
-  https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki
+  https://github.com/sfdx-mass-action-scheduler/sfdx-mass-action-scheduler/wiki
 -->
 
 ## Is your documentation request related to an existing wiki page? If yes, which pages?

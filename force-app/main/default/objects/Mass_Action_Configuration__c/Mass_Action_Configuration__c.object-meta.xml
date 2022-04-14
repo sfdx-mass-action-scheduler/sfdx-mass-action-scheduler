@@ -149,7 +149,7 @@
     <deploymentStatus>Deployed</deploymentStatus>
     <deprecated>false</deprecated>
     <description>A configuration of inputs (reports, list views, queries) and actions (process builder, flows, apex) that can be scheduled.
-https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/</description>
+https://github.com/sfdx-mass-action-scheduler/sfdx-mass-action-scheduler/wiki/</description>
     <enableActivities>true</enableActivities>
     <enableBulkApi>true</enableBulkApi>
     <enableFeeds>false</enableFeeds>

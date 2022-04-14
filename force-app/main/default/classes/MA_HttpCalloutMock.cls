@@ -1,7 +1,7 @@
 /**
  * Author: Doug Ayers
  * Website: https://douglascayers.com
- * GitHub: https://github.com/douglascayers-org/sfdx-mass-action-scheduler
+ * GitHub: https://github.com/sfdx-mass-action-scheduler/sfdx-mass-action-scheduler
  * License: BSD 3-Clause License
  */
 /*
@@ -72,7 +72,7 @@ public inherited sharing class MA_HttpCalloutMock implements HttpCalloutMock {
                 '     "label" : "Test Flow", ' +
                 '     "name" : "Test_Flow", ' +
                 '     "type" : "FLOW", ' +
-                '     "url" : "/services/data/v47.0/actions/custom/flow/Test_Flow" ' +
+                '     "url" : "/services/data/v54.0/actions/custom/flow/Test_Flow" ' +
                 '   } ] ' +
                 ' } '
             );
@@ -83,7 +83,7 @@ public inherited sharing class MA_HttpCalloutMock implements HttpCalloutMock {
 
             response.setBody(
                 ' { ' +
-                '   "Account" : "/services/data/v47.0/actions/custom/quickAction/Account" ' +
+                '   "Account" : "/services/data/v54.0/actions/custom/quickAction/Account" ' +
                 ' } '
             );
 
@@ -97,7 +97,7 @@ public inherited sharing class MA_HttpCalloutMock implements HttpCalloutMock {
                 '     "label" : "Test Quick Action", ' +
                 '     "name" : "Test_Quick_Action", ' +
                 '     "type" : "QUICKACTION", ' +
-                '     "url" : "/services/data/v47.0/actions/custom/quickAction/Account/Test_Quick_Action" ' +
+                '     "url" : "/services/data/v54.0/actions/custom/quickAction/Account/Test_Quick_Action" ' +
                 '   } ] ' +
                 ' } '
             );
@@ -108,7 +108,7 @@ public inherited sharing class MA_HttpCalloutMock implements HttpCalloutMock {
 
             response.setBody(
                 ' { ' +
-                '   "Account" : "/services/data/v47.0/actions/custom/emailAlert/Account" ' +
+                '   "Account" : "/services/data/v54.0/actions/custom/emailAlert/Account" ' +
                 ' } '
             );
 
@@ -122,7 +122,7 @@ public inherited sharing class MA_HttpCalloutMock implements HttpCalloutMock {
                 '     "label" : "Test Email Alert", ' +
                 '     "name" : "Test_Email_Alert", ' +
                 '     "type" : "EMAILALERT", ' +
-                '     "url" : "/services/data/v47.0/actions/custom/emailalert/Account/Test_Email_Alert" ' +
+                '     "url" : "/services/data/v54.0/actions/custom/emailalert/Account/Test_Email_Alert" ' +
                 '   } ] ' +
                 ' } '
             );
@@ -137,7 +137,7 @@ public inherited sharing class MA_HttpCalloutMock implements HttpCalloutMock {
                 '     "label" : "Test Apex", ' +
                 '     "name" : "Test_Apex", ' +
                 '     "type" : "APEX", ' +
-                '     "url" : "/services/data/v47.0/actions/custom/apex/Test_Apex" ' +
+                '     "url" : "/services/data/v54.0/actions/custom/apex/Test_Apex" ' +
                 '   } ] ' +
                 ' } '
             );
@@ -244,7 +244,7 @@ public inherited sharing class MA_HttpCalloutMock implements HttpCalloutMock {
                 '   "records" : [ { ' +
                 '     "attributes" : { ' +
                 '       "type" : "Account", ' +
-                '       "url" : "/services/data/v47.0/sobjects/Account/001f400000CukanAAB" ' +
+                '       "url" : "/services/data/v54.0/sobjects/Account/001f400000CukanAAB" ' +
                 '     }, ' +
                 '     "Id" : "001f400000CukanAAB", ' +
                 '     "Name" : "Test Account 1" ' +
@@ -271,7 +271,7 @@ public inherited sharing class MA_HttpCalloutMock implements HttpCalloutMock {
                 '   "records" : [ { ' +
                 '     "attributes" : { ' +
                 '       "type" : "Account", ' +
-                '       "url" : "/services/data/v47.0/sobjects/Account/001f400000lxT2JAAU" ' +
+                '       "url" : "/services/data/v54.0/sobjects/Account/001f400000lxT2JAAU" ' +
                 '     }, ' +
                 '     "Id" : "001f400000lxT2JAAU", ' +
                 '     "Name" : "Test Account 2" ' +
@@ -468,7 +468,7 @@ public inherited sharing class MA_HttpCalloutMock implements HttpCalloutMock {
 /*
 BSD 3-Clause License
 
-Copyright (c) 2017-2020, Doug Ayers, douglascayers.com
+Copyright (c) 2017-2022, Doug Ayers, douglascayers.com
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
