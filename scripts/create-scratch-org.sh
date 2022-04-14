@@ -35,6 +35,9 @@ sfdx force:source:deploy -p force-app -u $org_alias
 # Assign permission set
 sfdx force:user:permset:assign -n Mass_Action_Admin -u $org_alias
 
+# Create a test account, only required for the report tests
+sfdx force:data:record:create --sobjecttype Account --values "Name='dca_mass_action: MA Test Account'"
+
 # Reset source tracking
 sfdx force:source:tracking:reset --noprompt -u $org_alias
 
