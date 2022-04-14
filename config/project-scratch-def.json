@@ -9,8 +9,6 @@
         },
         "securitySettings": {
             "sessionSettings": {
-                "lockerServiceCSP": true,
-                "lockerServiceFrozenRealm": true,
                 "enableClickjackNonsetupUser": false,
                 "enableClickjackNonsetupUserHeaderless": false
             }
