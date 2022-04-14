@@ -196,7 +196,7 @@ License: BSD 3-Clause License
 
         var conn = new jsforce.Connection({
             accessToken : '{!$Api.Session_Id}',
-            version : '47.0'
+            version : '54.0'
         });
 
         const consumerKey = getRandomLetters( 85 );
