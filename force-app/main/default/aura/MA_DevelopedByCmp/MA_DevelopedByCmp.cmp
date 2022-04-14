@@ -1,13 +1,13 @@
 <!--
 Author: Doug Ayers
 Website: https://douglascayers.com
-GitHub: https://github.com/douglascayers-org/sfdx-mass-action-scheduler
+GitHub: https://github.com/sfdx-mass-action-scheduler/sfdx-mass-action-scheduler
 License: BSD 3-Clause License
 -->
 <aura:component implements="flexipage:availableForAllPageTypes" access="global">
 
     <div class="slds-theme_shade slds-box slds-box_small slds-m-vertical_medium slds-text-align_center">
-        <span><a href="https://douglascayers-org.github.io/sfdx-mass-action-scheduler/" target="_blank" rel="noopener noreferrer">Mass Action Scheduler</a></span>
+        <span><a href="https://sfdx-mass-action-scheduler.github.io/sfdx-mass-action-scheduler/" target="_blank" rel="noopener noreferrer">Mass Action Scheduler</a></span>
         <span class="slds-m-horizontal_xx-small">️is developed with love by</span>
         <span><a href="https://douglascayers.com" target="_blank" rel="noopener noreferrer">Doug Ayers</a></span>
     </div>

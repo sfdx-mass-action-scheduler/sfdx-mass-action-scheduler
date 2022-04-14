@@ -1,7 +1,7 @@
 /**
  * Author: Doug Ayers
  * Website: https://douglascayers.com
- * GitHub: https://github.com/douglascayers-org/sfdx-mass-action-scheduler
+ * GitHub: https://github.com/sfdx-mass-action-scheduler/sfdx-mass-action-scheduler
  * License: BSD 3-Clause License
  */
 trigger MA_MassActionLogTrigger on Mass_Action_Log__c ( before insert, before update, before delete,

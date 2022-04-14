@@ -1,7 +1,7 @@
 /**
  * Author: Doug Ayers
  * Website: https://douglascayers.com
- * GitHub: https://github.com/douglascayers-org/sfdx-mass-action-scheduler
+ * GitHub: https://github.com/sfdx-mass-action-scheduler/sfdx-mass-action-scheduler
  * License: BSD 3-Clause License
  */
 trigger MA_BatchApexStatusEventTrigger on Mass_Action_Batch_Apex_Status_Event__e ( after insert ) {
