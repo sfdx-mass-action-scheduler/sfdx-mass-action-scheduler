@@ -1,7 +1,7 @@
 <!--
 Author: Doug Ayers
 Website: https://douglascayers.com
-GitHub: https://github.com/douglascayers-org/sfdx-mass-action-scheduler
+GitHub: https://github.com/sfdx-mass-action-scheduler/sfdx-mass-action-scheduler
 License: BSD 3-Clause License
 -->
 <aura:component controller="MA_EditConfigCmpController" implements="flexipage:availableForRecordHome,force:hasRecordId,lightning:actionOverride" access="global">
@@ -297,7 +297,7 @@ License: BSD 3-Clause License
                                             Your future self and those that come after you will appreciate it.
                                         </p>
                                         <p>
-                                            Pro Tip: After you've saved this record, use the <a href="https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/How-to-Customize-the-Quick-Edit-Page-Layout" target="_blank" rel="noopener noreferrer">Quick Edit</a> button to edit details
+                                            Pro Tip: After you've saved this record, use the <a href="https://github.com/sfdx-mass-action-scheduler/sfdx-mass-action-scheduler/wiki/How-to-Customize-the-Quick-Edit-Page-Layout" target="_blank" rel="noopener noreferrer">Quick Edit</a> button to edit details
                                             without needing to step through the entire wizard each time.
                                         </p>
                                         <p>
@@ -306,9 +306,9 @@ License: BSD 3-Clause License
                                         </p>
                                         <p>
                                             <ul>
-                                                <li>For discussion and feedback <a href="https://success.salesforce.com/_ui/core/chatter/groups/GroupProfilePage?g=0F93A000000LhvN" target="_blank" rel="noopener noreferrer">post in the community group</a> or raise well defined issues and ideas via the <a href="https://github.com/douglascayers-org/sfdx-mass-action-scheduler/issues" target="_blank" rel="noopener noreferrer">Issues feature</a>.</li>
-                                                <li>Read the <a href="https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki" target="_blank" rel="noopener noreferrer">wiki page</a> for further documentation on Mass Action Scheduler.</li>
-                                                <li>Read the <a href="https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Frequently-Asked-Questions" target="_blank" rel="noopener noreferrer">FAQ page</a> to help troubleshoot technical issues.</li>
+                                                <li>For discussion and feedback <a href="https://success.salesforce.com/_ui/core/chatter/groups/GroupProfilePage?g=0F93A000000LhvN" target="_blank" rel="noopener noreferrer">post in the community group</a> or raise well defined issues and ideas via the <a href="https://github.com/sfdx-mass-action-scheduler/sfdx-mass-action-scheduler/issues" target="_blank" rel="noopener noreferrer">Issues feature</a>.</li>
+                                                <li>Read the <a href="https://github.com/sfdx-mass-action-scheduler/sfdx-mass-action-scheduler/wiki" target="_blank" rel="noopener noreferrer">wiki page</a> for further documentation on Mass Action Scheduler.</li>
+                                                <li>Read the <a href="https://github.com/sfdx-mass-action-scheduler/sfdx-mass-action-scheduler/wiki/Frequently-Asked-Questions" target="_blank" rel="noopener noreferrer">FAQ page</a> to help troubleshoot technical issues.</li>
                                             </ul>
                                         </p>
                                     </aura:set>
@@ -327,7 +327,7 @@ License: BSD 3-Clause License
                                             As when using Data Loader, you may need to reduce the batch size to stay within <a href="https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm" target="_blank" rel="noopener noreferrer">governor limits</a>.
                                         </p>
                                         <p>
-                                            <b>Named Credential</b> is optional and is a way to <a href="https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Specify-the-Running-User-via-Named-Credentials" target="_blank" rel="noopener noreferrer">specify the running user</a> performing the actions.
+                                            <b>Named Credential</b> is optional and is a way to <a href="https://github.com/sfdx-mass-action-scheduler/sfdx-mass-action-scheduler/wiki/Specify-the-Running-User-via-Named-Credentials" target="_blank" rel="noopener noreferrer">specify the running user</a> performing the actions.
                                             That is to say the user who has their name stamped as the "Last Modified By" on any updated records
                                             by the target action from the Choose Action step.
                                             If not specified, then the user who last activates the configuration, or who manually runs it, is the running user.
@@ -1337,7 +1337,7 @@ License: BSD 3-Clause License
 <!--
 BSD 3-Clause License
 
-Copyright (c) 2017-2020, Doug Ayers, douglascayers.com
+Copyright (c) 2017-2022, Doug Ayers, douglascayers.com
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
