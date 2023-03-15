@@ -270,7 +270,7 @@ License: BSD 3-Clause License
 
         <lightning:spinner aura:id="spinner" variant="brand"/>
 
-        <div class="slds-grid slds-p-around_medium">
+        <div class="slds-grid slds-var-p-around_medium">
             <div class="slds-col">
 
                 <c:strike_wizard aura:id="wizard"
@@ -380,17 +380,17 @@ License: BSD 3-Clause License
                                             <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered">
                                                 <thead>
                                                     <tr class="slds-line-height_reset">
-                                                        <th class="slds-text-title_caps slds-cell-nowrap">Source Type</th>
+                                                        <th class="slds-text-title_caps slds-nowrap">Source Type</th>
                                                         <th class="slds-text-title_caps slds-cell-wrap">Limits</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     <tr>
-                                                        <td class="slds-cell-nowrap"><b>List Views</b></td>
+                                                        <td class="slds-nowrap"><b>List Views</b></td>
                                                         <td class="slds-cell-wrap">Up to 50 million records.</td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="slds-cell-nowrap"><b>Reports</b></td>
+                                                        <td class="slds-nowrap"><b>Reports</b></td>
                                                         <td class="slds-cell-wrap">
                                                             Up to 10 thousand records.
                                                             <br/>
@@ -400,11 +400,11 @@ License: BSD 3-Clause License
                                                         </td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="slds-cell-nowrap"><b>SOQL</b></td>
+                                                        <td class="slds-nowrap"><b>SOQL</b></td>
                                                         <td class="slds-cell-wrap">Up to 50 million records.</td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="slds-cell-nowrap"><b>Apex</b></td>
+                                                        <td class="slds-nowrap"><b>Apex</b></td>
                                                         <td class="slds-cell-wrap">
                                                             Up to 50 million records.
                                                             <br/>
@@ -460,33 +460,33 @@ License: BSD 3-Clause License
                                             <table class="slds-table slds-table_cell-buffer slds-table_bordered">
                                                 <thead>
                                                     <tr class="slds-line-height_reset">
-                                                        <th class="slds-text-title_caps slds-cell-nowrap">Action Type</th>
+                                                        <th class="slds-text-title_caps slds-nowrap">Action Type</th>
                                                         <th class="slds-text-title_caps slds-cell-wrap">Supported Types</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     <tr>
-                                                        <td class="slds-cell-nowrap"><b>Process Builder</b></td>
+                                                        <td class="slds-nowrap"><b>Process Builder</b></td>
                                                         <td class="slds-cell-wrap">Processes that start when <a href="https://help.salesforce.com/articleView?id=process_start.htm" target="_blank" rel="noopener noreferrer">invoked by another process</a>, not when a record is created or updated.</td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="slds-cell-nowrap"><b>Flows</b></td>
+                                                        <td class="slds-nowrap"><b>Flows</b></td>
                                                         <td class="slds-cell-wrap">Autolaunched flows. Flows that <a href="https://help.salesforce.com/articleView?id=flow_concepts_type.htm" target="_blank" rel="noopener noreferrer">don't require user interaction</a> like screens.</td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="slds-cell-nowrap"><b>Quick Actions</b></td>
+                                                        <td class="slds-nowrap"><b>Quick Actions</b></td>
                                                         <td class="slds-cell-wrap">Create a Record, Update a Record, and Log a Call types.</td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="slds-cell-nowrap"><b>Email Alerts</b></td>
+                                                        <td class="slds-nowrap"><b>Email Alerts</b></td>
                                                         <td class="slds-cell-wrap">All</td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="slds-cell-nowrap"><b>Workflow Rules</b></td>
+                                                        <td class="slds-nowrap"><b>Workflow Rules</b></td>
                                                         <td class="slds-cell-wrap">Active rules.</td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="slds-cell-nowrap"><b>Apex</b></td>
+                                                        <td class="slds-nowrap"><b>Apex</b></td>
                                                         <td class="slds-cell-wrap">
                                                             <p>
                                                                 Classes annotated with <a href="https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_InvocableMethod.htm" target="_blank" rel="noopener noreferrer">@InvocableMethod</a> or <a href="https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_anonymous_block.htm" target="_blank" rel="noopener noreferrer">anonymous blocks</a>.
@@ -608,29 +608,29 @@ License: BSD 3-Clause License
                                                 <table class="slds-table slds-table_cell-buffer slds-table_bordered">
                                                     <thead>
                                                         <tr class="slds-line-height_reset">
-                                                            <th class="slds-text-title_caps slds-cell-nowrap">Expression</th>
+                                                            <th class="slds-text-title_caps slds-nowrap">Expression</th>
                                                             <th class="slds-text-title_caps slds-cell-wrap">Description</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
                                                         <tr>
-                                                            <td class="slds-cell-nowrap"><code>0 0 13 * * ?</code></td>
+                                                            <td class="slds-nowrap"><code>0 0 13 * * ?</code></td>
                                                             <td class="slds-cell-wrap">Runs every day at 1 PM.</td>
                                                         </tr>
                                                         <tr>
-                                                            <td class="slds-cell-nowrap"><code>0 0 22 ? * 6L</code></td>
+                                                            <td class="slds-nowrap"><code>0 0 22 ? * 6L</code></td>
                                                             <td class="slds-cell-wrap">Runs the last Friday of every month at 10 PM.</td>
                                                         </tr>
                                                         <tr>
-                                                            <td class="slds-cell-nowrap"><code>0 0 10 ? * MON-FRI	</code></td>
+                                                            <td class="slds-nowrap"><code>0 0 10 ? * MON-FRI	</code></td>
                                                             <td class="slds-cell-wrap">Runs Monday through Friday at 10 AM.</td>
                                                         </tr>
                                                         <tr>
-                                                            <td class="slds-cell-nowrap"><code>0 0 20 * * ? 2010</code></td>
+                                                            <td class="slds-nowrap"><code>0 0 20 * * ? 2010</code></td>
                                                             <td class="slds-cell-wrap">Runs every day at 8 PM during the year 2010.</td>
                                                         </tr>
                                                         <tr>
-                                                            <td class="slds-cell-nowrap"><code>0 0 8 13 2 ?</code></td>
+                                                            <td class="slds-nowrap"><code>0 0 8 13 2 ?</code></td>
                                                             <td class="slds-cell-wrap">Runs every 13th of February at 8 AM.</td>
                                                         </tr>
                                                     </tbody>
@@ -656,7 +656,7 @@ License: BSD 3-Clause License
 
             <aura:if isTrue="{!equals( v.wizardActiveStageIndex, 0 )}">
 
-                <div class="slds-grid slds-p-horizontal_medium">
+                <div class="slds-grid slds-var-p-horizontal_medium">
 
                     <div class="slds-col">
                         <c:slds_section title="Detail Information"/>
@@ -664,7 +664,7 @@ License: BSD 3-Clause License
 
                 </div>
 
-                <div class="slds-grid slds-p-horizontal_medium">
+                <div class="slds-grid slds-var-p-horizontal_medium">
 
                     <div class="slds-col">
                         <div class="slds-form slds-form_stacked">
@@ -679,7 +679,7 @@ License: BSD 3-Clause License
                                 required="true"
                                 type="text"
                                 messageWhenValueMissing="Name is required."
-                                class="slds-p-top_x-small"
+                                class="slds-var-p-top_x-small"
                                 onblur="{!c.handleInputNameFieldBlur}"/>
 
                             <c:slds_label label="{!v.objectDescribe.fields.DeveloperName__c.label}"
@@ -692,7 +692,7 @@ License: BSD 3-Clause License
                                 required="true"
                                 type="text"
                                 messageWhenValueMissing="Unique Name is required."
-                                class="slds-p-top_x-small"/>
+                                class="slds-var-p-top_x-small"/>
 
                             <c:slds_label label="{!v.objectDescribe.fields.Description__c.label}"
                                           helpText="{!v.objectDescribe.fields.Description__c.helpText}"/>
@@ -702,7 +702,7 @@ License: BSD 3-Clause License
                                 label="{!v.objectDescribe.fields.Description__c.label}"
                                 value="{!v.record.description}"
                                 required="false"
-                                class="slds-p-top_x-small"/>
+                                class="slds-var-p-top_x-small"/>
 
                             <c:slds_label label="{!v.objectDescribe.fields.Active__c.label}"
                                           helpText="{!v.objectDescribe.fields.Active__c.helpText}"/>
@@ -714,7 +714,7 @@ License: BSD 3-Clause License
                                 checked="{!v.record.active}"
                                 required="false"
                                 type="checkbox"
-                                class="slds-p-top_x-small"/>
+                                class="slds-var-p-top_x-small"/>
 
                             <c:slds_label label="{!v.objectDescribe.fields.Batch_Size__c.label}"
                                           helpText="{!v.objectDescribe.fields.Batch_Size__c.helpText}"/>
@@ -730,7 +730,7 @@ License: BSD 3-Clause License
                                 messageWhenValueMissing="Batch Size is required."
                                 messageWhenRangeUnderflow="Batch Size must be between 1 and 200."
                                 messageWhenRangeOverflow="Batch Size must be between 1 and 200."
-                                class="slds-p-top_x-small"/>
+                                class="slds-var-p-top_x-small"/>
 
                             <c:slds_label label="{!v.objectDescribe.fields.Named_Credential__c.label}"
                                           helpText="{!v.objectDescribe.fields.Named_Credential__c.helpText}"/>
@@ -742,7 +742,7 @@ License: BSD 3-Clause License
                                 required="false"
                                 options="{!v.targetNamedCredentials}"
                                 placeholder="Select a Named Credential"
-                                class="slds-p-top_x-small"/>
+                                class="slds-var-p-top_x-small"/>
 
                         </div>
                     </div>
@@ -755,7 +755,7 @@ License: BSD 3-Clause License
 
             <aura:if isTrue="{!equals( v.wizardActiveStageIndex, 1 )}">
 
-                <div class="slds-grid slds-p-horizontal_medium">
+                <div class="slds-grid slds-var-p-horizontal_medium">
 
                     <div class="slds-col">
                         <c:slds_section title="Source Information"/>
@@ -763,7 +763,7 @@ License: BSD 3-Clause License
 
                 </div>
 
-                <div class="slds-grid slds-p-horizontal_medium">
+                <div class="slds-grid slds-var-p-horizontal_medium">
 
                     <div class="slds-col">
                         <div class="slds-form slds-form_stacked">
@@ -779,7 +779,7 @@ License: BSD 3-Clause License
                                 placeholder="Select a Source Type"
                                 required="true"
                                 messageWhenValueMissing="Source Type is required."
-                                class="slds-p-top_x-small"/>
+                                class="slds-var-p-top_x-small"/>
 
                             <aura:if isTrue="{!equals( v.sourceType, 'Report' )}">
 
@@ -794,7 +794,7 @@ License: BSD 3-Clause License
                                     placeholder="Select a Report Folder"
                                     required="true"
                                     messageWhenValueMissing="Report Folder is required."
-                                    class="slds-p-top_x-small"/>
+                                    class="slds-var-p-top_x-small"/>
 
                                 <c:slds_label label="Report (tabular format only)"
                                               helpText="{!v.objectDescribe.fields.Source_Report_ID__c.helpText}"/>
@@ -807,7 +807,7 @@ License: BSD 3-Clause License
                                     placeholder="Select a Tabular Report"
                                     required="true"
                                     messageWhenValueMissing="Report is required."
-                                    class="slds-p-top_x-small"/>
+                                    class="slds-var-p-top_x-small"/>
 
                                 <c:slds_label label="Report Column - choose a column that uniquely identifies each record in the report"
                                               helpText="{!v.objectDescribe.fields.Source_Report_Column_Name__c.helpText}"/>
@@ -820,7 +820,7 @@ License: BSD 3-Clause License
                                     placeholder="Select a Report Column"
                                     required="true"
                                     messageWhenValueMissing="Report Column is required."
-                                    class="slds-p-top_x-small"/>
+                                    class="slds-var-p-top_x-small"/>
 
                             </aura:if>
 
@@ -837,7 +837,7 @@ License: BSD 3-Clause License
                                     placeholder="Select an Object"
                                     required="true"
                                     messageWhenValueMissing="Object is required."
-                                    class="slds-p-top_x-small"/>
+                                    class="slds-var-p-top_x-small"/>
 
                                 <c:slds_label label="List View"
                                               helpText="{!v.objectDescribe.fields.Source_List_View_ID__c.helpText}"/>
@@ -850,7 +850,7 @@ License: BSD 3-Clause License
                                     placeholder="Select a List View"
                                     required="true"
                                     messageWhenValueMissing="List View is required."
-                                    class="slds-p-top_x-small"/>
+                                    class="slds-var-p-top_x-small"/>
 
                             </aura:if>
 
@@ -868,7 +868,7 @@ License: BSD 3-Clause License
                                     maxlength="{!v.objectDescribe.fields.Source_SOQL_Query__c.length}"
                                     messageWhenValueMissing="SOQL Query is required."
                                     messageWhenTooLong="SOQL Query is too long."
-                                    class="slds-p-top_x-small slds-text-font_monospace"/>
+                                    class="slds-var-p-top_x-small slds-text-font_monospace"/>
 
                             </aura:if>
 
@@ -883,7 +883,7 @@ License: BSD 3-Clause License
                                     value="{!v.record.sourceApexClass}"
                                     required="true"
                                     messageWhenValueMissing="Apex Class is required."
-                                    class="slds-p-top_x-small"/>
+                                    class="slds-var-p-top_x-small"/>
 
                             </aura:if>
 
@@ -908,7 +908,7 @@ License: BSD 3-Clause License
 
             <aura:if isTrue="{!equals( v.wizardActiveStageIndex, 2 )}">
 
-                <div class="slds-grid slds-p-horizontal_medium">
+                <div class="slds-grid slds-var-p-horizontal_medium">
 
                     <div class="slds-col">
                         <c:slds_section title="Action Information"/>
@@ -916,7 +916,7 @@ License: BSD 3-Clause License
 
                 </div>
 
-                <div class="slds-grid slds-p-horizontal_medium">
+                <div class="slds-grid slds-var-p-horizontal_medium">
 
                     <div class="slds-col">
                         <div class="slds-form slds-form_stacked">
@@ -932,11 +932,11 @@ License: BSD 3-Clause License
                                 placeholder="Select an Action Type"
                                 required="true"
                                 messageWhenValueMissing="Action Type is required."
-                                class="slds-p-top_x-small"/>
+                                class="slds-var-p-top_x-small"/>
 
                             <aura:if isTrue="{!equals( v.targetType, 'Workflow' )}">
 
-                                <div class="slds-form-element slds-p-top_x-small">
+                                <div class="slds-form-element slds-var-p-top_x-small">
 
                                     <label class="slds-form-element__label">
                                         <abbr title="required" class="slds-required">*</abbr>
@@ -968,7 +968,7 @@ License: BSD 3-Clause License
                                     placeholder="Select an Apex Type"
                                     required="true"
                                     messageWhenValueMissing="Apex Type is required."
-                                    class="slds-p-top_x-small"/>
+                                    class="slds-var-p-top_x-small"/>
 
                                 <aura:if isTrue="{!equals( v.targetApexType, 'Anonymous' )}">
                                     <c:slds_label label="Apex Code"
@@ -983,7 +983,7 @@ License: BSD 3-Clause License
                                         maxlength="{!v.objectDescribe.fields.Target_Apex_Script__c.length}"
                                         messageWhenValueMissing="Apex code is required."
                                         messageWhenTooLong="Apex code is too long."
-                                        class="slds-p-top_x-small slds-text-font_monospace"/>
+                                        class="slds-var-p-top_x-small slds-text-font_monospace"/>
                                 </aura:if>
 
                             </aura:if>
@@ -1000,7 +1000,7 @@ License: BSD 3-Clause License
                                     placeholder="Select an Object"
                                     required="true"
                                     messageWhenValueMissing="Object is required."
-                                    class="slds-p-top_x-small"/>
+                                    class="slds-var-p-top_x-small"/>
                             </aura:if>
 
                             <aura:if isTrue="{!v.isValidToRenderTargetInvocableActions}">
@@ -1015,7 +1015,7 @@ License: BSD 3-Clause License
                                     placeholder="Select an Action"
                                     required="true"
                                     messageWhenValueMissing="Action is required."
-                                    class="slds-p-top_x-small"/>
+                                    class="slds-var-p-top_x-small"/>
                             </aura:if>
 
                         </div>
@@ -1029,7 +1029,7 @@ License: BSD 3-Clause License
 
             <aura:if isTrue="{!equals( v.wizardActiveStageIndex, 3 )}">
 
-                <div class="slds-grid slds-p-horizontal_medium">
+                <div class="slds-grid slds-var-p-horizontal_medium">
 
                     <div class="slds-col">
                         <c:slds_section title="Field Mappings"/>
@@ -1037,7 +1037,7 @@ License: BSD 3-Clause License
 
                 </div>
 
-                <div class="slds-p-horizontal_medium">
+                <div class="slds-var-p-horizontal_medium">
 
                     <aura:if isTrue="{!empty(v.targetFieldMappings)}">
 
@@ -1097,13 +1097,13 @@ License: BSD 3-Clause License
 
                                                 <aura:set attribute="else">
 
-                                                    <span class="slds-m-right_xxx-small" style="opacity:0">*</span>
+                                                    <span class="slds-var-m-right_xxx-small" style="opacity:0">*</span>
 
                                                 </aura:set>
 
                                             </aura:if>
 
-                                            <span class="slds-m-right_xx-small">{!targetFieldMapping.targetField.label}</span>
+                                            <span class="slds-var-m-right_xx-small">{!targetFieldMapping.targetField.label}</span>
 
                                             <aura:if isTrue="{!not(empty(targetFieldMapping.targetField.description))}">
                                                 <lightning:helptext content="{!targetFieldMapping.targetField.description}"/>
@@ -1125,7 +1125,7 @@ License: BSD 3-Clause License
 
             <aura:if isTrue="{!equals( v.wizardActiveStageIndex, 4 )}">
 
-                <div class="slds-grid slds-p-horizontal_medium">
+                <div class="slds-grid slds-var-p-horizontal_medium">
 
                     <div class="slds-col">
                         <c:slds_section title="Schedule Information"/>
@@ -1133,7 +1133,7 @@ License: BSD 3-Clause License
 
                 </div>
 
-                <div class="slds-grid slds-p-horizontal_medium">
+                <div class="slds-grid slds-var-p-horizontal_medium">
 
                     <div class="slds-col">
                         <div class="slds-form slds-form_stacked">
@@ -1149,7 +1149,7 @@ License: BSD 3-Clause License
                                 type="button"
                                 required="true"
                                 messageWhenValueMissing="Schedule Frequency is required."
-                                class="slds-p-top_x-small label-hidden"/>
+                                class="slds-var-p-top_x-small label-hidden"/>
 
                             <!--
                                 Unfortunately, the radioGroup component changes the value type to an array,
@@ -1160,7 +1160,7 @@ License: BSD 3-Clause License
                              -->
                             <aura:if isTrue="{!or( equals( v.scheduleSelectionsFrequency, 'Scheduled' ), and( not( empty( v.scheduleSelectionsFrequency ) ), equals( v.scheduleSelectionsFrequency[0], 'Scheduled' ) ) )}">
 
-                                <div class="slds-p-top_medium">
+                                <div class="slds-var-p-top_medium">
 
                                     <p>
                                         Select the hours, days of month or weekdays, and months
@@ -1169,7 +1169,7 @@ License: BSD 3-Clause License
 
                                     <div class="slds-grid">
 
-                                        <div class="slds-col slds-m-vertical_medium">
+                                        <div class="slds-col slds-var-m-vertical_medium">
 
                                             <c:slds_label label="{!v.objectDescribe.fields.Schedule_HourOfDay__c.label}"
                                                           helpText="{!v.objectDescribe.fields.Schedule_HourOfDay__c.helpText}"/>
@@ -1190,7 +1190,7 @@ License: BSD 3-Clause License
 
                                     <div class="slds-grid">
 
-                                        <div class="slds-col slds-m-vertical_medium">
+                                        <div class="slds-col slds-var-m-vertical_medium">
 
                                             <c:slds_label label="{!v.objectDescribe.fields.Schedule_DayOfWeek__c.label}"
                                                           helpText="{!v.objectDescribe.fields.Schedule_DayOfWeek__c.helpText}"/>
@@ -1210,7 +1210,7 @@ License: BSD 3-Clause License
 
                                     <div class="slds-grid">
 
-                                        <div class="slds-col slds-m-vertical_medium">
+                                        <div class="slds-col slds-var-m-vertical_medium">
 
                                             <c:slds_label label="{!v.objectDescribe.fields.Schedule_DayOfMonth__c.label}"
                                                           helpText="{!v.objectDescribe.fields.Schedule_DayOfMonth__c.helpText}"/>
@@ -1230,7 +1230,7 @@ License: BSD 3-Clause License
 
                                     <div class="slds-grid">
 
-                                        <div class="slds-col slds-m-vertical_medium">
+                                        <div class="slds-col slds-var-m-vertical_medium">
 
                                             <c:slds_label label="{!v.objectDescribe.fields.Schedule_MonthOfYear__c.label}"
                                                           helpText="{!v.objectDescribe.fields.Schedule_MonthOfYear__c.helpText}"/>
@@ -1255,7 +1255,7 @@ License: BSD 3-Clause License
 
                             <aura:if isTrue="{!or( equals( v.scheduleSelectionsFrequency, 'Custom' ), and( not( empty( v.scheduleSelectionsFrequency ) ), equals( v.scheduleSelectionsFrequency[0], 'Custom' ) ) )}">
 
-                                <div class="slds-p-top_medium">
+                                <div class="slds-var-p-top_medium">
 
                                     <c:slds_label label="{!v.objectDescribe.fields.Schedule_Cron__c.label}"
                                                   helpText="{!v.objectDescribe.fields.Schedule_Cron__c.helpText}"/>
@@ -1267,7 +1267,7 @@ License: BSD 3-Clause License
                                          value="{!v.record.scheduleCron}"
                                          required="true"/>
 
-                                    <div class="slds-m-vertical_small">
+                                    <div class="slds-var-m-vertical_small">
                                         Please refer to the <a href="https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_scheduler.htm" target="_blank" rel="noopener noreferrer">Apex Scheduler Developer Documentation</a>
                                         for details on creating a cron expression.
                                     </div>
@@ -1285,9 +1285,9 @@ License: BSD 3-Clause License
 
             <!-- Navigation Controls -->
 
-            <div class="slds-grid slds-p-around_medium slds-m-top_medium slds-grid_pull-padded-medium slds-grid_align-center">
+            <div class="slds-grid slds-var-p-around_medium slds-var-m-top_medium slds-grid_pull-padded-medium slds-grid_align-center">
 
-                <div class="slds-col slds-p-horizontal_medium">
+                <div class="slds-col slds-var-p-horizontal_medium">
                     <lightning:button aura:id="wizardPreviousButton"
                         label="Previous"
                         title="Previous"
@@ -1298,7 +1298,7 @@ License: BSD 3-Clause License
 
                 <aura:if isTrue="{!lessthan( v.wizardActiveStageIndex, ( v.wizardStageNames.length - 1 ) )}">
 
-                    <div class="slds-col slds-p-horizontal_medium">
+                    <div class="slds-col slds-var-p-horizontal_medium">
                         <lightning:button aura:id="wizardNextButton"
                             label="Next"
                             title="Next"
@@ -1311,7 +1311,7 @@ License: BSD 3-Clause License
 
                 <aura:if isTrue="{!equals( v.wizardActiveStageIndex, ( v.wizardStageNames.length - 1 ) )}">
 
-                    <div class="slds-col slds-p-horizontal_medium">
+                    <div class="slds-col slds-var-p-horizontal_medium">
                         <lightning:button aura:id="wizardSaveButton"
                             label="Save"
                             title="Save"
@@ -1337,7 +1337,7 @@ License: BSD 3-Clause License
 <!--
 BSD 3-Clause License
 
-Copyright (c) 2017-2022, Doug Ayers, douglascayers.com
+Copyright (c) 2017-2023, Doug Ayers, douglascayers.com
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
