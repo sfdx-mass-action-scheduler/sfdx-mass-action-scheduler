@@ -3,7 +3,7 @@
 :+1::tada: First off, thanks for taking the time to contribute! :tada::+1:
 
 The following is a set of guidelines for contributing to Mass Action Scheduler and its packages,
-which are hosted in the [Douglas C. Ayers Open Source Organization](https://github.com/douglascayers-org) on GitHub.
+which are hosted in the [Salesforce Mass Action Scheduler](https://github.com/sfdx-mass-action-scheduler) organization on GitHub.
 
 ## Table of Contents
 
@@ -13,7 +13,7 @@ which are hosted in the [Douglas C. Ayers Open Source Organization](https://gith
   * [Reporting Bugs](#reporting-bugs)
   * [Suggesting Enhancements](#suggesting-enhancements)
   * [Pull Requests](#pull-requests)
-  
+
 [Styleguides](#styleguides)
 
 [Additional Notes](#additional-notes)
@@ -41,10 +41,10 @@ Fill out [the template](.github/ISSUE_TEMPLATE/BUG_REPORT.md), the information i
 
 #### Before Submitting A Bug Report
 
-* Read the [wiki](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki) for documentation and usage.
-* Check the [FAQ](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/Frequently-Asked-Questions). Your question might already be answered.
+* Read the [wiki](https://github.com/sfdx-mass-action-scheduler/sfdx-mass-action-scheduler/wiki) for documentation and usage.
+* Check the [FAQ](https://github.com/sfdx-mass-action-scheduler/sfdx-mass-action-scheduler/wiki/Frequently-Asked-Questions). Your question might already be answered.
 * Review conversations in the [community group](https://success.salesforce.com/_ui/core/chatter/groups/GroupProfilePage?g=0F93A000000LhvN). Your issue might already have been discussed.
-* Perform a [cursory search](https://github.com/search?utf8=%E2%9C%93&q=repo%3Adouglascayers-org%2Fsfdx-mass-action-scheduler&type=issues) to see if the problem has already been reported. If it has **and the issue is still open**, add a comment to the existing issue instead of opening a new one.
+* Perform a [cursory search](https://github.com/search?utf8=%E2%9C%93&q=repo%3Asfdx-mass-action-scheduler%2Fsfdx-mass-action-scheduler&type=issues) to see if the problem has already been reported. If it has **and the issue is still open**, add a comment to the existing issue instead of opening a new one.
 
 #### How Do I Submit A (Good) Bug Report?
 
@@ -71,8 +71,8 @@ Fill out [the template](.github/ISSUE_TEMPLATE/FEATURE_REQUEST.md), including ho
 
 #### Before Submitting An Enhancement Suggestion
 
-* Read the [wiki](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki) for documentation and usage. The feature might already exist. 
-* Perform a [cursory search](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/issues?q=is%3Aopen+is%3Aissue+label%3A%22enhancement+%E2%9C%A8%22) to see if the enhancement has already been requested. If it has **and the request is still open**, add a comment to the existing request instead of opening a new one.
+* Read the [wiki](https://github.com/sfdx-mass-action-scheduler/sfdx-mass-action-scheduler/wiki) for documentation and usage. The feature might already exist.
+* Perform a [cursory search](https://github.com/sfdx-mass-action-scheduler/sfdx-mass-action-scheduler/issues?q=is%3Aopen+is%3Aissue+label%3A%22enhancement+%E2%9C%A8%22) to see if the enhancement has already been requested. If it has **and the request is still open**, add a comment to the existing request instead of opening a new one.
 
 #### How Do I Submit A (Good) Enhancement Suggestion?
 
@@ -83,14 +83,14 @@ Enhancements are tracked as [GitHub issues](https://guides.github.com/features/i
 * **Describe the current behavior** and **explain which behavior you expected to see instead** and why.
 * **Explain why this enhancement would be useful.**
 * **Include screenshots and animated GIFs** which help you demonstrate the steps or point out the part of Mass Action Scheduler which the suggestion is related to.
-* **Specify which version of Mass Action Scheduler you're using.** Determine the version number by going to Setup, search for `Installed` in the Quick Find box, then click **Installed Packages**. 
+* **Specify which version of Mass Action Scheduler you're using.** Determine the version number by going to Setup, search for `Installed` in the Quick Find box, then click **Installed Packages**.
 
 ### Pull Requests
 
 Please follow these steps to have your contribution considered by the maintainers. We follow the [GitHub Flow](https://guides.github.com/introduction/flow/) to submit pull requests from feature branches from forks of this project.
 
 1. Fork the repo
-    * https://github.com/douglascayers-org/sfdx-mass-action-scheduler
+    * https://github.com/sfdx-mass-action-scheduler/sfdx-mass-action-scheduler
 2. Check out a new branch and name it to what you intend to do
     * Use one branch per fix / feature
 3. Commit your changes
@@ -115,7 +115,7 @@ Follow the coding convention and standards of the code in the project.
 ### Issue and Pull Request Labels
 
 Labels help us track and manage issues and pull requests.
-Refer to the full list of labels and their descriptions [here](https://github.com/douglascayers-org/sfdx-mass-action-scheduler/labels).
+Refer to the full list of labels and their descriptions [here](https://github.com/sfdx-mass-action-scheduler/sfdx-mass-action-scheduler/labels).
 
 [GitHub search](https://help.github.com/articles/searching-issues/) makes it easy to use labels for finding groups of issues or pull requests you're interested in.
 We encourage you to read about [other search filters](https://help.github.com/articles/searching-issues/) which will help you write more focused queries.

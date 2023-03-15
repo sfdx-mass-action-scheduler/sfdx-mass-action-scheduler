@@ -145,7 +145,7 @@
     <deploymentStatus>Deployed</deploymentStatus>
     <deprecated>false</deprecated>
     <description>Information about Mass Action batch job executions. You can safely delete these records after their related batch job has finished.
-https://github.com/douglascayers-org/sfdx-mass-action-scheduler/wiki/</description>
+https://github.com/sfdx-mass-action-scheduler/sfdx-mass-action-scheduler/wiki/</description>
     <enableActivities>true</enableActivities>
     <enableBulkApi>true</enableBulkApi>
     <enableFeeds>false</enableFeeds>

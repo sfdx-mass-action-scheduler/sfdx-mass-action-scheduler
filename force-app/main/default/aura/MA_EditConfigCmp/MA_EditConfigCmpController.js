@@ -1,7 +1,7 @@
 /*
 Author: Doug Ayers
 Website: https://douglascayers.com
-GitHub: https://github.com/douglascayers-org/sfdx-mass-action-scheduler
+GitHub: https://github.com/sfdx-mass-action-scheduler/sfdx-mass-action-scheduler
 License: BSD 3-Clause License
  */
 ({
@@ -102,7 +102,7 @@ License: BSD 3-Clause License
                         // several change handlers call controller methods
                         // and those methods end up reading/writing attribtues
                         // before the above async operations have completed.
-                        // https://github.com/douglascayers-org/sfdx-mass-action-scheduler/issues/94
+                        // https://github.com/sfdx-mass-action-scheduler/sfdx-mass-action-scheduler/issues/94
 
                         component.set( 'v.didInitConfig', true );
 
@@ -491,7 +491,7 @@ License: BSD 3-Clause License
 /*
 BSD 3-Clause License
 
-Copyright (c) 2017-2020, Doug Ayers, douglascayers.com
+Copyright (c) 2017-2022, Doug Ayers, douglascayers.com
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
