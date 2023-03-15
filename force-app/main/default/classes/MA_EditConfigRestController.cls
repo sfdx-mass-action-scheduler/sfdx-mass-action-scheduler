@@ -718,7 +718,7 @@ global with sharing class MA_EditConfigRestController {
 /*
 BSD 3-Clause License
 
-Copyright (c) 2017-2022, Doug Ayers, douglascayers.com
+Copyright (c) 2017-2023, Doug Ayers, douglascayers.com
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
