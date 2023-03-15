@@ -40,13 +40,13 @@ License: BSD 3-Clause License
 
         </aura:set>
 
-        <p class="slds-p-around_small">
+        <p class="slds-var-p-around_small">
             Submits background batch job that invokes the target action on the source records.
         </p>
 
         <aura:if isTrue="{!and(not(empty(v.record)), not(v.record.active))}">
             <div class="slds-notify slds-notify_alert slds-theme_warning" role="alert">
-                <div class="slds-notify__content">
+                <div>
                     <p>This Mass Action can't be run because it is inactive.</p>
                     <p>To run, activate this Mass Action then try again.</p>
                 </div>

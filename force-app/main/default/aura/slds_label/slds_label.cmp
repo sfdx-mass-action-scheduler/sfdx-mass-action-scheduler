@@ -16,7 +16,7 @@ License: BSD 3-Clause License
 
     <div>
 
-        <label class="slds-form-element__label slds-m-right_xx-small">
+        <label class="slds-form-element__label slds-var-m-right_xx-small">
             {!v.label}
         </label>
 

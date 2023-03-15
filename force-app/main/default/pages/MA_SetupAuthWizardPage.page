@@ -130,18 +130,18 @@ License: BSD 3-Clause License
                         <div class="slds-text-heading_medium">4. Post Setup</div>
                         <p class="slds-p-bottom_medium">
                             <ol class="slds-list_ordered" style="list-style-type: lower-alpha;">
-                                <li class="slds-m-vertical_small">
+                                <li class="slds-var-m-vertical_small">
                                     <b>Wait 10 minutes</b> for the Connected App to become available to the Salesforce login servers, otherwise you will get error <span class="slds-text-color_error">invalid_client_id</span> in step 4b.
                                 </li>
-                                <li class="slds-m-vertical_small">
+                                <li class="slds-var-m-vertical_small">
                                     In Setup, go to the <a href="/lightning/setup/NamedCredential/home" target="_blank" rel="noopener noreferrer">Named Credential</a> record,
                                     click <b>Edit</b>, ensure the <b>Start Authentication Flow on Save</b> checkbox is selected, then click <b>Save</b>.
                                 </li>
-                                <li class="slds-m-vertical_small">
+                                <li class="slds-var-m-vertical_small">
                                     Salesforce will prompt you to log in with the user credentials you want Mass Action Scheduler app to use.
                                     On the login page, click <b>Use Custom Domain</b> and enter <span id="post-setup-custom-domain">your org's My Domain</span>.
                                 </li>
-                                <li class="slds-m-vertical_small">
+                                <li class="slds-var-m-vertical_small">
                                     Upon logging in Salesforce will prompt you to authorize Mass Action Scheduler app to perform requests on your behalf.
                                     At no time will Mass Action Scheduler app be provided your <i>actual</i> Salesforce password, which is a purpose of these security requirements.
                                 </li>
