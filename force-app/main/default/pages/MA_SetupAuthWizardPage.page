@@ -199,19 +199,10 @@ License: BSD 3-Clause License
             version : '54.0'
         });
 
-        const consumerKey = getRandomLetters( 85 );
-
-        // When creating a connected app, the consumerSecret must be plain text.
+        // When creating a connected app, the consumer key and secret must be plain text.
         // http://releasenotes.docs.salesforce.com/en-us/spring19/release-notes/rn_identity_client_secret_resize.htm
-        const consumerSecret = '4CB36F0D9CC8ACF7FD5CA005C438A6E165FE57810AD4B6DADB8136E8C4B6DB35';
-
-        // When creating an auth provider, the consumerSecret must be encrypted.
-        // Since the algorithm to encrypt the plain text consumerSecret is secret,
-        // then to learn the encrypted value I created an Auth Provider with a known key/secret
-        // then retrieved its metadata using Salesforce CLI with `force:source:retrieve --metadata AuthProvider` command.
-        // This is the encrypted value of the plain text consumer secret above.
-        // https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_authproviders.htm
-        const encryptedConsumerSecret = 'RVbMTqpAyU71sOoFzY5lswGqjWgOsrdIfrP4SsaNMKbq4DCxPCyygFAkyYlIdnsrtD7gSIIxK8/kEiL7vfBBXHBBGPdiC2rX';
+        const consumerKey = getRandomLetters( 85 );
+        const consumerSecret = getRandomString( 64, true, false, true, false );
 
         function createMetadata() {
 
@@ -233,7 +224,7 @@ License: BSD 3-Clause License
                         .then( function( result ) {
                             validateMetadataSaveResult( 'ConnectedApp', result );
                             showMessage( 'Connected App created with name "' + fullName + '"', 'SUCCESS' );
-                            return conn.metadata.create( 'AuthProvider', buildAuthProvider( label, fullName, orgDomainURL, consumerKey, encryptedConsumerSecret ) );
+                            return conn.metadata.create( 'AuthProvider', buildAuthProvider( label, fullName, orgDomainURL, consumerKey, consumerSecret ) );
                         })
                         .then( function( result ) {
                             validateMetadataSaveResult( 'AuthProvider', result );
