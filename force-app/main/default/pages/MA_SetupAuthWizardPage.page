@@ -199,11 +199,10 @@ License: BSD 3-Clause License
             version : '54.0'
         });
 
-        const consumerKey = getRandomLetters( 85 );
-
-        // When creating a connected app, the consumerSecret must be plain text.
+        // When creating a connected app, the consumer key and secret must be plain text.
         // http://releasenotes.docs.salesforce.com/en-us/spring19/release-notes/rn_identity_client_secret_resize.htm
-        const consumerSecret = '4CB36F0D9CC8ACF7FD5CA005C438A6E165FE57810AD4B6DADB8136E8C4B6DB35';
+        const consumerKey = getRandomLetters( 85 );
+        const consumerSecret = getRandomString( 64, true, false, true, false );
 
         function createMetadata() {
 
